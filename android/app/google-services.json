@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "513781665335",
+    "project_id": "eye-health-application",
+    "storage_bucket": "eye-health-application.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:513781665335:android:53a2bc55c510e19110b9b2",
+        "android_client_info": {
+          "package_name": "com.eyehealth.ehapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJN2md56_PLTHX_YN8FdB0wtWYZLOV0v8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
