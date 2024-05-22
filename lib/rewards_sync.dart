@@ -55,29 +55,7 @@ class _RewardsContactsSync extends State<RewardContact> {
 
 
 
-  // Future<void> shareAppLink(BuildContext context) async {
-  //   try {
-  //     String message =
-  //         'Check out our awesome app: $appStoreLink\nUse Referral Code: $referralCode';
-  //
-  //     // Create a clickable link for the referral code
-  //     String referralLink = 'https://yourapp.com?referral=$referralCode';
-  //
-  //     // If the URL can be launched, append it to the message
-  //     if (await canLaunch(referralLink)) {
-  //       message += '\n\nReferral Link: $referralLink';
-  //     }
-  //
-  //     // Share the message
-  //     await Share.share(message);
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text('Failed to share the app.'),
-  //       ),
-  //     );
-  //   }
-  // }
+
   void shareAppLink(int i) async {
     try {
         Share.share('Check out our awesome app: $appStoreLink'
@@ -338,7 +316,9 @@ if(ReferCode!.isNotEmpty)
                     Permission.contacts
                     ].request();
 
+setState(() {
 
+});
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -460,11 +440,7 @@ if(ReferCode!.isNotEmpty)
                           ],
                         ),
                         onTap: () async {
-                          // final fullContact =
-                          //     await FlutterContacts.getContact(
-                          //         _contacts[i].id);
-                          // await Navigator.of(context).push(MaterialPageRoute(
-                          //     builder: (_) => ContactPage(fullContact!)));
+
                         },
                       ),
                     ),
@@ -1710,20 +1686,21 @@ class PresUpload extends State<PrescriptionUpload> {
 
                         ),
                       ),
+// TODO REPLACEMENT ===add progress bar for uploading files
 
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(18.0,10,18,10),
-                        child: Text(
-                          'Uploading - 1/1 files',
-                          // 'Win a cool pair of sunglasses of worth rs 1000 free',
-                          style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.greytext,
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ),
+                      // Padding(
+                      //   padding: EdgeInsets.fromLTRB(18.0,10,18,10),
+                      //   child: Text(
+                      //     'Uploading - 1/1 files',
+                      //     // 'Win a cool pair of sunglasses of worth rs 1000 free',
+                      //     style: TextStyle(
+                      //         fontSize: 13,
+                      //         color: Colors.greytext,
+                      //         fontWeight: FontWeight.w500),
+                      //   ),
+                      // ),
 
-
+                SizedBox(height: 15,),
 
                       Expanded(
                         child: ListView.builder(
@@ -1871,37 +1848,10 @@ class PresUpload extends State<PrescriptionUpload> {
         'file',
         _files[0].path!,
       ));
-    // }
 
-    // for (var i = 0; i < 1; i++) {
-    //   var file = _files[i];
-    //   if (file != null) {
-    //     print("Adding file at index $i: ${file.name}");
-    //
-    //     // Check if the bytes property is not null
-    //     if (file.bytes != null) {
-    //       // Get the bytes directly from the PlatformFile
-    //       Uint8List bytes = file.bytes!;
-    //
-    //       // Create a multipart file from bytes
-    //       var multipartFile = http.MultipartFile.fromBytes(
-    //         'FILE[${i + 1}]',
-    //         bytes,
-    //         filename: file.name, // You can use the file name as the filename
-    //       );
-    //
-    //       // Add the multipart file to the request
-    //       request.files.add(multipartFile);
-    //     } else {
-    //       print("Skipping file at index $i because the bytes property is null.");
-    //     }
-    //   } else {
-    //     print("Skipping file at index $i because it is null.");
-    //   }
-    // }
 
     print("Request==: ${request.toString()}");
-    // print("File details: ${_files[0].name}, ${_files[0].path}, ${_files[0].bytes}");
+
 
     try {
       var response = await request.send();
@@ -1920,27 +1870,46 @@ class PresUpload extends State<PrescriptionUpload> {
       // Handle the status code
       print("Status Code: $statusCode");
 
-      // Check if the status code indicates success
       if (statusCode == 201) {
         Fluttertoast.showToast(msg: "File uploaded Successfully");
+
         getPrescriptionFiles();
-      } else {
+      }
+      else {
         print("Error: ${response.reasonPhrase}");
       }
     } catch (e) {
       // Handle any errors that occur during the request
       print("Error uploading file: $e");
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   }
 
 
 
 
   Future getPrescriptionFiles() async {
+
     var sharedPref = await SharedPreferences.getInstance();
     String userToken = sharedPref.getString("access_token") ?? '';
     try {
-
+setState(() {
+  _files1.clear();
+  _files.clear();
+});
       Map<String, String> headers = {
         'Authorization': 'Bearer $userToken', // Bearer token type
         // 'Content-Type': 'application/json',

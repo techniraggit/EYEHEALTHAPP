@@ -30,7 +30,6 @@ final navigatorKey=GlobalKey<NavigatorState>();
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message)async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
 
-
   print("message----1bavk"+message.notification!.body.toString());
   Map<String, dynamic> parsedJson = json.decode(message.notification!.body.toString());
 
