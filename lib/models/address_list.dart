@@ -11,15 +11,15 @@ class AddressList {
     if (json['data'] != null) {
       data = <Data>[];
       json['data'].forEach((v) {
-        data!.add(Data.fromJson(v));
+        data!.add(new Data.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['status'] = status;
-    data['status_code'] = statusCode;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['status'] = this.status;
+    data['status_code'] = this.statusCode;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -35,6 +35,12 @@ class Data {
   String? state;
   String? country;
   String? fullAddress;
+  String? fullName;
+  String? phoneNumber;
+  String? email;
+  String? locality;
+  bool? isDefault;
+  String? addressType;
 
   Data(
       {this.addressId,
@@ -43,7 +49,13 @@ class Data {
         this.city,
         this.state,
         this.country,
-        this.fullAddress});
+        this.fullAddress,
+        this.fullName,
+        this.phoneNumber,
+        this.email,
+        this.locality,
+        this.isDefault,
+        this.addressType});
 
   Data.fromJson(Map<String, dynamic> json) {
     addressId = json['address_id'];
@@ -53,17 +65,29 @@ class Data {
     state = json['state'];
     country = json['country'];
     fullAddress = json['full_address'];
+    fullName = json['full_name'];
+    phoneNumber = json['phone_number'];
+    email = json['email'];
+    locality = json['locality'];
+    isDefault = json['is_default'];
+    addressType = json['address_type'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['address_id'] = addressId;
-    data['address'] = address;
-    data['postal_code'] = postalCode;
-    data['city'] = city;
-    data['state'] = state;
-    data['country'] = country;
-    data['full_address'] = fullAddress;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['address_id'] = this.addressId;
+    data['address'] = this.address;
+    data['postal_code'] = this.postalCode;
+    data['city'] = this.city;
+    data['state'] = this.state;
+    data['country'] = this.country;
+    data['full_address'] = this.fullAddress;
+    data['full_name'] = this.fullName;
+    data['phone_number'] = this.phoneNumber;
+    data['email'] = this.email;
+    data['locality'] = this.locality;
+    data['is_default'] = this.isDefault;
+    data['address_type'] = this.addressType;
     return data;
   }
 }

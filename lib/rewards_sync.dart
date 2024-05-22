@@ -26,6 +26,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Custom_navbar/bottom_navbar.dart';
 import 'api/config.dart';
+import 'new_address_screen.dart';
 
 class RewardContact extends StatefulWidget {
   const RewardContact({super.key});
@@ -42,7 +43,9 @@ class _RewardsContactsSync extends State<RewardContact> {
   List<Contact> _contacts = [];String ? ReferCode="";
   bool _permissionDenied = false;
   final Map<int, bool> _invitationStatus = {};
-@override
+  final Map<int, bool> condition = {};
+
+  @override
   void initState()  {
     // TODO: implement initState
     super.initState();
@@ -88,19 +91,23 @@ class _RewardsContactsSync extends State<RewardContact> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return DefaultTabController(
+      length: 2,
+        child: Scaffold(
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(10),
           child: AppBar(
             backgroundColor:
-                Colors.white, // Set app bar background color to white
+            Colors.white, // Set app bar background color to white
             elevation: 0, // Remove app bar shadow
             // Add any other app bar properties as needed
+
+
           ),
-        ),
-        body:
-        Column(
+    ),
+
+
+        body: Column(
           children: [
             Stack(
               children: [
@@ -295,11 +302,7 @@ if(ReferCode!.isNotEmpty)
     ),
   ),
 
-
-
-
-
-            Padding(
+  Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 30.0, vertical: 27),
               child: SizedBox(
@@ -338,116 +341,246 @@ setState(() {
                 ),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 22.0, vertical: 10),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  'Contacts',
-                  style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.background,
-                      fontWeight: FontWeight.w500),
-                ),
+
+
+
+            //TODO INcorrect Parentage
+
+            PreferredSize(
+              preferredSize: Size.fromHeight(MediaQuery.of(context).size.height / 2),
+              child: TabBar(
+                isScrollable: false,
+                tabs: [
+                  Tab(text: 'Contacts'),
+                  Tab(text: 'Joined'),
+
+                ],
               ),
             ),
-            // if (_permissionDenied)
-            //   const Center(child: Text('Permission denied')),
-            if (_contacts != null) ...{
-              Expanded(
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: _contacts.length,
-                  itemBuilder: (context, i) => Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Card(
-                      color: Colors.white,
-                      elevation: 0.9,
-                      child: ListTile(
-                        leading: _contacts[i].avatar!=null && _contacts[i].avatar!.isNotEmpty?
-                        Container(
-                          height: 50,
-                          width: 50,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle
-                          ),
-                          child: Image.memory(_contacts[i].avatar!))
-                        : Container(
-                          height: 50,
-                          width: 50,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle
-                          ),
-                          child: Image.asset('assets/contact.png'))
-                        ,
-                        // leading: CircleAvatar(
-                        //   backgroundImage: _contacts[i].avatar != null &&
-                        //           _contacts[i].avatar!.isNotEmpty
-                        //       ? MemoryImage(_contacts[i].avatar!)
-                        //       : const AssetImage('assets/contact.png')
-                        //           as ImageProvider,
-                        // ),
-                        title: Text(
-                          _contacts[i].displayName??'',
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 15,
-                              color: Colors.black),
-                        ),
-                        subtitle: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '+91 ${_contacts[i].phones!.isNotEmpty ? _contacts[i].phones!.first.value : 'N/A'}',
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 14,
-                                  color: Color(0xFF667085)),
-                            ),
-                            const Spacer(),
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
 
-                                  // if(  _invitationStatus[i] ==false){
-                                    print("===${_invitationStatus[i].toString()}");
-                                  // _invitationStatus[i] =
-                                  //     !(_invitationStatus[i] ?? false);
-                                  shareAppLink(i);
-                                  // }
 
-                                });
-                              },
-                              child: _invitationStatus[i] == true
-                                  ? Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors
-                                            .green, // Green background color
-                                        borderRadius: BorderRadius.circular(
-                                            20), // Rounded border
-                                      ),
-                                      child: const Icon(Icons.check,
+
+
+
+            Expanded(
+              child: TabBarView(
+                children: [
+
+                  Center(
+                    child:_contacts != null
+                        ? Expanded(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: _contacts.length,
+                        itemBuilder: (context, i) => Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Card(
+                            color: Colors.white,
+                            elevation: 0.9,
+                            child: ListTile(
+                              leading: _contacts[i].avatar!=null && _contacts[i].avatar!.isNotEmpty?
+                              Container(
+                                  height: 50,
+                                  width: 50,
+                                  decoration: const BoxDecoration(
+                                      shape: BoxShape.circle
+                                  ),
+                                  child: Image.memory(_contacts[i].avatar!))
+                                  : Container(
+                                  height: 50,
+                                  width: 50,
+                                  decoration: const BoxDecoration(
+                                      shape: BoxShape.circle
+                                  ),
+                                  child: Image.asset('assets/contact.png'))
+                              ,
+                              // leading: CircleAvatar(
+                              //   backgroundImage: _contacts[i].avatar != null &&
+                              //           _contacts[i].avatar!.isNotEmpty
+                              //       ? MemoryImage(_contacts[i].avatar!)
+                              //       : const AssetImage('assets/contact.png')
+                              //           as ImageProvider,
+                              // ),
+                              title: Text(
+                                _contacts[i].displayName??'',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 15,
+                                    color: Colors.black),
+                              ),
+                              subtitle: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '+91 ${_contacts[i].phones!.isNotEmpty ? _contacts[i].phones!.first.value : 'N/A'}',
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 14,
+                                        color: Color(0xFF667085)),
+                                  ),
+                                  const Spacer(),
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+
+                                        // if(  _invitationStatus[i] ==false){
+                                        print("===${_invitationStatus[i].toString()}");
+                                        // _invitationStatus[i] =
+                                        //     !(_invitationStatus[i] ?? false);
+                                        shareAppLink(i);
+                                        // }
+
+                                      });
+                                    },
+                                    child: _invitationStatus[i] == true
+                                        ? Container(
+                                        decoration: BoxDecoration(
                                           color: Colors
-                                              .white)) // Display verified icon
-                                  : const Text(
+                                              .green, // Green background color
+                                          borderRadius: BorderRadius.circular(
+                                              20), // Rounded border
+                                        ),
+                                        child: const Icon(Icons.check,
+                                            color: Colors
+                                                .white)) // Display verified icon
+                                        : const Text(
                                       'INVITE',
                                       style: TextStyle(
                                           fontWeight: FontWeight.w400,
                                           fontSize: 14,
                                           color: Color(0xFF667085)),
                                     ), // Display "INVITE" text
-                            ),
-                          ],
-                        ),
-                        onTap: () async {
+                                  ),
+                                ],
+                              ),
+                              onTap: () async {
 
-                        },
+                              },
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                    ):Container()
+                      // if (_permissionDenied)
+                      //   const Center(child: Text('Permission denied')),
+                      // if (_contacts != null) ...{
+
                   ),
-                ),
+                  // Content of Tab 2
+
+                  Center(
+                      child:_contacts != null
+                          ? Expanded(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: _contacts.length,
+                          itemBuilder: (context, i) => Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Card(
+                              color: Colors.white,
+                              elevation: 0.9,
+                              child: ListTile(
+                                leading: _contacts[i].avatar!=null && _contacts[i].avatar!.isNotEmpty?
+                                Container(
+                                    height: 50,
+                                    width: 50,
+                                    decoration: const BoxDecoration(
+                                        shape: BoxShape.circle
+                                    ),
+                                    child: Image.memory(_contacts[i].avatar!))
+                                    : Container(
+                                    height: 50,
+                                    width: 50,
+                                    decoration: const BoxDecoration(
+                                        shape: BoxShape.circle
+                                    ),
+                                    child: Image.asset('assets/contact.png'))
+                                ,
+                                // leading: CircleAvatar(
+                                //   backgroundImage: _contacts[i].avatar != null &&
+                                //           _contacts[i].avatar!.isNotEmpty
+                                //       ? MemoryImage(_contacts[i].avatar!)
+                                //       : const AssetImage('assets/contact.png')
+                                //           as ImageProvider,
+                                // ),
+                                title: Text(
+                                  _contacts[i].displayName??'',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 15,
+                                      color: Colors.black),
+                                ),
+                                subtitle: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '+91 ${_contacts[i].phones!.isNotEmpty ? _contacts[i].phones!.first.value : 'N/A'}',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 14,
+                                          color: Color(0xFF667085)),
+                                    ),
+                                    const Spacer(),
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+
+                                          // // if(  _invitationStatus[i] ==false){
+                                          // print("===${condition[i].toString()}");
+                                          condition[i] =
+                                              !(condition[i] ?? false);
+                                          // shareAppLink(i);
+                                          // // }
+
+                                        });
+                                      },
+                                      child:
+                                           Container(
+                                          decoration: BoxDecoration(
+                                            color: condition[i] == true ? Colors.green : Colors.grey,
+                                            borderRadius: BorderRadius.circular(
+                                                12), // Rounded border
+                                          ),
+                                         // Display verified icon
+                                           child: Padding(
+                                             padding: const EdgeInsets.all(8.0),
+                                             child: Text(
+                                                                                     '${10} Points',
+                                                                                     style: TextStyle(
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 14,
+                                              color: Colors.white),
+                                                                                   ),
+                                           ), // Display "INVITE" text
+                                    ),)
+                                  ],
+                                ),
+                                onTap: () async {
+
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                      ):Container()
+                    // if (_permissionDenied)
+                    //   const Center(child: Text('Permission denied')),
+                    // if (_contacts != null) ...{
+
+                  ),
+                ],
               ),
-            }
+            ),
+
+
+
+
+
+
+
+
+
+
           ],
         ),
         bottomNavigationBar: CustomBottomAppBar(), // Include the persistent bottom bar here
@@ -544,6 +677,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
   int ? totalPoints ;
    OfferData? offerData;
   AddressList? address_list;
+  bool isChecked = false;
 
   double ? userPercentage;
   bool isReedemButtonEnabled = false; // Set your condition here
@@ -661,6 +795,7 @@ if(userPercentage==100.0){
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         address_list = AddressList.fromJson(responseData);
+
         print("statusCode================${address_list?.data?[0].address}");
 
         setState(() {});
@@ -1079,6 +1214,8 @@ if(userPercentage==100.0){
       ),
     );
   }
+
+
   void RedeemaddressSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -1087,7 +1224,8 @@ if(userPercentage==100.0){
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return SingleChildScrollView(
-              child: Column(
+              child:
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
                   Container(
@@ -1119,136 +1257,120 @@ if(userPercentage==100.0){
                       ],
                     ),
                   ),
+
+                  //TODO INcorrect Parentage
+
+
                   ListView.builder(
                     shrinkWrap: true,
-                    physics:
-                    const ScrollPhysics(),
-                    itemCount: address_list?.data?.length, // Replace with your item count
+                    physics: const ScrollPhysics(),
+                    itemCount: address_list?.data?.length ?? 0,
                     itemBuilder: (BuildContext context, int index) {
                       return Card(
                         margin: EdgeInsets.all(8.0),
-                     child:  Row(
-                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-
-
-
-                        Column(
-                          children: [
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Checkbox(
-                                  value: false, // Replace with your checkbox value
-                                  onChanged: (newValue) {
-                                    isSelected = !isSelected;
-                                  },
+                                Builder(
+                                  builder: (context) {
+                                    if( address_list?.data?[index].isDefault==true){
+                                    isSelected=true;
+                                    }
+                                    else{
+                                      isSelected=false;
+
+                                    }
+
+                                    return Checkbox(
+                                      value: false, // Replace with your checkbox value
+                                      onChanged: (newValue) {
+                                        isSelected = !isSelected;
+                                      },
+                                    );
+                                  }
                                 ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: isSelected ? Colors.background : Colors.grey,                              width: 0.3, // Specify the width of the border
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: isSelected ? Colors.background : Colors.grey,
+                                        width: 0.3,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8),
+                                      color: isSelected ? Colors.background : Colors.grey,
                                     ),
-                                    borderRadius: BorderRadius.circular(8), // Specify the border radius
-                                    color: isSelected ? Colors.background : Colors.grey,                          ),
-                                  child:SizedBox(
+                                    child: SizedBox(
                                       height: 25,
-                                      width: 50,
-                                      // Specify the desired height
+                                      width: 59,
                                       child: Center(
                                         child: Text(
-                                          'Home',
+                                          '${address_list?.data?[index].addressType}',
                                           style: TextStyle(
-                                            fontSize: 12,color: Colors.white,
+                                            fontSize: 12,
+                                            color: Colors.white,
                                             fontWeight: FontWeight.w400,
                                           ),
                                         ),
                                       ),
-                                    ),),
+                                    ),
+                                  ),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      width:MediaQuery.of(context).size.width/2.2,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 5.0, left: 10, right: 10),
+                                        child: Text(
+                                          '${address_list?.data?[index].address}  ${address_list?.data?[index].city},  ${address_list?.data?[index].state}, ${address_list?.data?[index].country}, ${address_list?.data?[index].postalCode}',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: isSelected ? Colors.background : Colors.black,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                          maxLines: null,
+                                        ),
+                                      ),
+                                    ),
+
+
+                                    Container(
+                                      width:MediaQuery.of(context).size.width/2.2,
+
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 5.0, left: 10),
+                                        child: Text(
+                                          '${address_list?.data?[index].phoneNumber}  ${address_list?.data?[index].email}   ',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 5.0, left: 10),
+                                      child: Text(
+                                        '${address_list?.data?[index].state}',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w300,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
-
-
-
-                            // Padding(
-                            //   padding: const EdgeInsets.only(left: 20, right: 20),
-                            //   child: Container(
-                            //     decoration: BoxDecoration(
-                            //       border: Border.all(
-                            //           color: const Color(0xff95a2b6), width: 1.0),
-                            //     ),
-                            //     child: Padding(
-                            //       padding: const EdgeInsets.symmetric(
-                            //           horizontal: 12, vertical: 12),
-                            //       child: Row(
-                            //         children: [
-                            //           Expanded(
-                            //             child: Text(
-                            //               '${address_list?.data?[index].address}  ${address_list?.data?[index].city},   ${address_list?.data?[index].state}, ${address_list?.data?[index].country}, ${address_list?.data?[index].postalCode}',
-                            //               maxLines: null,
-                            //               style: const TextStyle(
-                            //                   color: Color(0xff112f5c), fontSize: 16,fontWeight: FontWeight.w400),
-                            //             ),
-                            //           ),
-                            //         ],
-                            //       ),
-                            //     ),
-                            //   ),
-                            // ),
-
-                            Padding(
-                              padding: const EdgeInsets.only(top: 5.0,left: 10,right: 10),
-                              child: Text(
-                                '${address_list?.data?[index].address}  ${address_list?.data?[index].city},  ${address_list?.data?[index].state}, ${address_list?.data?[index].country}, ${address_list?.data?[index].postalCode}',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.background, // Text color based on selection
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                maxLines: null,
-                              ),
-                            ),
-
-
-                            Padding(
-                              padding: const EdgeInsets.only(top: 5.0,left: 10),
-                              child: Text(
-                                '${address_list?.data?[index].address}',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color:Colors.black , // Text color based on selection
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ),
-
-
-                            Padding(
-                              padding: const EdgeInsets.only(top: 5.0,left: 10),
-                              child: Text(
-                                '${address_list?.data?[index].state}',
-                                style: TextStyle(
-                                  fontSize: 14,color: Colors.black,
-                                  fontWeight: FontWeight.w300,
-                                ),
-                              ),
-                            ),
-
-                          ],
-                        ),
-
-
-
-
-
-
-
-
-
-
                             Align(
-                              alignment: Alignment.centerRight,
-
+                              alignment: Alignment.center,
                               child: IconButton(
                                 icon: Icon(Icons.edit),
                                 onPressed: () {
@@ -1258,10 +1380,71 @@ if(userPercentage==100.0){
                             ),
                           ],
                         ),
-
                       );
                     },
                   ),
+
+
+
+            Container(
+            padding: EdgeInsets.only(top: 10.0,left: 10),
+            child: Column(
+            children: <Widget>[
+            CheckboxListTile(
+              title: Text(
+                'Billing address same as shipping',
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              value: isChecked,
+              onChanged: (newValue) {
+                setState(() {
+                  isChecked = newValue!;
+                });
+              },
+              controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+            )
+            ],
+            ),
+            ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => NewAddressScreen()),
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.only(top: 5.0, left: 14),
+                      child: Row(
+                        children: <Widget>[
+                          IconButton(
+                            icon: Icon(Icons.add),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => NewAddressScreen()),
+                              );
+                            },
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            'Add new address',
+                            style: TextStyle(
+                              color: Colors.black54,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+
                 ],
               ),
             );
@@ -1271,21 +1454,9 @@ if(userPercentage==100.0){
     );
 
   }
+
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
