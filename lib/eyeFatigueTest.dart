@@ -140,9 +140,7 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  onPrimary: Colors.white,
-
-                  primary: Colors.deepPurple,
+                  foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
                   // Background color
                   // Text color
                   padding: EdgeInsets.all(16),
@@ -243,8 +241,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  onPrimary: Colors.white,
-                  primary: Colors.purple.shade300,
+                  foregroundColor: Colors.white, backgroundColor: Colors.purple.shade300,
                   minimumSize: Size(350, 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25),
@@ -353,8 +350,7 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
             );
           },
           style: ElevatedButton.styleFrom(
-            onPrimary: Colors.white,
-            primary: Colors.deepPurple,
+            foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
             padding: EdgeInsets.all(16),
             minimumSize: Size(300, 40),
             shape: RoundedRectangleBorder(

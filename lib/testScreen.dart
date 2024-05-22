@@ -170,8 +170,7 @@ class SelectQuestion extends State<GiveInfo> {
                     },
                     child: Text('Next'),
                     style: ElevatedButton.styleFrom(
-                      primary: Color(0xFF5900D9),
-                      onPrimary: Colors.white,
+                      foregroundColor: Colors.white, backgroundColor: Color(0xFF5900D9),
                       padding: EdgeInsets.all(6),
                       minimumSize: Size(MediaQuery.of(context).size.width, 50),
                       shape: RoundedRectangleBorder(
@@ -189,17 +188,13 @@ class SelectQuestion extends State<GiveInfo> {
   }
 
   Future<void> submitApi() async {
-    //  _progressDialog = ProgressDialog(context); // Initialize ProgressDialog
-    // _progressDialog!.show(); // Show ProgressDialog
-    String access_token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE2MDEyODM4LCJpYXQiOjE3MTU5MjY0MzgsImp0aSI6ImU2ODZkZmM3ZmFiYjQzMGNiY2U0ODQ2YjkzZWM2NjUyIiwidXNlcl9pZCI6IjkxOTNhOTE1LWY5YzItNDQ0MC04MDVlLTQxNDBhYTc5ZDQzOSJ9.39D-W8cAKxt7mQJVxdCD0f8cIO-tNFwpWv-S_zRL2XA';
-
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    //String access_token = prefs.getString('access') ?? '';
-    //   String id = prefs.getString('patient_id') ?? '';
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     print("myselectedid${selectedIds}");
     var headers = {
-      'Authorization': 'Bearer ${Api.access_token}',
+      'Authorization': 'Bearer ${authToken}',
 // Remove or modify Content-Type header here
       'Content-Type': 'application/json',
     };
@@ -324,9 +319,7 @@ class DoTestState extends State<DoTest> {
                           // onImageClicked();
                         },
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.bluebutton,
-                          // Background color
-                          onPrimary: Colors.white,
+                          foregroundColor: Colors.white, backgroundColor: Colors.bluebutton,
                           // Text color
                           padding: EdgeInsets.all(16),
                           minimumSize: Size(200, 30),
@@ -350,16 +343,17 @@ class DoTestState extends State<DoTest> {
   Future<void> select_eye_for_test(String eye) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String access_token = prefs.getString('access') ?? '';
       String test = prefs.getString('test') ?? '';
       String id = prefs.getString('patient_id') ?? '';
-
+      String authToken =
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       var headers = {
-        'Authorization': 'Bearer ${Api.access_token}',
+        'Authorization': 'Bearer ${authToken}',
         'Content-Type': 'application/json',
       };
       var request = http.Request(
-          'POST', Uri.parse('http://192.168.29.221:8000/api/eye/select-eye'));
+          'POST', Uri.parse('${Api.baseurl}/api/eye/select-eye'));
       request.body =
           json.encode({"test_id": id, "eye_status": eye, "test": test});
       print(request.body);
@@ -467,7 +461,9 @@ class SnellFraction extends State<AlfabetTest> {
 
     //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access') ?? '';
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     String text = prefs.getString('test') ?? '';
     if (text == 'myopia') {
       distanceType = 'fardistance';
@@ -489,7 +485,7 @@ class SnellFraction extends State<AlfabetTest> {
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer $access_token',
+          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
         },
         body: requestBody,
@@ -542,10 +538,12 @@ class SnellFraction extends State<AlfabetTest> {
   Future<void> getSnellFraction() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String access_token = prefs.getString('access') ?? '';
+      String authToken =
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String testname = prefs.getString('test') ?? '';
       var headers = {
-        'Authorization': 'Bearer ${Api.access_token}',
+        'Authorization': 'Bearer ${authToken}',
       };
       var uri = Uri.parse(
           '${Api.baseurl}/api/eye/snellen-fraction/?test_name=$testname');
@@ -847,13 +845,15 @@ class SnellFraction extends State<AlfabetTest> {
     });
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String access_token = prefs.getString('access') ?? '';
+      String authToken =
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String id = prefs.getString('test_id') ?? '';
       print('beebeb$id');
 //todo notworking
       print("nahi$nextFraction");
       var headers = {
-        'Authorization': 'Bearer ${Api.access_token}',
+        'Authorization': 'Bearer ${authToken}',
         'Content-Type': 'application/json',
       };
       var request =
@@ -902,11 +902,13 @@ class SnellFraction extends State<AlfabetTest> {
   Future<void> Myopia_or_HyperMyopiaTest(BuildContext context) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String access_token = prefs.getString('access') ?? '';
+      String authToken =
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String test_id = prefs.getString('test_id') ?? '';
       print("testid$test_id snell$nextFraction");
       var headers = {
-        'Authorization': 'Bearer ${Api.access_token}',
+        'Authorization': 'Bearer ${authToken}',
         'Content-Type': 'application/json',
       };
       var request = http.Request(
@@ -1006,7 +1008,9 @@ class Reading extends State<ReadingTest> {
 
     //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access') ?? '';
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
     try {
       var frameData =
@@ -1021,7 +1025,7 @@ class Reading extends State<ReadingTest> {
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer $access_token',
+          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
         },
         body: requestBody,
@@ -1084,10 +1088,12 @@ class Reading extends State<ReadingTest> {
   Future<void> getReadingSnellFraction() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String access_token = prefs.getString('access') ?? '';
+      String authToken =
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String testname = "hyperopia";
       var headers = {
-        'Authorization': 'Bearer $access_token',
+        'Authorization': 'Bearer $authToken',
       };
       var uri = Uri.parse(
           'https://testing1.zuktiapp.zuktiinnovations.com/get-snellen-fraction-api/?test_name=$testname');
@@ -1398,13 +1404,15 @@ class Reading extends State<ReadingTest> {
   Future<String?> getReadingRandomTest() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String access_token = prefs.getString('access') ?? '';
+      String authToken =
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String id = prefs.getString('test_id') ?? '';
       print('beebeb$id');
 //todo notworking
       print("nahi$nextFraction");
       var headers = {
-        'Authorization': 'Bearer $access_token',
+        'Authorization': 'Bearer $authToken',
         'Content-Type': 'application/json',
       };
       var request = http.Request(
@@ -1464,10 +1472,12 @@ class Reading extends State<ReadingTest> {
   Future<void> Update_HyperMyopiaTest(BuildContext context) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String access_token = prefs.getString('access') ?? '';
+      String authToken =
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String test_id = prefs.getString('test_id') ?? '';
       var headers = {
-        'Authorization': 'Bearer $access_token',
+        'Authorization': 'Bearer $authToken',
         'Content-Type': 'application/json',
       };
       var request = http.Request(
@@ -1513,14 +1523,16 @@ class Reading extends State<ReadingTest> {
 
   Future<void> getActivePlan() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access') ?? '';
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
 
     final String apiUrl =
         'https://testing1.zuktiapp.zuktiinnovations.com/subscription-active-plan/';
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $access_token',
+      'Authorization': 'Bearer $authToken',
     };
 // Replace this with your PUT request body
 
@@ -1662,7 +1674,9 @@ class AstigmationTest1 extends State<AstigmationTest> {
 
     //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access') ?? '';
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
     try {
       var frameData =
@@ -1677,7 +1691,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer $access_token',
+          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
         },
         body: requestBody,
@@ -1749,13 +1763,15 @@ class AstigmationTest1 extends State<AstigmationTest> {
   Future<void> ChoseAstigmation() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String access_token = prefs.getString('access') ?? '';
+      String authToken =
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String test_id = prefs.getString('test_id') ?? '';
       await prefs.setString('region', region);
       print("choseastigmation_response${region}");
 
-      const String apiUrl =
-          'http://192.168.29.221:8000/api/eye/choose-astigmatism';
+       String apiUrl =
+          '${Api.baseurl}/api/eye/choose-astigmatism';
       Map<String, dynamic> body1 = {
         'test_id': test_id,
         'choose_astigmatism': region,
@@ -1763,7 +1779,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
       final response = await http.put(
         Uri.parse(apiUrl),
         headers: {
-          'Authorization': 'Bearer ${Api.access_token}',
+          'Authorization': 'Bearer ${authToken}',
           'Content-Type': 'application/json'
         },
         body: jsonEncode(body1),
@@ -2061,13 +2077,14 @@ class Astigmationtest2 extends State<AstigmationTest2> {
 
   Future<void> sendDistanceRequest(String image) async {
     var apiUrl =
-        '${Api.access_token}/api/eye/calculate-distance/'; // Replace with your API endpoint
+        '${Api.baseurl}/api/eye/calculate-distance/'; // Replace with your API endpoint
     /* String base64String = await xFileToBase64(image);*/
 
     //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access') ?? '';
-    //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? ''; //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
     try {
       var frameData =
           image; // Replace this with your frame data as a base64 string
@@ -2081,7 +2098,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer ${Api.access_token}',
+          'Authorization': 'Bearer ${authToken}',
           'Content-Type': 'application/json',
         },
         body: requestBody,
@@ -2206,12 +2223,14 @@ class Astigmationtest2 extends State<AstigmationTest2> {
   Future<void> fetchData() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String access_token = prefs.getString('access') ?? '';
+      String authToken =
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String test_id = prefs.getString('test_id') ?? '';
       String selectedRegion = prefs.getString('region') ?? '';
       print("eeee$test_id");
       final String apiUrl =
-          'http://192.168.29.221:8000/api/eye/get-degrees?test_id=$test_id';
+          '${Api.baseurl}/api/eye/get-degrees?test_id=$test_id';
       final response = await http.get(
         Uri.parse(apiUrl),
         headers: {
@@ -2221,7 +2240,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
       );
       print("degrees--" + response.body);
       print("apiurl--" + apiUrl);
-      print("token--" + access_token);
+      print("token--" + authToken);
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
@@ -2263,7 +2282,9 @@ class Astigmationtest2 extends State<AstigmationTest2> {
   Future<void> ChoseAstigmation(int value) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String access_token = prefs.getString('access') ?? '';
+      String authToken =
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String test_id = prefs.getString('test_id') ?? '';
       String apiUrl = '${Api.baseurl}/api/eye/choose-degree-api/';
       Map<String, dynamic> body1 = {
@@ -2274,7 +2295,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
       final response = await http.put(
         Uri.parse(apiUrl),
         headers: {
-          'Authorization': 'Bearer ${Api.access_token}',
+          'Authorization': 'Bearer ${authToken}',
           'Content-Type': 'application/json'
         },
         body: jsonEncode(body1),
@@ -2697,7 +2718,9 @@ class AstigmationTestNone extends State<AstigmationTest3> {
 
     //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access') ?? '';
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
     try {
       var frameData =
@@ -2712,7 +2735,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer ${Api.access_token}',
+          'Authorization': 'Bearer ${authToken}',
           'Content-Type': 'application/json',
         },
         body: requestBody,
@@ -2801,14 +2824,16 @@ class AstigmationTestNone extends State<AstigmationTest3> {
 
   Future<void> CounterApi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access') ?? '';
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
 
     final String apiUrl =
         'https://testing1.zuktiapp.zuktiinnovations.com/counter-api/?counter_value=0';
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Authorization': '$access_token',
+      'Authorization': '$authToken',
     };
 // Replace this with your PUT request body
 
@@ -2840,7 +2865,9 @@ class AstigmationTestNone extends State<AstigmationTest3> {
   Future<void> ChoseAstigmation() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String access_token = prefs.getString('access') ?? '';
+      String authToken =
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String test_id = prefs.getString('test_id') ?? '';
       final String apiUrl = '${Api.baseurl}/api/eye/choose-astigmatism-api/';
       Map<String, dynamic> body1 = {
@@ -2850,7 +2877,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
       final response = await http.put(
         Uri.parse(apiUrl),
         headers: {
-          'Authorization': 'Bearer $access_token',
+          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json'
         },
         body: jsonEncode(body1),
@@ -2875,7 +2902,9 @@ class AstigmationTestNone extends State<AstigmationTest3> {
 
   Future<void> fetchData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access') ?? '';
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     String test_id = prefs.getString('test_id') ?? '';
     await prefs.setString('region', selectedPart);
 // Replace this URL with your PUT API endpoint
@@ -2884,7 +2913,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $access_token',
+      'Authorization': 'Bearer $authToken',
     };
 // Replace this with your PUT request body
     Map<String, dynamic> body = {
@@ -3423,7 +3452,7 @@ class Cyl extends State<CylTest> {
 
     //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access') ?? '';
+    String access_token = prefs.getString('access_token') ?? '';
     //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
     try {
       var frameData =
@@ -3722,10 +3751,10 @@ class shadowtest extends State<ShadowTest> {
 
     var apiUrl =
         '${Api.baseurl}/api/eye/calculate-distance/'; // Replace with your API endpoint
-    /* String base64String = await xFileToBase64(image);*/
 
-    //print('image$image');
-    String access_token = prefs.getString('access') ?? '';
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
     try {
       var frameData =
@@ -3740,7 +3769,7 @@ class shadowtest extends State<ShadowTest> {
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer ${Api.access_token}',
+          'Authorization': 'Bearer ${authToken}',
           'Content-Type': 'application/json',
         },
         body: requestBody,
@@ -3965,14 +3994,16 @@ class shadowtest extends State<ShadowTest> {
 
   Future<void> CylTestApi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access') ?? '';
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     String test_id = prefs.getString('test_id') ?? '';
 // Replace this URL with your PUT API endpoint
     final String apiUrl = '${Api.baseurl}/api/eye/cyl-test/';
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${Api.access_token}',
+      'Authorization': 'Bearer ${authToken}',
     };
 // Replace this with your PUT request body
     Map<String, dynamic> body = {
@@ -4071,12 +4102,14 @@ class redgreen extends State<RedGreenTest> {
     //print('image$image');
     var distanceType;
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access') ?? '';
     //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
     try {
       var frameData = image;
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken =
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String text = prefs.getString('test') ?? '';
 
       if (text == 'myopia') {
@@ -4095,7 +4128,7 @@ class redgreen extends State<RedGreenTest> {
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer ${Api.access_token}',
+          'Authorization': 'Bearer ${authToken}',
           'Content-Type': 'application/json',
         },
         body: requestBody,
@@ -4147,7 +4180,10 @@ class redgreen extends State<RedGreenTest> {
 
   Future<void> fetchData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access') ?? '';
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
+
     String test_id = prefs.getString('test_id') ?? '';
     print('mytestid$test_id');
 
@@ -4156,7 +4192,7 @@ class redgreen extends State<RedGreenTest> {
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${Api.access_token}',
+      'Authorization': 'Bearer ${authToken}',
     };
 // Replace this with your PUT request body
 
@@ -4200,7 +4236,9 @@ class redgreen extends State<RedGreenTest> {
 
   Future<void> _callAPI() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access') ?? '';
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
 // Replace this URL with your PUT API endpoint
     String test_id = prefs.getString('test_id') ?? '';
     print('snellen_fraction: $snellenFraction');
@@ -4210,7 +4248,7 @@ class redgreen extends State<RedGreenTest> {
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${Api.access_token}',
+      'Authorization': 'Bearer ${authToken}',
     };
 // Replace this with your PUT request body
     Map<String, dynamic> body = {
@@ -4273,7 +4311,7 @@ class redgreen extends State<RedGreenTest> {
 
   Future<void> getActivePlan() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access') ?? '';
+    String access_token = prefs.getString('access_token') ?? '';
     final String apiUrl =
         'https://testing1.zuktiapp.zuktiinnovations.com/subscription-active-plan/';
 // Replace these headers with your required headers
@@ -4321,14 +4359,16 @@ class redgreen extends State<RedGreenTest> {
 
   Future<void> UpdateRedGreenTest() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access') ?? '';
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     String test_id = prefs.getString('test_id') ?? '';
 // Replace this URL with your PUT API endpoint
     final String apiUrl = '${Api.baseurl}/api/eye/update-red-green-action';
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${Api.access_token}', //$access_token
+      'Authorization': 'Bearer ${authToken}', //$access_token
     };
 // Replace this with your PUT request body
     Map<String, dynamic> body = {
@@ -4694,13 +4734,15 @@ class Righteye extends StatelessWidget {
   Future<void> select_eye_for_test(String eye, BuildContext context) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String access_token = prefs.getString('access') ?? '';
+      String authToken =
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String test = prefs.getString('test') ?? '';
       int id = 0;
       print('testt$test');
 
       var headers = {
-        'Authorization': 'Bearer ${Api.access_token}',
+        'Authorization': 'Bearer ${authToken}',
         'Content-Type': 'application/json',
       };
       var request =

@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:project_new/api/config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'customDialog.dart'; // Import intl package
 
@@ -50,9 +52,12 @@ class RewardsScreenState extends State<RewardsScreen> {
   }
 
   Future<List<Offer>> fetchOffers() async {
-    String access_token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk';
-    final String apiUrl = 'http://192.168.29.221:8000/api/offers';
+    String access_token = '';
+    var sharedPref = await SharedPreferences.getInstance();
+    access_token =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE2MjcyODc2LCJpYXQiOjE3MTYxODY0NzYsImp0aSI6ImYyMjJhM2VlZDNjYTRlZjc4MmNmNmEyNTYzOGQxMmU1IiwidXNlcl9pZCI6IjkxOTNhOTE1LWY5YzItNDQ0MC04MDVlLTQxNDBhYTc5ZDQzOSJ9.2Gj1laeNGLhy0FxYQCQVoB_Idt5W0F0X621BVPtNaic";
+    sharedPref.getString("access_token") ?? '';
+    final String apiUrl = '${ApiProvider.baseUrl}/api/offers';
 
     Map<String, String> headers = {
       'Authorization': 'Bearer $access_token',
@@ -238,9 +243,7 @@ class RewardsScreenState extends State<RewardsScreen> {
                                             },
                                             child: Text('Explore More'),
                                             style: ElevatedButton.styleFrom(
-                                              primary: Colors.deepPurple,
-                                              // Background color
-                                              onPrimary: Colors.white,
+                                              foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
                                               // Text color
                                               padding: EdgeInsets.all(10),
                                               minimumSize: Size(100, 20),
@@ -327,9 +330,7 @@ class RewardsScreenState extends State<RewardsScreen> {
                                 },
                                 child: Text('Explore More'),
                                 style: ElevatedButton.styleFrom(
-                                  onPrimary: Colors.white,
-
-                                  primary: Colors.deepPurple,
+                                  foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
                                   // Background color
                                   // Text color
                                   padding: EdgeInsets.all(10),

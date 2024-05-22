@@ -129,8 +129,7 @@ class MyPlanState extends State<MyPlan> {
                               },
                               child: Text('Buy Plan'),
                               style: ElevatedButton.styleFrom(
-                                onPrimary: index.isEven ? Colors.white : Colors.black,
-                                primary: index.isEven ? Color(0xFF5900D9) : Colors.white,
+                                foregroundColor: index.isEven ? Colors.white : Colors.black, backgroundColor: index.isEven ? Color(0xFF5900D9) : Colors.white,
                                 padding: EdgeInsets.all(10),
                                 minimumSize: Size(100, 20),
                                 shape: RoundedRectangleBorder(
@@ -265,10 +264,14 @@ class MyPlanState extends State<MyPlan> {
     _progressDialog.show(); // Show ProgressDialog
 
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken =
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       final response = await http.get(
-        Uri.parse('http://192.168.29.221:8000/api/subscription-plans'),
+        Uri.parse('${Api.baseurl}/api/subscription-plans'),
         headers: <String, String>{
-          'Authorization': 'Bearer ${Api.access_token}',
+          'Authorization': 'Bearer $authToken',
         },
       );
 

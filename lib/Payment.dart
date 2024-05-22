@@ -32,13 +32,15 @@ class ViewPlanM extends State<ViewPlan> {
 
   Future<void> CounterApi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access') ?? '';
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     final String apiUrl =
         'https://testing1.zuktiapp.zuktiinnovations.com/subscription-plans/';
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $access_token',
+      'Authorization': 'Bearer $authToken',
     };
 // Replace this with your PUT request body
 
@@ -176,9 +178,7 @@ class ViewPlanM extends State<ViewPlan> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    onPrimary: Colors.white,
-
-                    primary: Colors.indigo,
+                    foregroundColor: Colors.white, backgroundColor: Colors.indigo,
                     // Background color
                     // Text color
                     padding: EdgeInsets.all(16),
@@ -209,13 +209,15 @@ class ViewPlanM extends State<ViewPlan> {
   bool recordValue=false;
   Future<void> getStripeKey() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access') ?? '';
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     final String apiUrl =
         'https://testing1.zuktiapp.zuktiinnovations.com/get-stripe-detail/';
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $access_token',
+      'Authorization': 'Bearer $authToken',
     };
 // Replace this with your PUT request body
 
@@ -364,7 +366,9 @@ class ViewPlanM extends State<ViewPlan> {
         'https://testing1.zuktiapp.zuktiinnovations.com/stripe-checkout-api/'; // Replace with your API endpoint
     //print("ssss$subscriptionId");
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access') ?? '';
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
 
     try {
       var requestBody = jsonEncode({
@@ -375,7 +379,7 @@ class ViewPlanM extends State<ViewPlan> {
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer $access_token',
+          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
         },
         body: requestBody,
@@ -422,13 +426,15 @@ class ViewPlanM extends State<ViewPlan> {
 // Implement other methods here
   Future<void> checkusertest() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access') ?? '';
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     final String apiUrl =
         'https://testing1.zuktiapp.zuktiinnovations.com/checking-user-test/';
 
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $access_token',
+      'Authorization': 'Bearer $authToken',
     };
 // Replace this with your PUT request body
 
@@ -475,13 +481,15 @@ class ViewPlanM extends State<ViewPlan> {
 
   Future<void> checkPlanValidity() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access') ?? '';
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     final String apiUrl =
         'https://testing1.zuktiapp.zuktiinnovations.com/checking-plan-validity/';
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $access_token',
+      'Authorization': 'Bearer $authToken',
     };
 // Replace this with your PUT request body
     var requestBody = jsonEncode({
@@ -576,10 +584,12 @@ class ApiService {
 
   Future<dynamic> getPlanDetails(String planId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access') ?? '';
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $access_token',
+      'Authorization': 'Bearer $authToken',
     };
     final response =
     await http.get(Uri.parse('$baseUrl/$planId/'), headers: headers);
@@ -899,7 +909,7 @@ class _PlanDetailPageState extends State<PlanDetailPage> {
         'https://testing1.zuktiapp.zuktiinnovations.com/stripe-checkout-api/'; // Replace with your API endpoint
     //print("ssss$subscriptionId");
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access') ?? '';
+    String access_token = prefs.getString('access_token') ?? '';
 
     try {
       var requestBody = jsonEncode({
@@ -962,7 +972,7 @@ class _PlanDetailPageState extends State<PlanDetailPage> {
   bool recordValue=false;
   Future<void> getStripeKey() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access') ?? '';
+    String access_token = prefs.getString('access_token') ?? '';
     final String apiUrl =
         'https://testing1.zuktiapp.zuktiinnovations.com/get-stripe-detail/';
 // Replace these headers with your required headers

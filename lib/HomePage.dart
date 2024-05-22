@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:project_new/testScreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'Api.dart';
 
 class HomePage extends StatefulWidget {
@@ -451,12 +452,14 @@ class HomePageState extends State<HomePage> {
     );
   }
   Future<void> sendcustomerDetails(BuildContext context) async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    // String access_token = prefs.getString('access') ?? '';
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
 // Replace these headers with your required headers
     Map<String, String> headers = {
-      'Authorization': 'Bearer ${Api.access_token}',
+      'Authorization': 'Bearer $authToken',
     };
 
     try {
@@ -518,8 +521,12 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
   final TextEditingController _mobileController = TextEditingController();
 
   Future<void> sendCustomerDetails(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     var headers = {
-      'Authorization': 'Bearer ${Api.access_token}',
+      'Authorization': 'Bearer ${authToken}',
       'Content-Type': 'application/json'
     };
     var request = http.Request(
@@ -671,8 +678,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                     },
                     child: Text('Submit'),
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.bluebutton,
-                      onPrimary: Colors.white,
+                      foregroundColor: Colors.white, backgroundColor: Colors.bluebutton,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(25),
                       ),

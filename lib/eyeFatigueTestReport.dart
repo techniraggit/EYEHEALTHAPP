@@ -202,7 +202,7 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> {
                               // Add your download functionality here
                             },
                             style: ElevatedButton.styleFrom(
-                              primary: Colors.deepPurple.shade400,
+                              backgroundColor: Colors.deepPurple.shade400,
                               padding: EdgeInsets.all(16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(26),

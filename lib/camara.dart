@@ -50,10 +50,11 @@ class _CameraScreenState extends State<CameraS> {
 
   Future<void> validtoken(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access') ?? '';
-
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     Map<String, String> headers = {
-      'Authorization': 'Bearer $access_token',
+      'Authorization': 'Bearer $authToken',
     };
 
     final String apiUrl =
@@ -224,9 +225,7 @@ class _CameraScreenState extends State<CameraS> {
                                       // Add your button functionality here
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      primary: Colors.bluebutton,
-                                      // Background color
-                                      onPrimary: Colors.white,
+                                      foregroundColor: Colors.white, backgroundColor: Colors.bluebutton,
                                       // Text color
                                       padding: EdgeInsets.all(16),
                                       minimumSize: Size(200, 30),
@@ -256,7 +255,7 @@ class _CameraScreenState extends State<CameraS> {
 
   Future<void> sendDistanceRequest(String image) async {
     var apiUrl =
-        'http://192.168.29.221:8000/api/eye/calculate-distance'; // Replace with your API endpoint
+        '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     var distanceType;
@@ -267,10 +266,7 @@ class _CameraScreenState extends State<CameraS> {
     } else if (text == 'hyperopia') {
       distanceType = 'neardistance';
     } //print('image$image');
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    //  String access_token = prefs.getString('access') ?? '';
-    String access_token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk';
+
     try {
       var frameData =
           image; // Replace this with your frame data as a base64 string
@@ -280,12 +276,15 @@ class _CameraScreenState extends State<CameraS> {
         'frameData': frameData,
         'test_distance': distanceType,
       });
-
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken =
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${Api.access_token} ',
+          'Authorization': 'Bearer ${authToken} ',
         },
         body: requestBody,
       );
