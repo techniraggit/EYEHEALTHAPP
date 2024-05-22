@@ -224,9 +224,7 @@ class _CameraScreenState extends State<CameraS> {
                                       // Add your button functionality here
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      primary: Colors.bluebutton,
-                                      // Background color
-                                      onPrimary: Colors.white,
+                                      foregroundColor: Colors.white, backgroundColor: Colors.bluebutton,
                                       // Text color
                                       padding: EdgeInsets.all(16),
                                       minimumSize: Size(200, 30),

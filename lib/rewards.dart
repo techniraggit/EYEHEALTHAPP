@@ -238,9 +238,7 @@ class RewardsScreenState extends State<RewardsScreen> {
                                             },
                                             child: Text('Explore More'),
                                             style: ElevatedButton.styleFrom(
-                                              primary: Colors.deepPurple,
-                                              // Background color
-                                              onPrimary: Colors.white,
+                                              foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
                                               // Text color
                                               padding: EdgeInsets.all(10),
                                               minimumSize: Size(100, 20),
@@ -327,9 +325,7 @@ class RewardsScreenState extends State<RewardsScreen> {
                                 },
                                 child: Text('Explore More'),
                                 style: ElevatedButton.styleFrom(
-                                  onPrimary: Colors.white,
-
-                                  primary: Colors.deepPurple,
+                                  foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
                                   // Background color
                                   // Text color
                                   padding: EdgeInsets.all(10),

@@ -176,9 +176,7 @@ class ViewPlanM extends State<ViewPlan> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    onPrimary: Colors.white,
-
-                    primary: Colors.indigo,
+                    foregroundColor: Colors.white, backgroundColor: Colors.indigo,
                     // Background color
                     // Text color
                     padding: EdgeInsets.all(16),

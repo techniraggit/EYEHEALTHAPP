@@ -232,8 +232,7 @@ class ReportPageState extends State<ReportPage> {
                                 // Add button onPressed logic here
                               },
                               style: ElevatedButton.styleFrom(
-                                primary: Colors.indigo.shade900,
-                                onPrimary: Colors.white,
+                                foregroundColor: Colors.white, backgroundColor: Colors.indigo.shade900,
                                 shape: CircleBorder(),
                                 minimumSize: Size(30, 30), // Adjust the size as needed
                               ),

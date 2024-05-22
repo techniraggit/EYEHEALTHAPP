@@ -129,8 +129,7 @@ class MyPlanState extends State<MyPlan> {
                               },
                               child: Text('Buy Plan'),
                               style: ElevatedButton.styleFrom(
-                                onPrimary: index.isEven ? Colors.white : Colors.black,
-                                primary: index.isEven ? Color(0xFF5900D9) : Colors.white,
+                                foregroundColor: index.isEven ? Colors.white : Colors.black, backgroundColor: index.isEven ? Color(0xFF5900D9) : Colors.white,
                                 padding: EdgeInsets.all(10),
                                 minimumSize: Size(100, 20),
                                 shape: RoundedRectangleBorder(

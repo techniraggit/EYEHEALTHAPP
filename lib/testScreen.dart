@@ -170,8 +170,7 @@ class SelectQuestion extends State<GiveInfo> {
                     },
                     child: Text('Next'),
                     style: ElevatedButton.styleFrom(
-                      primary: Color(0xFF5900D9),
-                      onPrimary: Colors.white,
+                      foregroundColor: Colors.white, backgroundColor: Color(0xFF5900D9),
                       padding: EdgeInsets.all(6),
                       minimumSize: Size(MediaQuery.of(context).size.width, 50),
                       shape: RoundedRectangleBorder(
@@ -324,9 +323,7 @@ class DoTestState extends State<DoTest> {
                           // onImageClicked();
                         },
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.bluebutton,
-                          // Background color
-                          onPrimary: Colors.white,
+                          foregroundColor: Colors.white, backgroundColor: Colors.bluebutton,
                           // Text color
                           padding: EdgeInsets.all(16),
                           minimumSize: Size(200, 30),

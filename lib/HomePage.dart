@@ -671,8 +671,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                     },
                     child: Text('Submit'),
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.bluebutton,
-                      onPrimary: Colors.white,
+                      foregroundColor: Colors.white, backgroundColor: Colors.bluebutton,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(25),
                       ),
