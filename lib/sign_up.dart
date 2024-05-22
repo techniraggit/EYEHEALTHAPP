@@ -458,7 +458,7 @@ if(isNumeric(_phoneController.text)){
                                   padding: const EdgeInsets.all(10.0),
                                   child: PinCodeTextField(
                                     appContext: context,
-                                    length: 6,
+                                    length: 4,
                                     // controller: _otpController,
                                     obscureText: false,
                                     keyboardType: TextInputType.number,
@@ -477,7 +477,7 @@ if(isNumeric(_phoneController.text)){
                                     textStyle: TextStyle(fontSize: 15,fontWeight: FontWeight.w400,color:Colors.black), // Set the font size here
 
                                     onChanged: (String pin) {
-                                      if (pin.length == 6) {
+                                      if (pin.length == 4) {
                                         pincode=pin;
                                         buttonColor = Colors
                                             .background; // Change button color to green when enabled
@@ -496,7 +496,7 @@ if(isNumeric(_phoneController.text)){
                               const SizedBox(height: 10.0),
                               GestureDetector(
                                 onTap: () {
-                                  // ResendOtp();
+                                  getVerifyLoginOtp();
                                 },
                                 child: Container(
                                   alignment: Alignment.center,
@@ -595,7 +595,7 @@ if(isNumeric(_phoneController.text)){
     setState(() {
 
     });
-    if(pincode.isEmpty || pincode.length!=6){
+    if(pincode.isEmpty || pincode.length!=4){
       Fluttertoast.showToast(msg: "Enter Otp");
       return false;
 
@@ -1524,7 +1524,7 @@ double Latitude=0.0;double Longitude=0.0;
                                   padding: const EdgeInsets.all(10.0),
                                   child: PinCodeTextField(
                                     appContext: context,
-                                    length: 6,
+                                    length: 4,
                                     // controller: _otpController,
                                     obscureText: false,
                                     keyboardType: TextInputType.number,
@@ -1543,7 +1543,7 @@ double Latitude=0.0;double Longitude=0.0;
                                     textStyle: TextStyle(fontSize: 15,fontWeight: FontWeight.w400,color:Colors.black), // Set the font size here
 
                                     onChanged: (String pin) {
-                                      if (pin.length == 6) {
+                                      if (pin.length == 4) {
                                         pincode=pin;
                                         buttonColor = Colors
                                             .background; // Change button color to green when enabled
@@ -1753,7 +1753,7 @@ SizedBox(height: 20,),
                                 padding: const EdgeInsets.all(10.0),
                                 child: PinCodeTextField(
                                   appContext: context,
-                                  length: 6,
+                                  length: 4,
                                   // controller: _otpController,
                                   obscureText: false,
                                   keyboardType: TextInputType.number,
@@ -1772,7 +1772,7 @@ SizedBox(height: 20,),
                                   textStyle: TextStyle(fontSize: 15,fontWeight: FontWeight.w400,color:Colors.black), // Set the font size here
 
                                   onChanged: (String pin) {
-                                    if (pin.length == 6) {
+                                    if (pin.length == 4) {
                                       pincode=pin;
                                       buttonColor = Colors
                                           .background; // Change button color to green when enabled
@@ -2130,7 +2130,7 @@ else
     setState(() {
 
     });
-    if(pincode.isEmpty || pincode.length!=6){
+    if(pincode.isEmpty || pincode.length!=4){
       Fluttertoast.showToast(msg: "Enter Otp");
       return false;
 
@@ -2151,7 +2151,7 @@ else
     //
     // }
 
-    if(pincode.isEmpty || pincode.length!=6){
+    if(pincode.isEmpty || pincode.length!=4){
       Fluttertoast.showToast(msg: "Enter Otp");
       return false;
 
@@ -2377,7 +2377,7 @@ class _OTPScreenState extends State<OtpVerificationScreen> {
                                 padding: const EdgeInsets.all(20.0),
                                 child: PinCodeTextField(
                                   appContext: context,
-                                  length: 6,
+                                  length: 4,
                                   obscureText: false,
                                   keyboardType: TextInputType.number,
 
@@ -2395,7 +2395,7 @@ class _OTPScreenState extends State<OtpVerificationScreen> {
                                     inactiveFillColor: Colors.white,
                                   ),
                                   onChanged: (String pin) {
-                                    if (pin.length == 6) {
+                                    if (pin.length == 4) {
                                       buttonColor = Colors
                                           .background; // Change button color to green when enabled
                                     } else {
