@@ -1,6 +1,6 @@
 {
-    "name": "payment_app",
-    "short_name": "payment_app",
+    "name": "project_new",
+    "short_name": "project_new",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

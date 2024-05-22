@@ -10,9 +10,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:payment_app/ReportPage.dart';
-import 'package:payment_app/camara.dart';
-import 'package:payment_app/eyeHealthTrack.dart';
+import 'package:project_new/ReportPage.dart';
+import 'package:project_new/camara.dart';
+import 'package:project_new/eyeHealthTrack.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';

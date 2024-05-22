@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:payment_app/testScreen.dart';
+import 'package:project_new/testScreen.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert' as convert;

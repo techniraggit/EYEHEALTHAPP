@@ -4,13 +4,13 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
-import 'package:payment_app/HomePage.dart';
-import 'package:payment_app/eyeHealthTrack.dart';
-import 'package:payment_app/myPlanPage.dart';
-import 'package:payment_app/rewards.dart';
+import 'package:project_new/HomePage.dart';
+import 'package:project_new/eyeHealthTrack.dart';
+import 'package:project_new/myPlanPage.dart';
+import 'package:project_new/rewards.dart';
 import 'dart:convert' as convert;
 
-import 'package:payment_app/testScreen.dart';
+import 'package:project_new/testScreen.dart';
 
 late List<CameraDescription> cameras;
 

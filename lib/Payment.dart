@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
-import 'package:payment_app/ReportPage.dart';
+import 'package:project_new/ReportPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Counter.dart';
 import 'myPlanPage.dart';
