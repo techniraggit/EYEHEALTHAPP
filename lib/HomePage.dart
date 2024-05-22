@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
+import 'package:project_new/eyeFatigueTest.dart';
 import 'package:project_new/testScreen.dart';
 import 'Api.dart';
 
@@ -130,7 +131,16 @@ class HomePageState extends State<HomePage> {
               },
               child: Image.asset('assets/digital_eye_exam.png'),
             ),
-            Image.asset('assets/eyeFatigueTest.png'),
+            GestureDetector(
+              onTap: ()  {
+                 Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EyeFatigueStartScreen()),
+                ); // Call the API
+              },
+              child:   Image.asset('assets/eyeFatigueTest.png'),
+            ),
+
             Padding(
               padding: EdgeInsets.all(1.0),
               child: Image.asset('assets/find_near_by_store.png'),

@@ -10,78 +10,9 @@ class EyeFatigueStartScreen extends StatefulWidget {
 }
 
 class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
-  CameraController? _controller;
-  late List<CameraDescription> cameras;
-  bool isRecording = false;
-  late String videoPath;
-
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
-  }
-
-  Future<void> _initializeCamera() async {
-    cameras = await availableCameras();
-    _controller = CameraController(
-      cameras.firstWhere((camera) => camera.lensDirection == CameraLensDirection.front),
-      ResolutionPreset.high,
-    );
-
-    await _controller!.initialize();
-    _startVideoRecording();
-  }
-
-  Future<void> _startVideoRecording() async {
-    if (!_controller!.value.isInitialized) {
-      return;
-    }
-    final directory = await getApplicationDocumentsDirectory();
-    videoPath = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
-
-    try {
-      await _controller!.startVideoRecording();
-      isRecording = true;
-      setState(() {});
-
-      await Future.delayed(Duration(seconds: 30));
-
-      if (_controller!.value.isRecordingVideo) {
-        final XFile file = await _controller!.stopVideoRecording();
-        isRecording = false;
-        videoPath = file.path;
-        setState(() {});
-        print('Video recorded to: $videoPath');
-        if (videoPath != null) {
-          _uploadVideo(videoPath);
-        }
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  Future<void> _uploadVideo(String videoFile) async {
-    final url = Uri.parse('https://your-api-endpoint.com/upload'); // Replace with your API endpoint
-    final request = http.MultipartRequest('POST', url)
-      ..files.add(await http.MultipartFile.fromPath('video', videoFile));
-
-    try {
-      final response = await request.send();
-      if (response.statusCode == 200) {
-        print('Video uploaded successfully');
-      } else {
-        print('Failed to upload video');
-      }
-    } catch (e) {
-      print('Error uploading video: $e');
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
   }
 
   @override
@@ -167,6 +98,77 @@ class EyeFatigueSecondScreen extends StatefulWidget {
 }
 
 class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> {
+  CameraController? _controller;
+  late List<CameraDescription> cameras;
+  bool isRecording = false;
+  late String videoPath;
+  @override
+  void initState() {
+    super.initState();
+    _initializeCamera();
+  }
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _initializeCamera() async {
+    cameras = await availableCameras();
+    _controller = CameraController(
+      cameras.firstWhere((camera) => camera.lensDirection == CameraLensDirection.front),
+      ResolutionPreset.high,
+    );
+
+    await _controller!.initialize();
+    _startVideoRecording();
+  }
+
+  Future<void> _startVideoRecording() async {
+    if (!_controller!.value.isInitialized) {
+      return;
+    }
+    final directory = await getApplicationDocumentsDirectory();
+    videoPath = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
+
+    try {
+      await _controller!.startVideoRecording();
+      isRecording = true;
+      setState(() {});
+
+      await Future.delayed(Duration(seconds: 30));
+
+      if (_controller!.value.isRecordingVideo) {
+        final XFile file = await _controller!.stopVideoRecording();
+        isRecording = false;
+        videoPath = file.path;
+        setState(() {});
+        print('Video recorded to: $videoPath');
+        if (videoPath != null) {
+          _uploadVideo(videoPath);
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> _uploadVideo(String videoFile) async {
+    final url = Uri.parse('https://your-api-endpoint.com/upload'); // Replace with your API endpoint
+    final request = http.MultipartRequest('POST', url)
+      ..files.add(await http.MultipartFile.fromPath('video', videoFile));
+
+    try {
+      final response = await request.send();
+      if (response.statusCode == 200) {
+        print('Video uploaded successfully');
+      } else {
+        print('Failed to upload video');
+      }
+    } catch (e) {
+      print('Error uploading video: $e');
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -190,45 +192,8 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> {
             ),
             SizedBox(height: 10),
             Spacer(),
-            Padding(
-              padding: EdgeInsets.fromLTRB(12, 8, 12, 8),
-              child: Container(
-                color: Colors.lightBlue.shade300,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'Read the ON Your screen and we have assessed your eye health based on reading ability',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    // Add some space between the text and icon
-                    IconButton(
-                      icon: Icon(
-                        Icons.close,
-                        size: 24,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => EyeFatigueThirdScreen()),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
 
+           HideableContainer(),
             // Spacer to push the button to the bottom
             Padding(
               padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
@@ -257,6 +222,62 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> {
   }
 }
 
+class HideableContainer extends StatefulWidget {
+@override
+_HideableContainerState createState() => _HideableContainerState();
+}
+
+class _HideableContainerState extends State<HideableContainer> {
+  bool _isVisible = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Wrap the container with Visibility to manage its visibility.
+          Visibility(
+            visible: _isVisible,
+            child: Container(
+              color: Colors.lightBlue.shade300,
+              padding: EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'Read the text on your screen and we have assessed your eye health based on reading ability',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  IconButton(
+                    icon: Icon(
+                      Icons.close,
+                      size: 24,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isVisible = false;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 class EyeFatigueThirdScreen extends StatefulWidget {
   @override
   EyeFatigueThirdScreenState createState() => EyeFatigueThirdScreenState();
