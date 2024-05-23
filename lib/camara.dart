@@ -219,7 +219,7 @@ class _CameraScreenState extends State<CameraS> {
                                         Navigator.pushReplacement(
                                           context,
                                           CupertinoPageRoute(
-                                              builder: (context) => DoTest()),
+                                              builder: (context) => LeftEyeTest()),
                                         );
                                       });
                                       // Add your button functionality here

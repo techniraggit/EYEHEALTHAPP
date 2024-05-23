@@ -1,6 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Import intl package
+import 'package:intl/intl.dart';
+
+import 'Custom_navbar/bottom_navbar.dart'; // Import intl package
 
 class EyeHealthTrackDashboard extends StatefulWidget {
   @override
@@ -22,6 +24,9 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
           IconButton(
             icon: Icon(Icons.notifications),
             onPressed: () {
+
+
+
               // Handle notification icon pressed
             },
           ),
@@ -257,7 +262,8 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
           ],
         ),
       ),
-     );
+      bottomNavigationBar:
+      CustomBottomAppBar(),  );
   }
 }
 

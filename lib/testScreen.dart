@@ -258,98 +258,118 @@ class SelectQuestion extends State<GiveInfo> {
     // _progressDialog!.hide();
   }
 }
-
-class DoTest extends StatefulWidget {
+class LeftEyeTest extends StatefulWidget {
   @override
-  DoTestState createState() => DoTestState();
+  LeftEyeTestState createState() => LeftEyeTestState();
 }
 
-class DoTestState extends State<DoTest> {
+class LeftEyeTestState extends State<LeftEyeTest> {
+
+
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () async {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => GiveInfo()),
-            //(route) => route.isFirst, // Remove until the first route (Screen 1)
-          );
-          return false;
-        },
-        child: MaterialApp(
-          home: Scaffold(
-              body: Stack(
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            // Handle back button press
+          },
+        ),
+        title: Text('EYE TEST'), // Title of the page
+        // Set AppBar background color
+      ),
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              /*    image: DecorationImage(
+                    image: AssetImage('assets/test.png'),
+                    // Replace with your image
+                    fit: BoxFit.cover,
+                  ),*/
+            ),
+          ),
+          Column(
             children: [
-              Container(
-                decoration: BoxDecoration(
-                    /*    image: DecorationImage(
-                        image: AssetImage('assets/test.png'),
-                        // Replace with your image
-                        fit: BoxFit.cover,
-                      ),*/
-                    ),
-              ),
-              SizedBox(height: 20),
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(top: 40.0),
-                      // Set top padding for margin above the image
-
-                      // GestureDetector(
-                      // onTap: () => onImageClicked, // Assign the method to be called on tap
-                      // child: Image.asset(
-                      child: Image.asset(
-                        'assets/close_left_eye.png',
-                        // Replace with your centered image
-                        width: 300, // Adjust the width as needed
-                        height: 300,
-                        // Adjust the height as needed
-                      ),
-                    ),
-                    // ),
-                    SizedBox(height: 20),
-                    // Add spacing between the image and the button
-                    Container(
-                      width: 200, // Set the desired width here
-                      child: ElevatedButton(
-                        onPressed: () {
-                          select_eye_for_test('left');
-                          // onImageClicked();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white, backgroundColor: Colors.bluebutton,
-                          // Text color
-                          padding: EdgeInsets.all(16),
-                          minimumSize: Size(200, 30),
-                          // Button padding
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                            // Button border radius
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10.0),
+                          child: Text(
+                            'Eye Test Instructions for Optimal Results',
+                            style: TextStyle(
+                              color: Colors.bluebutton,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
-                        child: Text('Next'),
                       ),
-                    )
-                  ],
+                      Padding(
+                        padding: EdgeInsets.only(top: 4.0),
+                        child: Image.asset(
+                          'assets/right_eye_image.png',
+                          width: 300,
+                          height: 220,
+                        ),
+                      ),
+
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            bulletText(
+                                'Please place one hand over one eye while testing the other eye. This will help ensure accurate results during the test.'),
+                            bulletText(
+                                'For the virtual eye test, it\'s recommended to maintain a distance of approximately 50 cm from the screen. This distance is optimal for obtaining accurate results and facilitating thorough analysis of your vision.'),
+                            bulletText(
+                                'To facilitate the best possible testing conditions, we advise conducting the eye test in a well-lit room. Adequate lighting enhances the accuracy of the test results and ensures a comfortable testing experience for users.'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    select_eye_for_test('left');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Color(0xFF4600A9), // Set button background color
+                    padding: EdgeInsets.all(16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  child: Text('Next'),
                 ),
               ),
             ],
-          )),
-        ));
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> select_eye_for_test(String eye) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      String access_token = prefs.getString('access_token') ?? '';
       String test = prefs.getString('test') ?? '';
       String id = prefs.getString('patient_id') ?? '';
-      String authToken =
-      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-      prefs.getString('access_token') ?? '';
+
       var headers = {
-        'Authorization': 'Bearer ${authToken}',
+        'Authorization': 'Bearer ${access_token}',
         'Content-Type': 'application/json',
       };
       var request = http.Request(
@@ -392,6 +412,20 @@ class DoTestState extends State<DoTest> {
 // If the server returns an error response, throw an exception
     }
   }
+}
+Widget bulletText(String text) {
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text("• ", style: TextStyle(fontSize: 18)),
+      Expanded(
+        child: Text(
+          text,
+          style: TextStyle(fontSize: 16,color: Colors.bluebutton),
+        ),
+      ),
+    ],
+  );
 }
 
 class AlfabetTest extends StatefulWidget {
@@ -4446,214 +4480,180 @@ class redgreen extends State<RedGreenTest> {
     super.dispose();
   }
 
+  bool _isCameraVisible = true;
+
+
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () async {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => GiveInfo()),
-            //  (route) => route.isFirst, // Remove until the first route (Screen 1)
-          );
-          return false;
-        },
-        child: MaterialApp(
-          home: Scaffold(
-            body: Stack(
-              fit: StackFit.expand,
-              children: <Widget>[
-// Background Image
-                Image.asset(
-                  'assets/test.png', // Replace with your image path
-                  fit: BoxFit.cover,
-                ),
-                SingleChildScrollView(
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-//crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        SizedBox(height: 46.0),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(45, 23, 40, 2),
-                          child: Text(
-                            ' Red/Green Test',
-                            style: TextStyle(
-                                fontSize: 24.0,
-                                color: Color(0xFF1E3777),
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-// Text in the Middle
-                        SizedBox(height: 20.0),
-                        Container(
-                            child: InkWell(
-                          onTap: () {
-                            action = "red";
-// Call your API here
-                            _callAPI();
-                          },
-                          child: Container(
-                            width: 200,
-                            // Width of the container
-                            height: 100,
-                            // Height of the container
-                            color: Colors.red,
-                            // Background color of the container
-                            child: Center(
-                              child: Text(
-                                randomText,
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  // Text color
-                                  fontSize: textSize,
-                                  // Font size of the text
-                                  fontWeight: FontWeight
-                                      .bold, // Font weight of the text
-                                ),
-                              ),
-                            ),
-                          ),
-                        )),
-                        SizedBox(height: 10.0),
-
-                        Container(
-                            child: InkWell(
-                          onTap: () {
-                            action = "green";
-                            _callAPI();
-                          },
-                          child: Container(
-                            width: 200,
-                            // Width of the container
-                            height: 100,
-                            // Height of the container
-                            color: Colors.green,
-                            // Background color of the container
-                            child: Center(
-                              child: Text(
-                                randomText,
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  // Text color
-                                  fontSize: textSize,
-                                  // Font size of the text
-                                  fontWeight: FontWeight
-                                      .bold, // Font weight of the text
-                                ),
-                              ),
-                            ),
-                          ),
-                        )),
-
-                        SizedBox(height: 9),
-
-                        Container(
-                          height: 40,
-
-//padding: const EdgeInsets.fromLTRB(3, 1, 3, 1),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.bluebutton,
-                                Colors.green
-                              ], // Adjust colors as needed
-                            ),
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          child: MaterialButton(
-                            onPressed: () {},
-                            child: TextButton(
-                              child: Text(
-                                'Next',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                ),
-                              ),
-                              onPressed: () {
-// ChoseAstigmation
-
-                                UpdateRedGreenTest();
-                              },
-                            ),
-                          ),
-                        ),
-
-                        /**  Container(
-                            //height: 50,
-                            // width: 200,
-                            padding:  EdgeInsets.fromLTRB(25, 4, 25, 0),
-                            child: ShaderMask(
-                            shaderCallback: (Rect bounds) {
-                            return LinearGradient(
-                            colors: [
-                            Colors.bluebutton,
-                            Colors.green
-                            ], // Replace these with your desired colors
-                            ).createShader(bounds);
-                            },
-                            child: ElevatedButton(
-                            onPressed: () {
-                            UpdateRedGreenTest();
-                            },
-                            style: ElevatedButton.styleFrom(
-                            primary: Colors.bluebutton, // Set button background color
-                            onPrimary: Colors.white,
-                            // Set text color to white
-                            ),
-                            child: Text('Next', style: TextStyle(
-                            fontSize: 20,fontWeight: FontWeight.bold),),
-                            )
-                            )),**/
-                        Container(
-                          width: 320,
-                          height: 40,
-                          padding: EdgeInsets.all(8),
-                          child: Text(
-                            alert,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 22,
-                                color: alert == 'Good to go'
-                                    ? Colors.green
-                                    : Colors.red,
-                                fontWeight: FontWeight.bold
-                                // Change text color here
-                                // You can also set other properties like fontWeight, fontStyle, etc.
-                                ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 3,
-                        ),
-
-                        Container(
-                          child: InteractiveViewer(
-                            boundaryMargin: EdgeInsets.all(20.0),
-                            minScale: 0.1,
-                            maxScale: 1.5,
-                            child: _controller != null
-                                ? CameraPreview(_controller!)
-                                : Container(),
-                          ),
-                          width: 280.0,
-                          // Set the desired width
-                          height: 320.0,
-                          // Set the desired height
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                          ),
-                        ),
-                      ],
+    return Scaffold(
+      body: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          Positioned(
+            top: 16,
+            right: 16,
+            child: Visibility(
+              visible: _isCameraVisible,
+              child: Stack(
+                children: [
+                  Container(
+                    width: 130.0,
+                    height: 150.0,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                    ),
+                    child: InteractiveViewer(
+                      boundaryMargin: EdgeInsets.all(20.0),
+                      minScale: 0.1,
+                      maxScale: 1.5,
+                      child: _controller != null
+                          ? CameraPreview(_controller!)
+                          : Container(),
                     ),
                   ),
-                ),
-              ],
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.close,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isCameraVisible = false;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ));
+          SingleChildScrollView(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 180.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(
+                        'Red/Green Test',
+                        style: TextStyle(
+                          fontSize: 24.0,
+                          color: Color(0xFF1E3777),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
+                      child: InkWell(
+                        onTap: () {
+                          action = "red";
+                          _callAPI();
+                        },
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 150,
+                          color: Colors.red,
+                          child: Center(
+                            child: Text(
+                              randomText,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: textSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10.0),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
+                      child: InkWell(
+                        onTap: () {
+                          action = "green";
+                          _callAPI();
+                        },
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 150,
+                          color: Colors.green,
+                          child: Center(
+                            child: Text(
+                              randomText,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: textSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 320,
+                      height: 40,
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        alert,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 22,
+                          color: alert == 'Good to go' ? Colors.green : Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 9.0),
+                    Container(
+                      height: 60.0,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.bluebutton, // Change to your desired color
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: MaterialButton(
+                        onPressed: () {
+                          // Call your function here
+                          UpdateRedGreenTest();
+                        },
+                        child: Text(
+                          'Next',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
+
+
 }
+
+
+
+
+
+
+
+
 
 class RightEye extends StatelessWidget {
   @override

@@ -6,10 +6,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geocoding/geocoding.dart'hide Location;
 import 'package:geolocator/geolocator.dart';
@@ -17,12 +15,11 @@ import 'package:http/http.dart';
 import 'package:location/location.dart'hide LocationAccuracy;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
-import 'package:project_new/rewards_sync.dart';
+import 'package:project_new/HomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'api/config.dart';
+
 
 class SignIn extends StatefulWidget {
   @override
@@ -659,7 +656,7 @@ if(isNumeric(_phoneController.text)){
             context,
             CupertinoPageRoute(
                 builder: (context) =>
-                     RewardContact()),
+                     HomePage()),
           );
 
 

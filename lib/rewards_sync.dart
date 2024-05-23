@@ -128,7 +128,7 @@ class _RewardsContactsSync extends State<RewardContact> {
             Stack(
               children: [
                 Container(
-                  height: 110,
+                  height: 130,
                   decoration: const BoxDecoration(
                     image: DecorationImage(
                       image: AssetImage(
