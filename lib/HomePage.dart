@@ -109,7 +109,7 @@ class HomePageState extends State<HomePage> {
                         children: [
                           GestureDetector(
                             onTap:(){
-setReminder();
+
                             } ,
                             child: Text(
                               salutation,
@@ -121,7 +121,7 @@ setReminder();
                         ],
                       ),
                       const Text(
-                        'Name',
+                        'Rajat Saini',
                         style: TextStyle(
                             color: Colors.lightBlueAccent, fontSize: 18),
                       ),
@@ -166,11 +166,17 @@ setReminder();
                   MaterialPageRoute(builder: (context) => AddCustomerPage()),
                 );*/ // Call the API
               },
-              child: Image.asset('assets/digital_eye_exam.png'),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Image.asset('assets/digital_eye_exam.png'),
+              ),
             ),
-            Image.asset('assets/eyeFatigueTest.png'),
             Padding(
-              padding: EdgeInsets.all(1.0),
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Image.asset('assets/eyeFatigueTest.png'),
+            ),
+            Padding(
+              padding: EdgeInsets.all(8.0),
               child: Image.asset('assets/find_near_by_store.png'),
             ),
             Padding(
@@ -221,11 +227,14 @@ setReminder();
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('No. of eye fatigue test'),
+                              Text('No. of eye fatigue test',style: TextStyle(
+                                fontSize: 14,
+                                fontStyle: FontStyle.normal,
+                              ),),
                               Text(
                                 'value',
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -234,11 +243,14 @@ setReminder();
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text('No. of digital eye test'),
+                              Text('No. of digital eye test',style: TextStyle(
+                                fontSize: 14,
+                                fontStyle: FontStyle.normal,
+                              ),),
                               Text(
                                 'Value ',
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -254,11 +266,14 @@ setReminder();
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Prescription uploaded'),
+                              Text('Prescription uploaded',style: TextStyle(
+                                fontSize: 14,
+                                fontStyle: FontStyle.normal,
+                              ),),
                               Text(
                                 'value',
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -267,11 +282,14 @@ setReminder();
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text('visit to optemistist'),
+                              Text('visit to optemistist',style: TextStyle(
+                                fontSize: 14,
+                                fontStyle: FontStyle.normal,
+                              ),),
                               Text(
                                 'Value',
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -299,7 +317,7 @@ setReminder();
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
               child: Card(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -393,7 +411,7 @@ setReminder();
               child: Text(
                 'YOU HAVE TESTED SO FAR', // Display formatted current date
                 style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 17,
                     fontWeight: FontWeight.bold,
                     color: Colors.black),
               ),
@@ -415,7 +433,8 @@ setReminder();
                         ),
                       ),
                       child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Padding(
                             padding: EdgeInsets.symmetric(vertical: 2.0),
@@ -423,7 +442,7 @@ setReminder();
                               '300',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 25,
+                                fontSize: 24,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -434,7 +453,7 @@ setReminder();
                               'Eye Test',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 18,
+                                fontSize: 17,
                               ),
                             ),
                           ),
@@ -451,7 +470,8 @@ setReminder();
                         ),
                       ),
                       child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Padding(
                             padding: EdgeInsets.symmetric(
@@ -460,7 +480,7 @@ setReminder();
                               '300',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 25,
+                                fontSize: 24,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -472,7 +492,7 @@ setReminder();
                               'Eye Fatigue Test',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 18,
+                                fontSize: 16,
                               ),
                             ),
                           ),
@@ -532,7 +552,7 @@ setReminder();
 
 }
 
-
+/*
 class setReminder extends StatefulWidget {
 
   @override
@@ -646,7 +666,7 @@ class ReminderState extends State<setReminder> {
         .addAlarm(time!, uid: "TEST UID", payload: {"holy": "Moly"});
     reloadAlarms();
   }
-}
+}*/
 
 class MyClipper extends CustomClipper<Path> {
   @override
