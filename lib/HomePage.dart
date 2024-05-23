@@ -109,8 +109,12 @@ class HomePageState extends State<HomePage> {
                         children: [
                           GestureDetector(
                             onTap:(){
-
-                            } ,
+                              Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                    builder: (context) =>
+                                        setReminder()),
+                              );                            } ,
                             child: Text(
                               salutation,
                               style: const TextStyle(
@@ -121,7 +125,7 @@ class HomePageState extends State<HomePage> {
                         ],
                       ),
                       const Text(
-                        'Rajat Saini',
+                        'Name',
                         style: TextStyle(
                             color: Colors.lightBlueAccent, fontSize: 18),
                       ),
@@ -161,22 +165,16 @@ class HomePageState extends State<HomePage> {
             GestureDetector(
               onTap: ()  {
                 sendcustomerDetails(context);
-               /* Navigator.push(
+                /* Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => AddCustomerPage()),
                 );*/ // Call the API
               },
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Image.asset('assets/digital_eye_exam.png'),
-              ),
+              child: Image.asset('assets/digital_eye_exam.png'),
             ),
+            Image.asset('assets/eyeFatigueTest.png'),
             Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: Image.asset('assets/eyeFatigueTest.png'),
-            ),
-            Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(1.0),
               child: Image.asset('assets/find_near_by_store.png'),
             ),
             Padding(
@@ -227,14 +225,11 @@ class HomePageState extends State<HomePage> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('No. of eye fatigue test',style: TextStyle(
-                                fontSize: 14,
-                                fontStyle: FontStyle.normal,
-                              ),),
+                              Text('No. of eye fatigue test'),
                               Text(
                                 'value',
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -243,14 +238,11 @@ class HomePageState extends State<HomePage> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text('No. of digital eye test',style: TextStyle(
-                                fontSize: 14,
-                                fontStyle: FontStyle.normal,
-                              ),),
+                              Text('No. of digital eye test'),
                               Text(
                                 'Value ',
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -266,14 +258,11 @@ class HomePageState extends State<HomePage> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Prescription uploaded',style: TextStyle(
-                                fontSize: 14,
-                                fontStyle: FontStyle.normal,
-                              ),),
+                              Text('Prescription uploaded'),
                               Text(
                                 'value',
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -282,14 +271,11 @@ class HomePageState extends State<HomePage> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text('visit to optemistist',style: TextStyle(
-                                fontSize: 14,
-                                fontStyle: FontStyle.normal,
-                              ),),
+                              Text('visit to optemistist'),
                               Text(
                                 'Value',
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -314,10 +300,10 @@ class HomePageState extends State<HomePage> {
             ),
             Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
+              const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
               child: Card(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -411,7 +397,7 @@ class HomePageState extends State<HomePage> {
               child: Text(
                 'YOU HAVE TESTED SO FAR', // Display formatted current date
                 style: TextStyle(
-                    fontSize: 17,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Colors.black),
               ),
@@ -433,8 +419,7 @@ class HomePageState extends State<HomePage> {
                         ),
                       ),
                       child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Padding(
                             padding: EdgeInsets.symmetric(vertical: 2.0),
@@ -442,7 +427,7 @@ class HomePageState extends State<HomePage> {
                               '300',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 24,
+                                fontSize: 25,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -453,7 +438,7 @@ class HomePageState extends State<HomePage> {
                               'Eye Test',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 17,
+                                fontSize: 18,
                               ),
                             ),
                           ),
@@ -470,8 +455,7 @@ class HomePageState extends State<HomePage> {
                         ),
                       ),
                       child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Padding(
                             padding: EdgeInsets.symmetric(
@@ -480,7 +464,7 @@ class HomePageState extends State<HomePage> {
                               '300',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 24,
+                                fontSize: 25,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -492,7 +476,7 @@ class HomePageState extends State<HomePage> {
                               'Eye Fatigue Test',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 16,
+                                fontSize: 18,
                               ),
                             ),
                           ),
@@ -552,7 +536,7 @@ class HomePageState extends State<HomePage> {
 
 }
 
-/*
+
 class setReminder extends StatefulWidget {
 
   @override
@@ -560,113 +544,23 @@ class setReminder extends StatefulWidget {
 }
 
 class ReminderState extends State<setReminder> {
-  AlarmItem? _alarmItem;
-  DateTime? time;
-  List<AlarmItem> alarms = [];
-
-  @override
-  void initState() {
-    super.initState();
-    reloadAlarms();
-    AlarmService.instance.onForegroundAlarmEventHandler((alarmItem) {
-      reloadAlarms();
-    });
-  }
-
-  reloadAlarms() {
-    AlarmService.instance.getAllAlarms().then((alarmsList) => setState(() {
-      alarms = alarmsList;
-    }));
-  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Builder(builder: (context) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Card(
-                  margin: const EdgeInsets.all(10),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                            child: DateTimePicker(
-                              type: DateTimePickerType.dateTime,
-                              initialValue: '',
-                              firstDate: DateTime.now(),
-                              lastDate:
-                              DateTime.now().add(const Duration(days: 365)),
-                              dateLabelText: 'Alarm date time',
-                              onChanged: (val) => setState(() {
-                                time = DateTime.parse(val);
-                              }),
-                            )),
-                        ElevatedButton(
-                            onPressed: createAlarm,
-                            child: const Text("Set Alarm"))
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: alarms.length,
-                    itemBuilder: (ctx, idx) => ((AlarmItem alarm) => ListTile(
-                      title: Row(
-                        children: [
-                          Text(alarm.time!.toString()),
-                          const SizedBox(width: 5),
-                          Chip(
-                            padding: EdgeInsets.zero,
-                            label: Text(describeEnum(alarm.status),
-                                style: TextStyle(
-                                    color: alarm.status == AlarmStatus.DONE
-                                        ? Colors.black
-                                        : Colors.white,
-                                    fontSize: 10)),
-                            backgroundColor:
-                            alarm.status == AlarmStatus.DONE
-                                ? Colors.greenAccent
-                                : Colors.redAccent,
-                          )
-                        ],
-                      ),
-                      subtitle: Text(
-                          "ID: ${alarm.id}, UID: ${alarm.uid}, Payload: ${alarm.payload.toString()}"),
-                      trailing: IconButton(
-                          onPressed: () async {
-                            await AlarmService.instance
-                                .deleteAlarm(alarm.id!);
-                            reloadAlarms();
-                          },
-                          icon:
-                          const Icon(Icons.delete, color: Colors.red)),
-                    ))(alarms[idx]),
-                  ),
-                )
-              ],
+        home: Scaffold(
+            appBar: AppBar(
+              title: const Text('Plugin example app'),
             ),
-          );
-        }),
-      ),
-    );
-  }
+            body: Builder(builder: (context) {
+              return Center(
 
-  void createAlarm() async {
-    await AlarmService.instance
-        .addAlarm(time!, uid: "TEST UID", payload: {"holy": "Moly"});
-    reloadAlarms();
+              );
+            }
+            )
+        ));
   }
-}*/
+}
 
 class MyClipper extends CustomClipper<Path> {
   @override

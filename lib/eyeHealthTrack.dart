@@ -26,14 +26,14 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
             color: Colors.white, // Background color
             elevation: 4.0, // Shadow
             child: InkWell(
-              onTap: () {},
+              onTap: () {
+              },
               child: SizedBox(
                 width: 53.0, // Width of the FloatingActionButton
                 height: 50.0, // Height of the FloatingActionButton
                 child: Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    // Add padding for the icon
+                    padding: const EdgeInsets.all(8.0), // Add padding for the icon
                     child: Image.asset(
                       "assets/home_icon.png",
                       width: 20,
@@ -47,12 +47,18 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
           ),
         ),
       ),
+
+
+
       appBar: AppBar(
         title: Text('Eye Health Track'),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.notifications),
             onPressed: () {
+
+
+
               // Handle notification icon pressed
             },
           ),
@@ -72,7 +78,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(2.0),
+              padding: EdgeInsets.all(16.0),
               child: Image.asset('assets/banner1.png'),
             ),
             const Padding(
@@ -91,7 +97,6 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
               child: Card(
                 child: ListTile(
                   title: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -99,84 +104,47 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'No. of eye fatigue test',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontStyle: FontStyle.normal,
-                                ),
-                              ),
-                              Text(
-                                'value',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                              Text('No. of eye fatigue test'),
+                              Text('value',style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),),
                             ],
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text(
-                                'No. of digital eye test',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontStyle: FontStyle.normal,
-                                ),
-                              ),
-                              Text(
-                                'Value ',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                              Text('No. of digital eye test'),
+                              Text('Value ',style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),),
                             ],
                           ),
                         ],
                       ),
-                      SizedBox(height: 16),
-                      // Add spacing between the row and the additional columns
+                      SizedBox(height: 16), // Add spacing between the row and the additional columns
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'Prescription uploaded',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontStyle: FontStyle.normal,
-                                ),
-                              ),
-                              Text(
-                                'value',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                              Text('Prescription uploaded'),
+                              Text('value',style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),),
                             ],
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text(
-                                'visit to optemistist',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontStyle: FontStyle.normal,
-                                ),
-                              ),
-                              Text(
-                                'Value',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                              Text('visit to optemistist'),
+                              Text('Value',style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),),
                             ],
                           ),
                         ],
@@ -185,24 +153,22 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
                   ),
                 ),
               ),
-            ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
+            ),const Padding(
+              padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
               child: Text(
                 'EYE HEALTH GRAPH OVERVIEW', // Display formatted current date
                 style: TextStyle(
-                  fontSize: 17,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
             AspectRatio(
               aspectRatio: 1.40,
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
+              child:Padding(padding: EdgeInsets.all(16.0),
                 child: Card(
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(16, 15, 16, 4),
+                    padding: EdgeInsets.fromLTRB(16,15,16,4),
                     child: LineChart(
                       LineChartData(
                         lineBarsData: [
@@ -256,7 +222,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+              padding: const EdgeInsets.symmetric(vertical: 0,horizontal: 16),
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
@@ -264,6 +230,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
                   children: [
                     GestureDetector(
                       onTap: () {
@@ -276,9 +243,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(23),
-                            color: isLeftEyeSelected
-                                ? Colors.white
-                                : Colors.transparent,
+                            color: isLeftEyeSelected ? Colors.white : Colors.transparent,
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -303,9 +268,8 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(23),
-                            color: !isLeftEyeSelected
-                                ? Colors.white
-                                : Colors.transparent,
+
+                            color: !isLeftEyeSelected ? Colors.white : Colors.transparent,
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -324,15 +288,14 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
               ),
             ),
 
-            SizedBox(height: 20),
-            // Add spacing between the row and the eye health widgets
+            SizedBox(height: 20), // Add spacing between the row and the eye health widgets
             isLeftEyeSelected ? LeftEyeHealthWidget() : RightEyeHealthWidget(),
             // Text and toggle button below the graph
           ],
         ),
       ),
-      bottomNavigationBar: CustomBottomAppBar(),
-    );
+      bottomNavigationBar:
+      CustomBottomAppBar(),  );
   }
 }
 
@@ -341,11 +304,12 @@ class LeftEyeHealthWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        // First Card for Image, Label, and Text
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 1),
           child: Card(
             child: Padding(
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(16.0),
               child: ListTile(
                 leading: Image.asset('assets/lefteye.png'),
                 title: Column(
@@ -356,72 +320,35 @@ class LeftEyeHealthWidget extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Label 1:',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontStyle: FontStyle.normal,
-                              ),
-                            ),
-                            Text(
-                              'value',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontStyle: FontStyle.normal,
-                              ),
-                            ),
+                            Text('Label 1:'),
+                            Text('value'),
                           ],
                         ),
                         Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text(
-                              'Label 2',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontStyle: FontStyle.normal,
-                              ),
-                            ),
-                            Text(
-                              'Value ',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontStyle: FontStyle.normal,
-                              ),
-                            ),
+                            Text('Label 2'),
+                            Text('Value '),
                           ],
                         ),
                       ],
                     ),
-                    SizedBox(height: 16),
-                    // Add spacing between the row and the additional columns
+                    SizedBox(height: 16), // Add spacing between the row and the additional columns
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Label',style: TextStyle(
-                              fontSize: 14,
-                              fontStyle: FontStyle.normal,
-                            ),),
-                            Text('value',style: TextStyle(
-                              fontSize: 14,
-                              fontStyle: FontStyle.normal,
-                            ),),
+                            Text('Label'),
+                            Text('value'),
                           ],
                         ),
                         Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text('Label',style: TextStyle(
-                              fontSize: 14,
-                              fontStyle: FontStyle.normal,
-                            ),),
-                            Text('Value',style: TextStyle(
-                              fontSize: 14,
-                              fontStyle: FontStyle.normal,
-                            ),),
+                            Text('Label'),
+                            Text('Value'),
                           ],
                         ),
                       ],
@@ -434,16 +361,15 @@ class LeftEyeHealthWidget extends StatelessWidget {
         ),
         // Second Card for Heading and Graph
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 1),
           child: Card(
             child: Padding(
-              padding: const EdgeInsets.all(14.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: EdgeInsets.all(1),
-                    child: ListTile(
+                  Padding(padding: EdgeInsets.all(1),
+                    child :ListTile(
                       title: Text(
                         'Left Eye Health',
                         style: TextStyle(
@@ -452,8 +378,7 @@ class LeftEyeHealthWidget extends StatelessWidget {
                         ),
                       ),
                       subtitle: Text('April 30-May 30'),
-                    ),
-                  ),
+                    ),),
 
                   // Container with fixed height to contain the LineChart
                   SizedBox(
@@ -536,10 +461,10 @@ class RightEyeHealthWidget extends StatelessWidget {
       children: [
         // First Card for Image, Label, and Text
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical:1),
           child: Card(
             child: Padding(
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(16.0),
               child: ListTile(
                 leading: Image.asset('assets/righteye.png'),
                 title: Column(
@@ -550,60 +475,35 @@ class RightEyeHealthWidget extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Label 1:',style: TextStyle(
-                              fontSize: 14,
-                              fontStyle: FontStyle.normal,
-                            ),),
-                            Text('value',style: TextStyle(
-                              fontSize: 14,
-                              fontStyle: FontStyle.normal,
-                            ),),
+                            Text('Label 1:'),
+                            Text('value'),
                           ],
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text('Label 2',style: TextStyle(
-                              fontSize: 14,
-                              fontStyle: FontStyle.normal,
-                            ),),
-                            Text('Value ',style: TextStyle(
-                              fontSize: 14,
-                              fontStyle: FontStyle.normal,
-                            ),),
+                            Text('Label 2'),
+                            Text('Value '),
                           ],
                         ),
                       ],
                     ),
-                    SizedBox(height: 16),
-                    // Add spacing between the row and the additional columns
+                    SizedBox(height: 16), // Add spacing between the row and the additional columns
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Label',style: TextStyle(
-                              fontSize: 14,
-                              fontStyle: FontStyle.normal,
-                            ),),
-                            Text('value',style: TextStyle(
-                              fontSize: 14,
-                              fontStyle: FontStyle.normal,
-                            ),),
+                            Text('Label'),
+                            Text('value'),
                           ],
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text('Label',style: TextStyle(
-                              fontSize: 14,
-                              fontStyle: FontStyle.normal,
-                            ),),
-                            Text('Value',style: TextStyle(
-                              fontSize: 14,
-                              fontStyle: FontStyle.normal,
-                            ),),
+                            Text('Label'),
+                            Text('Value'),
                           ],
                         ),
                       ],
@@ -616,16 +516,15 @@ class RightEyeHealthWidget extends StatelessWidget {
         ),
         // Second Card for Heading and Graph
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 1),
           child: Card(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: EdgeInsets.all(1),
-                    child: ListTile(
+                  Padding(padding: EdgeInsets.all(1),
+                    child :ListTile(
                       title: Text(
                         'Right Eye Health',
                         style: TextStyle(
@@ -634,8 +533,7 @@ class RightEyeHealthWidget extends StatelessWidget {
                         ),
                       ),
                       subtitle: Text('April 30-May 30'),
-                    ),
-                  ),
+                    ),),
 
                   // Container with fixed height to contain the LineChart
                   Container(
@@ -710,3 +608,4 @@ class RightEyeHealthWidget extends StatelessWidget {
     );
   }
 }
+

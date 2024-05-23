@@ -18,9 +18,9 @@ class ReportPageState extends State<ReportPage> {
   List<double> data2 = [30, 50, 60, 50, 60]; // Sample data for line 2
 
   final List<String> items = [
-  'Item 1 - 10:00 AM, 2024-05-14',
-  'Item 2 - 11:30 AM, 2024-05-15',
-  'Item 3 - 02:45 PM, 2024-05-16',
+    'Item 1 - 10:00 AM, 2024-05-14',
+    'Item 2 - 11:30 AM, 2024-05-15',
+    'Item 3 - 02:45 PM, 2024-05-16',
   ];
   String testResult='Good';
 
@@ -28,6 +28,7 @@ class ReportPageState extends State<ReportPage> {
   Widget build(BuildContext context) {
     String formattedDate = DateFormat('dd MMMM').format(DateTime.now());
     return Scaffold(
+
 
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Padding(
@@ -58,6 +59,9 @@ class ReportPageState extends State<ReportPage> {
           ),
         ),
       ),
+
+
+
 
       appBar: AppBar(
         title: const Text('Report and Statistics'),
@@ -289,8 +293,13 @@ class ReportPageState extends State<ReportPage> {
           ],
         ),
       ),
+
       bottomNavigationBar:
       CustomBottomAppBar(),
+
+
+
+
     );
   }}
 

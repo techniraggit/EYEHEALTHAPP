@@ -17,7 +17,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:platform_device_id_v2/platform_device_id_v2.dart';
-import 'package:project_new/HomePage.dart';
 import 'package:project_new/rewards_sync.dart';
 import 'package:project_new/sign_up.dart';
 import 'package:project_new/user_profile.dart';
@@ -67,12 +66,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return
       MaterialApp(
-    builder: EasyLoading.init(),
-      home: SplashScreen(),// SplashScreen(),
-      navigatorKey: navigatorKey,
-      routes: {'/notification_screen':(context)=>  SignIn(),},//Notificationpage(
-      debugShowCheckedModeBanner: false,
-    );
+        builder: EasyLoading.init(),
+        home: RewardContact(),// SplashScreen(),
+        navigatorKey: navigatorKey,
+        routes: {'/notification_screen':(context)=>  SignIn(),},//Notificationpage(
+        debugShowCheckedModeBanner: false,
+      );
 
   }
 }
@@ -84,7 +83,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class Splash extends State<SplashScreen> {
-late Future<bool>isLoggedIn;
+  late Future<bool>isLoggedIn;
   @override
   void initState() {
     super.initState();
@@ -97,7 +96,7 @@ late Future<bool>isLoggedIn;
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => HomePage(),
+              builder: (context) => RewardContact(),
             ),
           );
         } else {
@@ -181,12 +180,12 @@ class _OnBoardingScreen1State extends State<OnBoardingScreen1> {
       await prefs.setString('device_id', deviceId);
       await prefs.setString('device_type', deviceType);
 
-          DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-            AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-            print('Running on ${androidInfo.id}');  // e.g. "Moto G (4)"
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      print('Running on ${androidInfo.id}');  // e.g. "Moto G (4)"
 
-                   IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-                 print('Running on ${iosInfo.identifierForVendor}');  // e.g. "iPod7,1"
+      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+      print('Running on ${iosInfo.identifierForVendor}');  // e.g. "iPod7,1"
 
 // WebBrowserInfo webBrowserInfo = await deviceInfo.webBrowserInfo;
 // print('Running on ${webBrowserInfo.userAgent}');  // e.g. "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0"

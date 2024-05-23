@@ -81,30 +81,39 @@ class _RewardsContactsSync extends State<RewardContact> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.all(8.0), // Add padding
-          child: ClipOval(
-            child: Material(
-              color: Colors.white, // Background color
-              elevation: 4.0, // Shadow
-              child: InkWell(
-                onTap: () {
-                },
-                child: SizedBox(
-                  width: 53.0, // Width of the FloatingActionButton
-                  height: 50.0, // Height of the FloatingActionButton
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0), // Add padding for the icon
-                      child: Image.asset(
-                        "assets/home_icon.png",
-                        width: 20,
-                        // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
-                        // color: Colors.grey, // Uncomment if you want to apply a color to the image
+    return
+      //   isLoading
+      //     ? const Center(
+      //   child: CircularProgressIndicator(
+      //     color: Colors.black,
+      //   ),
+      // )
+      //     :
+      DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+          floatingActionButton: Padding(
+            padding: const EdgeInsets.all(8.0), // Add padding
+            child: ClipOval(
+              child: Material(
+                color: Colors.white, // Background color
+                elevation: 4.0, // Shadow
+                child: InkWell(
+                  onTap: () {
+                  },
+                  child: SizedBox(
+                    width: 53.0, // Width of the FloatingActionButton
+                    height: 50.0, // Height of the FloatingActionButton
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0), // Add padding for the icon
+                        child: Image.asset(
+                          "assets/home_icon.png",
+                          width: 20,
+                          // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
+                          // color: Colors.grey, // Uncomment if you want to apply a color to the image
+                        ),
                       ),
                     ),
                   ),
@@ -112,474 +121,476 @@ class _RewardsContactsSync extends State<RewardContact> {
               ),
             ),
           ),
-        ),
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(10),
-          child: AppBar(
-            backgroundColor:
-                Colors.white, // Set app bar background color to white
-            elevation: 0, // Remove app bar shadow
-            // Add any other app bar properties as needed
+          appBar: PreferredSize(
+            preferredSize: const Size.fromHeight(10),
+            child: AppBar(
+              backgroundColor:
+              Colors.white, // Set app bar background color to white
+              elevation: 0, // Remove app bar shadow
+              // Add any other app bar properties as needed
+            ),
           ),
-        ),
 
-        body: Column(
-          children: [
-            Stack(
-              children: [
-                Container(
-                  height: 130,
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(
-                          "assets/rewards_back.png"), // Add your background image path
-                      fit: BoxFit.cover,
+          body: Column(
+            children: [
+
+              Stack(
+                children: [
+                  Container(
+                    height: 125,
+                    // width: MediaQuery.of(context).size.width,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(
+                            "assets/rewards_back.png"), // Add your background image path
+                        fit: BoxFit.fill,
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 110,
-                  child: Column(
-                    children: <Widget>[
-                      const SizedBox(height: 15),
+                  SizedBox(
+                    height: 110,
+                    child: Column(
+                      children: <Widget>[
+                        const SizedBox(height: 15),
 
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.arrow_back,
-                            color: Colors.white,
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: IconButton(
+                            icon: const Icon(
+                              Icons.arrow_back,
+                              color: Colors.white,
+                            ),
+                            iconSize: 28, // Back button icon
+                            onPressed: () {
+                              Navigator.pop(context);
+                              // Navigator.push(
+                              //   context,
+                              //   CupertinoPageRoute(
+                              //       builder: (context) =>  RewardSpecs()),
+                              // );
+                              // Navigator.of(context).pop();
+                            },
                           ),
-                          iconSize: 28, // Back button icon
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              CupertinoPageRoute(
-                                  builder: (context) => const RewardSpecs()),
-                            );
-                            // Navigator.of(context).pop();
-                          },
                         ),
-                      ),
-                      Align(
-                        alignment: Alignment.center,
-                        child: RichText(
-                          text: TextSpan(
-                            children: [
-                              const TextSpan(
-                                text: 'Invite a friend and get ',
-                                style: TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.w400),
-                              ),
-                              WidgetSpan(
-                                alignment: PlaceholderAlignment.middle,
-                                child: ShaderMask(
-                                  shaderCallback: (Rect bounds) {
-                                    return const RadialGradient(
-                                      radius: 1.0,
-                                      colors: [
-                                        Color(0xFFFFF400),
-                                        Color(0xFFFFE800),
-                                        Color(0xFFFFCA00),
-                                        Color(0xFFFF9A00),
-                                        Color(0xFFFF9800),
-                                      ],
-                                    ).createShader(bounds);
-                                  },
-                                  child: Text(
-                                    ' $points ',
-                                    style: const TextStyle(
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors
-                                          .white, // Specify a color for the text
+                        Align(
+                          alignment: Alignment.center,
+                          child: RichText(
+                            text: TextSpan(
+                              children: [
+                                const TextSpan(
+                                  text: 'Invite a friend and get ',
+                                  style: TextStyle(
+                                      fontSize: 15, fontWeight: FontWeight.w400),
+                                ),
+                                WidgetSpan(
+                                  alignment: PlaceholderAlignment.middle,
+                                  child: ShaderMask(
+                                    shaderCallback: (Rect bounds) {
+                                      return const RadialGradient(
+                                        radius: 1.0,
+                                        colors: [
+                                          Color(0xFFFFF400),
+                                          Color(0xFFFFE800),
+                                          Color(0xFFFFCA00),
+                                          Color(0xFFFF9A00),
+                                          Color(0xFFFF9800),
+                                        ],
+                                      ).createShader(bounds);
+                                    },
+                                    child: Text(
+                                      ' $points ',
+                                      style: const TextStyle(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors
+                                            .white, // Specify a color for the text
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              const TextSpan(
-                                text: ' Points',
-                                style: TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.w400),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      // Add more Text widgets as needed
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Align(
-              alignment: Alignment.center,
-              child: ShaderMask(
-                shaderCallback: (Rect bounds) {
-                  return const LinearGradient(
-                    colors: [
-                      Colors.bluegradient,
-                      Colors.greengradient
-                    ], // Your gradient colors
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ).createShader(bounds);
-                },
-                child: Text(
-                  '$totalPoints',
-                  style: const TextStyle(
-                      fontSize: 28,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 8,
-            ),
-            const Align(
-              alignment: Alignment.center,
-              child: Text(
-                'Total earn point by Prescription uplaod',
-                style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w400),
-              ),
-            ),
-            const SizedBox(
-              height: 35,
-            ),
-
-            if (ReferCode!.isNotEmpty)
-              GestureDetector(
-                onTap: () {
-                  Share.share(ReferCode!);
-
-                  // Your action when clicking on the left end or center
-                },
-                child: Container(
-                  height: 44,
-                  width: MediaQuery.of(context).size.width /
-                      2.2, // Set a width for the container
-                  child: Stack(
-                    children: [
-                      // Image widget as the background
-                      Center(
-                        child: Image.asset(
-                          'assets/referoutline.png', // Replace with your image asset path
-                          width: MediaQuery.of(context).size.width /
-                              1.5, // Set a width for the container
-                          // height: 65, // Set height to match container height
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                      // Text overlay
-                      Positioned(
-                        bottom: 10,
-                        left: 15,
-                        child: ShaderMask(
-                          shaderCallback: (Rect bounds) {
-                            return const LinearGradient(
-                              colors: [
-                                Colors.bluegradient,
-                                Colors.greengradient
-                              ], // Your gradient colors
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                            ).createShader(bounds);
-                          },
-                          child: GestureDetector(
-                            onTap: () {
-                              Clipboard.setData(
-                                  ClipboardData(text: ReferCode! ?? ""));
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content:
-                                      Text('Referral code copied to clipboard'),
+                                const TextSpan(
+                                  text: ' Points',
+                                  style: TextStyle(
+                                      fontSize: 15, fontWeight: FontWeight.w400),
                                 ),
-                              );
-                            },
-                            child: Text(
-                              ReferCode!,
-                              style: const TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
+                              ],
                             ),
                           ),
                         ),
-                      ),
-                    ],
+
+                        // Add more Text widgets as needed
+                      ],
+                    ),
                   ),
-                ),
+                ],
               ),
-
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 30.0, vertical: 27),
-              child: SizedBox(
-                height: 45,
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors
-                        .background, // Set your desired background color here
-                    // You can also customize other button properties here if needed
-                  ),
-                  onPressed: () async {
-
-                    await [Permission.contacts].request();
-
-                    Share.share(
-                      'Check out our awesome app: $appStoreLink Use Referal Code $ReferCode',
-                      subject: 'Share via WhatsApp',
-                      sharePositionOrigin: Rect.fromLTRB(0, 0, 0, 0),
-                    );
-
-
+              const SizedBox(
+                height: 10,
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: ShaderMask(
+                  shaderCallback: (Rect bounds) {
+                    return const LinearGradient(
+                      colors: [
+                        Colors.bluegradient,
+                        Colors.greengradient
+                      ], // Your gradient colors
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ).createShader(bounds);
                   },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Invite Via Whatsapp ',
-                        style: TextStyle(color: Colors.white70, fontSize: 14),
-                      ),
-                      const SizedBox(
-                        width: 9,
-                      ),
-                      Image.asset('assets/wp_icon.png',
-                          width: 19,
-                          color: Colors.white70), // Add your icon here
-                    ],
+                  child: Text(
+                    '$totalPoints',
+                    style: const TextStyle(
+                        fontSize: 28,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
-            ),
-
-            //TODO INcorrect Parentage
-
-            PreferredSize(
-              preferredSize:
-                  Size.fromHeight(MediaQuery.of(context).size.height / 2),
-              child: TabBar(
-                isScrollable: false,
-                tabs: [
-                  Tab(text: 'Contacts'),
-                  Tab(text: 'Joined'),
-                ],
+              const SizedBox(
+                height: 8,
               ),
-            ),
+              const Align(
+                alignment: Alignment.center,
+                child: Text(
+                  'Total earn point by Prescription uplaod',
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w400),
+                ),
+              ),
+              const SizedBox(
+                height: 35,
+              ),
 
-            Expanded(
-              child: TabBarView(
-                children: [
-                  Center(
-                      child: _contacts.isNotEmpty
-                          ? ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: _contacts.length,
-                            itemBuilder: (context, i) => Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Card(
-                                color: Colors.white,
-                                elevation: 0.9,
-                                child: ListTile(
-                                  leading: _contacts[i].avatar != null &&
-                                          _contacts[i].avatar!.isNotEmpty
-                                      ? Container(
-                                          height: 50,
-                                          width: 50,
-                                          decoration: const BoxDecoration(
-                                              shape: BoxShape.circle),
-                                          child: Image.memory(
-                                              _contacts[i].avatar!))
-                                      : Container(
-                                          height: 50,
-                                          width: 50,
-                                          decoration: const BoxDecoration(
-                                              shape: BoxShape.circle),
-                                          child: Image.asset(
-                                              'assets/contact.png')),
+              if (ReferCode!.isNotEmpty)
+                GestureDetector(
+                  onTap: () {
+                    Share.share(ReferCode!);
 
-                                  title: Text(
-                                    _contacts[i].displayName ?? '',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 15,
-                                        color: Colors.black),
+                    // Your action when clicking on the left end or center
+                  },
+                  child: Container(
+                    height: 44,
+                    width: MediaQuery.of(context).size.width /
+                        2.2, // Set a width for the container
+                    child: Stack(
+                      children: [
+                        // Image widget as the background
+                        Center(
+                          child: Image.asset(
+                            'assets/referoutline.png', // Replace with your image asset path
+                            width: MediaQuery.of(context).size.width /
+                                1.5, // Set a width for the container
+                            // height: 65, // Set height to match container height
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                        // Text overlay
+                        Positioned(
+                          bottom: 10,
+                          left: 15,
+                          child: ShaderMask(
+                            shaderCallback: (Rect bounds) {
+                              return const LinearGradient(
+                                colors: [
+                                  Colors.bluegradient,
+                                  Colors.greengradient
+                                ], // Your gradient colors
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                              ).createShader(bounds);
+                            },
+                            child: GestureDetector(
+                              onTap: () {
+                                Clipboard.setData(
+                                    ClipboardData(text: ReferCode! ?? ""));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content:
+                                    Text('Referral code copied to clipboard'),
                                   ),
-                                  subtitle: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '+91 ${_contacts[i].phones!.isNotEmpty ? _contacts[i].phones!.first.value : 'N/A'}',
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 14,
-                                            color: Color(0xFF667085)),
-                                      ),
-                                      const Spacer(),
-                                      GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            // if(  _invitationStatus[i] ==false){
-                                            print(
-                                                "===${_invitationStatus[i].toString()}");
-                                            // _invitationStatus[i] =
-                                            //     !(_invitationStatus[i] ?? false);
-                                            shareAppLink(i);
-                                            // }
-                                          });
-                                        },
-                                        child: _invitationStatus[i] == true
-                                            ? Container(
-                                                decoration: BoxDecoration(
-                                                  color: Colors
-                                                      .green, // Green background color
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20), // Rounded border
-                                                ),
-                                                child: const Icon(
-                                                    Icons.check,
-                                                    color: Colors
-                                                        .white)) // Display verified icon
-                                            : const Text(
-                                                'INVITE',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.w400,
-                                                    fontSize: 14,
-                                                    color:
-                                                        Color(0xFF667085)),
-                                              ), // Display "INVITE" text
-                                      ),
-                                    ],
-                                  ),
-                                  onTap: () async {},
-                                ),
+                                );
+                              },
+                              child: Text(
+                                ReferCode!,
+                                style: const TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
                               ),
                             ),
-                          )
-                          : Container()
-                      // if (_permissionDenied)
-                      //   const Center(child: Text('Permission denied')),
-                      // if (_contacts != null) ...{
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
 
-                      ),
-                  // Content of Tab 2
+              Padding(
+                padding:
+                const EdgeInsets.symmetric(horizontal: 30.0, vertical: 27),
+                child: SizedBox(
+                  height: 45,
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors
+                          .background, // Set your desired background color here
+                      // You can also customize other button properties here if needed
+                    ),
+                    onPressed: () async {
 
-                  Center(
-                      child: _contacts.isNotEmpty
-                          ? ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: _contacts.length,
-                            itemBuilder: (context, i) => Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Card(
-                                color: Colors.white,
-                                elevation: 0.9,
-                                child: ListTile(
-                                  leading: _contacts[i].avatar != null &&
-                                          _contacts[i].avatar!.isNotEmpty
-                                      ? Container(
-                                          height: 50,
-                                          width: 50,
-                                          decoration: const BoxDecoration(
-                                              shape: BoxShape.circle),
-                                          child: Image.memory(
-                                              _contacts[i].avatar!))
-                                      : Container(
-                                          height: 50,
-                                          width: 50,
-                                          decoration: const BoxDecoration(
-                                              shape: BoxShape.circle),
-                                          child: Image.asset(
-                                              'assets/contact.png')),
+                      await [Permission.contacts].request();
 
-                                  title: Text(
-                                    _contacts[i].displayName ?? '',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 15,
-                                        color: Colors.black),
-                                  ),
-                                  subtitle: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '+91 ${_contacts[i].phones!.isNotEmpty ? _contacts[i].phones!.first.value : 'N/A'}',
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 14,
-                                            color: Color(0xFF667085)),
-                                      ),
-                                      const Spacer(),
-                                      GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            // // if(  _invitationStatus[i] ==false){
-                                            // print("===${condition[i].toString()}");
-                                            condition[i] =
-                                                !(condition[i] ?? false);
-                                            // shareAppLink(i);
-                                            // // }
-                                          });
-                                        },
-                                        child: Container(
+                      Share.share(
+                        'Check out our awesome app: $appStoreLink Use Referal Code $ReferCode',
+                        subject: 'Share via WhatsApp',
+                        sharePositionOrigin: Rect.fromLTRB(0, 0, 0, 0),
+                      );
+
+
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Invite Via Whatsapp ',
+                          style: TextStyle(color: Colors.white70, fontSize: 14),
+                        ),
+                        const SizedBox(
+                          width: 9,
+                        ),
+                        Image.asset('assets/wp_icon.png',
+                            width: 19,
+                            color: Colors.white70), // Add your icon here
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              //TODO INcorrect Parentage
+
+              PreferredSize(
+                preferredSize:
+                Size.fromHeight(MediaQuery.of(context).size.height / 2),
+                child: TabBar(
+                  isScrollable: false,
+                  tabs: [
+                    Tab(text: 'Contacts'),
+                    Tab(text: 'Joined'),
+                  ],
+                ),
+              ),
+
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    Center(
+                        child: _contacts.isNotEmpty
+                            ? ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: _contacts.length,
+                          itemBuilder: (context, i) => Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Card(
+                              color: Colors.white,
+                              elevation: 0.9,
+                              child: ListTile(
+                                leading: _contacts[i].avatar != null &&
+                                    _contacts[i].avatar!.isNotEmpty
+                                    ? Container(
+                                    height: 50,
+                                    width: 50,
+                                    decoration: const BoxDecoration(
+                                        shape: BoxShape.circle),
+                                    child: Image.memory(
+                                        _contacts[i].avatar!))
+                                    : Container(
+                                    height: 50,
+                                    width: 50,
+                                    decoration: const BoxDecoration(
+                                        shape: BoxShape.circle),
+                                    child: Image.asset(
+                                        'assets/contact.png')),
+
+                                title: Text(
+                                  _contacts[i].displayName ?? '',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 15,
+                                      color: Colors.black),
+                                ),
+                                subtitle: Row(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '+91 ${_contacts[i].phones!.isNotEmpty ? _contacts[i].phones!.first.value : 'N/A'}',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 14,
+                                          color: Color(0xFF667085)),
+                                    ),
+                                    const Spacer(),
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          // if(  _invitationStatus[i] ==false){
+                                          print(
+                                              "===${_invitationStatus[i].toString()}");
+                                          // _invitationStatus[i] =
+                                          //     !(_invitationStatus[i] ?? false);
+                                          shareAppLink(i);
+                                          // }
+                                        });
+                                      },
+                                      child: _invitationStatus[i] == true
+                                          ? Container(
                                           decoration: BoxDecoration(
-                                            color: condition[i] == true
-                                                ? Colors.green
-                                                : Colors.grey,
+                                            color: Colors
+                                                .green, // Green background color
                                             borderRadius:
-                                                BorderRadius.circular(
-                                                    12), // Rounded border
+                                            BorderRadius.circular(
+                                                20), // Rounded border
                                           ),
-                                          // Display verified icon
-                                          child: Padding(
-                                            padding:
-                                                const EdgeInsets.all(8.0),
-                                            child: Text(
-                                              '${10} Points',
-                                              style: TextStyle(
-                                                  fontWeight:
-                                                      FontWeight.w400,
-                                                  fontSize: 14,
-                                                  color: Colors.white),
-                                            ),
-                                          ), // Display "INVITE" text
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  onTap: () async {},
+                                          child: const Icon(
+                                              Icons.check,
+                                              color: Colors
+                                                  .white)) // Display verified icon
+                                          : const Text(
+                                        'INVITE',
+                                        style: TextStyle(
+                                            fontWeight:
+                                            FontWeight.w400,
+                                            fontSize: 14,
+                                            color:
+                                            Color(0xFF667085)),
+                                      ), // Display "INVITE" text
+                                    ),
+                                  ],
                                 ),
+                                onTap: () async {},
                               ),
                             ),
-                          )
-                          : Container()
+                          ),
+                        )
+                            : Container()
                       // if (_permissionDenied)
                       //   const Center(child: Text('Permission denied')),
                       // if (_contacts != null) ...{
 
-                      ),
-                ],
+                    ),
+                    // Content of Tab 2
+
+                    Center(
+                        child: _contacts.isNotEmpty
+                            ? ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: _contacts.length,
+                          itemBuilder: (context, i) => Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Card(
+                              color: Colors.white,
+                              elevation: 0.9,
+                              child: ListTile(
+                                leading: _contacts[i].avatar != null &&
+                                    _contacts[i].avatar!.isNotEmpty
+                                    ? Container(
+                                    height: 50,
+                                    width: 50,
+                                    decoration: const BoxDecoration(
+                                        shape: BoxShape.circle),
+                                    child: Image.memory(
+                                        _contacts[i].avatar!))
+                                    : Container(
+                                    height: 50,
+                                    width: 50,
+                                    decoration: const BoxDecoration(
+                                        shape: BoxShape.circle),
+                                    child: Image.asset(
+                                        'assets/contact.png')),
+
+                                title: Text(
+                                  _contacts[i].displayName ?? '',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 15,
+                                      color: Colors.black),
+                                ),
+                                subtitle: Row(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '+91 ${_contacts[i].phones!.isNotEmpty ? _contacts[i].phones!.first.value : 'N/A'}',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 14,
+                                          color: Color(0xFF667085)),
+                                    ),
+                                    const Spacer(),
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          // // if(  _invitationStatus[i] ==false){
+                                          // print("===${condition[i].toString()}");
+                                          condition[i] =
+                                          !(condition[i] ?? false);
+                                          // shareAppLink(i);
+                                          // // }
+                                        });
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: condition[i] == true
+                                              ? Colors.green
+                                              : Colors.grey,
+                                          borderRadius:
+                                          BorderRadius.circular(
+                                              12), // Rounded border
+                                        ),
+                                        // Display verified icon
+                                        child: Padding(
+                                          padding:
+                                          const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            '${10} Points',
+                                            style: TextStyle(
+                                                fontWeight:
+                                                FontWeight.w400,
+                                                fontSize: 14,
+                                                color: Colors.white),
+                                          ),
+                                        ), // Display "INVITE" text
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                onTap: () async {},
+                              ),
+                            ),
+                          ),
+                        )
+                            : Container()
+                      // if (_permissionDenied)
+                      //   const Center(child: Text('Permission denied')),
+                      // if (_contacts != null) ...{
+
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
+          bottomNavigationBar:
+          CustomBottomAppBar(), // Include the persistent bottom bar here
         ),
-        bottomNavigationBar:
-            CustomBottomAppBar(), // Include the persistent bottom bar here
-      ),
-    );
+      );
   }
 
   Future _fetchContacts() async {
@@ -607,7 +618,7 @@ class _RewardsContactsSync extends State<RewardContact> {
       String userId = prefs.getString('id') ?? '';
       String token =
 // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE2Mjg5OTcxLCJpYXQiOjE3MTYyMDM1NzEsImp0aSI6IjRjMGQwZmNkMGZmNTQ4NWRiNThjODM5YzBjODM0OGU3IiwidXNlcl9pZCI6ImYzNWE2Y2Y2LTA2ODYtNDdhMS05ZTAwLTkzNWQwNWIwMWE3MCJ9.rX_Vcm0Q0DQRmT_4fC8YCRj-gxBHaM5ofYvawiuWl_4";
-          prefs.getString('access_token') ?? '';
+      prefs.getString('access_token') ?? '';
 
       print("id :$userId");
       final response = await http.get(
@@ -643,13 +654,17 @@ class _RewardsContactsSync extends State<RewardContact> {
 }
 
 class RewardSpecs extends StatefulWidget {
-  const RewardSpecs({super.key});
+  final String offer_id; // Declare variable to hold received data
+
+  RewardSpecs({required this.offer_id});
+  // const RewardSpecs({super.key});
 
   @override
   RewardSpecsSync createState() => RewardSpecsSync();
 }
 
 class RewardSpecsSync extends State<RewardSpecs> {
+
   int? EyeHealthPoints;
   int? totalPoints;
   OfferData? offerData;
@@ -659,7 +674,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
   double? userPercentage;
   bool isReedemButtonEnabled = false; // Set your condition here
 
-  String offer_id = "19225502-2a98-42e4-8744-a0bc0fb1cc01";
+  String offer_id =''; //"19225502-2a98-42e4-8744-a0bc0fb1cc01";
   final double _currentTime = 80.0; // Initial time
   int _countdownValue = 0;
   Timer? _timer;
@@ -667,7 +682,8 @@ class RewardSpecsSync extends State<RewardSpecs> {
   Color buttonColor = Colors.disablebutton; // Default color
   int? hours, minutes, seconds;
   bool isSelected = false;
-
+  List<bool> isSelectedList = [];
+  bool isLoading = true;
   @override
   void initState() {
     super.initState();
@@ -678,6 +694,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
     minutes = ((_currentTime % 3600) / 60).floor();
     seconds = (_currentTime % 60).floor();
     startCountdown();
+
   }
 
   @override
@@ -688,11 +705,12 @@ class RewardSpecsSync extends State<RewardSpecs> {
 
   Future<void> getOffersDetail() async {
     try {
+      offer_id=widget.offer_id;
       String userToken = '';
       var sharedPref = await SharedPreferences.getInstance();
       userToken =
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE2MjcyODc2LCJpYXQiOjE3MTYxODY0NzYsImp0aSI6ImYyMjJhM2VlZDNjYTRlZjc4MmNmNmEyNTYzOGQxMmU1IiwidXNlcl9pZCI6IjkxOTNhOTE1LWY5YzItNDQ0MC04MDVlLTQxNDBhYTc5ZDQzOSJ9.2Gj1laeNGLhy0FxYQCQVoB_Idt5W0F0X621BVPtNaic";
-          sharedPref.getString("access_token") ?? '';
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE2MjcyODc2LCJpYXQiOjE3MTYxODY0NzYsImp0aSI6ImYyMjJhM2VlZDNjYTRlZjc4MmNmNmEyNTYzOGQxMmU1IiwidXNlcl9pZCI6IjkxOTNhOTE1LWY5YzItNDQ0MC04MDVlLTQxNDBhYTc5ZDQzOSJ9.2Gj1laeNGLhy0FxYQCQVoB_Idt5W0F0X621BVPtNaic";
+      sharedPref.getString("access_token") ?? '';
       Map<String, String> headers = {
         'Authorization': 'Bearer $userToken', // Bearer token type
         'Content-Type': 'application/json',
@@ -704,8 +722,11 @@ class RewardSpecsSync extends State<RewardSpecs> {
       );
       print("statusCode================${response.statusCode}");
       if (response.statusCode == 200) {
+
         final responseData = json.decode(response.body);
         offerData = OfferData.fromJson(responseData);
+        isLoading = false;
+
         print("statusCode================${offerData?.data?.description}");
         image_url = offerData!.data!.image!;
         EyeHealthPoints = offerData!.userPoints!;
@@ -756,8 +777,8 @@ class RewardSpecsSync extends State<RewardSpecs> {
       String userToken = '';
       var sharedPref = await SharedPreferences.getInstance();
       userToken =
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE2MjcyODc2LCJpYXQiOjE3MTYxODY0NzYsImp0aSI6ImYyMjJhM2VlZDNjYTRlZjc4MmNmNmEyNTYzOGQxMmU1IiwidXNlcl9pZCI6IjkxOTNhOTE1LWY5YzItNDQ0MC04MDVlLTQxNDBhYTc5ZDQzOSJ9.2Gj1laeNGLhy0FxYQCQVoB_Idt5W0F0X621BVPtNaic";
-          sharedPref.getString("access_token") ?? '';
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE2MjcyODc2LCJpYXQiOjE3MTYxODY0NzYsImp0aSI6ImYyMjJhM2VlZDNjYTRlZjc4MmNmNmEyNTYzOGQxMmU1IiwidXNlcl9pZCI6IjkxOTNhOTE1LWY5YzItNDQ0MC04MDVlLTQxNDBhYTc5ZDQzOSJ9.2Gj1laeNGLhy0FxYQCQVoB_Idt5W0F0X621BVPtNaic";
+      sharedPref.getString("access_token") ?? '';
       Map<String, String> headers = {
         'Authorization': 'Bearer $userToken', // Bearer token type
       };
@@ -769,6 +790,15 @@ class RewardSpecsSync extends State<RewardSpecs> {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         address_list = AddressList.fromJson(responseData);
+        print("statusCode================${address_list?.data?[0].isDefault}");
+
+        if(address_list!.data!.isNotEmpty){
+          isSelectedList = List.generate(
+            address_list?.data?.length ?? 0,
+                (_) => false,);
+          for(int index=0;index< address_list!.data!.length;index++){
+            isSelectedList[index] = address_list?.data?[index].isDefault ?? false;
+          }}
 
         print("statusCode================${address_list?.data?[0].address}");
 
@@ -821,7 +851,19 @@ class RewardSpecsSync extends State<RewardSpecs> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return isLoading
+        ? const Center(
+      child: CircularProgressIndicator(
+        color: Colors.black,
+      ),
+    )
+        :
+
+
+
+
+
+    MaterialApp(
       home: Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: Padding(
@@ -857,7 +899,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
           preferredSize: const Size.fromHeight(10),
           child: AppBar(
             backgroundColor:
-                Colors.white70, // Set app bar background color to white
+            Colors.white70, // Set app bar background color to white
             elevation: 0, // Remove app bar shadow
             // Add any other app bar properties as needed
           ),
@@ -867,14 +909,17 @@ class RewardSpecsSync extends State<RewardSpecs> {
             Stack(
               children: [
                 Container(
-                    height: 110,
-                    decoration: const BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(
-                            "assets/rewards_back.png"), // Add your background image path
-                        fit: BoxFit.cover,
-                      ),
-                    )),
+                  height: 125,
+                  // width: MediaQuery.of(context).size.width,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(
+                          "assets/rewards_back.png"), // Add your background image path
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                ),
+
                 SizedBox(
                   height: 110,
                   child: Column(
@@ -1000,10 +1045,10 @@ class RewardSpecsSync extends State<RewardSpecs> {
                             decoration: BoxDecoration(
                               image: image_url != null
                                   ? DecorationImage(
-                                      image: NetworkImage(
-                                          "${ApiProvider.baseUrl}$image_url"),
-                                      // fit: BoxFit.cover,
-                                    )
+                                image: NetworkImage(
+                                    "${ApiProvider.baseUrl}$image_url"),
+                                // fit: BoxFit.cover,
+                              )
                                   : null,
                             ),
                           )),
@@ -1044,16 +1089,16 @@ class RewardSpecsSync extends State<RewardSpecs> {
                               data: const SliderThemeData(
                                 trackHeight: 8.0, // Increase the slider height
                                 thumbColor:
-                                    Colors.blue, // Set thumb color to blue
+                                Colors.blue, // Set thumb color to blue
                                 thumbShape: RoundSliderThumbShape(
                                     enabledThumbRadius:
-                                        6.0), // Adjust thumb size
+                                    6.0), // Adjust thumb size
                                 trackShape:
-                                    RoundedRectSliderTrackShape(), // Customize track shape
+                                RoundedRectSliderTrackShape(), // Customize track shape
                                 overlayShape: RoundSliderOverlayShape(
                                     overlayRadius: 20.0), // Adjust overlay size
                                 valueIndicatorShape:
-                                    PaddleSliderValueIndicatorShape(), // Customize value indicator shape
+                                PaddleSliderValueIndicatorShape(), // Customize value indicator shape
                                 valueIndicatorTextStyle: TextStyle(
                                     color: Colors
                                         .white), // Text style of value indicator
@@ -1062,7 +1107,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
                                 value: userPercentage ?? 0.0,
                                 min: 0.0,
                                 max:
-                                    100.0, // Adjust the max value according to your requirement
+                                100.0, // Adjust the max value according to your requirement
                                 // divisions: 10,
                                 label: '$_currentTime',
                                 onChanged:
@@ -1076,7 +1121,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
 
                             Padding(
                               padding:
-                                  const EdgeInsets.only(left: 18.0, right: 50),
+                              const EdgeInsets.only(left: 18.0, right: 50),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
@@ -1121,7 +1166,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
                                         color: Colors
                                             .background, // Change the color as needed
                                         width:
-                                            1.5, // Change the width as needed
+                                        1.5, // Change the width as needed
                                       ),
                                     ),
                                   ),
@@ -1181,7 +1226,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
           ],
         ),
         bottomNavigationBar:
-            CustomBottomAppBar(), // Include the persistent bottom bar here
+        CustomBottomAppBar(), // Include the persistent bottom bar here
       ),
     );
   }
@@ -1248,22 +1293,37 @@ class RewardSpecsSync extends State<RewardSpecs> {
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Builder(builder: (context) {
-                                  if (address_list?.data?[index].isDefault ==
-                                      true) {
-                                    isSelected = true;
-                                  } else {
-                                    isSelected = false;
-                                  }
+                                // Builder(builder: (context) {
+                                //   bool isSelected = address_list?.data?[index].isDefault ?? false;
+                                //   return Checkbox(
+                                //     value: isSelected,
+                                //     onChanged: (newValue) {
+                                //       setState(() {
+                                //         isSelected = newValue ?? false; // Update the state of isSelected
+                                //       });
+                                //     },
+                                //   );
+                                // }),
 
-                                  return Checkbox(
-                                    value:
-                                        false, // Replace with your checkbox value
-                                    onChanged: (newValue) {
-                                      isSelected = !isSelected;
-                                    },
-                                  );
-                                }),
+                                Builder(
+                                    builder: (context) {
+                                      print("--------${isSelectedList[index]} ");
+                                      return Checkbox(
+                                        value: isSelectedList[index],
+                                        onChanged: (newValue) {
+                                          setState(() {
+                                            setState(() {
+                                              for (int i = 0; i < isSelectedList.length; i++) {
+                                                isSelectedList[i] = (i == index && newValue == true);
+                                              }
+                                            });
+                                            // isSelectedList[index] = newValue ?? false;
+
+                                          });
+                                        },
+                                      );
+                                    }
+                                ),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Container(
@@ -1458,11 +1518,13 @@ class PresUpload extends State<PrescriptionUpload> {
   String userToken = '';
   List<String> dates = [];
   List<String> statuses = [];
+  bool isLoading = true;
+
   List<String> prescriptionid = [];
   Timer? _timer;
   String? image_url, title, description;
   Color buttonColor = Colors.disablebutton; // Default color
-  int? hours, minutes, seconds;
+  int? hours, minutes, seconds;bool isEnabled=true;
   @override
   void initState() {
     super.initState();
@@ -1482,8 +1544,8 @@ class PresUpload extends State<PrescriptionUpload> {
       String userToken = '';
       var sharedPref = await SharedPreferences.getInstance();
       userToken =
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE2MjcyODc2LCJpYXQiOjE3MTYxODY0NzYsImp0aSI6ImYyMjJhM2VlZDNjYTRlZjc4MmNmNmEyNTYzOGQxMmU1IiwidXNlcl9pZCI6IjkxOTNhOTE1LWY5YzItNDQ0MC04MDVlLTQxNDBhYTc5ZDQzOSJ9.2Gj1laeNGLhy0FxYQCQVoB_Idt5W0F0X621BVPtNaic";
-          sharedPref.getString("access_token") ?? '';
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE2MjcyODc2LCJpYXQiOjE3MTYxODY0NzYsImp0aSI6ImYyMjJhM2VlZDNjYTRlZjc4MmNmNmEyNTYzOGQxMmU1IiwidXNlcl9pZCI6IjkxOTNhOTE1LWY5YzItNDQ0MC04MDVlLTQxNDBhYTc5ZDQzOSJ9.2Gj1laeNGLhy0FxYQCQVoB_Idt5W0F0X621BVPtNaic";
+      sharedPref.getString("access_token") ?? '';
       Map<String, String> headers = {
         'Authorization': 'Bearer $userToken', // Bearer token type
         'Content-Type': 'application/json',
@@ -1497,6 +1559,7 @@ class PresUpload extends State<PrescriptionUpload> {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         offerData = OfferData.fromJson(responseData);
+        isLoading = false;
         print("statusCode================${offerData?.data?.description}");
         image_url = offerData!.data!.image!;
         EyeHealthPoints = offerData!.userPoints!;
@@ -1542,54 +1605,21 @@ class PresUpload extends State<PrescriptionUpload> {
     }
   }
 
-  void _removeFile(int index, String file_id) {
-    setState(() {
-      _files.removeAt(index);
-      // delFile(file_id);
-    });
-  }
 
-  // Future<String?> delFile(String mdid) async {
-  //   try {
-  //     var sharedPref = await SharedPreferences.getInstance();
-  //     userToken =
-  //     // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE2MjcyODc2LCJpYXQiOjE3MTYxODY0NzYsImp0aSI6ImYyMjJhM2VlZDNjYTRlZjc4MmNmNmEyNTYzOGQxMmU1IiwidXNlcl9pZCI6IjkxOTNhOTE1LWY5YzItNDQ0MC04MDVlLTQxNDBhYTc5ZDQzOSJ9.2Gj1laeNGLhy0FxYQCQVoB_Idt5W0F0X621BVPtNaic";
-  //     sharedPref.getString("access_token") ?? '';
-  //     Map<String, String> headers = {
-  //       'Authorization': 'Bearer $userToken', // Bearer token type
-  //       //  'Content-Type': 'application/json',
-  //     };
-  //     Map<String, dynamic> requestBody = {
-  //       "file_id": mdid,
-  //     };
-  //     print('requestbody body: ${requestBody.toString()}');
-  //
-  //     String apiUrl = "${ApiProvider.baseUrl}/api/admin/invoice-remove";
-  //     var response = await http.put(Uri.parse(apiUrl),
-  //         body: requestBody, headers: headers);
-  //
-  //     // Make the API request to fetch project sites
-  //
-  //     // Check the response status code
-  //     if (response.statusCode == 200) {
-  //       print("api response : $response");
-  //       Fluttertoast.showToast(msg: "file deleted sucessfully!");
-  //     } else {
-  //       // If the request was not successful, throw an error
-  //       throw Exception('Failed to load data: ${response.statusCode}');
-  //     }
-  //   } catch (e, stacktrace) {
-  //     print('Failed to load data: $stacktrace');
-  //
-  //     // If an error occurs during the request, throw the error
-  //     throw Exception('Failed to load data: $e');
-  //   }
-  // }
+
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
+      home:
+      // isLoading
+      //     ? const Center(
+      //   child: CircularProgressIndicator(
+      //     color: Colors.black,
+      //   ),
+      // )
+      //     :
+      Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: Padding(
           padding: const EdgeInsets.all(8.0), // Add padding
@@ -1623,7 +1653,7 @@ class PresUpload extends State<PrescriptionUpload> {
           preferredSize: const Size.fromHeight(10),
           child: AppBar(
             backgroundColor:
-                Colors.white, // Set app bar background color to white
+            Colors.white, // Set app bar background color to white
             elevation: 0, // Remove app bar shadow
             // Add any other app bar properties as needed
           ),
@@ -1633,14 +1663,16 @@ class PresUpload extends State<PrescriptionUpload> {
             Stack(
               children: [
                 Container(
-                    height: 110,
-                    decoration: const BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(
-                            "assets/rewards_back.png"), // Add your background image path
-                        fit: BoxFit.cover,
-                      ),
-                    )),
+                  height: 125,
+                  // width: MediaQuery.of(context).size.width,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage("assets/rewards_back.png"), // Add your background image path
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                ),
+
                 SizedBox(
                   height: 110,
                   child: Column(
@@ -1772,9 +1804,9 @@ class PresUpload extends State<PrescriptionUpload> {
                     ),
 
                     Container(
-                      height: 145,
-                      width: MediaQuery.of(context).size.width / 1.4,
-                      color: Colors.lightgrey,
+                      height: MediaQuery.of(context).size.width / 2.1,
+                      width: MediaQuery.of(context).size.width / 1.3,
+                      color: Colors.grey.withOpacity(0.2),
                       child: Align(
                           alignment: Alignment.center,
                           child: Column(
@@ -1783,25 +1815,35 @@ class PresUpload extends State<PrescriptionUpload> {
                                 height: 10,
                               ),
                               GestureDetector(
-                                onTap: _pickFiles,
+                                onTap: isEnabled ? _pickFiles : null,
+
+                                // onTap: _pickFiles,
                                 child: Container(
                                   height: 60,
                                   decoration: BoxDecoration(
                                     image: DecorationImage(
-                                      image: AssetImage(
-                                          'assets/upload_icon.png'), // Replace with your image asset path
+                                      image:AssetImage(
+                                        isEnabled ? 'assets/upload_icon.png' : 'assets/upload_success.png', // Change the paths accordingly
+                                      ),
+                                      // AssetImage(
+                                      //     'assets/upload_icon.png'), // Replace with your image asset path
                                       fit: BoxFit
                                           .contain, // Adjust the fit as needed
                                     ),
                                   ),
                                 ),
                               ),
+                              SizedBox(
+                                height: isEnabled ? 10 : 0, // Adjust height based on condition
+                              ),
                               Padding(
                                   padding: EdgeInsets.fromLTRB(18.0, 7, 18, 3),
                                   child: Align(
                                     alignment: Alignment.center,
                                     child: Text(
-                                      'Drag & drop files or Browse',
+                                      isEnabled ? 'Drag & drop files or Browse' : 'Prescription upload' ,
+
+                                      // 'Drag & drop files or Browse',
                                       // 'Win a cool pair of sunglasses of worth rs 1000 free',
                                       style: TextStyle(
                                           fontSize: 13,
@@ -1809,12 +1851,17 @@ class PresUpload extends State<PrescriptionUpload> {
                                           fontWeight: FontWeight.w500),
                                     ),
                                   )),
+                              SizedBox(
+                                height: isEnabled ? 10 : 0, // Adjust height based on condition
+                              ),
                               Padding(
                                   padding: EdgeInsets.fromLTRB(18.0, 0, 18, 4),
                                   child: Align(
                                     alignment: Alignment.center,
                                     child: Text(
-                                      'Supported formates: JPEG, PNG, Word, PPT',
+                                      isEnabled ? 'Supported formates: JPEG, PNG, Word, PPT': 'Your prescription has been uploaded and is currently being verified by our team. This process will take approximately 24 hours. ',
+
+
                                       // 'Win a cool pair of sunglasses of worth rs 1000 free',
                                       style: TextStyle(
                                           fontSize: 11,
@@ -1918,7 +1965,7 @@ class PresUpload extends State<PrescriptionUpload> {
           ],
         ),
         bottomNavigationBar:
-            CustomBottomAppBar(), // Include the persistent bottom bar here
+        CustomBottomAppBar(), // Include the persistent bottom bar here
       ),
     );
   }
@@ -1939,7 +1986,7 @@ class PresUpload extends State<PrescriptionUpload> {
       List<File> files = pickedFiles.paths.map((path) => File(path!)).toList();
 
       List<PlatformFile> pdfFiles =
-          pickedFiles.files.where((file) => file.extension == 'pdf').toList();
+      pickedFiles.files.where((file) => file.extension == 'pdf').toList();
       setState(() {});
       if (pdfFiles.length < pickedFiles.files.length) {
         Fluttertoast.showToast(
@@ -1997,6 +2044,7 @@ class PresUpload extends State<PrescriptionUpload> {
 
       if (statusCode == 201) {
         Fluttertoast.showToast(msg: "File uploaded Successfully");
+        isEnabled=false;
 
         getPrescriptionFiles();
       } else {

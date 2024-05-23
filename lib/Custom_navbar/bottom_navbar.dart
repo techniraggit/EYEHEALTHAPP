@@ -16,7 +16,7 @@ class CustomBottomAppBar extends StatelessWidget {
       height: 65.0, // Adjust the height here
       color: Colors.white70, // Set the background color
       child: BottomAppBar(
-        color: Colors.transparent, // Make the BottomAppBar transparent
+        color: Colors.white.withOpacity(0.9), // Make the BottomAppBar transparent
         elevation: 0, // Remove any shadow
 
         child: Stack(
@@ -36,9 +36,9 @@ class CustomBottomAppBar extends StatelessWidget {
                           onTap: () {
                             Navigator.push(
                               context, CupertinoPageRoute(
-                                  builder: (context) => ReportPage(
-                                  ),
-                                ),
+                              builder: (context) => ReportPage(
+                              ),
+                            ),
                               // CupertinoPageRoute(
                               //   builder: (context) => NotificationSideBar(
                               //     onNotificationUpdate: () {},
