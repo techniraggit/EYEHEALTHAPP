@@ -18,6 +18,37 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
   Widget build(BuildContext context) {
     String formattedDate = DateFormat('dd MMMM').format(DateTime.now());
     return Scaffold(
+
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.all(8.0), // Add padding
+        child: ClipOval(
+          child: Material(
+            color: Colors.white, // Background color
+            elevation: 4.0, // Shadow
+            child: InkWell(
+              onTap: () {
+              },
+              child: SizedBox(
+                width: 53.0, // Width of the FloatingActionButton
+                height: 50.0, // Height of the FloatingActionButton
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0), // Add padding for the icon
+                    child: Image.asset(
+                      "assets/home_icon.png",
+                      width: 20,
+                      // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
+                      // color: Colors.grey, // Uncomment if you want to apply a color to the image
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+
       appBar: AppBar(
         title: Text('Eye Health Track'),
         actions: <Widget>[

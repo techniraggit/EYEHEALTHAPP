@@ -1,15 +1,18 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+
+import 'package:flutter_alarm_background_trigger/flutter_alarm_background_trigger.dart';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
-import 'package:path/path.dart';
 import 'package:project_new/testScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Api.dart';
+import 'Custom_navbar/bottom_navbar.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -104,10 +107,15 @@ class HomePageState extends State<HomePage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            salutation,
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 16),
+                          GestureDetector(
+                            onTap:(){
+setReminder();
+                            } ,
+                            child: Text(
+                              salutation,
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 16),
+                            ),
                           ),
                           Image.asset('assets/notification.png')
                         ],
@@ -479,7 +487,8 @@ class HomePageState extends State<HomePage> {
         ),
       ),
 
-
+      bottomNavigationBar:
+      CustomBottomAppBar(),
 
 
 
@@ -520,9 +529,124 @@ class HomePageState extends State<HomePage> {
       print('Exception: $e');
     }
   }
+
 }
 
 
+class setReminder extends StatefulWidget {
+
+  @override
+  State<setReminder> createState() => ReminderState();
+}
+
+class ReminderState extends State<setReminder> {
+  AlarmItem? _alarmItem;
+  DateTime? time;
+  List<AlarmItem> alarms = [];
+
+  @override
+  void initState() {
+    super.initState();
+    reloadAlarms();
+    AlarmService.instance.onForegroundAlarmEventHandler((alarmItem) {
+      reloadAlarms();
+    });
+  }
+
+  reloadAlarms() {
+    AlarmService.instance.getAllAlarms().then((alarmsList) => setState(() {
+      alarms = alarmsList;
+    }));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Plugin example app'),
+        ),
+        body: Builder(builder: (context) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Card(
+                  margin: const EdgeInsets.all(10),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            child: DateTimePicker(
+                              type: DateTimePickerType.dateTime,
+                              initialValue: '',
+                              firstDate: DateTime.now(),
+                              lastDate:
+                              DateTime.now().add(const Duration(days: 365)),
+                              dateLabelText: 'Alarm date time',
+                              onChanged: (val) => setState(() {
+                                time = DateTime.parse(val);
+                              }),
+                            )),
+                        ElevatedButton(
+                            onPressed: createAlarm,
+                            child: const Text("Set Alarm"))
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: alarms.length,
+                    itemBuilder: (ctx, idx) => ((AlarmItem alarm) => ListTile(
+                      title: Row(
+                        children: [
+                          Text(alarm.time!.toString()),
+                          const SizedBox(width: 5),
+                          Chip(
+                            padding: EdgeInsets.zero,
+                            label: Text(describeEnum(alarm.status),
+                                style: TextStyle(
+                                    color: alarm.status == AlarmStatus.DONE
+                                        ? Colors.black
+                                        : Colors.white,
+                                    fontSize: 10)),
+                            backgroundColor:
+                            alarm.status == AlarmStatus.DONE
+                                ? Colors.greenAccent
+                                : Colors.redAccent,
+                          )
+                        ],
+                      ),
+                      subtitle: Text(
+                          "ID: ${alarm.id}, UID: ${alarm.uid}, Payload: ${alarm.payload.toString()}"),
+                      trailing: IconButton(
+                          onPressed: () async {
+                            await AlarmService.instance
+                                .deleteAlarm(alarm.id!);
+                            reloadAlarms();
+                          },
+                          icon:
+                          const Icon(Icons.delete, color: Colors.red)),
+                    ))(alarms[idx]),
+                  ),
+                )
+              ],
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  void createAlarm() async {
+    await AlarmService.instance
+        .addAlarm(time!, uid: "TEST UID", payload: {"holy": "Moly"});
+    reloadAlarms();
+  }
+}
 
 class MyClipper extends CustomClipper<Path> {
   @override
