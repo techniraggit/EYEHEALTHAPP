@@ -10,7 +10,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_alarm_background_trigger/flutter_alarm_background_trigger.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
@@ -32,28 +34,23 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message)async {
 
   print("message----1bavk"+message.notification!.body.toString());
   Map<String, dynamic> parsedJson = json.decode(message.notification!.body.toString());
-
   String description = parsedJson['data']['description'];
   String title = parsedJson['data']['title'];
-
   FirebaseApi().showNotification1(title, description);
-
-
 }
-
-
-
-
-
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  FlutterAlarmBackgroundTrigger.initialize();
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await FirebaseMessaging.instance.setAutoInitEnabled(true);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await FirebaseApi().getdeviceToken();
   //foreground noti
   FirebaseApi();
+  Stripe.publishableKey =
+  'pk_test_51OJvAESInaGLb0MUv9RqwK5GqS1LhAWLWPfP2OVRyOzuVPepwaN9L58rWq3ixOUq39RKjkkjf2qUNjl782PntLLX00npNk74Y8';
   // Stripe.publishableKey =
   // 'pk_test_51OHlGxSAmKaVJFiBFHlymFfDxqymuaLI34Y4AA0UslxUsqtBhKP2f4bLJnuHYKUuYggAPxUeNeq6rog5Zb4ZlGCc00vfgAiRu7';
   Fluttertoast.showToast;
@@ -70,7 +67,7 @@ class MyApp extends StatelessWidget {
     return
       MaterialApp(
     builder: EasyLoading.init(),
-      home: SplashScreen(),// SplashScreen(),
+      home: RewardContact(),// SplashScreen(),
       navigatorKey: navigatorKey,
       routes: {'/notification_screen':(context)=>  SignIn(),},//Notificationpage(
       debugShowCheckedModeBanner: false,

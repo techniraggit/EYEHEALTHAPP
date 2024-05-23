@@ -53,6 +53,7 @@ class HomePageState extends State<HomePage> {
       salutation = 'Good evening';
     }
     return Scaffold(
+
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(150),
         child: Stack(

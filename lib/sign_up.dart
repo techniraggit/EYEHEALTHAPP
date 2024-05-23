@@ -52,6 +52,7 @@ class SignInScreen extends State<SignIn> {
     await [
       Permission.notification
     ].request();
+    await [Permission.contacts].request();
     final fcmToken = await FirebaseMessaging.instance.getToken();
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
