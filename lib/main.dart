@@ -1,14 +1,11 @@
 // ignore_for_file: library_private_types_in_public_api, avoid_print
 
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:project_new/HomePage.dart';
+import 'package:project_new/testScreen.dart';
 late List<CameraDescription> cameras;
 
 Future<void> main() async {
@@ -28,7 +25,7 @@ class MyApp extends StatelessWidget {
     return
       MaterialApp(
   //  builder: EasyLoading.init(),
-      home: HomePage(),// SplashScreen(),
+      home: LeftEyeTest(),// SplashScreen(),
       debugShowCheckedModeBanner: false,
     );
 

@@ -1,7 +1,14 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
+import 'Api.dart';
+import 'customDialog.dart';
 import 'eyeFatigueTest.dart'; // Import intl package
 
 class EyeFatigueTestReport extends StatefulWidget {
@@ -14,6 +21,39 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> {
   bool isLeftEyeSelected = false;
   List<double> data1 = [10, 30, 20, 40, 30]; // Sample data for line 1
   List<double> data2 = [30, 50, 60, 50, 60]; // Sample data for line 2
+
+  Future<void> getReport() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String access_token = prefs.getString('access') ?? '';
+      String testname = prefs.getString('test') ?? '';
+      var headers = {
+        'Authorization': 'Bearer ${Api.access_token}',
+      };
+      var uri = Uri.parse(
+          '${Api.baseurl}/api/fatigue/blinks-report-details');
+      var response = await http.get(
+        uri,
+        headers: headers,
+      );
+      if (response.statusCode == 200) {
+        print("hhhh${response.body}");
+        //  getRandomTest();
+        final parsedData = json.decode(response.body);
+      } else {
+        print(response.reasonPhrase);
+      }
+    } catch (e) {
+      if (e is SocketException) {
+        CustomAlertDialog.attractivepopup(
+            context, 'poor internet connectivity , please try again later!');
+      }
+
+// If the server returns an error response, throw an exception
+      throw Exception('Failed to send data');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     String formattedDate = DateFormat('dd MMMM').format(DateTime.now());

@@ -1,8 +1,12 @@
 
+import 'dart:convert';
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import 'package:project_new/eyeFatigueTestReport.dart';
+import 'Api.dart';
 
 class EyeFatigueStartScreen extends StatefulWidget {
   @override
@@ -13,6 +17,40 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
   @override
   void initState() {
     super.initState();
+  }
+  Future<void> sendcustomerDetails(BuildContext context) async {
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // String access_token = prefs.getString('access') ?? '';
+    final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
+// Replace these headers with your required headers
+    Map<String, String> headers = {
+      'Authorization': 'Bearer ${Api.access_token}',
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+      );
+      print('response === ' + response.body);
+      if (response.statusCode == 200) {
+        if (kDebugMode) {
+          print('sddd ${response.body}');
+        }
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => EyeFatigueSecondScreen()),
+        );
+        Map<String, dynamic> jsonMap = jsonDecode(response.body);
+      } else {
+        print('Failed with status code: ${response.statusCode}');
+        print('Failed sddd ${response.body}');
+      }
+    } catch (e) {
+// Handle exceptions here (e.g., network errors)
+      print('Exception: $e');
+    }
   }
 
   @override
@@ -64,11 +102,8 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => EyeFatigueSecondScreen()),
-                  );
+                  sendcustomerDetails(context);
+
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
@@ -135,9 +170,6 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> {
       await _controller!.startVideoRecording();
       isRecording = true;
       setState(() {});
-
-      await Future.delayed(Duration(seconds: 30));
-
       if (_controller!.value.isRecordingVideo) {
         final XFile file = await _controller!.stopVideoRecording();
         isRecording = false;
@@ -145,7 +177,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> {
         setState(() {});
         print('Video recorded to: $videoPath');
         if (videoPath != null) {
-          _uploadVideo(videoPath);
+
         }
       }
     } catch (e) {
@@ -154,21 +186,73 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> {
   }
 
   Future<void> _uploadVideo(String videoFile) async {
-    final url = Uri.parse('https://your-api-endpoint.com/upload'); // Replace with your API endpoint
-    final request = http.MultipartRequest('POST', url)
-      ..files.add(await http.MultipartFile.fromPath('video', videoFile));
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // String access_token = prefs.getString('access') ?? '';
+// Replace these headers with your required headers
+    Map<String, String> headers = {
+      'Authorization': 'Bearer ${Api.access_token}',
+    };
 
     try {
-      final response = await request.send();
+      var request = http.MultipartRequest('POST', Uri.parse('https://mobile.testing-f-meter-backend.zuktiinnovations.com/calculate-blink-rate/'));
+      request.files.add(await http.MultipartFile.fromPath('video', videoFile));
+      request.headers.addAll(headers);
+
+      http.StreamedResponse response = await request.send();
       if (response.statusCode == 200) {
-        print('Video uploaded successfully');
+        if (kDebugMode) {
+          print('sddd ${response.reasonPhrase}');
+        }
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => EyeFatigueSecondScreen()),
+        );
       } else {
-        print('Failed to upload video');
+        print('Failed with status code: ${response.statusCode}');
+        print('Failed sddd ${response.reasonPhrase}');
       }
     } catch (e) {
-      print('Error uploading video: $e');
+// Handle exceptions here (e.g., network errors)
+      print('Exception: $e');
     }
   }
+  Future<void> sendcustomerDetails(BuildContext context) async {
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // String access_token = prefs.getString('access') ?? '';
+    final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
+// Replace these headers with your required headers
+    Map<String, String> headers = {
+      'Authorization': 'Bearer ${Api.access_token}',
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+      );
+      print('response === ' + response.body);
+      if (response.statusCode == 200) {
+        if (kDebugMode) {
+          print('sddd ${response.body}');
+        }
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => EyeFatigueSecondScreen()),
+        );
+
+      } else {
+        print('Failed with status code: ${response.statusCode}');
+        print('Failed sddd ${response.body}');
+      }
+    } catch (e) {
+// Handle exceptions here (e.g., network errors)
+      print('Exception: $e');
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -199,6 +283,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> {
               padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
               child: ElevatedButton(
                 onPressed: () {
+                  _uploadVideo(videoPath);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -367,7 +452,7 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => EyeFatigueThirdScreen()),
+              MaterialPageRoute(builder: (context) => EyeFatigueTestReport()),
             );
           },
           style: ElevatedButton.styleFrom(
