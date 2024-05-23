@@ -1191,11 +1191,12 @@ class RewardSpecsSync extends State<RewardSpecs> {
                                 height: 45,
                                 child: GestureDetector(
                                   onTap: () {
-                                    RedeemaddressSheet(context);
+                                    isReedemButtonEnabled ? () {
+                                      RedeemaddressSheet(context);
+                                    } : null;
+                                    // RedeemaddressSheet(context);
                                   },
-                                  // isReedemButtonEnabled ? () {
-                                  //   RedeemaddressSheet(context);
-                                  // } : null,
+
                                   child: Container(
                                     alignment: Alignment.center,
                                     decoration: BoxDecoration(
@@ -1511,7 +1512,7 @@ class PresUpload extends State<PrescriptionUpload> {
   List<PlatformFile> _files = [];
   String Date = '1 May, 2024 ';
   String Time = "2 days";
-  String offer_id = "19225502-2a98-42e4-8744-a0bc0fb1cc01";
+  String offer_id = "ba3546d5-fa64-45fe-a2db-35b7b1597c53";
   int points = 10;
   final double _currentTime = 80.0; // Initial time
   int _countdownValue = 0;
@@ -1552,7 +1553,7 @@ class PresUpload extends State<PrescriptionUpload> {
       };
       final response = await http.get(
         Uri.parse(
-            '${ApiProvider.baseUrl}${ApiProvider.getOffers_detail + "?offer_id=$offer_id"}'),
+            '${ApiProvider.baseUrl}${ApiProvider.getOffers_detail +"?offer_id=$offer_id"}'),
         headers: headers,
       );
       print("statusCode================${response.statusCode}");
@@ -1612,13 +1613,13 @@ class PresUpload extends State<PrescriptionUpload> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home:
-      // isLoading
-      //     ? const Center(
-      //   child: CircularProgressIndicator(
-      //     color: Colors.black,
-      //   ),
-      // )
-      //     :
+      isLoading
+          ? const Center(
+        child: CircularProgressIndicator(
+          color: Colors.black,
+        ),
+      )
+          :
       Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: Padding(

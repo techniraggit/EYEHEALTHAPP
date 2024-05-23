@@ -12,22 +12,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_alarm_background_trigger/flutter_alarm_background_trigger.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:platform_device_id_v2/platform_device_id_v2.dart';
+import 'package:project_new/HomePage.dart';
 import 'package:project_new/rewards_sync.dart';
 import 'package:project_new/sign_up.dart';
 import 'package:project_new/user_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'Custom_navbar/alarm_page.dart';
 import 'Custom_navbar/bottom_navbar.dart';
 import 'FirebaseOptions/FirebaseApi.dart';
 import 'firebase_options.dart';
 final navigatorKey=GlobalKey<NavigatorState>();
 
-
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+FlutterLocalNotificationsPlugin();
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message)async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
@@ -67,9 +71,13 @@ class MyApp extends StatelessWidget {
     return
       MaterialApp(
         builder: EasyLoading.init(),
-        home: RewardContact(),// SplashScreen(),
+        home: SplashScreen(),// SplashScreen(),
         navigatorKey: navigatorKey,
-        routes: {'/notification_screen':(context)=>  SignIn(),},//Notificationpage(
+
+        routes: {'/notification_screen':(context)=>  SignIn(),
+          '/alarm': (context) => AlarmPage(
+            flutterLocalNotificationsPlugin: flutterLocalNotificationsPlugin,
+          ),},//Notificationpage(
         debugShowCheckedModeBanner: false,
       );
 
@@ -96,7 +104,7 @@ class Splash extends State<SplashScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => RewardContact(),
+              builder: (context) => HomePage(),
             ),
           );
         } else {

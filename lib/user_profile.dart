@@ -16,7 +16,6 @@ import 'package:location/location.dart'hide LocationAccuracy;
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:project_new/rewards_sync.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'Custom_navbar/bottom_navbar.dart';
 import 'api/config.dart';
 class UserProfile extends StatefulWidget {
   @override
@@ -29,8 +28,8 @@ class SignUpScreen extends State<UserProfile> {
   TextEditingController _lastNmeController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _phoneController = TextEditingController();
-
-
+  bool isVerifiedphone=true;
+  bool isVerifiedemail=true;
   TextEditingController _locationController = TextEditingController();
   TextEditingController referalController = TextEditingController();
   TextEditingController _dobController = TextEditingController();
@@ -38,7 +37,7 @@ class SignUpScreen extends State<UserProfile> {
   double Latitude=0.0;double Longitude=0.0;
 
   DateTime ? _selectedDate;
-String user_id='';
+  String user_id='';
   Color buttonColor = Colors.disablebutton; // Default color
 
   bool _emailValid = true;
@@ -88,35 +87,6 @@ String user_id='';
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: Scaffold(
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.all(8.0), // Add padding
-          child: ClipOval(
-            child: Material(
-              color: Colors.white, // Background color
-              elevation: 4.0, // Shadow
-              child: InkWell(
-                onTap: () {
-                },
-                child: SizedBox(
-                  width: 53.0, // Width of the FloatingActionButton
-                  height: 50.0, // Height of the FloatingActionButton
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0), // Add padding for the icon
-                      child: Image.asset(
-                        "assets/home_icon.png",
-                        width: 20,
-                        // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
-                        // color: Colors.grey, // Uncomment if you want to apply a color to the image
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
         backgroundColor: Colors.background,
         body: Column(
           children: [
@@ -153,9 +123,9 @@ String user_id='';
                   child: Center(
                     child: GestureDetector(
 
-                        onTap: () {
-                          _getImage();
-                        },
+                      onTap: () {
+                        _getImage();
+                      },
 
 
                       child:
@@ -316,6 +286,14 @@ String user_id='';
                                 LengthLimitingTextInputFormatter(10), // Limits input length to 10 characters
                               ],keyboardType: TextInputType.number,
                               textInputAction: TextInputAction.next,
+                              onSubmitted: (_) {
+                                // Call your API function when the user submits the text field
+                                verifyUserphone();
+                              },
+                              onEditingComplete: () {
+                                // Call your API function when the user completes editing the text field
+                                verifyUserphone();
+                              },
                               decoration: InputDecoration(
                                   labelText: 'Phone',
                                   hintText: 'Enter Phone Number',
@@ -335,12 +313,21 @@ String user_id='';
                                   // Set floatingLabelBehavior to always display the label
                                   floatingLabelBehavior:
                                   FloatingLabelBehavior.always,
-                                  suffixIcon: GestureDetector(
-                                      onTap: () {
-                                        getVerifyPhoneOtp();
+                                  suffixIcon:! isVerifiedphone
+                                      ? GestureDetector(
+                                    onTap: () {
+                                      getVerifyPhoneOtp();
+                                    },
+                                    child: getSuffixIconPhone(),
+                                  )
+                                      : null,
 
-                                      },
-                                      child: getSuffixIconPhone())
+                                  // suffixIcon: GestureDetector(
+                                  //     onTap: () {
+                                  //       getVerifyPhoneOtp();
+                                  //
+                                  //     },
+                                  //     child: getSuffixIconPhone())
                               ),
                               style: const TextStyle(
                                   fontSize: 15, fontWeight: FontWeight.w400),
@@ -360,7 +347,14 @@ String user_id='';
                                 setState(() {
                                   _emailValid = isValidEmail(value); // Validate email on change
                                 });
-                              },                              decoration: InputDecoration(
+                              },   onSubmitted: (_) {
+                              // Call your API function when the user submits the text field
+                              verifyUseremail();
+                            },
+                              onEditingComplete: () {
+                                // Call your API function when the user completes editing the text field
+                                verifyUseremail();
+                              },                            decoration: InputDecoration(
                               labelText: 'Email',
                               hintText: 'Enter Email Address',
                               labelStyle: const TextStyle(
@@ -379,11 +373,15 @@ String user_id='';
                               // Set floatingLabelBehavior to always display the label
                               floatingLabelBehavior:
                               FloatingLabelBehavior.always,
-                              suffixIcon:GestureDetector(
-                                  onTap: () {
-                                    getVerifyEmailOtp();
-                                    print('Icon tapped');
-                                  },child: getSuffixIconEmail()),
+                              suffixIcon: !isVerifiedemail
+                                  ? GestureDetector(
+                                onTap: () {
+                                  getVerifyPhoneOtp();
+                                },
+                                child: getSuffixIconEmail(),
+                              )
+                                  : null,
+
                               errorText: _emailValid ? null : 'Please enter a valid email',
 
                             ),
@@ -438,8 +436,6 @@ String user_id='';
             ),
           ],
         ),
-        bottomNavigationBar:
-        CustomBottomAppBar(),
       ),
     );
   }
@@ -546,7 +542,7 @@ String user_id='';
       setState(() {
         _imageFile = File(pickedFile.path);
       });
-       imageFile= _imageFile!;
+      imageFile= _imageFile!;
       // await updateProfilePicture();
     }
   }
@@ -561,7 +557,7 @@ String user_id='';
         ApiProvider.updateUserProfile}';
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
     prefs.getString('access_token') ?? '';
 
     var request = http.MultipartRequest('PATCH', Uri.parse(apiUrl));
@@ -641,7 +637,7 @@ String user_id='';
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String userId = prefs.getString('id') ?? '';
       String token = prefs.getString('access_token') ?? '';
-         // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
 
       // prefs.getString('access_token') ?? '';
 
@@ -663,7 +659,7 @@ String user_id='';
           user_id=jsonResponse['data']['id'];
           _firstNameController.text=jsonResponse['data']['first_name'];
           if(jsonResponse['data']['last_name']==null || jsonResponse['data']['last_name'].toString().isNotEmpty){
-          _lastNmeController.text=jsonResponse['data']['last_name'];}
+            _lastNmeController.text=jsonResponse['data']['last_name'];}
           else{
             _lastNmeController.text="N/A";
           }
@@ -1531,6 +1527,83 @@ String user_id='';
 
 
 
+
+  void verifyUserphone() async {
+
+
+
+    try {
+
+      final response = await http.get(
+        Uri.parse('${ApiProvider.baseUrl+ApiProvider.verifyuser}${_phoneController.text.trim()}'),
+
+      );
+
+      if (response.statusCode == 200) {
+        // _progressDialog!.hide();
+
+        final jsonResponse = jsonDecode(response.body);
+
+        // Access the value of is_verified
+         isVerifiedphone = jsonResponse['is_verified'];
+        setState(() {
+
+        });
+
+        print("responseviewprofile:${response.body}");
+
+
+        return json.decode(response.body);
+
+      } else {     // _progressDialog!.hide();
+
+        print(response.body);
+
+      }
+    }
+    catch (e) {     // _progressDialog!.hide();
+
+      print("exception:$e");
+    }
+    throw Exception('');
+
+  }
+
+  Future<void> verifyUseremail() async {  try {
+
+    final response = await http.get(
+      Uri.parse('${ApiProvider.baseUrl+ApiProvider.verifyuser}${_emailController.text.trim()}'),
+
+    );
+
+    if (response.statusCode == 200) {
+      // _progressDialog!.hide();
+
+      final jsonResponse = jsonDecode(response.body);
+
+      // Access the value of is_verified
+      isVerifiedemail = jsonResponse['is_verified'];
+      setState(() {
+
+      });
+
+      print("responseviewprofile:${response.body}");
+
+
+      return json.decode(response.body);
+
+    } else {     // _progressDialog!.hide();
+
+      print(response.body);
+
+    }
+  }
+  catch (e) {     // _progressDialog!.hide();
+
+    print("exception:$e");
+  }
+  throw Exception('');
+  }
 
 
 

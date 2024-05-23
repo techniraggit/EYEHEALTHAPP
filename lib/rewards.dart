@@ -361,7 +361,105 @@ class RewardsScreenState extends State<RewardsScreen> {
                               padding:  EdgeInsets.all(2.0),
                               child: ElevatedButton(
                                 onPressed: () {
-                                  // Add your button onPressed logic here
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => RewardContact()),
+                                  );
+                                },
+                                child: Text('Explore More'),
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
+                                  // Background color
+                                  // Text color
+                                  padding: EdgeInsets.all(10),
+
+                                  minimumSize: Size(100, 20),
+                                  // Button padding
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(26),
+                                    // Button border radius
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+
+
+
+
+
+
+
+
+
+            Padding(
+              padding: EdgeInsets.fromLTRB(16.0, 0, 0, 10),
+              child: Text(
+                'Upload Prescription', // Display formatted current date
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepPurple,
+                ),
+              ),
+            ),
+            Padding(
+              padding:  EdgeInsets.all(8.0),
+              child: Card(
+                child: Row(
+                  children: [
+                    // Image on the left side
+                    Image.asset(
+                      'assets/refer_earn.png',
+                      // Add any additional properties to style the image
+                    ),
+                    // Columns on the right side
+                    Padding(
+                      padding:  EdgeInsets.all(8.0),
+                      child: Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding:  EdgeInsets.symmetric(
+                                  vertical: 4.0, horizontal: 8.0),
+                              child: Text(
+                                'First Text',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding:  EdgeInsets.symmetric(
+                                  vertical: 4.0, horizontal: 8.0),
+                              child: Text(
+                                'Second Text',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding:  EdgeInsets.all(2.0),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => PrescriptionUpload()),
+                                  );
                                 },
                                 child: Text('Explore More'),
                                 style: ElevatedButton.styleFrom(

@@ -17,7 +17,7 @@ class ApiProvider{
   static const getOffers_detail='/api/offers';
   static const uploadPrescription='/api/prescription';
   static const getaddress='/api/address';
-
+  static const verifyuser= '/api/is_already_verified?username=';
 
 
 
