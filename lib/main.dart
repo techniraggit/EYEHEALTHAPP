@@ -19,6 +19,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:platform_device_id_v2/platform_device_id_v2.dart';
 import 'package:project_new/HomePage.dart';
+import 'package:project_new/eyeHealthTrack.dart';
 import 'package:project_new/rewards_sync.dart';
 import 'package:project_new/sign_up.dart';
 import 'package:project_new/user_profile.dart';

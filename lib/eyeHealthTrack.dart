@@ -1,6 +1,9 @@
+import 'package:alarm/alarm.dart';
+import 'package:alarm/model/alarm_settings.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'Custom_navbar/bottom_navbar.dart'; // Import intl package
 
@@ -10,6 +13,17 @@ class EyeHealthTrackDashboard extends StatefulWidget {
 }
 
 class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
+
+  Future<void> checkAndroidScheduleExactAlarmPermission() async {
+    final status = await Permission.scheduleExactAlarm.status;
+    print('Schedule exact alarm permission: $status.');
+    if (status.isDenied) {
+      print('Requesting schedule exact alarm permission...');
+      final res = await Permission.scheduleExactAlarm.request();
+      print('Schedule exact alarm permission ${res.isGranted ? '' : 'not'} granted.');
+    }
+  }
+
   bool isSelected = false;
   bool isLeftEyeSelected = false;
   List<double> data1 = [10, 30, 20, 40, 30]; // Sample data for line 1
@@ -55,11 +69,25 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.notifications),
-            onPressed: () {
-
-
-
+            onPressed: () async {
+              print("asdklaskldjaskldasjkdjlkas");
+              checkAndroidScheduleExactAlarmPermission();
+              await Alarm.init();
+              final alarmSettings = AlarmSettings(
+                id: 42,
+                dateTime: DateTime.now().add(Duration(seconds: 15)),
+                assetAudioPath: 'assets/alarm.mp3',
+                loopAudio: false,
+                vibrate: true,
+                volume: 0.8,
+                androidFullScreenIntent: true,
+                fadeDuration: 3.0,
+                notificationTitle: 'This is the title',
+                notificationBody: 'This is the body',
+                enableNotificationOnKill: true,
+              );
               // Handle notification icon pressed
+              await Alarm.set(alarmSettings: alarmSettings);
             },
           ),
         ],
