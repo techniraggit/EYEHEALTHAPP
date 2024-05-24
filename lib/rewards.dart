@@ -6,6 +6,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:project_new/api/config.dart';
+import 'package:project_new/rewards_sync.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Custom_navbar/bottom_navbar.dart';
@@ -155,7 +156,7 @@ class RewardsScreenState extends State<RewardsScreen> {
               child: Text(
                 'Today $formattedDate', // Display formatted current date
                 style:
-                    TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+                TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
               ),
             ),
             Stack(
@@ -166,7 +167,7 @@ class RewardsScreenState extends State<RewardsScreen> {
                   fit: BoxFit.contain,
                   // Add any additional properties to style the image
                 ),
-                 Column(
+                Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
@@ -175,27 +176,27 @@ class RewardsScreenState extends State<RewardsScreen> {
                       style: TextStyle(
                           fontSize: 20.0,
                           color: Colors.white // Adjust size as needed
-                          // Add other styling properties as needed
-                          ),
+                        // Add other styling properties as needed
+                      ),
                     ),
                     Text(
                       eyeHealthScore, // Convert double to String
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 30.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.amber,
-                          decoration: TextDecoration.underline,
-                          decorationColor: Colors.amber, // Adjust size as needed
-                          // Add other styling properties as needed
-                        ),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 30.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.amber,
+                        decoration: TextDecoration.underline,
+                        decorationColor: Colors.amber, // Adjust size as needed
+                        // Add other styling properties as needed
+                      ),
                     ),
                   ],
                 ),
               ],
             ),
             // Add spacing between titles and dynamic list
-             Padding(
+            Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
               child: Text(
                 'Offers', // Display formatted current date
@@ -219,7 +220,7 @@ class RewardsScreenState extends State<RewardsScreen> {
                     return Center(child: Text('No offers found'));
                   } else {
                     return SizedBox(
-                      height: MediaQuery.of(context).size.height, // Set a fixed height or any height you deem appropriate
+                      height: MediaQuery.of(context).size.height/2.3, // Set a fixed height or any height you deem appropriate
                       child: ListView.builder(
                         itemCount: snapshot.data!.length,
                         itemBuilder: (context, index) {
@@ -269,7 +270,11 @@ class RewardsScreenState extends State<RewardsScreen> {
                                           padding:  EdgeInsets.all(2.0),
                                           child: ElevatedButton(
                                             onPressed: () {
-                                              // Add your button onPressed logic here
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(builder: (context) => RewardSpecs(offer_id:offer.offerId)),
+                                              );
+
                                             },
                                             child: Text('Explore More'),
                                             style: ElevatedButton.styleFrom(
@@ -299,8 +304,8 @@ class RewardsScreenState extends State<RewardsScreen> {
                 },
               ),
 
-          ), // Add spacing between titles and dynamic list
-             Padding(
+            ), // Add spacing between titles and dynamic list
+            Padding(
               padding: EdgeInsets.fromLTRB(16.0, 0, 0, 10),
               child: Text(
                 'Refer & Earn', // Display formatted current date
@@ -356,7 +361,105 @@ class RewardsScreenState extends State<RewardsScreen> {
                               padding:  EdgeInsets.all(2.0),
                               child: ElevatedButton(
                                 onPressed: () {
-                                  // Add your button onPressed logic here
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => RewardContact()),
+                                  );
+                                },
+                                child: Text('Explore More'),
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
+                                  // Background color
+                                  // Text color
+                                  padding: EdgeInsets.all(10),
+
+                                  minimumSize: Size(100, 20),
+                                  // Button padding
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(26),
+                                    // Button border radius
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+
+
+
+
+
+
+
+
+
+            Padding(
+              padding: EdgeInsets.fromLTRB(16.0, 0, 0, 10),
+              child: Text(
+                'Upload Prescription', // Display formatted current date
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepPurple,
+                ),
+              ),
+            ),
+            Padding(
+              padding:  EdgeInsets.all(8.0),
+              child: Card(
+                child: Row(
+                  children: [
+                    // Image on the left side
+                    Image.asset(
+                      'assets/refer_earn.png',
+                      // Add any additional properties to style the image
+                    ),
+                    // Columns on the right side
+                    Padding(
+                      padding:  EdgeInsets.all(8.0),
+                      child: Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding:  EdgeInsets.symmetric(
+                                  vertical: 4.0, horizontal: 8.0),
+                              child: Text(
+                                'First Text',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding:  EdgeInsets.symmetric(
+                                  vertical: 4.0, horizontal: 8.0),
+                              child: Text(
+                                'Second Text',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding:  EdgeInsets.all(2.0),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => PrescriptionUpload()),
+                                  );
                                 },
                                 child: Text('Explore More'),
                                 style: ElevatedButton.styleFrom(

@@ -15,6 +15,7 @@ import 'package:geocoding/geocoding.dart'hide Location;
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart';
 import 'package:location/location.dart'hide LocationAccuracy;
+import 'package:project_new/rewards_sync.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -89,7 +90,7 @@ class AddADressSCreen extends State<NewAddressScreen> {
           backgroundColor: Colors.white,
           title:
           const Align(
-            alignment: Alignment.center,
+              alignment: Alignment.center,
               child: Text("Addresses",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500),)),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
@@ -102,8 +103,8 @@ class AddADressSCreen extends State<NewAddressScreen> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-          
-          
+
+
               const SizedBox(
                 height: 10,
               ),
@@ -133,7 +134,7 @@ class AddADressSCreen extends State<NewAddressScreen> {
                         ),
                       ),
                       const SizedBox(height: 23),
-                
+
                       SizedBox(
                         height: 50,
                         child: Padding(
@@ -161,16 +162,16 @@ class AddADressSCreen extends State<NewAddressScreen> {
                               // Set floatingLabelBehavior to always display the label
                               floatingLabelBehavior: FloatingLabelBehavior.always,
                               // Add button to the end of the TextField
-                
+
                             ),
                             style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w400),
                           ),
                         ),
                       ),
-                
-                
+
+
                       const SizedBox(height: 25),
-                
+
                       SizedBox(
                         height: 50,
                         child: Padding(
@@ -183,31 +184,31 @@ class AddADressSCreen extends State<NewAddressScreen> {
                             ],keyboardType: TextInputType.number,
                             textInputAction: TextInputAction.next,
                             decoration: InputDecoration(
-                                labelText: 'Phone',
-                                hintText: 'Phone Number',
-                                labelStyle: const TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.background,
-                
-                                    fontWeight: FontWeight.w400),
-                                hintStyle: const TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.hinttext,
-                                    fontWeight: FontWeight.w400),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      27.0),                              borderSide: BorderSide(color: Colors.grey, width: 0.7), // Set border color and width
-                                  // Add circular border
-                                ),
-                                // Set floatingLabelBehavior to always display the label
-                                floatingLabelBehavior:
-                                FloatingLabelBehavior.always,
-                                // suffixIcon: GestureDetector(
-                                //     onTap: () {
-                                //       getVerifyPhoneOtp();
-                                //
-                                //     },
-                                //     child: getSuffixIconPhone())
+                              labelText: 'Phone',
+                              hintText: 'Phone Number',
+                              labelStyle: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.background,
+
+                                  fontWeight: FontWeight.w400),
+                              hintStyle: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.hinttext,
+                                  fontWeight: FontWeight.w400),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(
+                                    27.0),                              borderSide: BorderSide(color: Colors.grey, width: 0.7), // Set border color and width
+                                // Add circular border
+                              ),
+                              // Set floatingLabelBehavior to always display the label
+                              floatingLabelBehavior:
+                              FloatingLabelBehavior.always,
+                              // suffixIcon: GestureDetector(
+                              //     onTap: () {
+                              //       getVerifyPhoneOtp();
+                              //
+                              //     },
+                              //     child: getSuffixIconPhone())
                             ),
                             style: const TextStyle(
                                 fontSize: 13, fontWeight: FontWeight.w400),
@@ -218,7 +219,7 @@ class AddADressSCreen extends State<NewAddressScreen> {
                       SizedBox(
                         height: 65,
                         width: MediaQuery.of(context).size.width/1.2,
-                
+
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10.0, vertical: 1),
@@ -236,7 +237,7 @@ class AddADressSCreen extends State<NewAddressScreen> {
                                 fontSize: 12,
                                 color: Colors.background,
                                 fontWeight: FontWeight.w400),
-                
+
                             hintStyle: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.hinttext,
@@ -255,19 +256,19 @@ class AddADressSCreen extends State<NewAddressScreen> {
                             //       print('Icon tapped');
                             //     },child: getSuffixIconEmail()),
                             errorText: _emailValid ? null : 'Please enter a valid email',
-                
+
                           ),
                             style: const TextStyle(
                                 fontSize: 13, fontWeight: FontWeight.w400),
                           ),
                         ),
                       ),
-                
+
                       const SizedBox(height: 55),
                       SizedBox(
                         height: 50,
                         width: MediaQuery.of(context).size.width/1.2,
-                
+
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10.0, vertical: 1),
@@ -284,7 +285,7 @@ class AddADressSCreen extends State<NewAddressScreen> {
                                 fontSize: 12,
                                 color: Colors.background,
                                 fontWeight: FontWeight.w400),
-                
+
                             hintStyle: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.hinttext,
@@ -298,20 +299,20 @@ class AddADressSCreen extends State<NewAddressScreen> {
                             // Set floatingLabelBehavior to always display the label
                             floatingLabelBehavior:
                             FloatingLabelBehavior.always,
-                
-                
+
+
                           ),
                             style: const TextStyle(
                                 fontSize: 13, fontWeight: FontWeight.w400),
                           ),
                         ),
                       ),
-                
-                
+
+
                       const SizedBox(height: 20),
                       SizedBox(
                         height: 50,                            width: MediaQuery.of(context).size.width/1.2,
-                
+
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10.0, vertical: 1),
@@ -328,7 +329,7 @@ class AddADressSCreen extends State<NewAddressScreen> {
                                 fontSize: 12,
                                 color: Colors.background,
                                 fontWeight: FontWeight.w400),
-                
+
                             hintStyle: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.hinttext,
@@ -341,26 +342,30 @@ class AddADressSCreen extends State<NewAddressScreen> {
                             // Set floatingLabelBehavior to always display the label
                             floatingLabelBehavior:
                             FloatingLabelBehavior.always,
-                
-                
+
+
                           ),
                             style: const TextStyle(
                                 fontSize: 13, fontWeight: FontWeight.w400),
                           ),
                         ),
                       ),
-                
-                
+
+
                       const SizedBox(height: 20),
                       SizedBox(
                         height: 50,
                         width: MediaQuery.of(context).size.width/1.2,
-                
+
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10.0, vertical: 1),
                           child: TextField(
                             controller: _pinCodeController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(6), // Limits input length to 10 characters
+                            ],
                             textInputAction: TextInputAction.next,
                             onChanged: (value) {
                               setState(() {
@@ -372,7 +377,7 @@ class AddADressSCreen extends State<NewAddressScreen> {
                                 fontSize: 12,
                                 color: Colors.background,
                                 fontWeight: FontWeight.w400),
-                
+
                             hintStyle: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.hinttext,
@@ -385,8 +390,8 @@ class AddADressSCreen extends State<NewAddressScreen> {
                             // Set floatingLabelBehavior to always display the label
                             floatingLabelBehavior:
                             FloatingLabelBehavior.always,
-                
-                
+
+
                           ),
                             style: const TextStyle(
                                 fontSize: 13, fontWeight: FontWeight.w400),
@@ -395,7 +400,7 @@ class AddADressSCreen extends State<NewAddressScreen> {
                       ),
                       const SizedBox(height: 20),
 
-                
+
                       Row(
                         children: [
                           SizedBox(
@@ -440,7 +445,7 @@ class AddADressSCreen extends State<NewAddressScreen> {
                           ),
 
 
-                            SizedBox(width: 3,),
+                          SizedBox(width: 3,),
                           SizedBox(
                             height: 49,
                             width: MediaQuery.of(context).size.width/2.5,
@@ -486,29 +491,71 @@ class AddADressSCreen extends State<NewAddressScreen> {
 
                         ],
                       ),
-                
-                SizedBox(height: 18,),
-                
-                
-                  Row(
-                    children: [
-                      SelectableContainer(
-                        text: 'Home',
-                        isSelected: address_type == 'Home',
-                        onTap: () => setSelectedValue('Home'),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        height: 50,
+                        width: MediaQuery.of(context).size.width/1.2,
+
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10.0, vertical: 1),
+                          child: TextField(
+                            controller: _cityController,
+                            textInputAction: TextInputAction.next,
+                            onChanged: (value) {
+                              setState(() {
+                              });
+                            },                              decoration: InputDecoration(
+                            labelText: '',
+                            hintText: 'City',
+                            labelStyle: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.background,
+                                fontWeight: FontWeight.w400),
+
+                            hintStyle: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.hinttext,
+                                fontWeight: FontWeight.w400),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                  27.0),
+                              borderSide: BorderSide(color: Colors.grey, width: 0.7), // Set border color and width
+// Add circular border
+                            ),
+                            // Set floatingLabelBehavior to always display the label
+                            floatingLabelBehavior:
+                            FloatingLabelBehavior.always,
+
+
+                          ),
+                            style: const TextStyle(
+                                fontSize: 13, fontWeight: FontWeight.w400),
+                          ),
+                        ),
                       ),
-                      SelectableContainer(
-                        text: 'Custom',
-                        isSelected: address_type == 'Custom',
-                        onTap: () => setSelectedValue('Custom'),
+                      SizedBox(height: 18,),
+
+
+                      Row(
+                        children: [
+                          SelectableContainer(
+                            text: 'Home',
+                            isSelected: address_type == 'Home',
+                            onTap: () => setSelectedValue('Home'),
+                          ),
+                          SelectableContainer(
+                            text: 'Custom',
+                            isSelected: address_type == 'Custom',
+                            onTap: () => setSelectedValue('Custom'),
+                          ),
+                          SelectableContainer(
+                            text: 'Work',
+                            isSelected: address_type == 'Work',
+                            onTap: () => setSelectedValue('Work'),
+                          ),
+                        ],
                       ),
-                      SelectableContainer(
-                        text: 'Work',
-                        isSelected: address_type == 'Work',
-                        onTap: () => setSelectedValue('Work'),
-                      ),
-                    ],
-                  ),
 
 
 
@@ -611,14 +658,14 @@ class AddADressSCreen extends State<NewAddressScreen> {
                           width: 300,
                           child: ElevatedButton(
                             onPressed: () {
-                
+
                               AddAddress();
-                
+
                             },
                             style: ButtonStyle(
                               elevation: MaterialStateProperty.all<double>(
                                   0), // Set elevation to 0 to remove shadow
-                
+
                               backgroundColor:
                               MaterialStateProperty.all<Color>(Colors
                                   .background), // Set your desired background color here
@@ -704,10 +751,11 @@ class AddADressSCreen extends State<NewAddressScreen> {
 
 
   void AddAddress() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    device_type= prefs.getString('device_type')!;
-    device_id= prefs.getString('device_id')!;
-    device_token=prefs.getString('device_token')!;
+
+    var sharedPref = await SharedPreferences.getInstance();
+    String  token =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE2MjcyODc2LCJpYXQiOjE3MTYxODY0NzYsImp0aSI6ImYyMjJhM2VlZDNjYTRlZjc4MmNmNmEyNTYzOGQxMmU1IiwidXNlcl9pZCI6IjkxOTNhOTE1LWY5YzItNDQ0MC04MDVlLTQxNDBhYTc5ZDQzOSJ9.2Gj1laeNGLhy0FxYQCQVoB_Idt5W0F0X621BVPtNaic";
+    sharedPref.getString("access_token") ?? '';
     print("valuessss===device_type$device_type=========device_id$device_id=====device_token$device_token");
 
     if(checkValidationForAddAddress()){
@@ -736,7 +784,8 @@ class AddADressSCreen extends State<NewAddressScreen> {
             Uri.parse('${ApiProvider.baseUrl+ApiProvider.getaddress}'),
             body: jsonEncode(requestBody),
             headers: {
-              "Content-Type":"application/json"
+              "Content-Type":"application/json",
+              'Authorization': 'Bearer $token',
             }
 
         );
@@ -748,7 +797,12 @@ class AddADressSCreen extends State<NewAddressScreen> {
         if (response.statusCode == 201) {
 
           Map<String, dynamic> data = json.decode(response.body);
-
+          Fluttertoast.showToast(msg: data['message']);
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(
+          //       builder: (context) => RewardSpecs()),
+          // );
           print("Email verified $data");
 
         } else {
