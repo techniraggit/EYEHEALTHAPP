@@ -4,13 +4,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:alarm/alarm.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_alarm_background_trigger/flutter_alarm_background_trigger.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -19,12 +19,12 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:platform_device_id_v2/platform_device_id_v2.dart';
 import 'package:project_new/HomePage.dart';
+import 'package:project_new/eyeHealthTrack.dart';
 import 'package:project_new/rewards_sync.dart';
 import 'package:project_new/sign_up.dart';
 import 'package:project_new/user_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'Custom_navbar/alarm_page.dart';
 import 'Custom_navbar/bottom_navbar.dart';
 import 'FirebaseOptions/FirebaseApi.dart';
 import 'firebase_options.dart';
@@ -45,7 +45,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message)async {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  FlutterAlarmBackgroundTrigger.initialize();
+  // FlutterAlarmBackgroundTrigger.initialize();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await FirebaseMessaging.instance.setAutoInitEnabled(true);
@@ -55,9 +55,11 @@ Future<void> main() async {
   FirebaseApi();
   Stripe.publishableKey =
   'pk_test_51OJvAESInaGLb0MUv9RqwK5GqS1LhAWLWPfP2OVRyOzuVPepwaN9L58rWq3ixOUq39RKjkkjf2qUNjl782PntLLX00npNk74Y8';
-  // Stripe.publishableKey =
-  // 'pk_test_51OHlGxSAmKaVJFiBFHlymFfDxqymuaLI34Y4AA0UslxUsqtBhKP2f4bLJnuHYKUuYggAPxUeNeq6rog5Zb4ZlGCc00vfgAiRu7';
+
   Fluttertoast.showToast;
+
+
+
   runApp(const MyApp());
   // runApp(const MyApp());
 }
@@ -75,9 +77,7 @@ class MyApp extends StatelessWidget {
         navigatorKey: navigatorKey,
 
         routes: {'/notification_screen':(context)=>  SignIn(),
-          '/alarm': (context) => AlarmPage(
-            flutterLocalNotificationsPlugin: flutterLocalNotificationsPlugin,
-          ),},//Notificationpage(
+          },//Notificationpage(
         debugShowCheckedModeBanner: false,
       );
 

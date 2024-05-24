@@ -21,6 +21,7 @@ version: 1.0.0+1
 environment:
   sdk: '>=3.3.4 <4.0.0'
 
+
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
 # consider running `flutter pub upgrade --major-versions`. Alternatively,
@@ -28,6 +29,8 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+
+
   flutter:
     sdk: flutter
 
@@ -83,9 +86,13 @@ dependencies:
   file_picker: ^8.0.3
   path_provider: ^2.1.3
   flutter_multi_formatter: ^2.12.8
-  flutter_alarm_background_trigger: ^1.0.2
   flutter_datetime_picker_plus: ^2.2.0
   timezone: ^0.9.3
+  alarm: ^3.1.4
+
+plugin:
+  package: com.gdelataillade.alarm.alarm
+  pluginClass: AlarmPlugin
 
 
 dev_dependencies:
@@ -111,6 +118,8 @@ flutter:
   uses-material-design: true
   assets:
      - assets/
+     - assets/long_blank.mp3
+     - assets/not_blank.mp3
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

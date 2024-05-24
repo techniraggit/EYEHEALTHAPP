@@ -11,6 +11,7 @@ import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Api.dart';
+import 'api/config.dart';
 import 'customDialog.dart';
 
 class MyPlan extends StatefulWidget {
@@ -20,7 +21,7 @@ class MyPlan extends StatefulWidget {
 
 class MyPlanState extends State<MyPlan> {
   late Future<List<Plan>> futurePlans;
-
+bool isActivePlan=false;
   @override
   void initState() {
     super.initState();
@@ -124,7 +125,11 @@ class MyPlanState extends State<MyPlan> {
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             child: ElevatedButton(
                               onPressed: () {
-                                makePayment();
+
+
+                             checkActivePlan();
+
+
                                 // Add your button onPressed logic here
                               },
                               child: Text('Buy Plan'),
@@ -251,7 +256,82 @@ class MyPlanState extends State<MyPlan> {
   calculateAmount(String amount) {
     final calculatedAmount = (int.parse(amount)) * 100;
     return calculatedAmount.toString();
-  }}
+  }
+
+
+
+  void checkActivePlan() async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('access_token') ?? '';
+
+    try {
+
+      final response = await http.get(
+        Uri.parse('${ApiProvider.baseUrl+ApiProvider.isActivePlan}'),
+        headers: <String, String>{
+          'Authorization': 'Bearer $token',
+
+
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // _progressDialog!.hide();
+
+        final jsonResponse = jsonDecode(response.body);
+
+        // Access the value of is_verified
+        isActivePlan = jsonResponse['is_active_plan'];
+
+        setState(() {
+          if(isActivePlan==true){
+            makePayment();
+
+          }
+        });
+
+        print("responseviewprofile:${response.body}");
+
+
+        return json.decode(response.body);
+
+      } else {     // _progressDialog!.hide();
+
+        print(response.body);
+
+      }
+    }
+    catch (e) {     // _progressDialog!.hide();
+
+      print("exception:$e");
+    }
+    throw Exception('');
+
+  }
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   late final   jsonResponse ;
   late List<Plan> plans;

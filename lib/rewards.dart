@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:project_new/rewards_sync.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Custom_navbar/bottom_navbar.dart';
+import 'HomePage.dart';
 import 'customDialog.dart'; // Import intl package
 
 class Offer {
@@ -111,6 +113,13 @@ class RewardsScreenState extends State<RewardsScreen> {
             elevation: 4.0, // Shadow
             child: InkWell(
               onTap: () {
+                Navigator.push(
+                  context, CupertinoPageRoute(
+                  builder: (context) => HomePage(
+                  ),
+                ),
+
+                );
               },
               child: SizedBox(
                 width: 53.0, // Width of the FloatingActionButton

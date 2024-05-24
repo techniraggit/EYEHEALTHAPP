@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter_alarm_background_trigger/flutter_alarm_background_trigger.dart';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
@@ -65,6 +64,13 @@ class HomePageState extends State<HomePage> {
             elevation: 4.0, // Shadow
             child: InkWell(
               onTap: () {
+                Navigator.push(
+                  context, CupertinoPageRoute(
+                  builder: (context) => HomePage(
+                  ),
+                ),
+
+                );
               },
               child: SizedBox(
                 width: 53.0, // Width of the FloatingActionButton

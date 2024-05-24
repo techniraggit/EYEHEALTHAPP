@@ -1,8 +1,18 @@
+import 'dart:async';
+
+import 'package:alarm/alarm.dart';
+import 'package:alarm/model/alarm_settings.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-import 'Custom_navbar/bottom_navbar.dart'; // Import intl package
+import 'Custom_navbar/bottom_navbar.dart';
+import 'HomePage.dart';
+import 'alarm/edit_alarm.dart';
+import 'alarm/ring.dart';
+import 'alarm/shortcut_alarmButton.dart';
 
 class EyeHealthTrackDashboard extends StatefulWidget {
   @override
@@ -10,6 +20,107 @@ class EyeHealthTrackDashboard extends StatefulWidget {
 }
 
 class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
+  //  List<AlarmSettings> alarms=[];
+  //
+  // static StreamSubscription<AlarmSettings>? subscription;
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   if (Alarm.android) {
+  //     checkAndroidNotificationPermission();
+  //     checkAndroidScheduleExactAlarmPermission();
+  //   }
+  //   loadAlarms();
+  //   subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
+  // }
+  //
+  // void loadAlarms() {
+  //   setState(() {
+  //     alarms = Alarm.getAlarms();
+  //     alarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
+  //   });
+  // }
+  //
+  // Future<void> navigateToRingScreen(AlarmSettings alarmSettings) async {
+  //   await Navigator.push(
+  //     context,
+  //     MaterialPageRoute<void>(
+  //       builder: (context) =>
+  //           ExampleAlarmRingScreen(alarmSettings: alarmSettings),
+  //     ),
+  //   );
+  //   loadAlarms();
+  // }
+  //
+  // Future<void> navigateToAlarmScreen(AlarmSettings? settings) async {
+  //   final res = await showModalBottomSheet<bool?>(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     shape: RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.circular(10),
+  //     ),
+  //     builder: (context) {
+  //       return FractionallySizedBox(
+  //         heightFactor: 0.75,
+  //         child: ExampleAlarmEditScreen(alarmSettings: settings),
+  //       );
+  //     },
+  //   );
+  //
+  //   if (res != null && res == true) loadAlarms();
+  // }
+  //
+  // Future<void> checkAndroidNotificationPermission() async {
+  //   final status = await Permission.notification.status;
+  //   if (status.isDenied) {
+  //     alarmPrint('Requesting notification permission...');
+  //     final res = await Permission.notification.request();
+  //     alarmPrint(
+  //       'Notification permission ${res.isGranted ? '' : 'not '}granted',
+  //     );
+  //   }
+  // }
+  //
+  // Future<void> checkAndroidExternalStoragePermission() async {
+  //   final status = await Permission.storage.status;
+  //   if (status.isDenied) {
+  //     alarmPrint('Requesting external storage permission...');
+  //     final res = await Permission.storage.request();
+  //     alarmPrint(
+  //       'External storage permission ${res.isGranted ? '' : 'not'} granted',
+  //     );
+  //   }
+  // }
+  //
+  // Future<void> checkAndroidScheduleExactAlarmPermission() async {
+  //   final status = await Permission.scheduleExactAlarm.status;
+  //   alarmPrint('Schedule exact alarm permission: $status.');
+  //   if (status.isDenied) {
+  //     alarmPrint('Requesting schedule exact alarm permission...');
+  //     final res = await Permission.scheduleExactAlarm.request();
+  //     alarmPrint(
+  //       'Schedule exact alarm permission ${res.isGranted ? '' : 'not'} granted',
+  //     );
+  //   }
+  // }
+  //
+  // @override
+  // void dispose() {
+  //   subscription?.cancel();
+  //   super.dispose();
+  // }
+
+
+
+
   bool isSelected = false;
   bool isLeftEyeSelected = false;
   List<double> data1 = [10, 30, 20, 40, 30]; // Sample data for line 1
@@ -27,6 +138,13 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
             elevation: 4.0, // Shadow
             child: InkWell(
               onTap: () {
+                Navigator.push(
+                  context, CupertinoPageRoute(
+                  builder: (context) => HomePage(
+                  ),
+                ),
+
+                );
               },
               child: SizedBox(
                 width: 53.0, // Width of the FloatingActionButton
@@ -53,13 +171,32 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
       appBar: AppBar(
         title: Text('Eye Health Track'),
         actions: <Widget>[
+          // ExampleAlarmHomeShortcutButton(refreshAlarms: loadAlarms),
+
           IconButton(
             icon: Icon(Icons.notifications),
-            onPressed: () {
+            onPressed: () async {
+              print("asdklaskldjaskldasjkdjlkas");
+              // navigateToAlarmScreen(null);
 
 
-
-              // Handle notification icon pressed
+              // checkAndroidScheduleExactAlarmPermission();
+              // await Alarm.init();
+              // final alarmSettings = AlarmSettings(
+              //   id: 42,
+              //   dateTime: DateTime.now().add(Duration(seconds: 15)),
+              //   assetAudioPath: 'assets/alarm.mp3',
+              //   loopAudio: false,
+              //   vibrate: true,
+              //   volume: 0.8,
+              //   androidFullScreenIntent: true,
+              //   fadeDuration: 1.0,
+              //   notificationTitle: 'This is the title',
+              //   notificationBody: 'This is the body',
+              //   enableNotificationOnKill: true,
+              // );
+              // // Handle notification icon pressed
+              // await Alarm.set(alarmSettings: alarmSettings);
             },
           ),
         ],

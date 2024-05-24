@@ -25,6 +25,7 @@ import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Custom_navbar/bottom_navbar.dart';
+import 'HomePage.dart';
 import 'api/config.dart';
 import 'new_address_screen.dart';
 
@@ -101,6 +102,13 @@ class _RewardsContactsSync extends State<RewardContact> {
                 elevation: 4.0, // Shadow
                 child: InkWell(
                   onTap: () {
+                    Navigator.push(
+                      context, CupertinoPageRoute(
+                      builder: (context) => HomePage(
+                      ),
+                    ),
+
+                    );
                   },
                   child: SizedBox(
                     width: 53.0, // Width of the FloatingActionButton
@@ -874,6 +882,13 @@ class RewardSpecsSync extends State<RewardSpecs> {
               elevation: 4.0, // Shadow
               child: InkWell(
                 onTap: () {
+                  Navigator.push(
+                    context, CupertinoPageRoute(
+                    builder: (context) => HomePage(
+                    ),
+                  ),
+
+                  );
                 },
                 child: SizedBox(
                   width: 53.0, // Width of the FloatingActionButton
@@ -1630,6 +1645,13 @@ class PresUpload extends State<PrescriptionUpload> {
               elevation: 4.0, // Shadow
               child: InkWell(
                 onTap: () {
+                  Navigator.push(
+                    context, CupertinoPageRoute(
+                    builder: (context) => HomePage(
+                    ),
+                  ),
+
+                  );
                 },
                 child: SizedBox(
                   width: 53.0, // Width of the FloatingActionButton

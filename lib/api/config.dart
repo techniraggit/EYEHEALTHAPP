@@ -1,7 +1,7 @@
 class ApiProvider{
 
   //static const baseUrl = "http://192.168.29.221:8000";
-  static const baseUrl = "http://192.168.29.221:8000";
+  static const baseUrl = "https://eyehealth.backend.zuktiinnovations.com";
 
   static const verifyEmailOtp = "/api/verification_otp";//verify email during signup
   static const sendVerifyOtp = "/api/verification_otp";
@@ -18,7 +18,7 @@ class ApiProvider{
   static const uploadPrescription='/api/prescription';
   static const getaddress='/api/address';
   static const verifyuser= '/api/is_already_verified?username=';
-
+  static const isActivePlan='/api/is-active-plan';
 
 
 

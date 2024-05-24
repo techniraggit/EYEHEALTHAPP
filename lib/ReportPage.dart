@@ -1,8 +1,10 @@
 import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:project_new/HomePage.dart';
 
 import 'Custom_navbar/bottom_navbar.dart'; // Import intl package
 
@@ -39,6 +41,13 @@ class ReportPageState extends State<ReportPage> {
             elevation: 4.0, // Shadow
             child: InkWell(
               onTap: () {
+                Navigator.push(
+                  context, CupertinoPageRoute(
+                  builder: (context) => HomePage(
+                  ),
+                ),
+
+                );
               },
               child: SizedBox(
                 width: 53.0, // Width of the FloatingActionButton
