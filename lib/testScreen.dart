@@ -61,7 +61,6 @@ class SelectQuestion extends State<GiveInfo> {
       onWillPop: () async {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => GiveInfo()),
-          //(route) => route.isFirst, // Remove until the first route (Screen 1)
         );
         return false;
       },
@@ -80,113 +79,175 @@ class SelectQuestion extends State<GiveInfo> {
               },
             ),
           ),
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                          /*  image: DecorationImage(
-                          image: AssetImage('assets/test.png'),
-                          fit: BoxFit.fill,
-                        ),*/
-                          ),
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Welcome to Eye Health',
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF5900D9),
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 40),
-                              child: Text(
-                                'Are you wearing Eyeglasses or Contact Lenses for Vision Correction Faces, or Sightseeing?',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                            QuestionCheckbox(
-                              questionId: 1,
-                              questionText:
-                                  'Is your eye power higher than -4/+4?',
-                              onChanged: (bool? value) {
-                                _onCheckboxChanged(value, 1);
-                              },
-                            ),
-                            QuestionCheckbox(
-                              questionId: 2,
-                              questionText:
-                                  'Are you facing difficulty in viewing objects at a distance more clearly than others?',
-                              onChanged: (bool? value) {
-                                _onCheckboxChanged(value, 2);
-                              },
-                            ),
-                            QuestionCheckbox(
-                              questionId: 3,
-                              questionText:
-                                  'Are objects at a distance clearer to you than others?',
-                              onChanged: (bool? value) {
-                                _onCheckboxChanged(value, 3);
-                              },
-                            ),
-                            QuestionCheckbox(
-                              questionId: 4,
-                              questionText:
-                                  'Do you have any known medical conditions?',
-                              onChanged: (bool? value) {
-                                _onCheckboxChanged(value, 4);
-                              },
-                            ),
-                          ],
+          body: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Welcome to Eye Health',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF5900D9),
                         ),
                       ),
-                    ),
-                  ],
+                      SizedBox(height: 5),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 40),
+                        child: Text(
+                          'Are you wearing Eyeglasses or Contact Lenses for Vision Correction Faces, or Sightseeing?',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.black,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      QuestionCheckbox(
+                        questionId: 1,
+                        questionText:
+                        'Is your eye power higher than -4/+4?',
+                        onChanged: (bool? value) {
+                          _onCheckboxChanged(value, 1);
+                        },
+                      ),
+                      QuestionCheckbox(
+                        questionId: 2,
+                        questionText:
+                        'Are you facing difficulty in viewing objects at a distance more clearly than others?',
+                        onChanged: (bool? value) {
+                          _onCheckboxChanged(value, 2);
+                        },
+                      ),
+                      QuestionCheckbox(
+                        questionId: 3,
+                        questionText:
+                        'Are objects at a distance clearer to you than others?',
+                        onChanged: (bool? value) {
+                          _onCheckboxChanged(value, 3);
+                        },
+                      ),
+                      QuestionCheckbox(
+                        questionId: 4,
+                        questionText:
+                        'Do you have any known medical conditions?',
+                        onChanged: (bool? value) {
+                          _onCheckboxChanged(value, 4);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Card(
-                shape: RoundedRectangleBorder(),
-                elevation: 5,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Add your validation and navigation logic here
-                      submitApi();
-                    },
-                    child: Text('Next'),
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white, backgroundColor: Color(0xFF5900D9),
-                      padding: EdgeInsets.all(6),
-                      minimumSize: Size(MediaQuery.of(context).size.width, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(26),
+                Card(
+                  shape: RoundedRectangleBorder(),
+                  elevation: 5,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Add your validation and navigation logic here
+                        getqstnApi();
+                        submitApi();
+                      },
+                      child: Text('Next'),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Color(0xFF5900D9),
+                        padding: EdgeInsets.all(6),
+                        minimumSize: Size(
+                          MediaQuery.of(context).size.width,
+                          50,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(26),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+                SizedBox(height: 20), // Add some spacing after the button
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
+  Future<void> getqstnApi() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
+    String CustomerId= prefs.getString('customer_id') ?? '';
+    print("myselectedid$CustomerId");
+    var headers = {
+      'Authorization': 'Bearer ${authToken}',
+// Remove or modify Content-Type header here
+      'Content-Type': 'application/json',
+      'Customer-Id' :CustomerId
+    };
+
+    try {
+      // Update message while API call is in progress
+      //  _progressDialog!.update(message: 'please wait...');
+
+      http.Response response = await http.get(
+        Uri.parse('${Api.baseurl}/api/eye/get-question-details'),
+        headers: headers,
+      );
+      print(response.body);
+
+      if (response.statusCode == 200) {
+        // _progressDialog!.hide();
+        print(response.body);
+
+        final responseBody = json.decode(response.body);
+        final int id = responseBody['data']['id'];
+        final String test = responseBody['data']['test'];
+        //  message=responseMap['message'];
+        //  CustomAlertDialog.attractivepopupnodelay(context, message);
+
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('patient_id', '$id');
+        await prefs.setString('test', test);
+        print("id $id");
+        print("id $test");
+        print(response.body);
+        //   _progressDialog!.hide();
+
+        Navigator.pushReplacement(
+          context,
+          CupertinoPageRoute(builder: (context) => Camara()),
+        );
+      } else {
+        // _progressDialog!.hide();
+
+        CustomAlertDialog.attractivepopupnodelay(
+            context, 'Please answer the questions carefully');
+// Map<String, dynamic> parsedJson = json.decode(response.body);
+        print(response.reasonPhrase);
+      }
+    } catch (e) {
+      // _progressDialog!.hide();
+
+      if (e is SocketException) {
+        CustomAlertDialog.attractivepopupnodelay(
+            context, 'poor internet connectivity , please try again later!');
+      }
+
+// If the server returns an error response, throw an exception
+      //  throw Exception('Failed to send data');
+    } finally {
+      //  _progressDialog!.hide();
+    }
+    // _progressDialog!.hide();
+  }
   Future<void> submitApi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
@@ -4939,7 +5000,7 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -4956,7 +5017,7 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
                 child: Row(
                   children: [
                     Transform.scale(
-                      scale: 1.5,
+                      scale: 1.2,
                       // Adjust the scale factor to increase the size
                       child: Theme(
                         data: ThemeData(
@@ -5014,7 +5075,7 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
               Row(
                 children: [
                   Transform.scale(
-                    scale: 1.5, // Adjust the scale factor to increase the size
+                    scale: 1.2, // Adjust the scale factor to increase the size
                     child: Theme(
                       data: ThemeData(
                         checkboxTheme: CheckboxThemeData(

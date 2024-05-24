@@ -12,11 +12,13 @@
         android:label="project_new"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        android:theme="@style/Theme.AppCompat.Light">
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
+            android:enableOnBackInvokedCallback="true"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">

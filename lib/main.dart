@@ -18,6 +18,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:platform_device_id_v2/platform_device_id_v2.dart';
 import 'package:project_new/HomePage.dart';
+import 'package:project_new/myPlanPage.dart';
 import 'package:project_new/rewards_sync.dart';
 import 'package:project_new/sign_up.dart';
 import 'package:project_new/user_profile.dart';
@@ -68,7 +69,7 @@ class MyApp extends StatelessWidget {
     return
       MaterialApp(
     builder: EasyLoading.init(),
-      home: SplashScreen(),// SplashScreen(),
+      home: SplashScreen(),
       navigatorKey: navigatorKey,
       routes: {'/notification_screen':(context)=>  SignIn(),},//Notificationpage(
       debugShowCheckedModeBanner: false,

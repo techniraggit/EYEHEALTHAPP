@@ -24,7 +24,7 @@ class MyPlanState extends State<MyPlan> {
   @override
   void initState() {
     super.initState();
-    futurePlans = _getPlanApi(context) ;
+    futurePlans = _getPlanApi(context);
   }
 
   @override
@@ -67,7 +67,8 @@ class MyPlanState extends State<MyPlan> {
                   return Container(
                     decoration: BoxDecoration(
                       color: index.isEven ? Colors.white : Color(0xFF5900D9),
-                      borderRadius: BorderRadius.circular(12.0), // Corner radius
+                      borderRadius: BorderRadius.circular(12.0),
+                      // Corner radius
                       border: Border.all(
                         color: Colors.grey, // Border color
                         width: 1.0, // Border width
@@ -79,13 +80,15 @@ class MyPlanState extends State<MyPlan> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 2.0, horizontal: 8.0),
                             child: Text(
                               plan.name,
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: index.isEven ? Colors.black : Colors.white,
+                                color:
+                                    index.isEven ? Colors.black : Colors.white,
                               ),
                             ),
                           ),
@@ -95,30 +98,36 @@ class MyPlanState extends State<MyPlan> {
                               '\$${plan.price}/${plan.planType}',
                               style: TextStyle(
                                   fontSize: 20,
-                                  color: index.isEven ? Colors.black : Colors.white,
+                                  color: index.isEven
+                                      ? Colors.black
+                                      : Colors.white,
                                   fontWeight: FontWeight.bold),
                             ),
                           ),
                           ...features.map((feature) => Row(
-                            children: [
-                              Icon(
-                                Icons.check_circle,
-                                color: index.isEven ? Color(0xFF5900D9) : Colors.white,
-                                size: 20,
-                              ),
-                              SizedBox(width: 5),
-                              Expanded(
-                                child: Text(
-                                  feature,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: index.isEven ? Colors.grey.shade700 : Colors.white,
-                                    fontStyle: FontStyle.normal,
+                                children: [
+                                  Icon(
+                                    Icons.check_circle,
+                                    color: index.isEven
+                                        ? Color(0xFF5900D9)
+                                        : Colors.white,
+                                    size: 20,
                                   ),
-                                ),
-                              ),
-                            ],
-                          )),
+                                  SizedBox(width: 5),
+                                  Expanded(
+                                    child: Text(
+                                      feature,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: index.isEven
+                                            ? Colors.grey.shade700
+                                            : Colors.white,
+                                        fontStyle: FontStyle.normal,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )),
                           Spacer(),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 10),
@@ -129,7 +138,11 @@ class MyPlanState extends State<MyPlan> {
                               },
                               child: Text('Buy Plan'),
                               style: ElevatedButton.styleFrom(
-                                foregroundColor: index.isEven ? Colors.white : Colors.black, backgroundColor: index.isEven ? Color(0xFF5900D9) : Colors.white,
+                                foregroundColor:
+                                    index.isEven ? Colors.white : Colors.black,
+                                backgroundColor: index.isEven
+                                    ? Color(0xFF5900D9)
+                                    : Colors.white,
                                 padding: EdgeInsets.all(10),
                                 minimumSize: Size(100, 20),
                                 shape: RoundedRectangleBorder(
@@ -145,7 +158,6 @@ class MyPlanState extends State<MyPlan> {
                 },
               ),
             );
-
           }
         },
       ),
@@ -153,18 +165,18 @@ class MyPlanState extends State<MyPlan> {
   }
 
   Map<String, dynamic>? paymentIntent;
+
   Future<void> makePayment() async {
     try {
-      paymentIntent = await createPaymentIntent('71', 'USD');
+      paymentIntent = await createPaymentIntent('720', 'USD');
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
-
           paymentIntentClientSecret: paymentIntent!['client_secret'],
           googlePay: const PaymentSheetGooglePay(
               testEnv: true, currencyCode: "USD", merchantCountryCode: "US"),
           merchantDisplayName: 'Zukti Innovations',
           customerEphemeralKeySecret: paymentIntent!['ephemeralKey'],
-          customerId:'cus_Q99KA3BxJP2vY7',
+          customerId: 'cus_Q99KA3BxJP2vY7',
           returnURL: 'flutterstripe://redirect',
         ),
       );
@@ -222,15 +234,25 @@ class MyPlanState extends State<MyPlan> {
     }
   }
 
+  // Convert payment method types into separate entries
+  List<String> paymentMethodTypes = ['card', 'google_pay', 'apple_pay'];
+
   createPaymentIntent(String amount, String currency) async {
     try {
       Map<String, dynamic> body = {
         'amount': calculateAmount(amount),
         'currency': currency,
-        'payment_method_types[]': 'card',
+       // 'payment_method_types[]': 'card',
+       // 'payment_method_types[]': ['card','Google Pay','Apple Pay'],
         'description': 'Software Testing',
         'customer': 'cus_Q99KA3BxJP2vY7',
+        'metadata[plan_id]': 'db85c623-467d-4b16-b2a4-f057d55a526e',
+        'metadata[user_id]': '32f7bf9a-42df-4c50-a5ac-30a49232cefd',
       };
+      // Add each payment method type to the body
+      for (var i = 0; i < paymentMethodTypes.length; i++) {
+        body['payment_method_types[$i]'] = paymentMethodTypes[i];
+      }
       var secretKey =
           "sk_test_51OJvAESInaGLb0MUtLmhP2IwmJa9JqTztYYFgrMnXbewAzgHKXeJqgKullONr7Oxj268IJt1i9GrwfYiSFuWHLF500ShZtLEZX";
       var response = await http.post(
@@ -251,57 +273,57 @@ class MyPlanState extends State<MyPlan> {
   calculateAmount(String amount) {
     final calculatedAmount = (int.parse(amount)) * 100;
     return calculatedAmount.toString();
-  }}
+  }
+}
 
-  late final   jsonResponse ;
-  late List<Plan> plans;
+late final jsonResponse;
 
+late List<Plan> plans;
 
-  Future<List<Plan>>  _getPlanApi(BuildContext context) async {
-    ProgressDialog? _progressDialog;
+Future<List<Plan>> _getPlanApi(BuildContext context) async {
+  ProgressDialog? _progressDialog;
 
-    _progressDialog = ProgressDialog(context); // Initialize ProgressDialog
-    _progressDialog.show(); // Show ProgressDialog
+  _progressDialog = ProgressDialog(context); // Initialize ProgressDialog
+  _progressDialog.show(); // Show ProgressDialog
 
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String authToken =
-      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-      prefs.getString('access_token') ?? '';
-      final response = await http.get(
-        Uri.parse('${Api.baseurl}/api/subscription-plans'),
-        headers: <String, String>{
-          'Authorization': 'Bearer $authToken',
-        },
-      );
+  try {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken =
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
+    final response = await http.get(
+      Uri.parse('${Api.baseurl}/api/subscription-plans'),
+      headers: <String, String>{
+        'Authorization': 'Bearer $authToken',
+      },
+    );
 
-      if (response.statusCode == 200) {
-        print("gggg${response.body}");
-        _progressDialog.hide();
-        final jsonResponse = jsonDecode(response.body);
-        final List<dynamic> data = jsonResponse['data'];
+    if (response.statusCode == 200) {
+      print("gggg${response.body}");
+      _progressDialog.hide();
+      final jsonResponse = jsonDecode(response.body);
+      final List<dynamic> data = jsonResponse['data'];
 
-        return data.map((planJson) => Plan.fromJson(planJson)).toList();
-
-      } else {
-        _progressDialog.hide();
-
-        CustomAlertDialog.attractivepopup(
-            context, 'Error message here: ${response.statusCode}');
-      }
-    } catch (e) {
+      return data.map((planJson) => Plan.fromJson(planJson)).toList();
+    } else {
       _progressDialog.hide();
 
-      if (e is SocketException) {
-        CustomAlertDialog.attractivepopup(
-            context, 'Poor internet connectivity, please try again later!');
-      } else {
-        CustomAlertDialog.attractivepopup(context, 'Unknown error occurred');
-      }
+      CustomAlertDialog.attractivepopup(
+          context, 'Error message here: ${response.statusCode}');
     }
+  } catch (e) {
+    _progressDialog.hide();
 
-    throw Exception('Failed to fetch data');
+    if (e is SocketException) {
+      CustomAlertDialog.attractivepopup(
+          context, 'Poor internet connectivity, please try again later!');
+    } else {
+      CustomAlertDialog.attractivepopup(context, 'Unknown error occurred');
+    }
   }
+
+  throw Exception('Failed to fetch data');
+}
 
 class Plan {
   final String id;
@@ -331,14 +353,3 @@ class Plan {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-

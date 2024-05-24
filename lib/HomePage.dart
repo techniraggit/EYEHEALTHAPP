@@ -523,23 +523,36 @@ class HomePageState extends State<HomePage> {
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Authorization': 'Bearer $authToken',
+      'Content-Type': 'application/json',
+
     };
+
+    var body = json.encode({
+      "is_self": true,
+    });
+
 
     try {
       final response = await http.post(
         Uri.parse(apiUrl),
         headers: headers,
+        body: body,
       );
       print('response === ' + response.body);
       if (response.statusCode == 200) {
         if (kDebugMode) {
           print('sddd ${response.body}');
         }
+        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+        // Extract the customer ID
+        String customerId = jsonResponse['customer_id'];
+        prefs.setString('customer_id', customerId);
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => GiveInfo()),
         );
-        Map<String, dynamic> jsonMap = jsonDecode(response.body);
+
       } else {
         print('Failed with status code: ${response.statusCode}');
         print('Failed sddd ${response.body}');
