@@ -32,6 +32,7 @@ class GiveInfo extends StatefulWidget {
 
 class SelectQuestion extends State<GiveInfo> {
   ProgressDialog? _progressDialog;
+  late Future<List<Question>> _questionsFuture;
 
   List<int> idList = [];
   List<int> selectedIds = [];
@@ -41,11 +42,21 @@ class SelectQuestion extends State<GiveInfo> {
   void _onCheckboxChanged(bool? value, int questionId) {
     setState(() {
       if (value == true) {
-        selectedIds.add(questionId);
+        // Add the ID to the selected IDs list if it's not already present
+        if (!selectedIds.contains(questionId)) {
+          selectedIds.add(questionId);
+        }
       } else {
+        // Remove the ID from the selected IDs list if it's present
         selectedIds.remove(questionId);
       }
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _questionsFuture = getQuestionApi();
   }
 
   @override
@@ -61,142 +72,211 @@ class SelectQuestion extends State<GiveInfo> {
       onWillPop: () async {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => GiveInfo()),
-          //(route) => route.isFirst, // Remove until the first route (Screen 1)
         );
         return false;
       },
-      child: MaterialApp(
-        home: Scaffold(
-          appBar: AppBar(
-            title: Text("EYE TEST"),
-            centerTitle: true,
-            leading: IconButton(
-              icon: Icon(
-                Icons.arrow_back,
-                color: Colors.bluebutton,
-              ),
-              onPressed: () {
-                // Add your back button functionality here
-              },
-            ),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("EYE TEST"),
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+            onPressed: () {
+              // Add your back button functionality here
+            },
           ),
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Stack(
-                  fit: StackFit.expand,
+        ),
+        body: FutureBuilder<List<Question>>(
+          future: _questionsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(child: Text('No questions available'));
+            } else {
+              return SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      decoration: BoxDecoration(
-                          /*  image: DecorationImage(
-                          image: AssetImage('assets/test.png'),
-                          fit: BoxFit.fill,
-                        ),*/
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Welcome to Eye Health',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.bluebutton,
+                            ),
                           ),
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Welcome to Eye Health',
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 40),
+                            child: Text(
+                              'Are you wearing Eyeglasses or Contact Lenses for Vision Correction Faces, or Sightseeing?',
                               style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF5900D9),
+                                fontSize: 12,
+                                color: Colors.black,
                               ),
+                              textAlign: TextAlign.center,
                             ),
-                            SizedBox(height: 10),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 40),
-                              child: Text(
-                                'Are you wearing Eyeglasses or Contact Lenses for Vision Correction Faces, or Sightseeing?',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                            SizedBox(height: 10),
+                          ),
+                          SizedBox(height: 10),
+                          // Dynamically create QuestionCheckbox widgets based on fetched questions
+                          for (var question in snapshot.data!) ...[
                             QuestionCheckbox(
-                              questionId: 1,
-                              questionText:
-                                  'Is your eye power higher than -4/+4?',
+                              questionId: question.id,
+                              questionText: question.questionText,
                               onChanged: (bool? value) {
-                                _onCheckboxChanged(value, 1);
-                              },
-                            ),
-                            QuestionCheckbox(
-                              questionId: 2,
-                              questionText:
-                                  'Are you facing difficulty in viewing objects at a distance more clearly than others?',
-                              onChanged: (bool? value) {
-                                _onCheckboxChanged(value, 2);
-                              },
-                            ),
-                            QuestionCheckbox(
-                              questionId: 3,
-                              questionText:
-                                  'Are objects at a distance clearer to you than others?',
-                              onChanged: (bool? value) {
-                                _onCheckboxChanged(value, 3);
-                              },
-                            ),
-                            QuestionCheckbox(
-                              questionId: 4,
-                              questionText:
-                                  'Do you have any known medical conditions?',
-                              onChanged: (bool? value) {
-                                _onCheckboxChanged(value, 4);
+                                _onCheckboxChanged(value, question.id);
                               },
                             ),
                           ],
+                        ],
+                      ),
+                    ),
+                    Card(
+                      shape: RoundedRectangleBorder(),
+                      elevation: 5,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            submitApi();
+                          },
+                          child: Text('Next'),
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Color(0xFF5900D9),
+                            padding: EdgeInsets.all(6),
+                            minimumSize:
+                                Size(MediaQuery.of(context).size.width, 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(26),
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ],
                 ),
-              ),
-              Card(
-                shape: RoundedRectangleBorder(),
-                elevation: 5,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Add your validation and navigation logic here
-                      submitApi();
-                    },
-                    child: Text('Next'),
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white, backgroundColor: Color(0xFF5900D9),
-                      padding: EdgeInsets.all(6),
-                      minimumSize: Size(MediaQuery.of(context).size.width, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(26),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+              );
+            }
+          },
         ),
       ),
     );
   }
 
+/*  Future<void> getQuestionApi() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken =
+    prefs.getString('access_token') ?? '';
+    String customer=
+        prefs.getString('customer_id') ?? '';
+
+    var headers = {
+      'Authorization': 'Bearer $authToken',
+      'Customer-Id' : customer,
+      // Remove or modify Content-Type header here
+      'Content-Type': 'application/json',
+    };
+    try {
+      // Update message while API call is in progress
+      //  _progressDialog!.update(message: 'please wait...');
+
+      http.Response response = await http.get(
+        Uri.parse('${Api.baseurl}/api/eye/get-question-details'),
+        headers: headers,
+      );
+      print(headers);
+
+      if (response.statusCode == 200) {
+        // _progressDialog!.hide();
+        print(response.body);
+
+        List<Question> parseQuestions(String responseBody) {
+          final parsed = jsonDecode(responseBody);
+          final List<dynamic> data = parsed['data'];
+
+          return data.map<Question>((json) {
+            // Assign custom names like "qst1", "qst2", etc., to the questions
+            final customName = 'qst${json['id']}';
+            return Question(id: json['id'], questionText: json['question_text']);
+          }).toList();
+      }} else {
+        // _progressDialog!.hide();
+
+        CustomAlertDialog.attractivepopupnodelay(
+            context, 'Please answer the questions carefully');
+// Map<String, dynamic> parsedJson = json.decode(response.body);
+        print(response.reasonPhrase);
+      }
+    } catch (e) {
+      // _progressDialog!.hide();
+
+      if (e is SocketException) {
+        CustomAlertDialog.attractivepopupnodelay(
+            context, 'poor internet connectivity , please try again later!');
+      }
+
+// If the server returns an error response, throw an exception
+      //  throw Exception('Failed to send data');
+    } finally {
+      //  _progressDialog!.hide();
+    }
+    // _progressDialog!.hide();
+  }*/
+  Future<List<Question>> getQuestionApi() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken = prefs.getString('access_token') ?? '';
+    String customer = prefs.getString('customer_id') ?? '';
+
+    var headers = {
+      'Authorization': 'Bearer $authToken',
+      'Customer-Id': customer,
+      // Remove or modify Content-Type header here
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      http.Response response = await http.get(
+        Uri.parse('${Api.baseurl}/api/eye/get-question-details'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final parsed = jsonDecode(response.body);
+        final List<dynamic> data = parsed['data'];
+
+        return data.map<Question>((json) {
+          // Assign custom names like "qst1", "qst2", etc., to the questions
+          final customName = 'qst${json['id']}';
+          return Question(id: json['id'], questionText: json['question_text']);
+        }).toList();
+      } else {
+        throw Exception('Failed to fetch questions');
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+
   Future<void> submitApi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
+    String CustomerId = prefs.getString('customer_id') ?? '';
     print("myselectedid${selectedIds}");
     var headers = {
       'Authorization': 'Bearer ${authToken}',
 // Remove or modify Content-Type header here
       'Content-Type': 'application/json',
+      'Customer-Id': CustomerId,
     };
     var body = json.encode({
       "selected_question": selectedIds,
@@ -258,14 +338,13 @@ class SelectQuestion extends State<GiveInfo> {
     // _progressDialog!.hide();
   }
 }
+
 class LeftEyeTest extends StatefulWidget {
   @override
   LeftEyeTestState createState() => LeftEyeTestState();
 }
 
 class LeftEyeTestState extends State<LeftEyeTest> {
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -283,12 +362,12 @@ class LeftEyeTestState extends State<LeftEyeTest> {
         children: [
           Container(
             decoration: BoxDecoration(
-              /*    image: DecorationImage(
+                /*    image: DecorationImage(
                     image: AssetImage('assets/test.png'),
                     // Replace with your image
                     fit: BoxFit.cover,
                   ),*/
-            ),
+                ),
           ),
           Column(
             children: [
@@ -317,7 +396,6 @@ class LeftEyeTestState extends State<LeftEyeTest> {
                           height: 220,
                         ),
                       ),
-
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 20.0),
                         child: Column(
@@ -345,7 +423,8 @@ class LeftEyeTestState extends State<LeftEyeTest> {
                   },
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Color(0xFF4600A9), // Set button background color
+                    backgroundColor: Color(0xFF4600A9),
+                    // Set button background color
                     padding: EdgeInsets.all(16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
@@ -367,13 +446,14 @@ class LeftEyeTestState extends State<LeftEyeTest> {
       String access_token = prefs.getString('access_token') ?? '';
       String test = prefs.getString('test') ?? '';
       String id = prefs.getString('patient_id') ?? '';
-
+      String CustomerId = prefs.getString('customer_id') ?? '';
       var headers = {
         'Authorization': 'Bearer ${access_token}',
         'Content-Type': 'application/json',
+        'Customer-Id': CustomerId,
       };
-      var request = http.Request(
-          'POST', Uri.parse('${Api.baseurl}/api/eye/select-eye'));
+      var request =
+          http.Request('POST', Uri.parse('${Api.baseurl}/api/eye/select-eye'));
       request.body =
           json.encode({"test_id": id, "eye_status": eye, "test": test});
       print(request.body);
@@ -413,6 +493,7 @@ class LeftEyeTestState extends State<LeftEyeTest> {
     }
   }
 }
+
 Widget bulletText(String text) {
   return Row(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -421,7 +502,7 @@ Widget bulletText(String text) {
       Expanded(
         child: Text(
           text,
-          style: TextStyle(fontSize: 16,color: Colors.bluebutton),
+          style: TextStyle(fontSize: 16, color: Colors.bluebutton),
         ),
       ),
     ],
@@ -440,7 +521,7 @@ class SnellFraction extends State<AlfabetTest> {
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+    //_initializeCamera();
     getSnellFraction();
   }
 
@@ -490,14 +571,16 @@ class SnellFraction extends State<AlfabetTest> {
     var distanceType;
 
     var apiUrl =
-        'https://testing1.zuktiapp.zuktiinnovations.com/calculate-distance-api/'; // Replace with your API endpoint
+        '${Api.baseurl}/calculate-distance'; // Replace with your API endpoint
     /* String base64String = await xFileToBase64(image);*/
 
     //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
+    String CustomerId = prefs.getString('customer_id') ?? '';
+
     String text = prefs.getString('test') ?? '';
     if (text == 'myopia') {
       distanceType = 'fardistance';
@@ -521,6 +604,7 @@ class SnellFraction extends State<AlfabetTest> {
         headers: <String, String>{
           'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
+          'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
@@ -573,8 +657,8 @@ class SnellFraction extends State<AlfabetTest> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-      prefs.getString('access_token') ?? '';
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+          prefs.getString('access_token') ?? '';
       String testname = prefs.getString('test') ?? '';
       var headers = {
         'Authorization': 'Bearer ${authToken}',
@@ -749,9 +833,8 @@ class SnellFraction extends State<AlfabetTest> {
                           width: 160,
                           child: ElevatedButton(
                             onPressed: () {
-                              _controller?.dispose().then((_) {
-                                Myopia_or_HyperMyopiaTest(context);
-                              });
+                              Myopia_or_HyperMyopiaTest(context);
+                              _controller?.dispose().then((_) {});
                             },
                             child: Text(
                               'Not able to Read',
@@ -880,15 +963,18 @@ class SnellFraction extends State<AlfabetTest> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-      prefs.getString('access_token') ?? '';
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+          prefs.getString('access_token') ?? '';
       String id = prefs.getString('test_id') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
+
       print('beebeb$id');
 //todo notworking
       print("nahi$nextFraction");
       var headers = {
         'Authorization': 'Bearer ${authToken}',
         'Content-Type': 'application/json',
+        'Customer-Id': CustomerId,
       };
       var request =
           http.Request('POST', Uri.parse('${Api.baseurl}/api/eye/random-text'));
@@ -936,14 +1022,14 @@ class SnellFraction extends State<AlfabetTest> {
   Future<void> Myopia_or_HyperMyopiaTest(BuildContext context) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String authToken =
-      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-      prefs.getString('access_token') ?? '';
+      String authToken = prefs.getString('access_token') ?? '';
       String test_id = prefs.getString('test_id') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
       print("testid$test_id snell$nextFraction");
       var headers = {
-        'Authorization': 'Bearer ${authToken}',
+        'Authorization': 'Bearer $authToken',
         'Content-Type': 'application/json',
+        'Customer-Id': CustomerId,
       };
       var request = http.Request(
           'PUT',
@@ -989,7 +1075,7 @@ class Reading extends State<ReadingTest> {
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+    // _initializeCamera();
     getReadingSnellFraction();
   }
 
@@ -1043,8 +1129,8 @@ class Reading extends State<ReadingTest> {
     //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
     //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
     try {
       var frameData =
@@ -1123,8 +1209,8 @@ class Reading extends State<ReadingTest> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-      prefs.getString('access_token') ?? '';
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+          prefs.getString('access_token') ?? '';
       String testname = "hyperopia";
       var headers = {
         'Authorization': 'Bearer $authToken',
@@ -1439,15 +1525,17 @@ class Reading extends State<ReadingTest> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-      prefs.getString('access_token') ?? '';
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+          prefs.getString('access_token') ?? '';
       String id = prefs.getString('test_id') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
       print('beebeb$id');
 //todo notworking
       print("nahi$nextFraction");
       var headers = {
         'Authorization': 'Bearer $authToken',
         'Content-Type': 'application/json',
+        'Customer-Id': CustomerId,
       };
       var request = http.Request(
           'POST',
@@ -1504,47 +1592,49 @@ class Reading extends State<ReadingTest> {
   }
 
   Future<void> Update_HyperMyopiaTest(BuildContext context) async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String authToken =
-      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-      prefs.getString('access_token') ?? '';
-      String test_id = prefs.getString('test_id') ?? '';
-      var headers = {
-        'Authorization': 'Bearer $authToken',
-        'Content-Type': 'application/json',
-      };
-      var request = http.Request(
-          'PUT',
-          Uri.parse(
-              'https://testing1.zuktiapp.zuktiinnovations.com/update-Reading-SnellenFraction-Test-api/'));
-      request.body =
-          json.encode({"test_id": test_id, "snellen_fraction": nextFraction});
-      request.headers.addAll(headers);
-      http.StreamedResponse response = await request.send();
-      print(response.statusCode);
-      String responseBody = await response.stream.bytesToString();
-      Map<String, dynamic> parsedJson = json.decode(responseBody);
-      print(parsedJson.toString());
-      if (response.statusCode == 200) {
-        // showCustomToast(context, ' Operation Successfully ');
-        String eyeStatus = parsedJson["data"]["eye_status"];
-        if (eyeStatus == "right") {
-          CustomAlertDialog.attractivepopup(
-              context, 'You Have Successfully Completed Eyetest.....');
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('page', "readingtestpage");
+    //  try {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken =
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
+    String test_id = prefs.getString('test_id') ?? '';
+    String CustomerId = prefs.getString('customer_id') ?? '';
+    var headers = {
+      'Authorization': 'Bearer $authToken',
+      'Content-Type': 'application/json',
+      'Customer-Id': CustomerId,
+    };
+    var request = http.Request(
+        'PUT',
+        Uri.parse(
+            '${Api.baseurl}/api/eye/update-Reading-SnellenFraction-TestApi'));
+    request.body =
+        json.encode({"test_id": test_id, "snellen_fraction": nextFraction});
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    print(response.statusCode);
+    String responseBody = await response.stream.bytesToString();
+    Map<String, dynamic> parsedJson = json.decode(responseBody);
+    print(parsedJson.toString());
+    if (response.statusCode == 200) {
+      // showCustomToast(context, ' Operation Successfully ');
+      String eyeStatus = parsedJson["data"]["eye_status"];
+      if (eyeStatus == "right") {
+        CustomAlertDialog.attractivepopup(
+            context, 'You Have Successfully Completed Eyetest.....');
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('page', "readingtestpage");
 
-          getActivePlan();
-        } else {
-          Navigator.push(
-            context,
-            CupertinoPageRoute(builder: (context) => RightEye()),
-          );
-        }
-        print(await response.stream.bytesToString());
+        getActivePlan();
+      } else {
+        Navigator.push(
+          context,
+          CupertinoPageRoute(builder: (context) => RightEye()),
+        );
       }
-    } catch (e) {
+      print(await response.stream.bytesToString());
+    }
+    /* } catch (e) {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
             context, 'poor internet connectivity , please try again later!');
@@ -1552,14 +1642,14 @@ class Reading extends State<ReadingTest> {
 
 // If the server returns an error response, throw an exception
       throw Exception('Failed to send data');
-    }
+    }*/
   }
 
   Future<void> getActivePlan() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
 
     final String apiUrl =
         'https://testing1.zuktiapp.zuktiinnovations.com/subscription-active-plan/';
@@ -1632,7 +1722,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
   void initState() {
     super.initState();
     startTimer();
-    _initializeCamera();
+    //  _initializeCamera();
   }
 
   void startTimer() {
@@ -1676,7 +1766,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
       setState(() {});
     }
     // Start capturing images per second
-    _captureImagePerSecond();
+    // _captureImagePerSecond();
   }
 
   void _captureImagePerSecond() async {
@@ -1709,8 +1799,10 @@ class AstigmationTest1 extends State<AstigmationTest> {
     //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
+    String CustomerId = prefs.getString('customer_id') ?? '';
+
     //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
     try {
       var frameData =
@@ -1720,6 +1812,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
       var requestBody = jsonEncode({
         'frameData': frameData,
         'test_distance': distanceType,
+        'Customer-Id': CustomerId,
       });
 
       var response = await http.post(
@@ -1798,14 +1891,14 @@ class AstigmationTest1 extends State<AstigmationTest> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-      prefs.getString('access_token') ?? '';
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+          prefs.getString('access_token') ?? '';
       String test_id = prefs.getString('test_id') ?? '';
       await prefs.setString('region', region);
       print("choseastigmation_response${region}");
-
-       String apiUrl =
-          '${Api.baseurl}/api/eye/choose-astigmatism';
+      String CustomerId = prefs.getString('customer_id') ?? '';
+      print("choseastigmation_res${authToken}");
+      String apiUrl = '${Api.baseurl}/api/eye/choose-astigmatism';
       Map<String, dynamic> body1 = {
         'test_id': test_id,
         'choose_astigmatism': region,
@@ -1814,7 +1907,8 @@ class AstigmationTest1 extends State<AstigmationTest> {
         Uri.parse(apiUrl),
         headers: {
           'Authorization': 'Bearer ${authToken}',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Customer-Id': CustomerId
         },
         body: jsonEncode(body1),
       );
@@ -2084,7 +2178,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
       setState(() {});
     }
     // Start capturing images per second
-    _captureImagePerSecond();
+    //_captureImagePerSecond();
   }
 
   void _captureImagePerSecond() async {
@@ -2094,7 +2188,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
           ?.takePicture(); // Process the captured image as needed
       print('Image captured: ${image?.path}');
       // Delay to capture image per second
-      capturePhoto(image!);
+      //capturePhoto(image!);
       await Future.delayed(Duration(seconds: 1));
       // regpatient1(image);
     }
@@ -2117,8 +2211,11 @@ class Astigmationtest2 extends State<AstigmationTest2> {
     //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? ''; //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ??
+            ''; //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
+    String CustomerId = prefs.getString('customer_id') ?? '';
+
     try {
       var frameData =
           image; // Replace this with your frame data as a base64 string
@@ -2134,10 +2231,11 @@ class Astigmationtest2 extends State<AstigmationTest2> {
         headers: <String, String>{
           'Authorization': 'Bearer ${authToken}',
           'Content-Type': 'application/json',
+          'Customer-Id': CustomerId
         },
         body: requestBody,
       );
-
+      print("cust$CustomerId");
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
 
@@ -2189,7 +2287,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
       delayedAPICall();
     });
     // delayedAPICall();
-    _initializeCamera();
+    // _initializeCamera();
   }
 
   void startTimer() {
@@ -2258,18 +2356,20 @@ class Astigmationtest2 extends State<AstigmationTest2> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-      prefs.getString('access_token') ?? '';
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+          prefs.getString('access_token') ?? '';
       String test_id = prefs.getString('test_id') ?? '';
       String selectedRegion = prefs.getString('region') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
+
       print("eeee$test_id");
       final String apiUrl =
           '${Api.baseurl}/api/eye/get-degrees?test_id=$test_id';
       final response = await http.get(
         Uri.parse(apiUrl),
         headers: {
-          'Authorization':
-              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE2MzU2MzUyLCJpYXQiOjE3MTYyNjk5NTIsImp0aSI6IjU5MDA1OTUxNTM0ZTRjNTA4OGFhNzM4N2ZlNWMzZGRlIiwidXNlcl9pZCI6IjQ2OWQxZjU0LTVjNWYtNGQ2MS05MDFjLWQzY2QyMmZmOTIyMSJ9.8UsFlL6GKPE-rIY3Eh3QBY-Jcz_njkEJl2GTlHaiHlY',
+          'Authorization': 'Bearer $authToken',
+          'Customer-Id': CustomerId,
         },
       );
       print("degrees--" + response.body);
@@ -2317,9 +2417,10 @@ class Astigmationtest2 extends State<AstigmationTest2> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-      prefs.getString('access_token') ?? '';
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+          prefs.getString('access_token') ?? '';
       String test_id = prefs.getString('test_id') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
       String apiUrl = '${Api.baseurl}/api/eye/choose-degree-api/';
       Map<String, dynamic> body1 = {
         'test_id': test_id,
@@ -2329,8 +2430,9 @@ class Astigmationtest2 extends State<AstigmationTest2> {
       final response = await http.put(
         Uri.parse(apiUrl),
         headers: {
-          'Authorization': 'Bearer ${authToken}',
-          'Content-Type': 'application/json'
+          'Authorization': 'Bearer $authToken',
+          'Content-Type': 'application/json',
+          'Customer-Id': CustomerId,
         },
         body: jsonEncode(body1),
       );
@@ -2650,7 +2752,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
   void initState() {
     super.initState();
     startTimer();
-    _initializeCamera();
+    //  _initializeCamera();
   }
 
   void startTimer() {
@@ -2753,8 +2855,9 @@ class AstigmationTestNone extends State<AstigmationTest3> {
     //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
+    String CustomerId = prefs.getString('customer_id') ?? '';
     //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
     try {
       var frameData =
@@ -2769,8 +2872,9 @@ class AstigmationTestNone extends State<AstigmationTest3> {
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer ${authToken}',
+          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
+          'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
@@ -2859,8 +2963,9 @@ class AstigmationTestNone extends State<AstigmationTest3> {
   Future<void> CounterApi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
+    String CustomerId = prefs.getString('customer_id') ?? '';
 
     final String apiUrl =
         'https://testing1.zuktiapp.zuktiinnovations.com/counter-api/?counter_value=0';
@@ -2868,6 +2973,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
     Map<String, String> headers = {
       'Content-Type': 'application/json',
       'Authorization': '$authToken',
+      'Customer-Id': CustomerId,
     };
 // Replace this with your PUT request body
 
@@ -2900,9 +3006,12 @@ class AstigmationTestNone extends State<AstigmationTest3> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-      prefs.getString('access_token') ?? '';
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+          prefs.getString('access_token') ?? '';
       String test_id = prefs.getString('test_id') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
+      print("choseastigmation_res$CustomerId");
+
       final String apiUrl = '${Api.baseurl}/api/eye/choose-astigmatism-api/';
       Map<String, dynamic> body1 = {
         'test_id': test_id,
@@ -2912,7 +3021,8 @@ class AstigmationTestNone extends State<AstigmationTest3> {
         Uri.parse(apiUrl),
         headers: {
           'Authorization': 'Bearer $authToken',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Customer-Id': CustomerId,
         },
         body: jsonEncode(body1),
       );
@@ -2937,8 +3047,8 @@ class AstigmationTestNone extends State<AstigmationTest3> {
   Future<void> fetchData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
     String test_id = prefs.getString('test_id') ?? '';
     await prefs.setString('region', selectedPart);
 // Replace this URL with your PUT API endpoint
@@ -3434,7 +3544,7 @@ class Cyl extends State<CylTest> {
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+    // _initializeCamera();
   }
 
   Future<void> _initializeCamera() async {
@@ -3488,6 +3598,8 @@ class Cyl extends State<CylTest> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String access_token = prefs.getString('access_token') ?? '';
     //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
+    String CustomerId = prefs.getString('customer_id') ?? '';
+
     try {
       var frameData =
           image; // Replace this with your frame data as a base64 string
@@ -3503,6 +3615,7 @@ class Cyl extends State<CylTest> {
         headers: <String, String>{
           'Authorization': 'Bearer $access_token',
           'Content-Type': 'application/json',
+          'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
@@ -3727,7 +3840,7 @@ class shadowtest extends State<ShadowTest> {
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+    // _initializeCamera();
   }
 
   Future<void> _initializeCamera() async {
@@ -3747,7 +3860,7 @@ class shadowtest extends State<ShadowTest> {
       setState(() {});
     }
     // Start capturing images per second
-    _captureImagePerSecond();
+    //_captureImagePerSecond();
   }
 
   void _captureImagePerSecond() async {
@@ -3776,19 +3889,20 @@ class shadowtest extends State<ShadowTest> {
     var distanceType;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String text = prefs.getString('test') ?? '';
+    String CustomerId = prefs.getString('customer_id') ?? '';
 
     if (text == 'myopia') {
       distanceType = 'fardistance';
     } else if (text == 'hyperopia') {
       distanceType = 'neardistance';
     }
-
+    print("ddd$CustomerId");
     var apiUrl =
         '${Api.baseurl}/api/eye/calculate-distance/'; // Replace with your API endpoint
 
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
     //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
     try {
       var frameData =
@@ -3805,6 +3919,7 @@ class shadowtest extends State<ShadowTest> {
         headers: <String, String>{
           'Authorization': 'Bearer ${authToken}',
           'Content-Type': 'application/json',
+          'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
@@ -4029,15 +4144,17 @@ class shadowtest extends State<ShadowTest> {
   Future<void> CylTestApi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
     String test_id = prefs.getString('test_id') ?? '';
-// Replace this URL with your PUT API endpoint
-    final String apiUrl = '${Api.baseurl}/api/eye/cyl-test/';
+    String CustomerId = prefs.getString('customer_id') ?? '';
+    print("snsjsjsj");    // Replace this URL with your PUT API endpoint
+    final String apiUrl = '${Api.baseurl}/api/eye/cyl-test';
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${authToken}',
+      'Customer-Id': CustomerId
     };
 // Replace this with your PUT request body
     Map<String, dynamic> body = {
@@ -4083,7 +4200,7 @@ class redgreen extends State<RedGreenTest> {
   void initState() {
     super.initState();
     fetchData();
-    _initializeCamera();
+    // _initializeCamera();
   }
 
   Future<void> _initializeCamera() async {
@@ -4142,9 +4259,10 @@ class redgreen extends State<RedGreenTest> {
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-      prefs.getString('access_token') ?? '';
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+          prefs.getString('access_token') ?? '';
       String text = prefs.getString('test') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
 
       if (text == 'myopia') {
         distanceType = 'fardistance';
@@ -4164,6 +4282,7 @@ class redgreen extends State<RedGreenTest> {
         headers: <String, String>{
           'Authorization': 'Bearer ${authToken}',
           'Content-Type': 'application/json',
+          'Customer-Id': CustomerId
         },
         body: requestBody,
       );
@@ -4215,8 +4334,9 @@ class redgreen extends State<RedGreenTest> {
   Future<void> fetchData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
+    String CustomerId = prefs.getString('customer_id') ?? '';
 
     String test_id = prefs.getString('test_id') ?? '';
     print('mytestid$test_id');
@@ -4226,7 +4346,8 @@ class redgreen extends State<RedGreenTest> {
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${authToken}',
+      'Authorization': 'Bearer $authToken',
+      'Customer-Id': CustomerId
     };
 // Replace this with your PUT request body
 
@@ -4271,18 +4392,20 @@ class redgreen extends State<RedGreenTest> {
   Future<void> _callAPI() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
 // Replace this URL with your PUT API endpoint
     String test_id = prefs.getString('test_id') ?? '';
+    String CustomerId = prefs.getString('customer_id') ?? '';
     print('snellen_fraction: $snellenFraction');
     print('test_id: $test_id');
-    print('action: $action');
+    print('action: $CustomerId');
     final String apiUrl = '${Api.baseurl}/api/eye/final-red-green-action-test';
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${authToken}',
+      'Authorization': 'Bearer $authToken',
+      'Customer-Id': CustomerId
     };
 // Replace this with your PUT request body
     Map<String, dynamic> body = {
@@ -4394,15 +4517,18 @@ class redgreen extends State<RedGreenTest> {
   Future<void> UpdateRedGreenTest() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
     String test_id = prefs.getString('test_id') ?? '';
+    String CustomerId = prefs.getString('customer_id') ?? '';
+
 // Replace this URL with your PUT API endpoint
-    final String apiUrl = '${Api.baseurl}/api/eye/update-red-green-action';
+    final String apiUrl = '${Api.baseurl}/api/eye/update-red-green-action-api';
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${authToken}', //$access_token
+      'Authorization': 'Bearer $authToken',
+      'Customer-Id': CustomerId //$access_token
     };
 // Replace this with your PUT request body
     Map<String, dynamic> body = {
@@ -4427,9 +4553,11 @@ class redgreen extends State<RedGreenTest> {
         if (jsonResponseMap.containsKey("data") &&
             jsonResponseMap["data"].containsKey("data") &&
             jsonResponseMap["data"]["data"].containsKey("eye_status")) {
+
           String eyeStatus = jsonResponseMap["data"]["data"]["eye_status"];
-          String patient_age = jsonResponseMap["data"]["patient_age"];
-          int age = int.parse(patient_age);
+          String patientName = jsonResponseMap["data"]["data"]["full_name"];
+          String patientAge = jsonResponseMap["data"]["user_age"];
+          int age = int.parse(patientAge);
           print("123123age$age");
           if (eyeStatus == "right") {
             if (age >= 40) {
@@ -4481,7 +4609,6 @@ class redgreen extends State<RedGreenTest> {
   }
 
   bool _isCameraVisible = true;
-
 
   @override
   Widget build(BuildContext context) {
@@ -4607,7 +4734,8 @@ class redgreen extends State<RedGreenTest> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 22,
-                          color: alert == 'Good to go' ? Colors.green : Colors.red,
+                          color:
+                              alert == 'Good to go' ? Colors.green : Colors.red,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -4617,7 +4745,8 @@ class redgreen extends State<RedGreenTest> {
                       height: 60.0,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: Colors.bluebutton, // Change to your desired color
+                        color: Colors.bluebutton,
+                        // Change to your desired color
                         borderRadius: BorderRadius.circular(25),
                       ),
                       child: MaterialButton(
@@ -4643,17 +4772,7 @@ class redgreen extends State<RedGreenTest> {
       ),
     );
   }
-
-
 }
-
-
-
-
-
-
-
-
 
 class RightEye extends StatelessWidget {
   @override
@@ -4735,15 +4854,17 @@ class Righteye extends StatelessWidget {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-      prefs.getString('access_token') ?? '';
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+          prefs.getString('access_token') ?? '';
       String test = prefs.getString('test') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
       int id = 0;
       print('testt$test');
 
       var headers = {
         'Authorization': 'Bearer ${authToken}',
         'Content-Type': 'application/json',
+        'Customer-Id': CustomerId
       };
       var request =
           http.Request('POST', Uri.parse('${Api.baseurl}/api/eye/select-eye'));
@@ -4939,7 +5060,7 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 3),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -4948,7 +5069,7 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
             style: TextStyle(fontSize: 14, color: Colors.black),
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Padding(
                 padding:
@@ -4956,8 +5077,7 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
                 child: Row(
                   children: [
                     Transform.scale(
-                      scale: 1.5,
-                      // Adjust the scale factor to increase the size
+                      scale: 1.3,
                       child: Theme(
                         data: ThemeData(
                           checkboxTheme: CheckboxThemeData(
@@ -4966,10 +5086,6 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
                             ),
                             side: MaterialStateBorderSide.resolveWith(
                               (states) {
-                                if (states.contains(MaterialState.selected)) {
-                                  return BorderSide(
-                                      color: Colors.bluebutton, width: 2);
-                                }
                                 return BorderSide(
                                     color: Colors.bluebutton, width: 2);
                               },
@@ -4997,12 +5113,12 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
                           ),
                         ),
                         child: Checkbox(
-                          value: isChecked,
+                          value: isChecked == true,
                           onChanged: (bool? value) {
                             setState(() {
-                              isChecked = value!;
+                              isChecked = value ?? false;
                             });
-                            widget.onChanged(value!);
+                            widget.onChanged(isChecked!);
                           },
                         ),
                       ),
@@ -5014,7 +5130,7 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
               Row(
                 children: [
                   Transform.scale(
-                    scale: 1.5, // Adjust the scale factor to increase the size
+                    scale: 1.3,
                     child: Theme(
                       data: ThemeData(
                         checkboxTheme: CheckboxThemeData(
@@ -5023,10 +5139,6 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
                           ),
                           side: MaterialStateBorderSide.resolveWith(
                             (states) {
-                              if (states.contains(MaterialState.selected)) {
-                                return BorderSide(
-                                    color: Colors.bluebutton, width: 2);
-                              }
                               return BorderSide(
                                   color: Colors.bluebutton, width: 2);
                             },
@@ -5052,12 +5164,12 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
                         ),
                       ),
                       child: Checkbox(
-                        value: !isChecked,
+                        value: isChecked == false,
                         onChanged: (bool? value) {
                           setState(() {
-                            isChecked = !value!;
+                            isChecked = (value == true ? false : null)!;
                           });
-                          widget.onChanged(!value!);
+                          widget.onChanged(isChecked ?? false);
                         },
                       ),
                     ),
@@ -5069,6 +5181,21 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class Question {
+  final int id;
+  final String questionText;
+
+  Question({required this.id, required this.questionText});
+
+  // Factory method to create a Question object from JSON
+  factory Question.fromJson(Map<String, dynamic> json) {
+    return Question(
+      id: json['id'],
+      questionText: json['question_text'],
     );
   }
 }

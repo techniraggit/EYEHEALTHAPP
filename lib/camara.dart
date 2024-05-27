@@ -280,11 +280,14 @@ class _CameraScreenState extends State<CameraS> {
       String authToken =
       // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
       prefs.getString('access_token') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
+
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${authToken} ',
+          'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
