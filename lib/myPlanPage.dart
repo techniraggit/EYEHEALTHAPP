@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:project_new/rewards.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
@@ -191,22 +192,7 @@ bool isActivePlan=false;
       print("Display payment sheet");
       await Stripe.instance.presentPaymentSheet();
       print("Displayed successfully");
-      // showDialog(
-      //   context: context,
-      //   builder: (_) => const AlertDialog(
-      //     content: Column(
-      //       mainAxisSize: MainAxisSize.min,
-      //       children: [
-      //         Row(
-      //           children: [
-      //             Icon(Icons.check_circle, color: Colors.green),
-      //             Text("Payment Successful"),
-      //           ],
-      //         ),
-      //       ],
-      //     ),
-      //   ),
-      // );
+
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Paid successfully")),
@@ -285,9 +271,11 @@ bool isActivePlan=false;
         isActivePlan = jsonResponse['is_active_plan'];
 
         setState(() {
-          if(isActivePlan==true){
+          if(isActivePlan==false){
             makePayment();
 
+          }else{
+            Fluttertoast.showToast(msg: "you already have an active plan !!");
           }
         });
 
@@ -338,10 +326,7 @@ bool isActivePlan=false;
 
 
   Future<List<Plan>>  _getPlanApi(BuildContext context) async {
-    ProgressDialog? _progressDialog;
-
-    _progressDialog = ProgressDialog(context); // Initialize ProgressDialog
-    _progressDialog.show(); // Show ProgressDialog
+     // Show ProgressDialog
 
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -357,20 +342,19 @@ bool isActivePlan=false;
 
       if (response.statusCode == 200) {
         print("gggg${response.body}");
-        _progressDialog.hide();
         final jsonResponse = jsonDecode(response.body);
         final List<dynamic> data = jsonResponse['data'];
 
         return data.map((planJson) => Plan.fromJson(planJson)).toList();
 
       } else {
-        _progressDialog.hide();
+
 
         CustomAlertDialog.attractivepopup(
             context, 'Error message here: ${response.statusCode}');
       }
     } catch (e) {
-      _progressDialog.hide();
+
 
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(

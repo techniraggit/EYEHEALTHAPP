@@ -756,8 +756,7 @@ class AddADressSCreen extends State<NewAddressScreen> {
     String  token =
     // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE2MjcyODc2LCJpYXQiOjE3MTYxODY0NzYsImp0aSI6ImYyMjJhM2VlZDNjYTRlZjc4MmNmNmEyNTYzOGQxMmU1IiwidXNlcl9pZCI6IjkxOTNhOTE1LWY5YzItNDQ0MC04MDVlLTQxNDBhYTc5ZDQzOSJ9.2Gj1laeNGLhy0FxYQCQVoB_Idt5W0F0X621BVPtNaic";
     sharedPref.getString("access_token") ?? '';
-    print("valuessss===device_type$device_type=========device_id$device_id=====device_token$device_token");
-
+  String offer_id= sharedPref.getString("offer_id") ?? '';
     if(checkValidationForAddAddress()){
 
 
@@ -798,6 +797,11 @@ class AddADressSCreen extends State<NewAddressScreen> {
 
           Map<String, dynamic> data = json.decode(response.body);
           Fluttertoast.showToast(msg: data['message']);
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => RewardSpecs(offer_id: offer_id)),
+          );
           // Navigator.push(
           //   context,
           //   MaterialPageRoute(

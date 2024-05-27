@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:project_new/myPlanPage.dart';
 import 'package:project_new/testScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Api.dart';
@@ -181,7 +182,15 @@ class HomePageState extends State<HomePage> {
             Image.asset('assets/eyeFatigueTest.png'),
             Padding(
               padding: EdgeInsets.all(1.0),
-              child: Image.asset('assets/find_near_by_store.png'),
+              child: GestureDetector(
+                  onTap: ()  {
+
+                     Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MyPlan()),
+                ); // Call the API
+                  },
+                  child: Image.asset('assets/find_near_by_store.png')),
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 15, 10),
@@ -241,19 +250,19 @@ class HomePageState extends State<HomePage> {
                               ),
                             ],
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text('No. of digital eye test'),
-                              Text(
-                                'Value ',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
+                          // Column(
+                          //   crossAxisAlignment: CrossAxisAlignment.end,
+                          //   children: [
+                          //     Text('No. of digital eye test'),
+                          //     Text(
+                          //       'Value ',
+                          //       style: TextStyle(
+                          //         fontSize: 16,
+                          //         fontWeight: FontWeight.bold,
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
                         ],
                       ),
                       SizedBox(height: 16),
@@ -274,19 +283,19 @@ class HomePageState extends State<HomePage> {
                               ),
                             ],
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text('visit to optemistist'),
-                              Text(
-                                'Value',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
+                          // Column(
+                          //   crossAxisAlignment: CrossAxisAlignment.end,
+                          //   children: [
+                          //     Text('visit to optemistist'),
+                          //     Text(
+                          //       'Value',
+                          //       style: TextStyle(
+                          //         fontSize: 16,
+                          //         fontWeight: FontWeight.bold,
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
                         ],
                       ),
                     ],
@@ -417,7 +426,7 @@ class HomePageState extends State<HomePage> {
                   children: [
                     Container(
                       height: 180,
-                      width: 180,
+                      width: 140,
                       decoration: const BoxDecoration(
                         image: DecorationImage(
                           image: AssetImage('assets/interview.png'),
@@ -428,12 +437,12 @@ class HomePageState extends State<HomePage> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: EdgeInsets.symmetric(vertical: 2.0),
+                            padding: EdgeInsets.symmetric(vertical: 12.0),
                             child: Text(
                               '300',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 25,
+                                fontSize: 22,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -444,7 +453,7 @@ class HomePageState extends State<HomePage> {
                               'Eye Test',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 18,
+                                fontSize: 16,
                               ),
                             ),
                           ),
@@ -453,7 +462,7 @@ class HomePageState extends State<HomePage> {
                     ),
                     Container(
                       height: 180,
-                      width: 180,
+                      width: 140,
                       decoration: const BoxDecoration(
                         image: DecorationImage(
                           image: AssetImage('assets/eye_bg.png'),
@@ -465,12 +474,12 @@ class HomePageState extends State<HomePage> {
                         children: [
                           Padding(
                             padding: EdgeInsets.symmetric(
-                                vertical: 2.0, horizontal: 4.0),
+                                vertical: 12.0, horizontal: 4.0),
                             child: Text(
                               '300',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 25,
+                                fontSize: 22,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -482,7 +491,7 @@ class HomePageState extends State<HomePage> {
                               'Eye Fatigue Test',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 18,
+                                fontSize: 14,
                               ),
                             ),
                           ),
@@ -513,23 +522,36 @@ class HomePageState extends State<HomePage> {
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Authorization': 'Bearer $authToken',
+      'Content-Type': 'application/json',
+
     };
+
+    var body = json.encode({
+      "is_self": true,
+    });
+
 
     try {
       final response = await http.post(
         Uri.parse(apiUrl),
         headers: headers,
+        body: body,
       );
       print('response === ' + response.body);
       if (response.statusCode == 200) {
         if (kDebugMode) {
           print('sddd ${response.body}');
         }
+        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+        // Extract the customer ID
+        String customerId = jsonResponse['customer_id'];
+        prefs.setString('customer_id', customerId);
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => GiveInfo()),
         );
-        Map<String, dynamic> jsonMap = jsonDecode(response.body);
+
       } else {
         print('Failed with status code: ${response.statusCode}');
         print('Failed sddd ${response.body}');
@@ -539,7 +561,6 @@ class HomePageState extends State<HomePage> {
       print('Exception: $e');
     }
   }
-
 }
 
 

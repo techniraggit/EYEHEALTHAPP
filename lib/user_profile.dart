@@ -17,6 +17,14 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:project_new/rewards_sync.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'api/config.dart';
+
+
+
+
+
+
+
+
 class UserProfile extends StatefulWidget {
   @override
   State<UserProfile> createState() => SignUpScreen();

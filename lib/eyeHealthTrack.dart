@@ -241,19 +241,24 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('No. of eye fatigue test'),
+                              Text('No. of eye fatigue test',style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,)),
                               Text('value',style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 14,
                                 fontWeight: FontWeight.bold,
                               ),),
                             ],
                           ),
+                          SizedBox(width: 3,),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text('No. of digital eye test'),
+                              Text('No. of digital eye test',style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,)),
                               Text('Value ',style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 14,
                                 fontWeight: FontWeight.bold,
                               ),),
                             ],
@@ -267,9 +272,11 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Prescription uploaded'),
+                              Text('Prescription uploaded',style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,)),
                               Text('value',style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 14,
                                 fontWeight: FontWeight.bold,
                               ),),
                             ],
@@ -277,9 +284,11 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text('visit to optemistist'),
+                              Text('visit to optemistist',style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,)),
                               Text('Value',style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 14,
                                 fontWeight: FontWeight.bold,
                               ),),
                             ],

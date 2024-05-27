@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:project_new/models/OfferData.dart';
 import 'package:project_new/models/address_list.dart';
+import 'package:project_new/redeem_sucess.dart';
 import 'package:project_new/sign_up.dart';
 import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -635,6 +636,7 @@ class _RewardsContactsSync extends State<RewardContact> {
           'Authorization': 'Bearer $token',
         },
       );
+      print("statusCode================${token}");
 
       if (response.statusCode == 200) {
         // _progressDialog!.hide();
@@ -692,6 +694,8 @@ class RewardSpecsSync extends State<RewardSpecs> {
   bool isSelected = false;
   List<bool> isSelectedList = [];
   bool isLoading = true;
+  int selectedCount = 0;
+bool selectedCount_=false;
   @override
   void initState() {
     super.initState();
@@ -714,11 +718,15 @@ class RewardSpecsSync extends State<RewardSpecs> {
   Future<void> getOffersDetail() async {
     try {
       offer_id=widget.offer_id;
+
+
+
       String userToken = '';
       var sharedPref = await SharedPreferences.getInstance();
       userToken =
       // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE2MjcyODc2LCJpYXQiOjE3MTYxODY0NzYsImp0aSI6ImYyMjJhM2VlZDNjYTRlZjc4MmNmNmEyNTYzOGQxMmU1IiwidXNlcl9pZCI6IjkxOTNhOTE1LWY5YzItNDQ0MC04MDVlLTQxNDBhYTc5ZDQzOSJ9.2Gj1laeNGLhy0FxYQCQVoB_Idt5W0F0X621BVPtNaic";
       sharedPref.getString("access_token") ?? '';
+      sharedPref.setString("offer_id", offer_id);
       Map<String, String> headers = {
         'Authorization': 'Bearer $userToken', // Bearer token type
         'Content-Type': 'application/json',
@@ -790,6 +798,8 @@ class RewardSpecsSync extends State<RewardSpecs> {
       Map<String, String> headers = {
         'Authorization': 'Bearer $userToken', // Bearer token type
       };
+      print("statusCode================${userToken}");
+
       final response = await http.get(
         Uri.parse('${ApiProvider.baseUrl}${ApiProvider.getaddress}'),
         headers: headers,
@@ -1206,10 +1216,10 @@ class RewardSpecsSync extends State<RewardSpecs> {
                                 height: 45,
                                 child: GestureDetector(
                                   onTap: () {
-                                    isReedemButtonEnabled ? () {
-                                      RedeemaddressSheet(context);
-                                    } : null;
-                                    // RedeemaddressSheet(context);
+                                    // isReedemButtonEnabled ? () {
+                                    //   RedeemaddressSheet(context);
+                                    // } : null;
+                                    RedeemaddressSheet(context);
                                   },
 
                                   child: Container(
@@ -1324,18 +1334,39 @@ class RewardSpecsSync extends State<RewardSpecs> {
                                 Builder(
                                     builder: (context) {
                                       print("--------${isSelectedList[index]} ");
+                                      for(int i=0;i<address_list!.data!.length;i++){
+                                        if(isSelectedList[index]==true){
+                                          selectedCount_=true;
+                                        }
+                                      }
+
+
+
                                       return Checkbox(
                                         value: isSelectedList[index],
                                         onChanged: (newValue) {
+                                          // isSelectedList[index] = newValue ?? false;
+
                                           setState(() {
-                                            setState(() {
                                               for (int i = 0; i < isSelectedList.length; i++) {
                                                 isSelectedList[i] = (i == index && newValue == true);
+                                                if (newValue == true) {
+                                                  selectedCount++;
+                                                  selectedCount_=true;
+                                                  // Increment count when checkbox is selected
+                                                } else {
+                                                  selectedCount--;
+                                                  selectedCount_=false;// Decrement count when checkbox is deselected
+                                                }
                                               }
-                                            });
+
                                             // isSelectedList[index] = newValue ?? false;
 
                                           });
+
+
+
+
                                         },
                                       );
                                     }
@@ -1453,14 +1484,21 @@ class RewardSpecsSync extends State<RewardSpecs> {
                               fontWeight: FontWeight.w400,
                             ),
                           ),
+                          enabled:selectedCount_ ,
                           value: isChecked,
                           onChanged: (newValue) {
                             setState(() {
                               isChecked = newValue!;
+
+                              if(isChecked==true){
+                                Navigator.push(context, MaterialPageRoute(
+                                    builder: (context) => RedeemSuccessPage()),
+                                );
+                              }
+
                             });
                           },
-                          controlAffinity: ListTileControlAffinity
-                              .leading, //  <-- leading Checkbox
+                          controlAffinity: ListTileControlAffinity.leading, //  <-- leading Checkbox
                         )
                       ],
                     ),
@@ -1527,7 +1565,7 @@ class PresUpload extends State<PrescriptionUpload> {
   List<PlatformFile> _files = [];
   String Date = '1 May, 2024 ';
   String Time = "2 days";
-  String offer_id = "ba3546d5-fa64-45fe-a2db-35b7b1597c53";
+  String offer_id = "aa8e1bb0-c7cd-4732-81c0-09de236c05ec";
   int points = 10;
   final double _currentTime = 80.0; // Initial time
   int _countdownValue = 0;
@@ -1566,6 +1604,8 @@ class PresUpload extends State<PrescriptionUpload> {
         'Authorization': 'Bearer $userToken', // Bearer token type
         'Content-Type': 'application/json',
       };
+      print("statusCode================${userToken}");
+
       final response = await http.get(
         Uri.parse(
             '${ApiProvider.baseUrl}${ApiProvider.getOffers_detail +"?offer_id=$offer_id"}'),

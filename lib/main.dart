@@ -46,7 +46,9 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message)async {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // FlutterAlarmBackgroundTrigger.initialize();
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
+  await Alarm.init();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await FirebaseMessaging.instance.setAutoInitEnabled(true);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);

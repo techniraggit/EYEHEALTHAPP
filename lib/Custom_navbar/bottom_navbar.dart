@@ -6,6 +6,7 @@ import 'package:project_new/rewards.dart';
 import 'package:project_new/user_profile.dart';
 
 import '../notification/notification_dashboard.dart';
+import '../profileDashboard.dart';
 import '../rewards_sync.dart';
 
 
@@ -123,7 +124,7 @@ class CustomBottomAppBar extends StatelessWidget {
                             Navigator.push(
                               context,
                               CupertinoPageRoute(
-                                  builder: (context) =>  UserProfile()),
+                                  builder: (context) =>  UserDashboard()),
                             );
                           },
                           child: Image.asset(
