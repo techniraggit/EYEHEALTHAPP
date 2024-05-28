@@ -1,8 +1,14 @@
 
+import 'dart:io';
+import 'package:project_new/eyeFatigueTestReport.dart';
+import 'package:video_compress/video_compress.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'api/config.dart';
 
 class EyeFatigueStartScreen extends StatefulWidget {
   @override
@@ -32,6 +38,32 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
     _startVideoRecording();
   }
 
+  // Future<void> _startVideoRecording() async {
+  //   if (!_controller!.value.isInitialized) {
+  //     return;
+  //   }
+  //   final directory = await getApplicationDocumentsDirectory();
+  //   videoPath = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
+  //
+  //   try {
+  //     await _controller!.startVideoRecording();
+  //     isRecording = true;
+  //     setState(() {});
+  //
+  //     await Future.delayed(Duration(seconds: 30));
+  //
+  //     if (_controller!.value.isRecordingVideo) {
+  //       final XFile file = await _controller!.stopVideoRecording();
+  //       isRecording = false;
+  //       videoPath = file.path;
+  //       setState(() {});
+  //       print('Video recorded to: $videoPath');
+  //       _uploadVideo(videoPath);
+  //           }
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
   Future<void> _startVideoRecording() async {
     if (!_controller!.value.isInitialized) {
       return;
@@ -49,27 +81,77 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
       if (_controller!.value.isRecordingVideo) {
         final XFile file = await _controller!.stopVideoRecording();
         isRecording = false;
-        videoPath = file.path;
         setState(() {});
-        print('Video recorded to: $videoPath');
-        if (videoPath != null) {
-          _uploadVideo(videoPath);
+        print('Video recorded to: ${file.path}');
+
+        // Verify file existence
+        if (await File(file.path).exists()) {
+          final videoFile = File(file.path);
+          final videoSizeBytes = await videoFile.length();
+          print('Video size: ${videoSizeBytes / (1024 * 1024)} MB'); // Convert bytes to MB for readability
+          print('File exists.');
+          // await downloadVideoToLocal(file.path);
+          final compressedVideo = await VideoCompress.compressVideo(
+            file.path,
+            quality: VideoQuality.DefaultQuality,
+            deleteOrigin: false, // Set to true if you want to delete the original video after compression
+          );
+
+          print('Compressed video path: ${compressedVideo?.path}');
+          _uploadVideo(compressedVideo!.path!);
+          // Proceed with other operations like uploading the video...
+          // _uploadVideo(file.path); // Pass the correct file path to the upload method
+        } else {
+          print('File does not exist.');
         }
       }
     } catch (e) {
-      print(e);
+      print("Error: $e");
     }
   }
 
+  // Future<void> downloadVideoToLocal(String videoUrl) async {
+  //
+  //   // final response = await http.get(Uri.parse(videoUrl));
+  //   final directory = await getApplicationDocumentsDirectory();
+  //   final file = File('${directory.path}/downloaded_video.mp4');
+  //   // await file.writeAsBytes(response.bodyBytes);
+  //   print('Video downloaded to: ${file.path}');
+  // }
   Future<void> _uploadVideo(String videoFile) async {
-    final url = Uri.parse('https://your-api-endpoint.com/upload'); // Replace with your API endpoint
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE2ODc5NDEwLCJpYXQiOjE3MTY3OTMwMTAsImp0aSI6IjA1MTE4ZDIxMDBlMDRhZDY4OTM3ZGQ4YmRmNzkyNjRlIiwidXNlcl9pZCI6ImQ0MzFlOTY2LWQ5YmQtNGMyOS1hOWFiLTQ4ZDkzZmM1ZjZiOSJ9.piFLenoHDl3LRZ5Ug-V0NmgA71JbSMmBHtZIHJXQAW4';
+        // prefs.getString('access_token') ?? '';
+    String CustacsesToken =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE2ODEzOTU1LCJpYXQiOjE3MTY4MTAzNTUsImp0aSI6ImE5OGY5ZGY0MzM5NzQ1Njg5YWE3YzU4NjcxZTljNzM0IiwidXNlcl9pZCI6NTR9.GH-yjXwbz2MJoFozLXNiFdeq283s5B2Z8MNHJmptULE';
+        //prefs.getString('Customer-Access-Token') ?? '';
+    var headers = {
+      'Authorization': 'Bearer $token',
+      'Customer-Access-Token': '$CustacsesToken',
+    };
+    final url = Uri.parse('${ApiProvider.baseUrl+"/api/fatigue/calculate-blink-rate"}'); // Replace with your API endpoint
     final request = http.MultipartRequest('POST', url)
-      ..files.add(await http.MultipartFile.fromPath('video', videoFile));
+      ..files.add(await http.MultipartFile.fromPath('video',videoFile));
+    request.headers.addAll(headers);
 
     try {
-      final response = await request.send();
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+
+      print('Fsdfkjvhskvo++++==${response.body}');
       if (response.statusCode == 200) {
         print('Video uploaded successfully');
+        // getFatigueEyeReport();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => EyeFatigueTestReport()),
+        );
+
+
+
       } else {
         print('Failed to upload video');
       }

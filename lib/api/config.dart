@@ -10,6 +10,7 @@ class ApiProvider{
   static const verifyLoginOtp = "/api/verify_login_otp";
   static const validateReferralCode_ = "/api/validate_referral_code";
   static const getUserProfile = "/api/profile";
+  static const myReffrealcontacts ='/api/my-referrals';
   static const updateUserProfile = "/api/profile";
   static const updateProfilepic='/api/profile';
   static const get_notification='/api/user_notification';

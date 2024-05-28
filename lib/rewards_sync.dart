@@ -47,13 +47,13 @@ class _RewardsContactsSync extends State<RewardContact> {
   bool _permissionDenied = false;
   final Map<int, bool> _invitationStatus = {};
   final Map<int, bool> condition = {};
-
+  List< dynamic> _refferconatcts = [];
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getReferCode();
-    _fetchContacts();
+    _fetchContacts();getMyRefferConatcts();
   }
 
   void shareAppLink(int i) async {
@@ -400,26 +400,19 @@ class _RewardsContactsSync extends State<RewardContact> {
                 child: TabBarView(
                   children: [
                     Center(
-                        child: _contacts.isNotEmpty
+                        child: _refferconatcts.isNotEmpty
                             ? ListView.builder(
                           shrinkWrap: true,
-                          itemCount: _contacts.length,
+                          itemCount: _refferconatcts.length,
                           itemBuilder: (context, i) => Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Card(
                               color: Colors.white,
                               elevation: 0.9,
                               child: ListTile(
-                                leading: _contacts[i].avatar != null &&
-                                    _contacts[i].avatar!.isNotEmpty
-                                    ? Container(
-                                    height: 50,
-                                    width: 50,
-                                    decoration: const BoxDecoration(
-                                        shape: BoxShape.circle),
-                                    child: Image.memory(
-                                        _contacts[i].avatar!))
-                                    : Container(
+                                leading:
+
+                                Container(
                                     height: 50,
                                     width: 50,
                                     decoration: const BoxDecoration(
@@ -428,7 +421,7 @@ class _RewardsContactsSync extends State<RewardContact> {
                                         'assets/contact.png')),
 
                                 title: Text(
-                                  _contacts[i].displayName ?? '',
+                                  _refferconatcts[i]['full_name'] ?? '',
                                   style: const TextStyle(
                                       fontWeight: FontWeight.w500,
                                       fontSize: 15,
@@ -439,49 +432,34 @@ class _RewardsContactsSync extends State<RewardContact> {
                                   CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '+91 ${_contacts[i].phones!.isNotEmpty ? _contacts[i].phones!.first.value : 'N/A'}',
+                                      '+91 ${ _refferconatcts[i]['phone']}',
                                       style: const TextStyle(
                                           fontWeight: FontWeight.w400,
                                           fontSize: 14,
                                           color: Color(0xFF667085)),
                                     ),
                                     const Spacer(),
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          // if(  _invitationStatus[i] ==false){
-                                          print(
-                                              "===${_invitationStatus[i].toString()}");
-                                          // _invitationStatus[i] =
-                                          //     !(_invitationStatus[i] ?? false);
-                                          shareAppLink(i);
-                                          // }
-                                        });
-                                      },
-                                      child: _invitationStatus[i] == true
-                                          ? Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors
-                                                .green, // Green background color
-                                            borderRadius:
-                                            BorderRadius.circular(
-                                                20), // Rounded border
-                                          ),
-                                          child: const Icon(
-                                              Icons.check,
-                                              color: Colors
-                                                  .white)) // Display verified icon
-                                          : const Text(
-                                        'INVITE',
-                                        style: TextStyle(
+                                     Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors
+                                              .green.withOpacity(0.5), // Green background color
+                                          borderRadius:
+                                          BorderRadius.circular(
+                                              20), // Rounded border
+                                        ),
+                                       child: Padding(
+                                         padding: const EdgeInsets.all(4.0),
+                                         child: Text(
+                                                                               'Accepted',
+                                                                               style: TextStyle(
                                             fontWeight:
                                             FontWeight.w400,
                                             fontSize: 14,
                                             color:
                                             Color(0xFF667085)),
-                                      ), // Display "INVITE" text
-                                    ),
-                                  ],
+                                                                             ),
+                                       ),
+                                     ) ],
                                 ),
                                 onTap: () async {},
                               ),
@@ -661,6 +639,47 @@ class _RewardsContactsSync extends State<RewardContact> {
     }
     throw Exception('');
   }
+
+
+
+  Future<dynamic> getMyRefferConatcts() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String token =
+      prefs.getString('access_token') ?? '';
+
+      final response = await http.get(
+        Uri.parse('${ApiProvider.baseUrl + ApiProvider.myReffrealcontacts}'),
+        headers: <String, String>{
+          'Authorization': 'Bearer $token',
+        },
+      );
+      print("statusCode================${token}");
+
+      if (response.statusCode == 200) {
+        // _progressDialog!.hide();
+
+        final jsonResponse = jsonDecode(response.body);
+        _refferconatcts=jsonResponse['data'];
+
+        print("responseviewprofile:${response.body}");
+
+        return json.decode(response.body);
+      } else {
+        // _progressDialog!.hide();
+
+        print(response.body);
+      }
+    } catch (e) {
+      // _progressDialog!.hide();
+
+      print("exception:$e");
+    }
+    throw Exception('');
+  }
+
+
+
 }
 
 class RewardSpecs extends StatefulWidget {

@@ -13,6 +13,7 @@ import 'package:project_new/testScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Api.dart';
 import 'Custom_navbar/bottom_navbar.dart';
+import 'eyeFatigueTest.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -179,7 +180,14 @@ class HomePageState extends State<HomePage> {
               },
               child: Image.asset('assets/digital_eye_exam.png'),
             ),
-            Image.asset('assets/eyeFatigueTest.png'),
+            GestureDetector(
+              onTap: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EyeFatigueStartScreen()),
+                );
+              },
+                child: Image.asset('assets/eyeFatigueTest.png')),
             Padding(
               padding: EdgeInsets.all(1.0),
               child: GestureDetector(

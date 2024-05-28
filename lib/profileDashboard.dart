@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,7 +15,9 @@ import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart'hide LocationAccuracy;
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:project_new/myPlanPage.dart';
 import 'package:project_new/rewards_sync.dart';
+import 'package:project_new/sign_up.dart';
 import 'package:project_new/user_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'api/config.dart';
@@ -176,136 +179,165 @@ class UserProfiledash extends State<UserDashboard> {
                           ),
                         ),
                        SizedBox(height: 30,),
-                        Container(
-                          width: MediaQuery.of(context).size.width/1.3,
-                          height: 60,
+                        GestureDetector(
+                          onTap: (){
+                            Navigator.push(
+                              context,
+                              CupertinoPageRoute(
+                                  builder: (context) =>
+                                      PrescriptionUpload()),
+                            );
+                          },
+                          child: Container(
+                            width: MediaQuery.of(context).size.width/1.3,
+                            height: 60,
 
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(22), // Half of the height for oval shape
-                            color: Colors.grey.withOpacity(0.3),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(22), // Half of the height for oval shape
+                              color: Colors.grey.withOpacity(0.3),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
 
-                              Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Text(
-                                  'Reward Details',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 15,
+                                Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: Text(
+                                    'Reward Details',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.arrow_forward_ios_outlined),
-                                color: Colors.black,iconSize: 14,
-                                onPressed: () {
-                                  // Navigate to next screen
-                                },
-                              ),
-                            ],
+                                IconButton(
+                                  icon: Icon(Icons.arrow_forward_ios_outlined),
+                                  color: Colors.black,iconSize: 14,
+                                  onPressed: () {
+
+                                    // Navigate to next screen
+                                  },
+                                ),
+                              ],
+                            ),
                           ),
                         ),
+                        // SizedBox(height: 30,),
+                        // Container(
+                        //   width: MediaQuery.of(context).size.width/1.3,
+                        //   height: 60,
+                        //
+                        //   decoration: BoxDecoration(
+                        //     borderRadius: BorderRadius.circular(22), // Half of the height for oval shape
+                        //     color: Colors.grey.withOpacity(0.3),
+                        //   ),
+                        //   child: Row(
+                        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //     children: [
+                        //
+                        //       Padding(
+                        //         padding: const EdgeInsets.all(12.0),
+                        //         child: Text(
+                        //           'Payment Methods',
+                        //           style: TextStyle(
+                        //             color: Colors.black,
+                        //             fontSize: 15,
+                        //           ),
+                        //         ),
+                        //       ),
+                        //       IconButton(
+                        //         icon: Icon(Icons.arrow_forward_ios_outlined),
+                        //         color: Colors.black,iconSize: 14,
+                        //         onPressed: () {
+                        //           // Navigate to next screen
+                        //         },
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
                         SizedBox(height: 30,),
-                        Container(
-                          width: MediaQuery.of(context).size.width/1.3,
-                          height: 60,
+                        GestureDetector(
+                          onTap: (){
+                            Navigator.push(
+                              context,
+                              CupertinoPageRoute(
+                                  builder: (context) =>
+                                      MyPlan()),
+                            );
+                          },
+                          child: Container(
+                            width: MediaQuery.of(context).size.width/1.3,
+                            height: 60,
 
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(22), // Half of the height for oval shape
-                            color: Colors.grey.withOpacity(0.3),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(22), // Half of the height for oval shape
+                              color: Colors.grey.withOpacity(0.3),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
 
-                              Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Text(
-                                  'Payment Methods',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 15,
+                                Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: Text(
+                                    'Plans',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.arrow_forward_ios_outlined),
-                                color: Colors.black,iconSize: 14,
-                                onPressed: () {
-                                  // Navigate to next screen
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 30,),
-                        Container(
-                          width: MediaQuery.of(context).size.width/1.3,
-                          height: 60,
-
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(22), // Half of the height for oval shape
-                            color: Colors.grey.withOpacity(0.3),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-
-                              Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Text(
-                                  'Plans',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 15,
-                                  ),
+                                IconButton(
+                                  icon: Icon(Icons.arrow_forward_ios_outlined),
+                                  color: Colors.black,iconSize: 14,
+                                  onPressed: () {
+                                    // Navigate to next screen
+                                  },
                                 ),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.arrow_forward_ios_outlined),
-                                color: Colors.black,iconSize: 14,
-                                onPressed: () {
-                                  // Navigate to next screen
-                                },
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                         SizedBox(height: 20,),
 
-                        Container(
-                          width: MediaQuery.of(context).size.width/1.3,
-                          height: 60,
+                        GestureDetector(
+                          onTap: (){
+                            Logout();
 
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(22), // Half of the height for oval shape
-                            color: Colors.grey.withOpacity(0.3),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              IconButton(
-                                icon: Icon(Icons.logout),
-                                color: Colors.blue,iconSize: 14,
-                                onPressed: () {
-                                  // Navigate to next screen
-                                },
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Text(
-                                  'Sign Out',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 15,
+                          },
+                          child: Container(
+                            width: MediaQuery.of(context).size.width/1.3,
+                            height: 60,
+
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(22), // Half of the height for oval shape
+                              color: Colors.grey.withOpacity(0.3),
+                            ),
+                            child: Row(
+                              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.logout_rounded),
+                                  color: Colors.background,iconSize: 14,
+                                  onPressed: () {
+
+                                    Logout();
+
+                                  },
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 3.0,vertical: 12),
+                                  child: Text(
+                                    'Sign Out',
+                                    style: TextStyle(
+                                      color: Colors.background,
+                                      fontSize: 15,
+                                    ),
                                   ),
                                 ),
-                              ),
 
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                         SizedBox(height: 20,),
@@ -327,7 +359,18 @@ class UserProfiledash extends State<UserDashboard> {
 
 
 
+  void Logout() async {
 
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String access_token = prefs.getString('access_token') ?? '';
+    prefs.remove("isLoggedIn");
+    prefs.remove("access_token");
+
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => SignIn()),
+            (Route<dynamic> route) => false);
+
+  }
 
   Future<Map<String, dynamic>> getProfile() async {
 
