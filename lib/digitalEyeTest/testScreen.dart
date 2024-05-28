@@ -10,18 +10,17 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:project_new/ReportPage.dart';
-import 'package:project_new/camara.dart';
-import 'package:project_new/eyeHealthTrack.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:convert' as convert;
 
-import 'Api.dart';
-import 'customDialog.dart';
-import 'myPlanPage.dart';
+import '../../Api.dart';
+import '../../customDialog.dart';
+import '../camara.dart';
+import 'TestReport.dart';
+import '../../myPlanPage.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -82,7 +81,7 @@ class SelectQuestion extends State<GiveInfo> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
             onPressed: () {
-              // Add your back button functionality here
+              // Add your back button functionality here2
             },
           ),
         ),
@@ -349,14 +348,14 @@ class LeftEyeTestState extends State<LeftEyeTest> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: Text("EYE TEST"),
+        centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
           onPressed: () {
-            // Handle back button press
+            // Add your back button functionality here
           },
         ),
-        title: Text('EYE TEST'), // Title of the page
-        // Set AppBar background color
       ),
       body: Stack(
         children: [
@@ -511,10 +510,10 @@ Widget bulletText(String text) {
 
 class AlfabetTest extends StatefulWidget {
   @override
-  SnellFraction createState() => SnellFraction();
+  AlfabetTestState createState() => AlfabetTestState();
 }
 
-class SnellFraction extends State<AlfabetTest> {
+class AlfabetTestState extends State<AlfabetTest> {
   CameraController? _controller;
   late List<CameraDescription> _cameras;
 
@@ -711,6 +710,16 @@ class SnellFraction extends State<AlfabetTest> {
       },
       child: MaterialApp(
         home: Scaffold(
+          appBar: AppBar(
+            title: Text("EYE TEST"),
+            centerTitle: true,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+              onPressed: () {
+                // Add your back button functionality here
+              },
+            ),
+          ),
           body: Stack(
             children: [
               Container(
@@ -1071,7 +1080,7 @@ class ReadingTest extends StatefulWidget {
 class Reading extends State<ReadingTest> {
   CameraController? _controller;
   late List<CameraDescription> _cameras;
-
+  bool isLoadingRandomText = false;
   @override
   void initState() {
     super.initState();
@@ -1216,7 +1225,7 @@ class Reading extends State<ReadingTest> {
         'Authorization': 'Bearer $authToken',
       };
       var uri = Uri.parse(
-          'https://testing1.zuktiapp.zuktiinnovations.com/get-snellen-fraction-api/?test_name=$testname');
+          '${Api.baseurl}/get-snellen-fraction-api/?test_name=$testname');
       var response = await http.get(
         uri,
         headers: headers,
@@ -1259,7 +1268,7 @@ class Reading extends State<ReadingTest> {
     super.dispose();
   }
 
-  @override
+/*  @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
@@ -1271,186 +1280,378 @@ class Reading extends State<ReadingTest> {
       },
       child: MaterialApp(
           home: Scaffold(
-              body: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/test.png'),
-// Replace with your image
-                fit: BoxFit.cover,
+              appBar: AppBar(
+                title: Text("EYE TEST"),
+                centerTitle: true,
+                leading: IconButton(
+                  icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+                  onPressed: () {
+                    // Add your back button functionality here
+                  },
+                ),
               ),
-            ),
-          ),
-          Center(
-            child: SingleChildScrollView(
-              child: Column(
-                //  mainAxisAlignment: MainAxisAlignment.center,
+              body: Stack(
                 children: [
-                  SizedBox(height: 10),
                   Container(
-                    width: 150,
-                    height: 80,
-                    child: Center(
-                      child: Text(
-                        randomText,
-                        style: TextStyle(
-                          fontSize: currentTextSize,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/test.png'),
+// Replace with your image
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
-                  SizedBox(height: 30),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(width: 20),
-                      SizedBox(
-                        height: 45,
-                        width: 130,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            getReadingSnellFraction();
-                            increaseReadingTextSize();
-                          },
-                          child: Text(
-                            'Back',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight:
-                                    FontWeight.bold // Set the text color here
-                                // You can also set other properties like fontSize, fontWeight, etc.
+                  Center(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        //  mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(height: 10),
+                          Container(
+                            width: 150,
+                            height: 80,
+                            child: Center(
+                              child: Text(
+                                randomText,
+                                style: TextStyle(
+                                  fontSize: currentTextSize,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
                                 ),
+                              ),
+                            ),
                           ),
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 5, vertical: 1),
-                            backgroundColor: Colors.yellow,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                          SizedBox(height: 30),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(width: 20),
+                              SizedBox(
+                                height: 45,
+                                width: 130,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    getReadingSnellFraction();
+                                    increaseReadingTextSize();
+                                  },
+                                  child: Text(
+                                    'Back',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight
+                                            .bold // Set the text color here
+                                        // You can also set other properties like fontSize, fontWeight, etc.
+                                        ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 5, vertical: 1),
+                                    backgroundColor: Colors.yellow,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 20),
+                              SizedBox(
+                                height: 45,
+                                width: 140,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    getReadingSnellFraction();
+
+                                    decreaseReadingTextSize();
+                                  },
+                                  child: Text(
+                                    'Perfectly '
+                                    'Visible',
+                                    style: TextStyle(
+                                      color: Colors
+                                          .white, // Set the text color here
+                                      // You can also set other properties like fontSize, fontWeight, etc.
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 5, vertical: 1),
+                                    backgroundColor: Colors.lightGreen,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          SizedBox(
+                            height: 40,
+                            width: 150,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Update_HyperMyopiaTest(context);
+                              },
+                              child: Text(
+                                'Not able to Read',
+                                style: TextStyle(
+                                  color:
+                                      Colors.white, // Set the text color here
+                                  // You can also set other properties like fontSize, fontWeight, etc.
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 5, vertical: 3),
+                                backgroundColor: Colors.red,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                            width: 320,
+                            height: 40,
+                            padding: EdgeInsets.all(8),
+                            child: Text(
+                              alert,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 22,
+                                  color: alert == 'Good to go'
+                                      ? Colors.green
+                                      : Colors.red,
+                                  fontWeight: FontWeight.bold
+                                  // Change text color here
+                                  // You can also set other properties like fontWeight, fontStyle, etc.
+                                  ),
+                            ),
+                          ),
+                          Container(
+                            child: InteractiveViewer(
+                              boundaryMargin: EdgeInsets.all(20.0),
+                              minScale: 0.1,
+                              maxScale: 1.5,
+                              child: _controller != null
+                                  ? CameraPreview(_controller!)
+                                  : Container(),
+                            ),
+
+                            width: 280.0,
+                            // Set the desired width
+                            height: 320.0,
+                            // Set the desired height
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                            ),
+                          )
+
+                          ,
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ))),
+    );
+  }*/
+
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        /* Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => TestScreen()),
+        );*/
+        return false;
+      },
+      child: MaterialApp(
+        home: Scaffold(
+          appBar: AppBar(
+            title: Text("EYE TEST"),
+            centerTitle: true,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+              onPressed: () {
+                // Add your back button functionality here
+              },
+            ),
+          ),
+          body: Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  /*   image: DecorationImage(
+                    image: AssetImage('assets/test.png'),
+                    fit: BoxFit.cover,
+                  ),*/
+                ),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(height: 70),
+                  Container(
+                    width: 150,
+                    height: 150,
+                    child: Center(
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Text(
+                            randomText,
+                            style: TextStyle(
+                              fontSize: currentTextSize,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          Visibility(
+                            visible: isLoadingRandomText,
+                            child: CircularProgressIndicator(
+                              valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.grey),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Column(
+                    children: [
+                      Container(
+                        width: 320,
+                        height: 70,
+                        padding: EdgeInsets.all(8),
+                        child: Text(
+                          alert,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 22,
+                            color: alert == 'Good to go'
+                                ? Colors.green
+                                : Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 50,
+                            width: 160,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                getReadingSnellFraction();
+                                increaseReadingTextSize();
+                              },
+                              child: Text(
+                                'Back',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 5, vertical: 3),
+                                backgroundColor: Colors.teal,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 30),
+                          SizedBox(
+                            height: 50,
+                            width: 150,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                getReadingSnellFraction();
+                                decreaseReadingTextSize();
+                              },
+                              child: Text(
+                                'Perfectly Visible',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 5, vertical: 3),
+                                backgroundColor: Colors.bluebutton,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SizedBox(
+                          height: 50,
+                          width: 160,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Update_HyperMyopiaTest(context);
+                              _controller?.dispose().then((_) {});
+                            },
+                            child: Text(
+                              'Not able to Read',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 5, vertical: 3),
+                              backgroundColor: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                      SizedBox(width: 20),
-                      SizedBox(
-                        height: 45,
-                        width: 140,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            getReadingSnellFraction();
-
-                            decreaseReadingTextSize();
-                          },
-                          child: Text(
-                            'Perfectly '
-                            'Visible',
-                            style: TextStyle(
-                              color: Colors.white, // Set the text color here
-                              // You can also set other properties like fontSize, fontWeight, etc.
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 5, vertical: 1),
-                            backgroundColor: Colors.lightGreen,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                      )
                     ],
                   ),
-                  SizedBox(height: 10),
-                  SizedBox(
-                    height: 40,
-                    width: 150,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Update_HyperMyopiaTest(context);
-                      },
-                      child: Text(
-                        'Not able to Read',
-                        style: TextStyle(
-                          color: Colors.white, // Set the text color here
-                          // You can also set other properties like fontSize, fontWeight, etc.
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 5, vertical: 3),
-                        backgroundColor: Colors.red,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    width: 320,
-                    height: 40,
-                    padding: EdgeInsets.all(8),
-                    child: Text(
-                      alert,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 22,
-                          color:
-                              alert == 'Good to go' ? Colors.green : Colors.red,
-                          fontWeight: FontWeight.bold
-                          // Change text color here
-                          // You can also set other properties like fontWeight, fontStyle, etc.
-                          ),
-                    ),
-                  ),
-                  Container(
-                    child: InteractiveViewer(
-                      boundaryMargin: EdgeInsets.all(20.0),
-                      minScale: 0.1,
-                      maxScale: 1.5,
-                      child: _controller != null
-                          ? CameraPreview(_controller!)
-                          : Container(),
-                    ),
-
-                    width: 280.0,
-                    // Set the desired width
-                    height: 320.0,
-                    // Set the desired height
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                    ),
-                  )
-
-                  /** Container(
-                              child:AspectRatio(
-                              /**  width: 300.0,
-                              // Set the desired width
-                              height: 300.0,
-                              // Set the desired height
-                              decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey),
-                              ),**/
-                              aspectRatio: 3.5,
-
-                              child:_controller   != null
-                              ? CameraPreview(_controller!)
-                              : Container(),
-
-                              ) )**/
-                  ,
                 ],
               ),
-            ),
+              Positioned(
+                top: 10,
+                right: 10,
+                child: Container(
+                  width: 100.0,
+                  height: 150.0,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                  ),
+                  child: InteractiveViewer(
+                    boundaryMargin: EdgeInsets.all(20.0),
+                    minScale: 0.1,
+                    maxScale: 1.5,
+                    child: _controller != null
+                        ? CameraPreview(_controller!)
+                        : Container(),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ))),
+        ),
+      ),
     );
   }
 
@@ -1594,9 +1795,7 @@ class Reading extends State<ReadingTest> {
   Future<void> Update_HyperMyopiaTest(BuildContext context) async {
     //  try {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
+    String authToken = prefs.getString('access_token') ?? '';
     String test_id = prefs.getString('test_id') ?? '';
     String CustomerId = prefs.getString('customer_id') ?? '';
     var headers = {
@@ -1624,8 +1823,9 @@ class Reading extends State<ReadingTest> {
             context, 'You Have Successfully Completed Eyetest.....');
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('page', "readingtestpage");
-
-        getActivePlan();
+        Navigator.push(context,
+            CupertinoPageRoute(builder: (context) => const TestReport()));
+        // getActivePlan();
       } else {
         Navigator.push(
           context,
@@ -1645,7 +1845,7 @@ class Reading extends State<ReadingTest> {
     }*/
   }
 
-  Future<void> getActivePlan() async {
+/* Future<void> getActivePlan() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
         // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
@@ -1701,7 +1901,7 @@ class Reading extends State<ReadingTest> {
 // Handle exceptions here (e.g., network errors)
       print('Exception: $e');
     }
-  }
+  }*/
 }
 
 class AstigmationTest extends StatefulWidget {
@@ -1963,13 +2163,19 @@ class AstigmationTest1 extends State<AstigmationTest> {
       },
       child: MaterialApp(
         home: Scaffold(
+          appBar: AppBar(
+            title: Text("EYE TEST"),
+            centerTitle: true,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+              onPressed: () {
+                // Add your back button functionality here
+              },
+            ),
+          ),
           body: Stack(
             fit: StackFit.expand,
             children: <Widget>[
-              Image.asset(
-                'assets/test.png',
-                fit: BoxFit.cover,
-              ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -2505,12 +2711,9 @@ class Astigmationtest2 extends State<AstigmationTest2> {
         home: Scaffold(
           appBar: AppBar(
             title: Text("EYE TEST"),
-            centerTitle: false,
+            centerTitle: true,
             leading: IconButton(
-              icon: Icon(
-                Icons.arrow_back,
-                color: Colors.bluebutton,
-              ),
+              icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
               onPressed: () {
                 // Add your back button functionality here
               },
@@ -3112,15 +3315,20 @@ class AstigmationTestNone extends State<AstigmationTest3> {
         },
         child: MaterialApp(
           home: Scaffold(
+            appBar: AppBar(
+              title: Text("EYE TEST"),
+              centerTitle: true,
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+                onPressed: () {
+                  // Add your back button functionality here
+                },
+              ),
+            ),
             body: Stack(
               fit: StackFit.expand,
               children: <Widget>[
                 // Background Image
-                Image.asset(
-                  'assets/test.png', // Replace with your image path
-                  fit: BoxFit.cover,
-                ),
-
                 Container(
                   margin: EdgeInsets.fromLTRB(0, 55, 0, 2),
                   child: SingleChildScrollView(
@@ -4002,10 +4210,10 @@ class shadowtest extends State<ShadowTest> {
       child: MaterialApp(
         home: Scaffold(
           appBar: AppBar(
-            title: Text('EYE TEST'),
+            title: Text("EYE TEST"),
             centerTitle: true,
             leading: IconButton(
-              icon: Icon(Icons.arrow_back),
+              icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
               onPressed: () {
                 // Add your back button functionality here
               },
@@ -4148,7 +4356,7 @@ class shadowtest extends State<ShadowTest> {
         prefs.getString('access_token') ?? '';
     String test_id = prefs.getString('test_id') ?? '';
     String CustomerId = prefs.getString('customer_id') ?? '';
-    print("snsjsjsj");    // Replace this URL with your PUT API endpoint
+    print("snsjsjsj"); // Replace this URL with your PUT API endpoint
     final String apiUrl = '${Api.baseurl}/api/eye/cyl-test';
 // Replace these headers with your required headers
     Map<String, String> headers = {
@@ -4466,54 +4674,6 @@ class redgreen extends State<RedGreenTest> {
     }
   }
 
-  Future<void> getActivePlan() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access_token') ?? '';
-    final String apiUrl =
-        'https://testing1.zuktiapp.zuktiinnovations.com/subscription-active-plan/';
-// Replace these headers with your required headers
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $access_token',
-    };
-// Replace this with your PUT request body
-
-    try {
-      final response = await http.get(
-        Uri.parse(apiUrl),
-        headers: headers,
-//body: jsonEncode(body),
-      );
-      if (response.statusCode == 200) {
-        print('respsss ${response.body}');
-
-        Navigator.push(
-          context,
-          CupertinoPageRoute(
-              builder: (context) =>
-// LoginScreen()),
-                  ReportPage()),
-        );
-// If the call to the server was successful, parse the JSON
-      } else {
-        Navigator.push(
-          context,
-          CupertinoPageRoute(
-              builder: (context) =>
-// LoginScreen()),
-                  MyPlan()),
-        );
-// If the server did not return a 200 OK response,
-// handle the error here (display error message or take appropriate action)
-        print('Failed with status code: ${response.statusCode}');
-        print('Failed with status code: ${response.body}');
-      }
-    } catch (e) {
-// Handle exceptions here (e.g., network errors)
-      print('Exception: $e');
-    }
-  }
-
   Future<void> UpdateRedGreenTest() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
@@ -4553,7 +4713,6 @@ class redgreen extends State<RedGreenTest> {
         if (jsonResponseMap.containsKey("data") &&
             jsonResponseMap["data"].containsKey("data") &&
             jsonResponseMap["data"]["data"].containsKey("eye_status")) {
-
           String eyeStatus = jsonResponseMap["data"]["data"]["eye_status"];
           String patientName = jsonResponseMap["data"]["data"]["full_name"];
           String patientAge = jsonResponseMap["data"]["user_age"];
@@ -4572,7 +4731,9 @@ class redgreen extends State<RedGreenTest> {
               });
               SharedPreferences prefs = await SharedPreferences.getInstance();
               await prefs.setString('page', "redgreen");
-              getActivePlan();
+              // getActivePlan();
+              Navigator.push(context,
+                  CupertinoPageRoute(builder: (context) => const TestReport()));
             }
           } else {
             if (age > 40) {
@@ -4613,6 +4774,16 @@ class redgreen extends State<RedGreenTest> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("EYE TEST"),
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+          onPressed: () {
+            // Add your back button functionality here
+          },
+        ),
+      ),
       body: Stack(
         fit: StackFit.expand,
         children: <Widget>[
@@ -4779,6 +4950,17 @@ class RightEye extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        appBar: AppBar(
+          title: Text("EYE TEST"),
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+            onPressed: () {
+              // Add your back button functionality here
+            },
+          ),
+          // Set AppBar background color
+        ),
         body: Righteye(),
       ),
     );
@@ -4800,54 +4982,64 @@ class Righteye extends StatelessWidget {
         },
         child: MaterialApp(
             home: Scaffold(
-                body: Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/test.png'),
-                  // Replace with your image
-                  fit: BoxFit.cover,
+                appBar: AppBar(
+                  title: Text("EYE TEST"),
+                  centerTitle: true,
+                  leading: IconButton(
+                    icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+                    onPressed: () {
+                      // Add your back button functionality here
+                    },
+                  ),
                 ),
-              ),
-            ),
-            Center(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                body: Stack(
                   children: [
-                    Padding(
-                      padding: EdgeInsets.only(top: 50.0),
-                      // GestureDetector(
-                      // onTap: () => onImageClicked, // Assign the method to be called on tap
-                      // child: Image.asset(
-                      child: Image.asset(
-                        'assets/close_right_eye.png',
-                        // Replace with your centered image
-                        width: 300, // Adjust the width as needed
-                        height: 300, // Adjust the height as needed
+                    Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('assets/test.png'),
+                          // Replace with your image
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
-                    // ),
-                    SizedBox(height: 30),
-                    // Add spacing between the image and the button
-                    SizedBox(
-                      width: 200, // Set the desired width here
-                      child: ElevatedButton(
-                        onPressed: () {
-                          select_eye_for_test('right', context);
-                          // onImageClicked();
-                        },
-                        child: Text('Next'),
-                        // Replace with button text
+                    Center(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(top: 50.0),
+                              // GestureDetector(
+                              // onTap: () => onImageClicked, // Assign the method to be called on tap
+                              // child: Image.asset(
+                              child: Image.asset(
+                                'assets/close_right_eye.png',
+                                // Replace with your centered image
+                                width: 300, // Adjust the width as needed
+                                height: 300, // Adjust the height as needed
+                              ),
+                            ),
+                            // ),
+                            SizedBox(height: 30),
+                            // Add spacing between the image and the button
+                            SizedBox(
+                              width: 200, // Set the desired width here
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  select_eye_for_test('right', context);
+                                  // onImageClicked();
+                                },
+                                child: Text('Next'),
+                                // Replace with button text
+                              ),
+                            )
+                          ],
+                        ),
                       ),
-                    )
+                    ),
                   ],
-                ),
-              ),
-            ),
-          ],
-        ))));
+                ))));
   }
 
   Future<void> select_eye_for_test(String eye, BuildContext context) async {
@@ -4862,7 +5054,7 @@ class Righteye extends StatelessWidget {
       print('testt$test');
 
       var headers = {
-        'Authorization': 'Bearer ${authToken}',
+        'Authorization': 'Bearer $authToken',
         'Content-Type': 'application/json',
         'Customer-Id': CustomerId
       };
@@ -4882,7 +5074,7 @@ class Righteye extends StatelessWidget {
         // Extract data from the parsed JSON
         String test = parsedJson['data']['test'];
         print("resp: $responseBody");
-        String test_id = parsedJson['data']['id'];
+        String test_id = parsedJson['data']['id'].toString();
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('test_id', test_id);
         // await prefs.setString('test', test);

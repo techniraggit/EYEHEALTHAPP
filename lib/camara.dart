@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:project_new/testScreen.dart';
+import 'package:project_new/digitalEyeTest/testScreen.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert' as convert;
 import 'package:image_picker/image_picker.dart';
-import 'Api.dart';
-import 'customDialog.dart';
+import '../Api.dart';
+import '../customDialog.dart';
 
 class Camara extends StatelessWidget {
   @override
@@ -51,8 +51,8 @@ class _CameraScreenState extends State<CameraS> {
   Future<void> validtoken(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
     Map<String, String> headers = {
       'Authorization': 'Bearer $authToken',
     };
@@ -149,6 +149,16 @@ class _CameraScreenState extends State<CameraS> {
           return false;
         },
         child: Scaffold(
+            appBar: AppBar(
+              title: Text("EYE TEST"),
+              centerTitle: true,
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+                onPressed: () {
+                  // Add your back button functionality here
+                },
+              ),
+            ),
             body: Container(
                 decoration: BoxDecoration(
                     /* image: DecorationImage(
@@ -219,13 +229,15 @@ class _CameraScreenState extends State<CameraS> {
                                         Navigator.pushReplacement(
                                           context,
                                           CupertinoPageRoute(
-                                              builder: (context) => LeftEyeTest()),
+                                              builder: (context) =>
+                                                  LeftEyeTest()),
                                         );
                                       });
                                       // Add your button functionality here
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      foregroundColor: Colors.white, backgroundColor: Colors.bluebutton,
+                                      foregroundColor: Colors.white,
+                                      backgroundColor: Colors.bluebutton,
                                       // Text color
                                       padding: EdgeInsets.all(16),
                                       minimumSize: Size(200, 30),
@@ -278,8 +290,8 @@ class _CameraScreenState extends State<CameraS> {
       });
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-      prefs.getString('access_token') ?? '';
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+          prefs.getString('access_token') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
 
       var response = await http.post(

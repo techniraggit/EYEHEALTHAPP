@@ -27,8 +27,10 @@ bool isActivePlan=false;
   void initState() {
     super.initState();
     futurePlans = _getPlanApi(context) ;
+    checkActivePlan("");
   }
-
+late String PlanId;
+  String selectedPlanId='';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,9 +68,10 @@ bool isActivePlan=false;
                 itemBuilder: (context, index) {
                   final plan = plans[index];
                   final features = plan.description.split('.');
+                  bool isSelected = plan.id == selectedPlanId;
                   return Container(
                     decoration: BoxDecoration(
-                      color: index.isEven ? Colors.white : Color(0xFF5900D9),
+                      color: isSelected ? Colors.green.shade600 : Colors.white,
                       borderRadius: BorderRadius.circular(12.0), // Corner radius
                       border: Border.all(
                         color: Colors.grey, // Border color
@@ -87,7 +90,7 @@ bool isActivePlan=false;
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: index.isEven ? Colors.black : Colors.white,
+                                color:Colors.black,
                               ),
                             ),
                           ),
@@ -97,7 +100,7 @@ bool isActivePlan=false;
                               '\$${plan.price}/${plan.planType}',
                               style: TextStyle(
                                   fontSize: 20,
-                                  color: index.isEven ? Colors.black : Colors.white,
+                                  color:Colors.black,
                                   fontWeight: FontWeight.bold),
                             ),
                           ),
@@ -105,7 +108,7 @@ bool isActivePlan=false;
                             children: [
                               Icon(
                                 Icons.check_circle,
-                                color: index.isEven ? Color(0xFF5900D9) : Colors.white,
+                                color:  isSelected ? Colors.black : Colors.bluebutton,
                                 size: 20,
                               ),
                               SizedBox(width: 5),
@@ -114,7 +117,7 @@ bool isActivePlan=false;
                                   feature,
                                   style: TextStyle(
                                     fontSize: 16,
-                                    color: index.isEven ? Colors.grey.shade700 : Colors.white,
+                                    color:Colors.grey.shade700 ,
                                     fontStyle: FontStyle.normal,
                                   ),
                                 ),
@@ -126,16 +129,14 @@ bool isActivePlan=false;
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             child: ElevatedButton(
                               onPressed: () {
-
-
-                             checkActivePlan();
-
-
+                             checkActivePlan(plan.price);
+                             PlanId= plan.id;
                                 // Add your button onPressed logic here
                               },
                               child: Text('Buy Plan'),
                               style: ElevatedButton.styleFrom(
-                                foregroundColor: index.isEven ? Colors.white : Colors.black, backgroundColor: index.isEven ? Color(0xFF5900D9) : Colors.white,
+                                foregroundColor:isSelected ? Colors.black : Colors.white,
+                                backgroundColor:  isSelected ? Colors.grey.shade300 : Colors.bluebutton,
                                 padding: EdgeInsets.all(10),
                                 minimumSize: Size(100, 20),
                                 shape: RoundedRectangleBorder(
@@ -159,9 +160,10 @@ bool isActivePlan=false;
   }
 
   Map<String, dynamic>? paymentIntent;
-  Future<void> makePayment() async {
+  Future<void> makePayment(String price) async {
+    print("amounr");
     try {
-      paymentIntent = await createPaymentIntent('71', 'USD');
+      paymentIntent = await createPaymentIntent(price, 'USD');
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
 
@@ -221,7 +223,12 @@ bool isActivePlan=false;
         'payment_method_types[]': 'card',
         'description': 'Software Testing',
         'customer': 'cus_Q99KA3BxJP2vY7',
+
       };
+      body.addAll({
+        'metadata[plan_id]': PlanId,
+        'metadata[user_id]': 'd431e966-d9bd-4c29-a9ab-48d93fc5f6b9', // Example metadata
+      });
       var secretKey =
           "sk_test_51OJvAESInaGLb0MUtLmhP2IwmJa9JqTztYYFgrMnXbewAzgHKXeJqgKullONr7Oxj268IJt1i9GrwfYiSFuWHLF500ShZtLEZX";
       var response = await http.post(
@@ -240,13 +247,13 @@ bool isActivePlan=false;
   }
 
   calculateAmount(String amount) {
-    final calculatedAmount = (int.parse(amount)) * 100;
+    final calculatedAmount = (double.parse(amount) * 100).toInt();;
     return calculatedAmount.toString();
   }
 
 
 
-  void checkActivePlan() async {
+  void checkActivePlan(String price) async {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('access_token') ?? '';
@@ -269,10 +276,12 @@ bool isActivePlan=false;
 
         // Access the value of is_verified
         isActivePlan = jsonResponse['is_active_plan'];
+        selectedPlanId=jsonResponse['plan_id'];
 
         setState(() {
           if(isActivePlan==false){
-            makePayment();
+
+            makePayment(price);
 
           }else{
             Fluttertoast.showToast(msg: "you already have an active plan !!");
@@ -298,28 +307,7 @@ bool isActivePlan=false;
 
   }
 
-
-
-
-
-
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   late final   jsonResponse ;
   late List<Plan> plans;

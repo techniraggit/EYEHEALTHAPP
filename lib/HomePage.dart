@@ -8,12 +8,12 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
-import 'package:project_new/myPlanPage.dart';
-import 'package:project_new/testScreen.dart';
+import 'package:project_new/eyeFatigueTest.dart';
+import 'package:project_new/digitalEyeTest/testScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Api.dart';
 import 'Custom_navbar/bottom_navbar.dart';
-import 'eyeFatigueTest.dart';
+import 'myPlanPage.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -66,13 +66,6 @@ class HomePageState extends State<HomePage> {
             elevation: 4.0, // Shadow
             child: InkWell(
               onTap: () {
-                Navigator.push(
-                  context, CupertinoPageRoute(
-                  builder: (context) => HomePage(
-                  ),
-                ),
-
-                );
               },
               child: SizedBox(
                 width: 53.0, // Width of the FloatingActionButton
@@ -172,34 +165,31 @@ class HomePageState extends State<HomePage> {
           children: <Widget>[
             GestureDetector(
               onTap: ()  {
-                //sendcustomerDetails(context);
-                //_showTestChoiceDialog(context);
-                 Navigator.push(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => AddCustomerPage()),
-                ); // Call the API
+                );
               },
               child: Image.asset('assets/digital_eye_exam.png'),
             ),
             GestureDetector(
-              onTap: (){
+              onTap: ()  {
+                // sendcustomerDetails(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => EyeFatigueStartScreen()),
-                );
+                ); // Call the API
               },
-                child: Image.asset('assets/eyeFatigueTest.png')),
-            Padding(
-              padding: EdgeInsets.all(1.0),
-              child: GestureDetector(
-                  onTap: ()  {
-
-                     Navigator.push(
+              child: Image.asset('assets/eyeFatigueTest.png'),
+            ),
+            GestureDetector(
+              onTap: ()  {
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => MyPlan()),
-                ); // Call the API
-                  },
-                  child: Image.asset('assets/find_near_by_store.png')),
+                );
+              },
+              child: Image.asset('assets/find_near_by_store.png'),
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 15, 10),
@@ -259,19 +249,19 @@ class HomePageState extends State<HomePage> {
                               ),
                             ],
                           ),
-                          // Column(
-                          //   crossAxisAlignment: CrossAxisAlignment.end,
-                          //   children: [
-                          //     Text('No. of digital eye test'),
-                          //     Text(
-                          //       'Value ',
-                          //       style: TextStyle(
-                          //         fontSize: 16,
-                          //         fontWeight: FontWeight.bold,
-                          //       ),
-                          //     ),
-                          //   ],
-                          // ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text('No. of digital eye test'),
+                              Text(
+                                'Value ',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                       SizedBox(height: 16),
@@ -292,19 +282,19 @@ class HomePageState extends State<HomePage> {
                               ),
                             ],
                           ),
-                          // Column(
-                          //   crossAxisAlignment: CrossAxisAlignment.end,
-                          //   children: [
-                          //     Text('visit to optemistist'),
-                          //     Text(
-                          //       'Value',
-                          //       style: TextStyle(
-                          //         fontSize: 16,
-                          //         fontWeight: FontWeight.bold,
-                          //       ),
-                          //     ),
-                          //   ],
-                          // ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text('visit to optemistist'),
+                              Text(
+                                'Value',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ],
@@ -435,7 +425,7 @@ class HomePageState extends State<HomePage> {
                   children: [
                     Container(
                       height: 180,
-                      width: 140,
+                      width: 180,
                       decoration: const BoxDecoration(
                         image: DecorationImage(
                           image: AssetImage('assets/interview.png'),
@@ -446,12 +436,12 @@ class HomePageState extends State<HomePage> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: EdgeInsets.symmetric(vertical: 12.0),
+                            padding: EdgeInsets.symmetric(vertical: 2.0),
                             child: Text(
                               '300',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 22,
+                                fontSize: 25,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -462,7 +452,7 @@ class HomePageState extends State<HomePage> {
                               'Eye Test',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 16,
+                                fontSize: 18,
                               ),
                             ),
                           ),
@@ -471,7 +461,7 @@ class HomePageState extends State<HomePage> {
                     ),
                     Container(
                       height: 180,
-                      width: 140,
+                      width: 180,
                       decoration: const BoxDecoration(
                         image: DecorationImage(
                           image: AssetImage('assets/eye_bg.png'),
@@ -483,12 +473,12 @@ class HomePageState extends State<HomePage> {
                         children: [
                           Padding(
                             padding: EdgeInsets.symmetric(
-                                vertical: 12.0, horizontal: 4.0),
+                                vertical: 2.0, horizontal: 4.0),
                             child: Text(
                               '300',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 22,
+                                fontSize: 25,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -500,7 +490,7 @@ class HomePageState extends State<HomePage> {
                               'Eye Fatigue Test',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 14,
+                                fontSize: 18,
                               ),
                             ),
                           ),
@@ -570,6 +560,7 @@ class HomePageState extends State<HomePage> {
       print('Exception: $e');
     }
   }
+
 }
 
 
@@ -623,10 +614,61 @@ class AddCustomerPage extends StatefulWidget {
 
 class _AddCustomerPageState extends State<AddCustomerPage> {
   final _formKey = GlobalKey<FormState>();
-
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
+  final TextEditingController _mobileController = TextEditingController();
 
+  Future<void> sendcustomerDetails(BuildContext context, bool isSelf, {String? name, String? age}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken = prefs.getString('access_token') ?? '';
+    final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
+
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $authToken',
+      'Content-Type': 'application/json',
+    };
+
+    var body = json.encode({
+      'is_self': isSelf,
+      if (!isSelf) 'name': name,
+      if (!isSelf) 'age': age,
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: body,
+      );
+
+      print('API Response: ${response.statusCode} - ${response.body}');
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        if (jsonResponse.containsKey('customer_id')) {
+          String customerId = jsonResponse['customer_id'];
+
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString('customer_id', customerId);
+
+          print('Customer ID: $customerId');
+
+          // Navigate to GiveInfo screen
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => GiveInfo()),
+          );
+        } else {
+          print('Customer ID not found in response.');
+        }
+      } else {
+        print('API call failed with status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Exception: $e');
+    }
+  }
 
 
 
@@ -717,7 +759,6 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                 
                   SizedBox(height: 16),
                   TextFormField(
                     controller: _nameController,
@@ -731,11 +772,14 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                     keyboardType: TextInputType.number,
                     validator: _validateAge,
                   ),
+                  SizedBox(height: 16),
+
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         sendcustomerDetails(context,false, name: _nameController.text, age: _ageController.text);
+
                       }
                     },
                     child: Text('Submit'),
@@ -754,182 +798,13 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
       ),
     );
   }
-
-  Future<void> sendcustomerDetails(BuildContext context, bool isSelf, {String? name, String? age}) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken = prefs.getString('access_token') ?? '';
-    final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
-
-    Map<String, String> headers = {
-      'Authorization': 'Bearer $authToken',
-      'Content-Type': 'application/json',
-    };
-
-    var body = json.encode({
-      'is_self': isSelf,
-      if (!isSelf) 'name': name,
-      if (!isSelf) 'age': age,
-    });
-
-    try {
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        headers: headers,
-        body: body,
-      );
-
-      print('API Response: ${response.statusCode} - ${response.body}');
-
-      if (response.statusCode == 200) {
-        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-        if (jsonResponse.containsKey('customer_id')) {
-          String customerId = jsonResponse['customer_id'];
-
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString('customer_id', customerId);
-
-          print('Customer ID: $customerId');
-
-          // Navigate to GiveInfo screen
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => GiveInfo()),
-          );
-        } else {
-          print('Customer ID not found in response.');
-        }
-      } else {
-        print('API call failed with status code: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Exception: $e');
-    }
-  }
-
   @override
   void dispose() {
+    _emailController.dispose();
     _nameController.dispose();
     _ageController.dispose();
-    
+    _mobileController.dispose();
     super.dispose();
-  }
-}
-
-
-void _showTestChoiceDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Choose Test Option'),
-        content: Text('Is this test for yourself or for someone else?'),
-        actions: <Widget>[
-          TextButton(
-            child: Text('Test for Self'),
-            onPressed: () {
-              Navigator.of(context).pop();
-              sendcustomerDetails(context, true);
-            },
-          ),
-          TextButton(
-            child: Text('Test for Others'),
-            onPressed: () {
-              Navigator.of(context).pop();
-              _showOtherFormDialog(context);
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-
-void _showOtherFormDialog(BuildContext context) {
-  final _nameController = TextEditingController();
-  final _ageController = TextEditingController();
-
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Enter Details'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            TextField(
-              controller: _nameController,
-              decoration: InputDecoration(labelText: 'Name'),
-            ),
-            TextField(
-              controller: _ageController,
-              decoration: InputDecoration(labelText: 'Age'),
-              keyboardType: TextInputType.number,
-            ),
-          ],
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: Text('Submit'),
-            onPressed: () {
-              final String name = _nameController.text;
-              final String age = _ageController.text;
-              Navigator.of(context).pop();
-              sendcustomerDetails(context, false, name: name, age: age);
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-Future<void> sendcustomerDetails(BuildContext context, bool isSelf, {String? name, String? age}) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  String authToken = prefs.getString('access_token') ?? '';
-  final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
-
-  Map<String, String> headers = {
-    'Authorization': 'Bearer $authToken',
-    'Content-Type': 'application/json',
-  };
-
-  var body = json.encode({
-    'is_self': isSelf,
-    if (!isSelf) 'name': name,
-    if (!isSelf) 'age': age,
-  });
-
-  try {
-    final response = await http.post(
-      Uri.parse(apiUrl),
-      headers: headers,
-      body: body,
-    );
-
-    print('API Response: ${response.statusCode} - ${response.body}');
-
-    if (response.statusCode == 200) {
-      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-      if (jsonResponse.containsKey('customer_id')) {
-        String customerId = jsonResponse['customer_id'];
-
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('customer_id', customerId);
-
-        print('Customer ID: $customerId');
-
-        // Navigate to GiveInfo screen
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => GiveInfo()),
-        );
-      } else {
-        print('Customer ID not found in response.');
-      }
-    } else {
-      print('API call failed with status code: ${response.statusCode}');
-    }
-  } catch (e) {
-    print('Exception: $e');
   }
 }
 
