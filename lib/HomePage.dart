@@ -9,7 +9,8 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
-import 'package:project_new/testScreen.dart';
+import 'package:project_new/eyeFatigueTest.dart';
+import 'package:project_new/digitalEyeTest/testScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Api.dart';
 import 'Custom_navbar/bottom_navbar.dart';
@@ -165,14 +166,23 @@ class HomePageState extends State<HomePage> {
             GestureDetector(
               onTap: ()  {
                 sendcustomerDetails(context);
-                /* Navigator.push(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => AddCustomerPage()),
-                );*/ // Call the API
+                );
               },
               child: Image.asset('assets/digital_eye_exam.png'),
             ),
-            Image.asset('assets/eyeFatigueTest.png'),
+            GestureDetector(
+              onTap: ()  {
+               // sendcustomerDetails(context);
+                 Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EyeFatigueStartScreen()),
+                ); // Call the API
+              },
+              child: Image.asset('assets/eyeFatigueTest.png'),
+            ),
             Padding(
               padding: EdgeInsets.all(1.0),
               child: Image.asset('assets/find_near_by_store.png'),
@@ -605,41 +615,57 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _mobileController = TextEditingController();
 
-  Future<void> sendCustomerDetails(BuildContext context) async {
+  Future<void> sendcustomerDetails(BuildContext context, bool isSelf, {String? name, String? age}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
-    var headers = {
-      'Authorization': 'Bearer ${authToken}',
-      'Content-Type': 'application/json'
+    String authToken = prefs.getString('access_token') ?? '';
+    final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
+
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $authToken',
+      'Content-Type': 'application/json',
     };
-    var request = http.Request(
-        'POST',
-        Uri.parse('http://127.0.0.1:8000/api/eye/add-customer')
-    );
-    request.body = json.encode({
-      "email": _emailController.text,
-      "name": _nameController.text,
-      "domain_url": "mobile.testing.backend.zuktiinnovations",
-      "age": int.parse(_ageController.text),
-      "mobile_no": _mobileController.text,
+
+    var body = json.encode({
+      'is_self': isSelf,
+      if (!isSelf) 'name': name,
+      if (!isSelf) 'age': age,
     });
-    request.headers.addAll(headers);
 
-    http.StreamedResponse response = await request.send();
-
-    if (response.statusCode == 200) {
-
-      print(await response.stream.bytesToString());
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => GiveInfo()),
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: body,
       );
-    } else {
-      print(response.reasonPhrase);
+
+      print('API Response: ${response.statusCode} - ${response.body}');
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        if (jsonResponse.containsKey('customer_id')) {
+          String customerId = jsonResponse['customer_id'];
+
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString('customer_id', customerId);
+
+          print('Customer ID: $customerId');
+
+          // Navigate to GiveInfo screen
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => GiveInfo()),
+          );
+        } else {
+          print('Customer ID not found in response.');
+        }
+      } else {
+        print('API call failed with status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Exception: $e');
     }
   }
+
 
 
   InputDecoration _inputDecoration(String labelText) {
@@ -729,11 +755,6 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: _inputDecoration('Email'),
-                    validator: _validateEmail,
-                  ),
                   SizedBox(height: 16),
                   TextFormField(
                     controller: _nameController,
@@ -748,17 +769,13 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                     validator: _validateAge,
                   ),
                   SizedBox(height: 16),
-                  TextFormField(
-                    controller: _mobileController,
-                    decoration: _inputDecoration('Mobile No'),
-                    keyboardType: TextInputType.phone,
-                    validator: _validateMobile,
-                  ),
+
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        sendCustomerDetails(context);
+                        sendcustomerDetails(context,false, name: _nameController.text, age: _ageController.text);
+
                       }
                     },
                     child: Text('Submit'),

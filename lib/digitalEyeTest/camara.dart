@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:project_new/testScreen.dart';
+import 'package:project_new/digitalEyeTest/testScreen.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert' as convert;
 import 'package:image_picker/image_picker.dart';
-import 'Api.dart';
-import 'customDialog.dart';
+import '../Api.dart';
+import '../customDialog.dart';
 
 class Camara extends StatelessWidget {
   @override
@@ -87,9 +87,9 @@ class _CameraScreenState extends State<CameraS> {
         ]);**/
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
+          (camera) => camera.lensDirection == CameraLensDirection.front,
       orElse: () =>
-          _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
+      _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
     );
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
@@ -151,12 +151,12 @@ class _CameraScreenState extends State<CameraS> {
         child: Scaffold(
             body: Container(
                 decoration: BoxDecoration(
-                    /* image: DecorationImage(
+                  /* image: DecorationImage(
                     image: AssetImage('assets/test.png'),
                     // Replace with your image asset
                     fit: BoxFit.cover,
                   ),*/
-                    ),
+                ),
                 child: Center(
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -202,9 +202,9 @@ class _CameraScreenState extends State<CameraS> {
                                     fit: BoxFit.cover,
                                     child: SizedBox(
                                       width:
-                                          _controller.value.previewSize?.height,
+                                      _controller.value.previewSize?.height,
                                       height:
-                                          _controller.value.previewSize?.width,
+                                      _controller.value.previewSize?.width,
                                       child: CameraPreview(_controller),
                                     ),
                                   ),
@@ -280,11 +280,14 @@ class _CameraScreenState extends State<CameraS> {
       String authToken =
       // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
       prefs.getString('access_token') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
+
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${authToken} ',
+          'Customer-Id': CustomerId,
         },
         body: requestBody,
       );

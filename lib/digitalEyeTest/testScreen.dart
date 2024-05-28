@@ -11,7 +11,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:project_new/ReportPage.dart';
-import 'package:project_new/camara.dart';
+import 'package:project_new/digitalEyeTest/camara.dart';
 import 'package:project_new/eyeHealthTrack.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
@@ -19,9 +19,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:convert' as convert;
 
-import 'Api.dart';
-import 'customDialog.dart';
-import 'myPlanPage.dart';
+import '../../Api.dart';
+import '../../customDialog.dart';
+import 'TestReport.dart';
+import '../../myPlanPage.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -32,6 +33,7 @@ class GiveInfo extends StatefulWidget {
 
 class SelectQuestion extends State<GiveInfo> {
   ProgressDialog? _progressDialog;
+  late Future<List<Question>> _questionsFuture;
 
   List<int> idList = [];
   List<int> selectedIds = [];
@@ -41,11 +43,21 @@ class SelectQuestion extends State<GiveInfo> {
   void _onCheckboxChanged(bool? value, int questionId) {
     setState(() {
       if (value == true) {
-        selectedIds.add(questionId);
+        // Add the ID to the selected IDs list if it's not already present
+        if (!selectedIds.contains(questionId)) {
+          selectedIds.add(questionId);
+        }
       } else {
+        // Remove the ID from the selected IDs list if it's present
         selectedIds.remove(questionId);
       }
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _questionsFuture = getQuestionApi();
   }
 
   @override
@@ -64,135 +76,115 @@ class SelectQuestion extends State<GiveInfo> {
         );
         return false;
       },
-      child: MaterialApp(
-        home: Scaffold(
-          appBar: AppBar(
-            title: Text("EYE TEST"),
-            centerTitle: true,
-            leading: IconButton(
-              icon: Icon(
-                Icons.arrow_back,
-                color: Colors.bluebutton,
-              ),
-              onPressed: () {
-                // Add your back button functionality here
-              },
-            ),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("EYE TEST"),
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+            onPressed: () {
+              // Add your back button functionality here
+            },
           ),
-          body: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Welcome to Eye Health',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF5900D9),
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 40),
-                        child: Text(
-                          'Are you wearing Eyeglasses or Contact Lenses for Vision Correction Faces, or Sightseeing?',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.black,
+        ),
+        body: FutureBuilder<List<Question>>(
+          future: _questionsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(child: Text('No questions available'));
+            } else {
+              return SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Welcome to Eye Health',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.bluebutton,
+                            ),
                           ),
-                          textAlign: TextAlign.center,
-                        ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 40),
+                            child: Text(
+                              'Are you wearing Eyeglasses or Contact Lenses for Vision Correction Faces, or Sightseeing?',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.black,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          // Dynamically create QuestionCheckbox widgets based on fetched questions
+                          for (var question in snapshot.data!) ...[
+                            QuestionCheckbox(
+                              questionId: question.id,
+                              questionText: question.questionText,
+                              onChanged: (bool? value) {
+                                _onCheckboxChanged(value, question.id);
+                              },
+                            ),
+                          ],
+                        ],
                       ),
-                      QuestionCheckbox(
-                        questionId: 1,
-                        questionText:
-                        'Is your eye power higher than -4/+4?',
-                        onChanged: (bool? value) {
-                          _onCheckboxChanged(value, 1);
-                        },
-                      ),
-                      QuestionCheckbox(
-                        questionId: 2,
-                        questionText:
-                        'Are you facing difficulty in viewing objects at a distance more clearly than others?',
-                        onChanged: (bool? value) {
-                          _onCheckboxChanged(value, 2);
-                        },
-                      ),
-                      QuestionCheckbox(
-                        questionId: 3,
-                        questionText:
-                        'Are objects at a distance clearer to you than others?',
-                        onChanged: (bool? value) {
-                          _onCheckboxChanged(value, 3);
-                        },
-                      ),
-                      QuestionCheckbox(
-                        questionId: 4,
-                        questionText:
-                        'Do you have any known medical conditions?',
-                        onChanged: (bool? value) {
-                          _onCheckboxChanged(value, 4);
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                Card(
-                  shape: RoundedRectangleBorder(),
-                  elevation: 5,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Add your validation and navigation logic here
-                        getqstnApi();
-                        submitApi();
-                      },
-                      child: Text('Next'),
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Color(0xFF5900D9),
-                        padding: EdgeInsets.all(6),
-                        minimumSize: Size(
-                          MediaQuery.of(context).size.width,
-                          50,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(26),
+                    ),
+                    Card(
+                      shape: RoundedRectangleBorder(),
+                      elevation: 5,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            submitApi();
+                          },
+                          child: Text('Next'),
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Color(0xFF5900D9),
+                            padding: EdgeInsets.all(6),
+                            minimumSize:
+                            Size(MediaQuery.of(context).size.width, 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(26),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-                SizedBox(height: 20), // Add some spacing after the button
-              ],
-            ),
-          ),
+              );
+            }
+          },
         ),
       ),
     );
   }
 
-  Future<void> getqstnApi() async {
+/*  Future<void> getQuestionApi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
     prefs.getString('access_token') ?? '';
-    String CustomerId= prefs.getString('customer_id') ?? '';
-    print("myselectedid$CustomerId");
-    var headers = {
-      'Authorization': 'Bearer ${authToken}',
-// Remove or modify Content-Type header here
-      'Content-Type': 'application/json',
-      'Customer-Id' :CustomerId
-    };
+    String customer=
+        prefs.getString('customer_id') ?? '';
 
+    var headers = {
+      'Authorization': 'Bearer $authToken',
+      'Customer-Id' : customer,
+      // Remove or modify Content-Type header here
+      'Content-Type': 'application/json',
+    };
     try {
       // Update message while API call is in progress
       //  _progressDialog!.update(message: 'please wait...');
@@ -201,31 +193,22 @@ class SelectQuestion extends State<GiveInfo> {
         Uri.parse('${Api.baseurl}/api/eye/get-question-details'),
         headers: headers,
       );
-      print(response.body);
+      print(headers);
 
       if (response.statusCode == 200) {
         // _progressDialog!.hide();
         print(response.body);
 
-        final responseBody = json.decode(response.body);
-        final int id = responseBody['data']['id'];
-        final String test = responseBody['data']['test'];
-        //  message=responseMap['message'];
-        //  CustomAlertDialog.attractivepopupnodelay(context, message);
+        List<Question> parseQuestions(String responseBody) {
+          final parsed = jsonDecode(responseBody);
+          final List<dynamic> data = parsed['data'];
 
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('patient_id', '$id');
-        await prefs.setString('test', test);
-        print("id $id");
-        print("id $test");
-        print(response.body);
-        //   _progressDialog!.hide();
-
-        Navigator.pushReplacement(
-          context,
-          CupertinoPageRoute(builder: (context) => Camara()),
-        );
-      } else {
+          return data.map<Question>((json) {
+            // Assign custom names like "qst1", "qst2", etc., to the questions
+            final customName = 'qst${json['id']}';
+            return Question(id: json['id'], questionText: json['question_text']);
+          }).toList();
+      }} else {
         // _progressDialog!.hide();
 
         CustomAlertDialog.attractivepopupnodelay(
@@ -247,17 +230,54 @@ class SelectQuestion extends State<GiveInfo> {
       //  _progressDialog!.hide();
     }
     // _progressDialog!.hide();
+  }*/
+  Future<List<Question>> getQuestionApi() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken = prefs.getString('access_token') ?? '';
+    String customer = prefs.getString('customer_id') ?? '';
+
+    var headers = {
+      'Authorization': 'Bearer $authToken',
+      'Customer-Id': customer,
+      // Remove or modify Content-Type header here
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      http.Response response = await http.get(
+        Uri.parse('${Api.baseurl}/api/eye/get-question-details'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final parsed = jsonDecode(response.body);
+        final List<dynamic> data = parsed['data'];
+
+        return data.map<Question>((json) {
+          // Assign custom names like "qst1", "qst2", etc., to the questions
+          final customName = 'qst${json['id']}';
+          return Question(id: json['id'], questionText: json['question_text']);
+        }).toList();
+      } else {
+        throw Exception('Failed to fetch questions');
+      }
+    } catch (e) {
+      throw e;
+    }
   }
+
   Future<void> submitApi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
     // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
     prefs.getString('access_token') ?? '';
+    String CustomerId = prefs.getString('customer_id') ?? '';
     print("myselectedid${selectedIds}");
     var headers = {
       'Authorization': 'Bearer ${authToken}',
 // Remove or modify Content-Type header here
       'Content-Type': 'application/json',
+      'Customer-Id': CustomerId,
     };
     var body = json.encode({
       "selected_question": selectedIds,
@@ -319,14 +339,13 @@ class SelectQuestion extends State<GiveInfo> {
     // _progressDialog!.hide();
   }
 }
+
 class LeftEyeTest extends StatefulWidget {
   @override
   LeftEyeTestState createState() => LeftEyeTestState();
 }
 
 class LeftEyeTestState extends State<LeftEyeTest> {
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -378,7 +397,6 @@ class LeftEyeTestState extends State<LeftEyeTest> {
                           height: 220,
                         ),
                       ),
-
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 20.0),
                         child: Column(
@@ -406,7 +424,8 @@ class LeftEyeTestState extends State<LeftEyeTest> {
                   },
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Color(0xFF4600A9), // Set button background color
+                    backgroundColor: Color(0xFF4600A9),
+                    // Set button background color
                     padding: EdgeInsets.all(16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
@@ -428,13 +447,14 @@ class LeftEyeTestState extends State<LeftEyeTest> {
       String access_token = prefs.getString('access_token') ?? '';
       String test = prefs.getString('test') ?? '';
       String id = prefs.getString('patient_id') ?? '';
-
+      String CustomerId = prefs.getString('customer_id') ?? '';
       var headers = {
         'Authorization': 'Bearer ${access_token}',
         'Content-Type': 'application/json',
+        'Customer-Id': CustomerId,
       };
-      var request = http.Request(
-          'POST', Uri.parse('${Api.baseurl}/api/eye/select-eye'));
+      var request =
+      http.Request('POST', Uri.parse('${Api.baseurl}/api/eye/select-eye'));
       request.body =
           json.encode({"test_id": id, "eye_status": eye, "test": test});
       print(request.body);
@@ -474,6 +494,7 @@ class LeftEyeTestState extends State<LeftEyeTest> {
     }
   }
 }
+
 Widget bulletText(String text) {
   return Row(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -482,7 +503,7 @@ Widget bulletText(String text) {
       Expanded(
         child: Text(
           text,
-          style: TextStyle(fontSize: 16,color: Colors.bluebutton),
+          style: TextStyle(fontSize: 16, color: Colors.bluebutton),
         ),
       ),
     ],
@@ -501,16 +522,16 @@ class SnellFraction extends State<AlfabetTest> {
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+    //_initializeCamera();
     getSnellFraction();
   }
 
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
+          (camera) => camera.lensDirection == CameraLensDirection.front,
       orElse: () =>
-          _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
+      _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
     );
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
@@ -551,7 +572,7 @@ class SnellFraction extends State<AlfabetTest> {
     var distanceType;
 
     var apiUrl =
-        'https://testing1.zuktiapp.zuktiinnovations.com/calculate-distance-api/'; // Replace with your API endpoint
+        '${Api.baseurl}/calculate-distance'; // Replace with your API endpoint
     /* String base64String = await xFileToBase64(image);*/
 
     //print('image$image');
@@ -559,6 +580,8 @@ class SnellFraction extends State<AlfabetTest> {
     String authToken =
     // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
     prefs.getString('access_token') ?? '';
+    String CustomerId = prefs.getString('customer_id') ?? '';
+
     String text = prefs.getString('test') ?? '';
     if (text == 'myopia') {
       distanceType = 'fardistance';
@@ -582,6 +605,7 @@ class SnellFraction extends State<AlfabetTest> {
         headers: <String, String>{
           'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
+          'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
@@ -692,11 +716,11 @@ class SnellFraction extends State<AlfabetTest> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                    /*   image: DecorationImage(
+                  /*   image: DecorationImage(
                     image: AssetImage('assets/test.png'),
                     fit: BoxFit.cover,
                   ),*/
-                    ),
+                ),
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -721,7 +745,7 @@ class SnellFraction extends State<AlfabetTest> {
                             visible: isLoadingRandomText,
                             child: CircularProgressIndicator(
                               valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.grey),
+                              AlwaysStoppedAnimation<Color>(Colors.grey),
                             ),
                           ),
                         ],
@@ -810,9 +834,8 @@ class SnellFraction extends State<AlfabetTest> {
                           width: 160,
                           child: ElevatedButton(
                             onPressed: () {
-                              _controller?.dispose().then((_) {
-                                Myopia_or_HyperMyopiaTest(context);
-                              });
+                              Myopia_or_HyperMyopiaTest(context);
+                              _controller?.dispose().then((_) {});
                             },
                             child: Text(
                               'Not able to Read',
@@ -944,15 +967,18 @@ class SnellFraction extends State<AlfabetTest> {
       // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
       prefs.getString('access_token') ?? '';
       String id = prefs.getString('test_id') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
+
       print('beebeb$id');
 //todo notworking
       print("nahi$nextFraction");
       var headers = {
         'Authorization': 'Bearer ${authToken}',
         'Content-Type': 'application/json',
+        'Customer-Id': CustomerId,
       };
       var request =
-          http.Request('POST', Uri.parse('${Api.baseurl}/api/eye/random-text'));
+      http.Request('POST', Uri.parse('${Api.baseurl}/api/eye/random-text'));
       request.body =
           json.encode({"test_id": id, "snellen_fraction": nextFraction});
       request.headers.addAll(headers);
@@ -966,7 +992,7 @@ class SnellFraction extends State<AlfabetTest> {
 // Map<String, dynamic> parsedJson = json.decode(responseBody);
 // Extract data from the parsed JSON
         String choose_astigmatism =
-            parsedJson['data']['test_object']['choose_astigmatism'];
+        parsedJson['data']['test_object']['choose_astigmatism'];
         currentTextSize = parsedJson['data']['textSize'];
         randomText = parsedJson['data']['random_text'];
         setState(() {
@@ -997,14 +1023,14 @@ class SnellFraction extends State<AlfabetTest> {
   Future<void> Myopia_or_HyperMyopiaTest(BuildContext context) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String authToken =
-      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-      prefs.getString('access_token') ?? '';
+      String authToken = prefs.getString('access_token') ?? '';
       String test_id = prefs.getString('test_id') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
       print("testid$test_id snell$nextFraction");
       var headers = {
-        'Authorization': 'Bearer ${authToken}',
+        'Authorization': 'Bearer $authToken',
         'Content-Type': 'application/json',
+        'Customer-Id': CustomerId,
       };
       var request = http.Request(
           'PUT',
@@ -1050,16 +1076,16 @@ class Reading extends State<ReadingTest> {
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+    // _initializeCamera();
     getReadingSnellFraction();
   }
 
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
+          (camera) => camera.lensDirection == CameraLensDirection.front,
       orElse: () =>
-          _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
+      _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
     );
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
@@ -1144,7 +1170,7 @@ class Reading extends State<ReadingTest> {
         if (connectivityResult == ConnectivityResult.none) {
           Fluttertoast.showToast(
             msg:
-                'Poor internet connection , make sure you have a good internet',
+            'Poor internet connection , make sure you have a good internet',
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.BOTTOM,
             backgroundColor: Colors.black,
@@ -1208,7 +1234,7 @@ class Reading extends State<ReadingTest> {
         if (connectivityResult == ConnectivityResult.none) {
           Fluttertoast.showToast(
             msg:
-                'Poor internet connection , make sure you have a good internet',
+            'Poor internet connection , make sure you have a good internet',
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.BOTTOM,
             backgroundColor: Colors.black,
@@ -1247,163 +1273,163 @@ class Reading extends State<ReadingTest> {
       child: MaterialApp(
           home: Scaffold(
               body: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/test.png'),
-// Replace with your image
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          Center(
-            child: SingleChildScrollView(
-              child: Column(
-                //  mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(height: 10),
                   Container(
-                    width: 150,
-                    height: 80,
-                    child: Center(
-                      child: Text(
-                        randomText,
-                        style: TextStyle(
-                          fontSize: currentTextSize,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 30),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(width: 20),
-                      SizedBox(
-                        height: 45,
-                        width: 130,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            getReadingSnellFraction();
-                            increaseReadingTextSize();
-                          },
-                          child: Text(
-                            'Back',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight:
-                                    FontWeight.bold // Set the text color here
-                                // You can also set other properties like fontSize, fontWeight, etc.
-                                ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 5, vertical: 1),
-                            backgroundColor: Colors.yellow,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 20),
-                      SizedBox(
-                        height: 45,
-                        width: 140,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            getReadingSnellFraction();
-
-                            decreaseReadingTextSize();
-                          },
-                          child: Text(
-                            'Perfectly '
-                            'Visible',
-                            style: TextStyle(
-                              color: Colors.white, // Set the text color here
-                              // You can also set other properties like fontSize, fontWeight, etc.
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 5, vertical: 1),
-                            backgroundColor: Colors.lightGreen,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  SizedBox(
-                    height: 40,
-                    width: 150,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Update_HyperMyopiaTest(context);
-                      },
-                      child: Text(
-                        'Not able to Read',
-                        style: TextStyle(
-                          color: Colors.white, // Set the text color here
-                          // You can also set other properties like fontSize, fontWeight, etc.
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 5, vertical: 3),
-                        backgroundColor: Colors.red,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    width: 320,
-                    height: 40,
-                    padding: EdgeInsets.all(8),
-                    child: Text(
-                      alert,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 22,
-                          color:
-                              alert == 'Good to go' ? Colors.green : Colors.red,
-                          fontWeight: FontWeight.bold
-                          // Change text color here
-                          // You can also set other properties like fontWeight, fontStyle, etc.
-                          ),
-                    ),
-                  ),
-                  Container(
-                    child: InteractiveViewer(
-                      boundaryMargin: EdgeInsets.all(20.0),
-                      minScale: 0.1,
-                      maxScale: 1.5,
-                      child: _controller != null
-                          ? CameraPreview(_controller!)
-                          : Container(),
-                    ),
-
-                    width: 280.0,
-                    // Set the desired width
-                    height: 320.0,
-                    // Set the desired height
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
+                      image: DecorationImage(
+                        image: AssetImage('assets/test.png'),
+// Replace with your image
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                  )
+                  ),
+                  Center(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        //  mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(height: 10),
+                          Container(
+                            width: 150,
+                            height: 80,
+                            child: Center(
+                              child: Text(
+                                randomText,
+                                style: TextStyle(
+                                  fontSize: currentTextSize,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 30),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(width: 20),
+                              SizedBox(
+                                height: 45,
+                                width: 130,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    getReadingSnellFraction();
+                                    increaseReadingTextSize();
+                                  },
+                                  child: Text(
+                                    'Back',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight:
+                                        FontWeight.bold // Set the text color here
+                                      // You can also set other properties like fontSize, fontWeight, etc.
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 5, vertical: 1),
+                                    backgroundColor: Colors.yellow,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 20),
+                              SizedBox(
+                                height: 45,
+                                width: 140,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    getReadingSnellFraction();
 
-                  /** Container(
+                                    decreaseReadingTextSize();
+                                  },
+                                  child: Text(
+                                    'Perfectly '
+                                        'Visible',
+                                    style: TextStyle(
+                                      color: Colors.white, // Set the text color here
+                                      // You can also set other properties like fontSize, fontWeight, etc.
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 5, vertical: 1),
+                                    backgroundColor: Colors.lightGreen,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          SizedBox(
+                            height: 40,
+                            width: 150,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Update_HyperMyopiaTest(context);
+                              },
+                              child: Text(
+                                'Not able to Read',
+                                style: TextStyle(
+                                  color: Colors.white, // Set the text color here
+                                  // You can also set other properties like fontSize, fontWeight, etc.
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                padding:
+                                EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+                                backgroundColor: Colors.red,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                            width: 320,
+                            height: 40,
+                            padding: EdgeInsets.all(8),
+                            child: Text(
+                              alert,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 22,
+                                  color:
+                                  alert == 'Good to go' ? Colors.green : Colors.red,
+                                  fontWeight: FontWeight.bold
+                                // Change text color here
+                                // You can also set other properties like fontWeight, fontStyle, etc.
+                              ),
+                            ),
+                          ),
+                          Container(
+                            child: InteractiveViewer(
+                              boundaryMargin: EdgeInsets.all(20.0),
+                              minScale: 0.1,
+                              maxScale: 1.5,
+                              child: _controller != null
+                                  ? CameraPreview(_controller!)
+                                  : Container(),
+                            ),
+
+                            width: 280.0,
+                            // Set the desired width
+                            height: 320.0,
+                            // Set the desired height
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                            ),
+                          )
+
+                          /** Container(
                               child:AspectRatio(
                               /**  width: 300.0,
                               // Set the desired width
@@ -1419,13 +1445,13 @@ class Reading extends State<ReadingTest> {
                               : Container(),
 
                               ) )**/
-                  ,
+                          ,
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
-              ),
-            ),
-          ),
-        ],
-      ))),
+              ))),
     );
   }
 
@@ -1503,12 +1529,14 @@ class Reading extends State<ReadingTest> {
       // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
       prefs.getString('access_token') ?? '';
       String id = prefs.getString('test_id') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
       print('beebeb$id');
 //todo notworking
       print("nahi$nextFraction");
       var headers = {
         'Authorization': 'Bearer $authToken',
         'Content-Type': 'application/json',
+        'Customer-Id': CustomerId,
       };
       var request = http.Request(
           'POST',
@@ -1543,7 +1571,7 @@ class Reading extends State<ReadingTest> {
         if (connectivityResult == ConnectivityResult.none) {
           Fluttertoast.showToast(
             msg:
-                'Poor internet connection , make sure you have a good internet',
+            'Poor internet connection , make sure you have a good internet',
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.BOTTOM,
             backgroundColor: Colors.black,
@@ -1565,47 +1593,53 @@ class Reading extends State<ReadingTest> {
   }
 
   Future<void> Update_HyperMyopiaTest(BuildContext context) async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String authToken =
-      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-      prefs.getString('access_token') ?? '';
-      String test_id = prefs.getString('test_id') ?? '';
-      var headers = {
-        'Authorization': 'Bearer $authToken',
-        'Content-Type': 'application/json',
-      };
-      var request = http.Request(
-          'PUT',
-          Uri.parse(
-              'https://testing1.zuktiapp.zuktiinnovations.com/update-Reading-SnellenFraction-Test-api/'));
-      request.body =
-          json.encode({"test_id": test_id, "snellen_fraction": nextFraction});
-      request.headers.addAll(headers);
-      http.StreamedResponse response = await request.send();
-      print(response.statusCode);
-      String responseBody = await response.stream.bytesToString();
-      Map<String, dynamic> parsedJson = json.decode(responseBody);
-      print(parsedJson.toString());
-      if (response.statusCode == 200) {
-        // showCustomToast(context, ' Operation Successfully ');
-        String eyeStatus = parsedJson["data"]["eye_status"];
-        if (eyeStatus == "right") {
-          CustomAlertDialog.attractivepopup(
-              context, 'You Have Successfully Completed Eyetest.....');
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('page', "readingtestpage");
-
-          getActivePlan();
-        } else {
-          Navigator.push(
+    //  try {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
+    String test_id = prefs.getString('test_id') ?? '';
+    String CustomerId = prefs.getString('customer_id') ?? '';
+    var headers = {
+      'Authorization': 'Bearer $authToken',
+      'Content-Type': 'application/json',
+      'Customer-Id': CustomerId,
+    };
+    var request = http.Request(
+        'PUT',
+        Uri.parse(
+            '${Api.baseurl}/api/eye/update-Reading-SnellenFraction-TestApi'));
+    request.body =
+        json.encode({"test_id": test_id, "snellen_fraction": nextFraction});
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    print(response.statusCode);
+    String responseBody = await response.stream.bytesToString();
+    Map<String, dynamic> parsedJson = json.decode(responseBody);
+    print(parsedJson.toString());
+    if (response.statusCode == 200) {
+      // showCustomToast(context, ' Operation Successfully ');
+      String eyeStatus = parsedJson["data"]["eye_status"];
+      if (eyeStatus == "right") {
+        CustomAlertDialog.attractivepopup(
+            context, 'You Have Successfully Completed Eyetest.....');
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('page', "readingtestpage");
+        Navigator.push(
             context,
-            CupertinoPageRoute(builder: (context) => RightEye()),
-          );
-        }
-        print(await response.stream.bytesToString());
+            CupertinoPageRoute(
+                builder: (context) =>
+                const TestReport()));
+        // getActivePlan();
+      } else {
+        Navigator.push(
+          context,
+          CupertinoPageRoute(builder: (context) => RightEye()),
+        );
       }
-    } catch (e) {
+      print(await response.stream.bytesToString());
+    }
+    /* } catch (e) {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
             context, 'poor internet connectivity , please try again later!');
@@ -1613,14 +1647,14 @@ class Reading extends State<ReadingTest> {
 
 // If the server returns an error response, throw an exception
       throw Exception('Failed to send data');
-    }
+    }*/
   }
 
-  Future<void> getActivePlan() async {
+/* Future<void> getActivePlan() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
 
     final String apiUrl =
         'https://testing1.zuktiapp.zuktiinnovations.com/subscription-active-plan/';
@@ -1672,7 +1706,7 @@ class Reading extends State<ReadingTest> {
 // Handle exceptions here (e.g., network errors)
       print('Exception: $e');
     }
-  }
+  }*/
 }
 
 class AstigmationTest extends StatefulWidget {
@@ -1693,7 +1727,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
   void initState() {
     super.initState();
     startTimer();
-    _initializeCamera();
+    //  _initializeCamera();
   }
 
   void startTimer() {
@@ -1723,9 +1757,9 @@ class AstigmationTest1 extends State<AstigmationTest> {
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
+          (camera) => camera.lensDirection == CameraLensDirection.front,
       orElse: () =>
-          _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
+      _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
     );
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
@@ -1737,7 +1771,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
       setState(() {});
     }
     // Start capturing images per second
-    _captureImagePerSecond();
+    // _captureImagePerSecond();
   }
 
   void _captureImagePerSecond() async {
@@ -1772,6 +1806,8 @@ class AstigmationTest1 extends State<AstigmationTest> {
     String authToken =
     // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
     prefs.getString('access_token') ?? '';
+    String CustomerId = prefs.getString('customer_id') ?? '';
+
     //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
     try {
       var frameData =
@@ -1781,6 +1817,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
       var requestBody = jsonEncode({
         'frameData': frameData,
         'test_distance': distanceType,
+        'Customer-Id': CustomerId,
       });
 
       var response = await http.post(
@@ -1864,9 +1901,9 @@ class AstigmationTest1 extends State<AstigmationTest> {
       String test_id = prefs.getString('test_id') ?? '';
       await prefs.setString('region', region);
       print("choseastigmation_response${region}");
-
-       String apiUrl =
-          '${Api.baseurl}/api/eye/choose-astigmatism';
+      String CustomerId = prefs.getString('customer_id') ?? '';
+      print("choseastigmation_res${authToken}");
+      String apiUrl = '${Api.baseurl}/api/eye/choose-astigmatism';
       Map<String, dynamic> body1 = {
         'test_id': test_id,
         'choose_astigmatism': region,
@@ -1875,7 +1912,8 @@ class AstigmationTest1 extends State<AstigmationTest> {
         Uri.parse(apiUrl),
         headers: {
           'Authorization': 'Bearer ${authToken}',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Customer-Id': CustomerId
         },
         body: jsonEncode(body1),
       );
@@ -1933,10 +1971,6 @@ class AstigmationTest1 extends State<AstigmationTest> {
           body: Stack(
             fit: StackFit.expand,
             children: <Widget>[
-              Image.asset(
-                'assets/test.png',
-                fit: BoxFit.cover,
-              ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -2047,7 +2081,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
                       style: TextStyle(
                           fontSize: 22,
                           color:
-                              alert == 'Good to go' ? Colors.green : Colors.red,
+                          alert == 'Good to go' ? Colors.green : Colors.red,
                           fontWeight: FontWeight.w400),
                     ),
                   ),
@@ -2131,9 +2165,9 @@ class Astigmationtest2 extends State<AstigmationTest2> {
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
+          (camera) => camera.lensDirection == CameraLensDirection.front,
       orElse: () =>
-          _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
+      _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
     );
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
@@ -2145,7 +2179,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
       setState(() {});
     }
     // Start capturing images per second
-    _captureImagePerSecond();
+    //_captureImagePerSecond();
   }
 
   void _captureImagePerSecond() async {
@@ -2155,7 +2189,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
           ?.takePicture(); // Process the captured image as needed
       print('Image captured: ${image?.path}');
       // Delay to capture image per second
-      capturePhoto(image!);
+      //capturePhoto(image!);
       await Future.delayed(Duration(seconds: 1));
       // regpatient1(image);
     }
@@ -2179,7 +2213,10 @@ class Astigmationtest2 extends State<AstigmationTest2> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
     // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? ''; //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
+    prefs.getString('access_token') ??
+        ''; //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
+    String CustomerId = prefs.getString('customer_id') ?? '';
+
     try {
       var frameData =
           image; // Replace this with your frame data as a base64 string
@@ -2195,10 +2232,11 @@ class Astigmationtest2 extends State<AstigmationTest2> {
         headers: <String, String>{
           'Authorization': 'Bearer ${authToken}',
           'Content-Type': 'application/json',
+          'Customer-Id': CustomerId
         },
         body: requestBody,
       );
-
+      print("cust$CustomerId");
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
 
@@ -2250,7 +2288,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
       delayedAPICall();
     });
     // delayedAPICall();
-    _initializeCamera();
+    // _initializeCamera();
   }
 
   void startTimer() {
@@ -2323,14 +2361,16 @@ class Astigmationtest2 extends State<AstigmationTest2> {
       prefs.getString('access_token') ?? '';
       String test_id = prefs.getString('test_id') ?? '';
       String selectedRegion = prefs.getString('region') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
+
       print("eeee$test_id");
       final String apiUrl =
           '${Api.baseurl}/api/eye/get-degrees?test_id=$test_id';
       final response = await http.get(
         Uri.parse(apiUrl),
         headers: {
-          'Authorization':
-              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE2MzU2MzUyLCJpYXQiOjE3MTYyNjk5NTIsImp0aSI6IjU5MDA1OTUxNTM0ZTRjNTA4OGFhNzM4N2ZlNWMzZGRlIiwidXNlcl9pZCI6IjQ2OWQxZjU0LTVjNWYtNGQ2MS05MDFjLWQzY2QyMmZmOTIyMSJ9.8UsFlL6GKPE-rIY3Eh3QBY-Jcz_njkEJl2GTlHaiHlY',
+          'Authorization': 'Bearer $authToken',
+          'Customer-Id': CustomerId,
         },
       );
       print("degrees--" + response.body);
@@ -2381,6 +2421,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
       // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
       prefs.getString('access_token') ?? '';
       String test_id = prefs.getString('test_id') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
       String apiUrl = '${Api.baseurl}/api/eye/choose-degree-api/';
       Map<String, dynamic> body1 = {
         'test_id': test_id,
@@ -2390,8 +2431,9 @@ class Astigmationtest2 extends State<AstigmationTest2> {
       final response = await http.put(
         Uri.parse(apiUrl),
         headers: {
-          'Authorization': 'Bearer ${authToken}',
-          'Content-Type': 'application/json'
+          'Authorization': 'Bearer $authToken',
+          'Content-Type': 'application/json',
+          'Customer-Id': CustomerId,
         },
         body: jsonEncode(body1),
       );
@@ -2511,10 +2553,10 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                         child: currentImage.isEmpty
                             ? CircularProgressIndicator()
                             : Image.asset(
-                                currentImage,
-                                width: imageSize1,
-                                fit: BoxFit.fill,
-                              ),
+                          currentImage,
+                          width: imageSize1,
+                          fit: BoxFit.fill,
+                        ),
                       ),
                       SizedBox(height: 10.0),
                       Row(
@@ -2543,51 +2585,51 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                         child: dataList.isEmpty
                             ? CircularProgressIndicator()
                             : SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: dataList.map((value) {
-                                    return Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: OutlinedButton(
-                                        onPressed: () {
-                                          print('Button $value pressed');
-                                          ChoseAstigmation(value);
-                                          Degree = value;
-                                          setState(() {
-                                            selectedValue = value;
-                                          });
-                                        },
-                                        style: ButtonStyle(
-                                          backgroundColor:
-                                              MaterialStateProperty.all<Color>(
-                                            selectedValue == value
-                                                ? Colors.lightBlueAccent
-                                                : Colors.bluebutton,
-                                          ),
-                                          side: MaterialStateProperty.all<
-                                              BorderSide>(
-                                            BorderSide(
-                                              color: Colors
-                                                  .white, // Blue border color
-                                              width: 2.0,
-                                            ),
-                                          ),
-                                        ),
-                                        child: Text(
-                                          value.toString(),
-                                          style: TextStyle(
-                                            color: selectedValue == value
-                                                ? Colors.white
-                                                : Colors.white,
-                                          ),
-                                        ),
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceEvenly,
+                            children: dataList.map((value) {
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: OutlinedButton(
+                                  onPressed: () {
+                                    print('Button $value pressed');
+                                    ChoseAstigmation(value);
+                                    Degree = value;
+                                    setState(() {
+                                      selectedValue = value;
+                                    });
+                                  },
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                      selectedValue == value
+                                          ? Colors.lightBlueAccent
+                                          : Colors.bluebutton,
+                                    ),
+                                    side: MaterialStateProperty.all<
+                                        BorderSide>(
+                                      BorderSide(
+                                        color: Colors
+                                            .white, // Blue border color
+                                        width: 2.0,
                                       ),
-                                    );
-                                  }).toList(),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    value.toString(),
+                                    style: TextStyle(
+                                      color: selectedValue == value
+                                          ? Colors.white
+                                          : Colors.white,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
                       ),
                       SizedBox(height: 10),
                       Container(
@@ -2656,14 +2698,14 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                 child: _controller != null
                     ? CameraPreview(_controller!)
                     : Container(
-                        color: Colors.black,
-                        child: Center(
-                          child: Text(
-                            'Loading Camera...',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
+                  color: Colors.black,
+                  child: Center(
+                    child: Text(
+                      'Loading Camera...',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -2711,7 +2753,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
   void initState() {
     super.initState();
     startTimer();
-    _initializeCamera();
+    //  _initializeCamera();
   }
 
   void startTimer() {
@@ -2765,9 +2807,9 @@ class AstigmationTestNone extends State<AstigmationTest3> {
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
+          (camera) => camera.lensDirection == CameraLensDirection.front,
       orElse: () =>
-          _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
+      _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
     );
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
@@ -2816,6 +2858,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
     String authToken =
     // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
     prefs.getString('access_token') ?? '';
+    String CustomerId = prefs.getString('customer_id') ?? '';
     //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
     try {
       var frameData =
@@ -2830,8 +2873,9 @@ class AstigmationTestNone extends State<AstigmationTest3> {
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer ${authToken}',
+          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
+          'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
@@ -2922,6 +2966,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
     String authToken =
     // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
     prefs.getString('access_token') ?? '';
+    String CustomerId = prefs.getString('customer_id') ?? '';
 
     final String apiUrl =
         'https://testing1.zuktiapp.zuktiinnovations.com/counter-api/?counter_value=0';
@@ -2929,6 +2974,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
     Map<String, String> headers = {
       'Content-Type': 'application/json',
       'Authorization': '$authToken',
+      'Customer-Id': CustomerId,
     };
 // Replace this with your PUT request body
 
@@ -2964,6 +3010,9 @@ class AstigmationTestNone extends State<AstigmationTest3> {
       // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
       prefs.getString('access_token') ?? '';
       String test_id = prefs.getString('test_id') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
+      print("choseastigmation_res$CustomerId");
+
       final String apiUrl = '${Api.baseurl}/api/eye/choose-astigmatism-api/';
       Map<String, dynamic> body1 = {
         'test_id': test_id,
@@ -2973,7 +3022,8 @@ class AstigmationTestNone extends State<AstigmationTest3> {
         Uri.parse(apiUrl),
         headers: {
           'Authorization': 'Bearer $authToken',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Customer-Id': CustomerId,
         },
         body: jsonEncode(body1),
       );
@@ -3067,11 +3117,6 @@ class AstigmationTestNone extends State<AstigmationTest3> {
               fit: StackFit.expand,
               children: <Widget>[
                 // Background Image
-                Image.asset(
-                  'assets/test.png', // Replace with your image path
-                  fit: BoxFit.cover,
-                ),
-
                 Container(
                   margin: EdgeInsets.fromLTRB(0, 55, 0, 2),
                   child: SingleChildScrollView(
@@ -3443,9 +3488,9 @@ class AstigmationTestNone extends State<AstigmationTest3> {
                                           ? Colors.green
                                           : Colors.red,
                                       fontWeight: FontWeight.bold
-                                      // Change text color here
-                                      // You can also set other properties like fontWeight, fontStyle, etc.
-                                      ),
+                                    // Change text color here
+                                    // You can also set other properties like fontWeight, fontStyle, etc.
+                                  ),
                                 ),
                               ],
                             ),
@@ -3495,15 +3540,15 @@ class Cyl extends State<CylTest> {
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+    // _initializeCamera();
   }
 
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
+          (camera) => camera.lensDirection == CameraLensDirection.front,
       orElse: () =>
-          _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
+      _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
     );
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
@@ -3549,6 +3594,8 @@ class Cyl extends State<CylTest> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String access_token = prefs.getString('access_token') ?? '';
     //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
+    String CustomerId = prefs.getString('customer_id') ?? '';
+
     try {
       var frameData =
           image; // Replace this with your frame data as a base64 string
@@ -3564,6 +3611,7 @@ class Cyl extends State<CylTest> {
         headers: <String, String>{
           'Authorization': 'Bearer $access_token',
           'Content-Type': 'application/json',
+          'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
@@ -3726,7 +3774,7 @@ class Cyl extends State<CylTest> {
                       child: Text('Not able to Read'),
                       style: ElevatedButton.styleFrom(
                         padding:
-                            EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                         backgroundColor: Colors.red,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -3744,11 +3792,11 @@ class Cyl extends State<CylTest> {
                       style: TextStyle(
                           fontSize: 22,
                           color:
-                              alert == 'Good to go' ? Colors.green : Colors.red,
+                          alert == 'Good to go' ? Colors.green : Colors.red,
                           fontWeight: FontWeight.bold
-                          // Change text color here
-                          // You can also set other properties like fontWeight, fontStyle, etc.
-                          ),
+                        // Change text color here
+                        // You can also set other properties like fontWeight, fontStyle, etc.
+                      ),
                     ),
                   ),
                   Container(
@@ -3788,15 +3836,15 @@ class shadowtest extends State<ShadowTest> {
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+    // _initializeCamera();
   }
 
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
+          (camera) => camera.lensDirection == CameraLensDirection.front,
       orElse: () =>
-          _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
+      _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
     );
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
@@ -3808,7 +3856,7 @@ class shadowtest extends State<ShadowTest> {
       setState(() {});
     }
     // Start capturing images per second
-    _captureImagePerSecond();
+    //_captureImagePerSecond();
   }
 
   void _captureImagePerSecond() async {
@@ -3837,13 +3885,14 @@ class shadowtest extends State<ShadowTest> {
     var distanceType;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String text = prefs.getString('test') ?? '';
+    String CustomerId = prefs.getString('customer_id') ?? '';
 
     if (text == 'myopia') {
       distanceType = 'fardistance';
     } else if (text == 'hyperopia') {
       distanceType = 'neardistance';
     }
-
+    print("ddd$CustomerId");
     var apiUrl =
         '${Api.baseurl}/api/eye/calculate-distance/'; // Replace with your API endpoint
 
@@ -3866,6 +3915,7 @@ class shadowtest extends State<ShadowTest> {
         headers: <String, String>{
           'Authorization': 'Bearer ${authToken}',
           'Content-Type': 'application/json',
+          'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
@@ -4026,7 +4076,7 @@ class shadowtest extends State<ShadowTest> {
                         style: TextStyle(
                           fontSize: 22,
                           color: 'Good to go' ==
-                                  'Good to go' // Replace with your condition
+                              'Good to go' // Replace with your condition
                               ? Colors.green
                               : Colors.red,
                           fontWeight: FontWeight.bold,
@@ -4047,14 +4097,14 @@ class shadowtest extends State<ShadowTest> {
                 child: _controller != null
                     ? CameraPreview(_controller!)
                     : Container(
-                        color: Colors.black,
-                        child: Center(
-                          child: Text(
-                            'Camera Preview',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
+                  color: Colors.black,
+                  child: Center(
+                    child: Text(
+                      'Camera Preview',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -4093,12 +4143,14 @@ class shadowtest extends State<ShadowTest> {
     // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
     prefs.getString('access_token') ?? '';
     String test_id = prefs.getString('test_id') ?? '';
-// Replace this URL with your PUT API endpoint
-    final String apiUrl = '${Api.baseurl}/api/eye/cyl-test/';
+    String CustomerId = prefs.getString('customer_id') ?? '';
+    print("snsjsjsj"); // Replace this URL with your PUT API endpoint
+    final String apiUrl = '${Api.baseurl}/api/eye/cyl-test';
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${authToken}',
+      'Customer-Id': CustomerId
     };
 // Replace this with your PUT request body
     Map<String, dynamic> body = {
@@ -4144,15 +4196,15 @@ class redgreen extends State<RedGreenTest> {
   void initState() {
     super.initState();
     fetchData();
-    _initializeCamera();
+    // _initializeCamera();
   }
 
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
+          (camera) => camera.lensDirection == CameraLensDirection.front,
       orElse: () =>
-          _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
+      _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
     );
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
@@ -4206,6 +4258,7 @@ class redgreen extends State<RedGreenTest> {
       // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
       prefs.getString('access_token') ?? '';
       String text = prefs.getString('test') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
 
       if (text == 'myopia') {
         distanceType = 'fardistance';
@@ -4225,6 +4278,7 @@ class redgreen extends State<RedGreenTest> {
         headers: <String, String>{
           'Authorization': 'Bearer ${authToken}',
           'Content-Type': 'application/json',
+          'Customer-Id': CustomerId
         },
         body: requestBody,
       );
@@ -4278,6 +4332,7 @@ class redgreen extends State<RedGreenTest> {
     String authToken =
     // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
     prefs.getString('access_token') ?? '';
+    String CustomerId = prefs.getString('customer_id') ?? '';
 
     String test_id = prefs.getString('test_id') ?? '';
     print('mytestid$test_id');
@@ -4287,7 +4342,8 @@ class redgreen extends State<RedGreenTest> {
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${authToken}',
+      'Authorization': 'Bearer $authToken',
+      'Customer-Id': CustomerId
     };
 // Replace this with your PUT request body
 
@@ -4336,14 +4392,16 @@ class redgreen extends State<RedGreenTest> {
     prefs.getString('access_token') ?? '';
 // Replace this URL with your PUT API endpoint
     String test_id = prefs.getString('test_id') ?? '';
+    String CustomerId = prefs.getString('customer_id') ?? '';
     print('snellen_fraction: $snellenFraction');
     print('test_id: $test_id');
-    print('action: $action');
+    print('action: $CustomerId');
     final String apiUrl = '${Api.baseurl}/api/eye/final-red-green-action-test';
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${authToken}',
+      'Authorization': 'Bearer $authToken',
+      'Customer-Id': CustomerId
     };
 // Replace this with your PUT request body
     Map<String, dynamic> body = {
@@ -4404,66 +4462,21 @@ class redgreen extends State<RedGreenTest> {
     }
   }
 
-  Future<void> getActivePlan() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access_token') ?? '';
-    final String apiUrl =
-        'https://testing1.zuktiapp.zuktiinnovations.com/subscription-active-plan/';
-// Replace these headers with your required headers
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $access_token',
-    };
-// Replace this with your PUT request body
-
-    try {
-      final response = await http.get(
-        Uri.parse(apiUrl),
-        headers: headers,
-//body: jsonEncode(body),
-      );
-      if (response.statusCode == 200) {
-        print('respsss ${response.body}');
-
-        Navigator.push(
-          context,
-          CupertinoPageRoute(
-              builder: (context) =>
-// LoginScreen()),
-                  ReportPage()),
-        );
-// If the call to the server was successful, parse the JSON
-      } else {
-        Navigator.push(
-          context,
-          CupertinoPageRoute(
-              builder: (context) =>
-// LoginScreen()),
-                  MyPlan()),
-        );
-// If the server did not return a 200 OK response,
-// handle the error here (display error message or take appropriate action)
-        print('Failed with status code: ${response.statusCode}');
-        print('Failed with status code: ${response.body}');
-      }
-    } catch (e) {
-// Handle exceptions here (e.g., network errors)
-      print('Exception: $e');
-    }
-  }
-
   Future<void> UpdateRedGreenTest() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
     // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
     prefs.getString('access_token') ?? '';
     String test_id = prefs.getString('test_id') ?? '';
+    String CustomerId = prefs.getString('customer_id') ?? '';
+
 // Replace this URL with your PUT API endpoint
-    final String apiUrl = '${Api.baseurl}/api/eye/update-red-green-action';
+    final String apiUrl = '${Api.baseurl}/api/eye/update-red-green-action-api';
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${authToken}', //$access_token
+      'Authorization': 'Bearer $authToken',
+      'Customer-Id': CustomerId //$access_token
     };
 // Replace this with your PUT request body
     Map<String, dynamic> body = {
@@ -4489,8 +4502,9 @@ class redgreen extends State<RedGreenTest> {
             jsonResponseMap["data"].containsKey("data") &&
             jsonResponseMap["data"]["data"].containsKey("eye_status")) {
           String eyeStatus = jsonResponseMap["data"]["data"]["eye_status"];
-          String patient_age = jsonResponseMap["data"]["patient_age"];
-          int age = int.parse(patient_age);
+          String patientName = jsonResponseMap["data"]["data"]["full_name"];
+          String patientAge = jsonResponseMap["data"]["user_age"];
+          int age = int.parse(patientAge);
           print("123123age$age");
           if (eyeStatus == "right") {
             if (age >= 40) {
@@ -4505,7 +4519,12 @@ class redgreen extends State<RedGreenTest> {
               });
               SharedPreferences prefs = await SharedPreferences.getInstance();
               await prefs.setString('page', "redgreen");
-              getActivePlan();
+              // getActivePlan();
+              Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                      builder: (context) =>
+                      const TestReport()));
             }
           } else {
             if (age > 40) {
@@ -4542,7 +4561,6 @@ class redgreen extends State<RedGreenTest> {
   }
 
   bool _isCameraVisible = true;
-
 
   @override
   Widget build(BuildContext context) {
@@ -4668,7 +4686,8 @@ class redgreen extends State<RedGreenTest> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 22,
-                          color: alert == 'Good to go' ? Colors.green : Colors.red,
+                          color:
+                          alert == 'Good to go' ? Colors.green : Colors.red,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -4678,7 +4697,8 @@ class redgreen extends State<RedGreenTest> {
                       height: 60.0,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: Colors.bluebutton, // Change to your desired color
+                        color: Colors.bluebutton,
+                        // Change to your desired color
                         borderRadius: BorderRadius.circular(25),
                       ),
                       child: MaterialButton(
@@ -4704,17 +4724,7 @@ class redgreen extends State<RedGreenTest> {
       ),
     );
   }
-
-
 }
-
-
-
-
-
-
-
-
 
 class RightEye extends StatelessWidget {
   @override
@@ -4743,53 +4753,53 @@ class Righteye extends StatelessWidget {
         child: MaterialApp(
             home: Scaffold(
                 body: Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/test.png'),
-                  // Replace with your image
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            Center(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Padding(
-                      padding: EdgeInsets.only(top: 50.0),
-                      // GestureDetector(
-                      // onTap: () => onImageClicked, // Assign the method to be called on tap
-                      // child: Image.asset(
-                      child: Image.asset(
-                        'assets/close_right_eye.png',
-                        // Replace with your centered image
-                        width: 300, // Adjust the width as needed
-                        height: 300, // Adjust the height as needed
+                    Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('assets/test.png'),
+                          // Replace with your image
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
-                    // ),
-                    SizedBox(height: 30),
-                    // Add spacing between the image and the button
-                    SizedBox(
-                      width: 200, // Set the desired width here
-                      child: ElevatedButton(
-                        onPressed: () {
-                          select_eye_for_test('right', context);
-                          // onImageClicked();
-                        },
-                        child: Text('Next'),
-                        // Replace with button text
+                    Center(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(top: 50.0),
+                              // GestureDetector(
+                              // onTap: () => onImageClicked, // Assign the method to be called on tap
+                              // child: Image.asset(
+                              child: Image.asset(
+                                'assets/close_right_eye.png',
+                                // Replace with your centered image
+                                width: 300, // Adjust the width as needed
+                                height: 300, // Adjust the height as needed
+                              ),
+                            ),
+                            // ),
+                            SizedBox(height: 30),
+                            // Add spacing between the image and the button
+                            SizedBox(
+                              width: 200, // Set the desired width here
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  select_eye_for_test('right', context);
+                                  // onImageClicked();
+                                },
+                                child: Text('Next'),
+                                // Replace with button text
+                              ),
+                            )
+                          ],
+                        ),
                       ),
-                    )
+                    ),
                   ],
-                ),
-              ),
-            ),
-          ],
-        ))));
+                ))));
   }
 
   Future<void> select_eye_for_test(String eye, BuildContext context) async {
@@ -4799,19 +4809,21 @@ class Righteye extends StatelessWidget {
       // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
       prefs.getString('access_token') ?? '';
       String test = prefs.getString('test') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
       int id = 0;
       print('testt$test');
 
       var headers = {
-        'Authorization': 'Bearer ${authToken}',
+        'Authorization': 'Bearer $authToken',
         'Content-Type': 'application/json',
+        'Customer-Id': CustomerId
       };
       var request =
-          http.Request('POST', Uri.parse('${Api.baseurl}/api/eye/select-eye'));
+      http.Request('POST', Uri.parse('${Api.baseurl}/api/eye/select-eye'));
       request.body =
           json.encode({"test_id": id, "eye_status": eye, "test": test});
       String request1 =
-          json.encode({"test_id": id, "eye_status": eye, "test": test});
+      json.encode({"test_id": id, "eye_status": eye, "test": test});
       request.headers.addAll(headers);
       print("rryryr$request1");
       http.StreamedResponse response = await request.send();
@@ -4822,7 +4834,7 @@ class Righteye extends StatelessWidget {
         // Extract data from the parsed JSON
         String test = parsedJson['data']['test'];
         print("resp: $responseBody");
-        String test_id = parsedJson['data']['id'];
+        String test_id = parsedJson['data']['id'].toString();
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('test_id', test_id);
         // await prefs.setString('test', test);
@@ -5000,7 +5012,7 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 5),
+      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 3),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -5009,16 +5021,15 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
             style: TextStyle(fontSize: 14, color: Colors.black),
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
                 child: Row(
                   children: [
                     Transform.scale(
-                      scale: 1.2,
-                      // Adjust the scale factor to increase the size
+                      scale: 1.3,
                       child: Theme(
                         data: ThemeData(
                           checkboxTheme: CheckboxThemeData(
@@ -5026,17 +5037,13 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
                               borderRadius: BorderRadius.circular(4),
                             ),
                             side: MaterialStateBorderSide.resolveWith(
-                              (states) {
-                                if (states.contains(MaterialState.selected)) {
-                                  return BorderSide(
-                                      color: Colors.bluebutton, width: 2);
-                                }
+                                  (states) {
                                 return BorderSide(
                                     color: Colors.bluebutton, width: 2);
                               },
                             ),
                             fillColor: MaterialStateProperty.resolveWith(
-                              (states) {
+                                  (states) {
                                 if (states.contains(MaterialState.selected)) {
                                   return Colors
                                       .bluebutton; // Fill color when checked
@@ -5046,7 +5053,7 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
                               },
                             ),
                             checkColor: MaterialStateProperty.resolveWith(
-                              (states) {
+                                  (states) {
                                 if (states.contains(MaterialState.selected)) {
                                   return Colors
                                       .white; // Check color when checked
@@ -5058,12 +5065,12 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
                           ),
                         ),
                         child: Checkbox(
-                          value: isChecked,
+                          value: isChecked == true,
                           onChanged: (bool? value) {
                             setState(() {
-                              isChecked = value!;
+                              isChecked = value ?? false;
                             });
-                            widget.onChanged(value!);
+                            widget.onChanged(isChecked!);
                           },
                         ),
                       ),
@@ -5075,7 +5082,7 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
               Row(
                 children: [
                   Transform.scale(
-                    scale: 1.2, // Adjust the scale factor to increase the size
+                    scale: 1.3,
                     child: Theme(
                       data: ThemeData(
                         checkboxTheme: CheckboxThemeData(
@@ -5083,17 +5090,13 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
                             borderRadius: BorderRadius.circular(4),
                           ),
                           side: MaterialStateBorderSide.resolveWith(
-                            (states) {
-                              if (states.contains(MaterialState.selected)) {
-                                return BorderSide(
-                                    color: Colors.bluebutton, width: 2);
-                              }
+                                (states) {
                               return BorderSide(
                                   color: Colors.bluebutton, width: 2);
                             },
                           ),
                           fillColor: MaterialStateProperty.resolveWith(
-                            (states) {
+                                (states) {
                               if (states.contains(MaterialState.selected)) {
                                 return Colors
                                     .bluebutton; // Fill color when checked
@@ -5102,7 +5105,7 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
                             },
                           ),
                           checkColor: MaterialStateProperty.resolveWith(
-                            (states) {
+                                (states) {
                               if (states.contains(MaterialState.selected)) {
                                 return Colors.white; // Check color when checked
                               }
@@ -5113,12 +5116,12 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
                         ),
                       ),
                       child: Checkbox(
-                        value: !isChecked,
+                        value: isChecked == false,
                         onChanged: (bool? value) {
                           setState(() {
-                            isChecked = !value!;
+                            isChecked = (value == true ? false : null)!;
                           });
-                          widget.onChanged(!value!);
+                          widget.onChanged(isChecked ?? false);
                         },
                       ),
                     ),
@@ -5130,6 +5133,21 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class Question {
+  final int id;
+  final String questionText;
+
+  Question({required this.id, required this.questionText});
+
+  // Factory method to create a Question object from JSON
+  factory Question.fromJson(Map<String, dynamic> json) {
+    return Question(
+      id: json['id'],
+      questionText: json['question_text'],
     );
   }
 }
