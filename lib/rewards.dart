@@ -12,7 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Custom_navbar/bottom_navbar.dart';
 import 'HomePage.dart';
-import 'customDialog.dart'; // Import intl package
+import 'Custom_navbar/customDialog.dart'; // Import intl package
 
 class Offer {
   final String offerId;

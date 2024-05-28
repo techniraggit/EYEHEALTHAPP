@@ -14,7 +14,7 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'Api.dart';
+import 'api/Api.dart';
 import 'api/config.dart';
 
 class EyeFatigueStartScreen extends StatefulWidget {
@@ -148,16 +148,16 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
           print('Compressed video path: ${compressedVideo?.path}');
 
 
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => EyeFatigueThirdScreen()),
-          );
+
 
 
 
 
           _uploadVideo(compressedVideo!.path!);
+
+
+
+
 
         } else {
           print('File does not exist.');
@@ -194,8 +194,11 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
       print('Fsdfkjvhskvo++++==${response.body}');
       if (response.statusCode == 200) {
         print('Video uploaded successfully');
-        // getFatigueEyeReport();
-
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => EyeFatigueThirdScreen()),
+        );
 
 
 
@@ -410,7 +413,7 @@ class EyeFatigueThirdScreen extends StatefulWidget {
 }
 
 class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
-  bool success = false;
+  bool success = false;bool enable=false;
 @override
   void initState() {
   sendReportDb();
@@ -495,13 +498,15 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
         ),
         SizedBox(height: 20),
         ElevatedButton(
-          onPressed: () async {
-            await Future.delayed(Duration(seconds: 5));
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => EyeFatigueThirdScreen()),
-            );
-          },
+          onPressed:enable ? () async {
+            setState(() {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => EyeFatigueTestReport()),
+              );
+            });
+          }:null,
           style: ElevatedButton.styleFrom(
             foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
             padding: EdgeInsets.all(16),
@@ -528,23 +533,20 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
 
 // Bearer token type
       };
-      print("userrrtoken================${userToken}===================customer_access=======$customer_access");
+      print("userrrtoken====000============${userToken}===================customer_access=======$customer_access");
 
       final response = await http.get(
         Uri.parse('${ApiProvider.baseUrl}/api/fatigue/blinks-report-details'),
         headers: headers,
       );
-      print("senddata===============${response.body}");
+      print("senddata====0000000===========${response.body}");
       final responseData = json.decode(response.body);
 
       if (response.statusCode == 200) {
 
         setState(() {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => EyeFatigueThirdScreen()),
-          );
+          enable=true;
+
         });
       }
       else if (response.statusCode == 401) {

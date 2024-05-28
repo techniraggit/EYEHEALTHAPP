@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -6,6 +7,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:project_new/sign_up.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -19,7 +22,7 @@ class EyeFatigueTestReport extends StatefulWidget {
 }
 
 class EyeFatigueTestReportState extends State<EyeFatigueTestReport> {
-String? firstname,lastname,age,testresult,created_on;
+String? firstname,lastname,age,testresult,created_on;int report_id=0;
 bool ? is_fatigue_right,is_mild_tiredness_right,is_fatigue_left,is_mild_tiredness_left;
 bool isLoading=true;
   List<double> data1 = [10, 30, 20, 40, 30]; // Sample data for line 1
@@ -274,8 +277,7 @@ bool isLoading=true;
               padding: const EdgeInsets.all(12.0),
               child: ElevatedButton(
                 onPressed: () {
-                  // Add your download functionality here
-                },
+downloadReport();                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.deepPurple.shade400,
                   padding: EdgeInsets.all(16),
@@ -346,7 +348,7 @@ Future<void> getReport() async {
         age=responseData['data'][0]['user']['age'].toString();
         testresult=responseData['data'][0]['suggestion'];
         created_on=responseData['data'][0]['created_on'].toString().substring(0,10);
-
+        report_id=responseData['data'][0]['report_id'];
         is_fatigue_right=responseData['data'][0]['is_fatigue_right'];
         is_mild_tiredness_right=responseData['data'][0]['is_mild_tiredness_right'];
         is_fatigue_left=responseData['data'][0]['is_fatigue_left'];
@@ -383,6 +385,54 @@ Future<void> getReport() async {
   }
 
 
+  Future<String?> downloadReport() async {
+    try {
+      var sharedPref = await SharedPreferences.getInstance();
+      String userToken = sharedPref.getString("access_token") ?? '';
+
+      Map<String, String> headers = {
+        'Authorization': 'Bearer $userToken',
+      };
+
+      final response = await http.get(
+        Uri.parse('${ApiProvider.baseUrl}/api/fatigue/download-report?report_id=83'), // Adjust the URL as needed
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        Directory appDocDir = await getApplicationDocumentsDirectory();
+
+        // Create a file in the application documents directory
+        String pdfPath = '${appDocDir.path}/downloaded_file.pdf';
+        File pdfFile = File(pdfPath);
+Fluttertoast.showToast(msg: "PDF downloaded successfully");
+        // Write the response content to the file
+        await pdfFile.writeAsBytes(response.bodyBytes);
+
+        // Show a message or perform any further actions if needed
+        print('PDF downloaded successfully   $pdfFile.path');
+
+        // Return the path of the downloaded file
+        return pdfFile.path;
+
+      } else if (response.statusCode == 401) {
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+        return null;
+      } else {
+        print('Failed to download PDF: ${response.statusCode}');
+
+        // Handle other error cases if necessary
+        return null;
+      }
+    } catch (e) {
+      print("Exception: $e");
+      return null;
+    }
+  }
 
 }
 
