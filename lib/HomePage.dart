@@ -172,11 +172,12 @@ class HomePageState extends State<HomePage> {
           children: <Widget>[
             GestureDetector(
               onTap: ()  {
-                sendcustomerDetails(context);
-                /* Navigator.push(
+                //sendcustomerDetails(context);
+                //_showTestChoiceDialog(context);
+                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => AddCustomerPage()),
-                );*/ // Call the API
+                ); // Call the API
               },
               child: Image.asset('assets/digital_eye_exam.png'),
             ),
@@ -622,46 +623,11 @@ class AddCustomerPage extends StatefulWidget {
 
 class _AddCustomerPageState extends State<AddCustomerPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
+
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
-  final TextEditingController _mobileController = TextEditingController();
 
-  Future<void> sendCustomerDetails(BuildContext context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
-    var headers = {
-      'Authorization': 'Bearer ${authToken}',
-      'Content-Type': 'application/json'
-    };
-    var request = http.Request(
-        'POST',
-        Uri.parse('http://127.0.0.1:8000/api/eye/add-customer')
-    );
-    request.body = json.encode({
-      "email": _emailController.text,
-      "name": _nameController.text,
-      "domain_url": "mobile.testing.backend.zuktiinnovations",
-      "age": int.parse(_ageController.text),
-      "mobile_no": _mobileController.text,
-    });
-    request.headers.addAll(headers);
 
-    http.StreamedResponse response = await request.send();
-
-    if (response.statusCode == 200) {
-
-      print(await response.stream.bytesToString());
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => GiveInfo()),
-      );
-    } else {
-      print(response.reasonPhrase);
-    }
-  }
 
 
   InputDecoration _inputDecoration(String labelText) {
@@ -751,11 +717,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: _inputDecoration('Email'),
-                    validator: _validateEmail,
-                  ),
+                 
                   SizedBox(height: 16),
                   TextFormField(
                     controller: _nameController,
@@ -769,18 +731,11 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                     keyboardType: TextInputType.number,
                     validator: _validateAge,
                   ),
-                  SizedBox(height: 16),
-                  TextFormField(
-                    controller: _mobileController,
-                    decoration: _inputDecoration('Mobile No'),
-                    keyboardType: TextInputType.phone,
-                    validator: _validateMobile,
-                  ),
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        sendCustomerDetails(context);
+                        sendcustomerDetails(context,false, name: _nameController.text, age: _ageController.text);
                       }
                     },
                     child: Text('Submit'),
@@ -799,13 +754,182 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
       ),
     );
   }
+
+  Future<void> sendcustomerDetails(BuildContext context, bool isSelf, {String? name, String? age}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken = prefs.getString('access_token') ?? '';
+    final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
+
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $authToken',
+      'Content-Type': 'application/json',
+    };
+
+    var body = json.encode({
+      'is_self': isSelf,
+      if (!isSelf) 'name': name,
+      if (!isSelf) 'age': age,
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: body,
+      );
+
+      print('API Response: ${response.statusCode} - ${response.body}');
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        if (jsonResponse.containsKey('customer_id')) {
+          String customerId = jsonResponse['customer_id'];
+
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString('customer_id', customerId);
+
+          print('Customer ID: $customerId');
+
+          // Navigate to GiveInfo screen
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => GiveInfo()),
+          );
+        } else {
+          print('Customer ID not found in response.');
+        }
+      } else {
+        print('API call failed with status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Exception: $e');
+    }
+  }
+
   @override
   void dispose() {
-    _emailController.dispose();
     _nameController.dispose();
     _ageController.dispose();
-    _mobileController.dispose();
+    
     super.dispose();
+  }
+}
+
+
+void _showTestChoiceDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Choose Test Option'),
+        content: Text('Is this test for yourself or for someone else?'),
+        actions: <Widget>[
+          TextButton(
+            child: Text('Test for Self'),
+            onPressed: () {
+              Navigator.of(context).pop();
+              sendcustomerDetails(context, true);
+            },
+          ),
+          TextButton(
+            child: Text('Test for Others'),
+            onPressed: () {
+              Navigator.of(context).pop();
+              _showOtherFormDialog(context);
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+void _showOtherFormDialog(BuildContext context) {
+  final _nameController = TextEditingController();
+  final _ageController = TextEditingController();
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Enter Details'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            TextField(
+              controller: _nameController,
+              decoration: InputDecoration(labelText: 'Name'),
+            ),
+            TextField(
+              controller: _ageController,
+              decoration: InputDecoration(labelText: 'Age'),
+              keyboardType: TextInputType.number,
+            ),
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: Text('Submit'),
+            onPressed: () {
+              final String name = _nameController.text;
+              final String age = _ageController.text;
+              Navigator.of(context).pop();
+              sendcustomerDetails(context, false, name: name, age: age);
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+Future<void> sendcustomerDetails(BuildContext context, bool isSelf, {String? name, String? age}) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String authToken = prefs.getString('access_token') ?? '';
+  final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
+
+  Map<String, String> headers = {
+    'Authorization': 'Bearer $authToken',
+    'Content-Type': 'application/json',
+  };
+
+  var body = json.encode({
+    'is_self': isSelf,
+    if (!isSelf) 'name': name,
+    if (!isSelf) 'age': age,
+  });
+
+  try {
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      headers: headers,
+      body: body,
+    );
+
+    print('API Response: ${response.statusCode} - ${response.body}');
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      if (jsonResponse.containsKey('customer_id')) {
+        String customerId = jsonResponse['customer_id'];
+
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('customer_id', customerId);
+
+        print('Customer ID: $customerId');
+
+        // Navigate to GiveInfo screen
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => GiveInfo()),
+        );
+      } else {
+        print('Customer ID not found in response.');
+      }
+    } else {
+      print('API call failed with status code: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Exception: $e');
   }
 }
 
