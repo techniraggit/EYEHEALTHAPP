@@ -56,27 +56,55 @@ class _RewardsContactsSync extends State<RewardContact> {
     _fetchContacts();getMyRefferConatcts();
   }
 
+  // void shareAppLink(int i) async {
+  //   try {
+  //     Share.share('Check out our awesome app: $appStoreLink'
+  //         'Use Referal Code $ReferCode');
+  //
+  //     setState(() {
+  //
+  //       _invitationStatus[i] = !(_invitationStatus[i] ?? false);
+  //     });
+  //   } catch (e) {
+  //     // If there's an error during sharing, set isShareSuccess to false
+  //     setState(() {
+  //       _invitationStatus[i] = false;
+  //     });
+  //
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text('Failed to share the app.'),
+  //       ),
+  //     );
+  //
+  //     _invitationStatus[i] = !(_invitationStatus[i] ?? false);
+  //   }
+  // }
   void shareAppLink(int i) async {
     try {
+      // Share the app link using the Share package
       Share.share('Check out our awesome app: $appStoreLink'
           'Use Referal Code $ReferCode');
-      // If the share is successful, set isShareSuccess to true
-      // _invitationStatus[i] = true ;
+
+      // If sharing is successful, update the UI state
       setState(() {
         _invitationStatus[i] = !(_invitationStatus[i] ?? false);
       });
     } catch (e) {
-      // If there's an error during sharing, set isShareSuccess to false
+      // If there's an error during sharing, handle it
+      // Set _invitationStatus to false to indicate failure
       setState(() {
         _invitationStatus[i] = false;
       });
 
+      // Show a SnackBar to inform the user about the failure
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to share the app.'),
         ),
       );
 
+      // Revert the state change if sharing fails
       _invitationStatus[i] = !(_invitationStatus[i] ?? false);
     }
   }
@@ -400,6 +428,104 @@ class _RewardsContactsSync extends State<RewardContact> {
                 child: TabBarView(
                   children: [
                     Center(
+                        child: _contacts.isNotEmpty
+                            ? ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: _contacts.length,
+                          itemBuilder: (context, i) => Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Card(
+                              color: Colors.white,
+                              elevation: 0.9,
+                              child: ListTile(
+                                leading: _contacts[i].avatar != null &&
+                                    _contacts[i].avatar!.isNotEmpty
+                                    ? Container(
+                                    height: 50,
+                                    width: 50,
+                                    decoration: const BoxDecoration(
+                                        shape: BoxShape.circle),
+                                    child: Image.memory(
+                                        _contacts[i].avatar!))
+                                    : Container(
+                                    height: 50,
+                                    width: 50,
+                                    decoration: const BoxDecoration(
+                                        shape: BoxShape.circle),
+                                    child: Image.asset(
+                                        'assets/contact.png')),
+
+                                title: Text(
+                                  _contacts[i].displayName ?? '',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 15,
+                                      color: Colors.black),
+                                ),
+                                subtitle: Row(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '+91 ${_contacts[i].phones!.isNotEmpty ? _contacts[i].phones!.first.value : 'N/A'}',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 14,
+                                          color: Color(0xFF667085)),
+                                    ),
+                                    const Spacer(),
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          // if(  _invitationStatus[i] ==false){
+                                          print(
+                                              "===${_invitationStatus[i].toString()}");
+                                          // _invitationStatus[i] =
+                                          //     !(_invitationStatus[i] ?? false);
+                                          shareAppLink(i);
+                                          // }
+                                        });
+                                      },
+                                      child: _invitationStatus[i] == true
+                                          ? Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors
+                                                .green, // Green background color
+                                            borderRadius:
+                                            BorderRadius.circular(
+                                                20), // Rounded border
+                                          ),
+                                          child: const Icon(
+                                              Icons.check,
+                                              color: Colors
+                                                  .white)) // Display verified icon
+                                          : const Text(
+                                        'INVITE',
+                                        style: TextStyle(
+                                            fontWeight:
+                                            FontWeight.w400,
+                                            fontSize: 14,
+                                            color:
+                                            Color(0xFF667085)),
+                                      ), // Display "INVITE" text
+                                    ),
+                                  ],
+                                ),
+                                onTap: () async {},
+                              ),
+                            ),
+                          ),
+                        )
+                            : Container()
+                      // if (_permissionDenied)
+                      //   const Center(child: Text('Permission denied')),
+                      // if (_contacts != null) ...{
+
+                    ),
+
+
+
+                    Center(
                         child: _refferconatcts.isNotEmpty
                             ? ListView.builder(
                           shrinkWrap: true,
@@ -474,101 +600,7 @@ class _RewardsContactsSync extends State<RewardContact> {
                     ),
                     // Content of Tab 2
 
-                    Center(
-                        child: _contacts.isNotEmpty
-                            ? ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: _contacts.length,
-                          itemBuilder: (context, i) => Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Card(
-                              color: Colors.white,
-                              elevation: 0.9,
-                              child: ListTile(
-                                leading: _contacts[i].avatar != null &&
-                                    _contacts[i].avatar!.isNotEmpty
-                                    ? Container(
-                                    height: 50,
-                                    width: 50,
-                                    decoration: const BoxDecoration(
-                                        shape: BoxShape.circle),
-                                    child: Image.memory(
-                                        _contacts[i].avatar!))
-                                    : Container(
-                                    height: 50,
-                                    width: 50,
-                                    decoration: const BoxDecoration(
-                                        shape: BoxShape.circle),
-                                    child: Image.asset(
-                                        'assets/contact.png')),
 
-                                title: Text(
-                                  _contacts[i].displayName ?? '',
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 15,
-                                      color: Colors.black),
-                                ),
-                                subtitle: Row(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '+91 ${_contacts[i].phones!.isNotEmpty ? _contacts[i].phones!.first.value : 'N/A'}',
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 14,
-                                          color: Color(0xFF667085)),
-                                    ),
-                                    const Spacer(),
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          // // if(  _invitationStatus[i] ==false){
-                                          // print("===${condition[i].toString()}");
-                                          condition[i] =
-                                          !(condition[i] ?? false);
-                                          // shareAppLink(i);
-                                          // // }
-                                        });
-                                      },
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: condition[i] == true
-                                              ? Colors.green
-                                              : Colors.grey,
-                                          borderRadius:
-                                          BorderRadius.circular(
-                                              12), // Rounded border
-                                        ),
-                                        // Display verified icon
-                                        child: Padding(
-                                          padding:
-                                          const EdgeInsets.all(8.0),
-                                          child: Text(
-                                            '${10} Points',
-                                            style: TextStyle(
-                                                fontWeight:
-                                                FontWeight.w400,
-                                                fontSize: 14,
-                                                color: Colors.white),
-                                          ),
-                                        ), // Display "INVITE" text
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                onTap: () async {},
-                              ),
-                            ),
-                          ),
-                        )
-                            : Container()
-                      // if (_permissionDenied)
-                      //   const Center(child: Text('Permission denied')),
-                      // if (_contacts != null) ...{
-
-                    ),
                   ],
                 ),
               ),

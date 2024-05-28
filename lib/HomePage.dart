@@ -11,9 +11,11 @@ import 'package:http/http.dart' as http;
 import 'package:project_new/myPlanPage.dart';
 import 'package:project_new/testScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'Api.dart';
+import 'api/Api.dart';
 import 'Custom_navbar/bottom_navbar.dart';
+import 'api/config.dart';
 import 'eyeFatigueTest.dart';
+import 'models/fatigueGraphModel.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -21,7 +23,7 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  bool isSelected = false;
+  bool isSelected = false;fatigueGraph? fatigueGraphData;
   bool isLeftEyeSelected = false;
   List<double> data1 = [10, 30, 20, 40, 30]; // Sample data for line 1
   List<double> data2 = [30, 50, 60, 50, 60];
@@ -42,6 +44,11 @@ class HomePageState extends State<HomePage> {
         selectedDate = picked;
       });
     }
+  }
+  @override
+  void initState() {
+    super.initState();
+    getGraph();
   }
 
   @override
@@ -570,6 +577,47 @@ class HomePageState extends State<HomePage> {
       print('Exception: $e');
     }
   }
+
+  Future<void> getGraph() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken = prefs.getString('access_token') ?? '';
+    final response = await http.get(
+      Uri.parse('${ApiProvider.baseUrl}/api/fatigue/fatigue-graph'),
+      headers: <String, String>{
+      'Authorization': 'Bearer $authToken',
+
+
+    },
+
+    );
+
+    if (response.statusCode == 200) {
+
+      final responseData = json.decode(response.body);
+      fatigueGraphData = fatigueGraph.fromJson(responseData);
+      setState(() {
+
+      });
+
+      print("graphdata===:${response.body}");
+
+
+      return json.decode(response.body);
+
+    } else {
+
+      print(response.body);
+
+    }
+  }
+  catch (e) {     // _progressDialog!.hide();
+
+    print("exception:$e");
+  }
+  throw Exception('');
+  }
+
 }
 
 

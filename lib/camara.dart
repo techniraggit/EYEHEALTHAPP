@@ -10,8 +10,8 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert' as convert;
 import 'package:image_picker/image_picker.dart';
-import 'Api.dart';
-import 'customDialog.dart';
+import 'api/Api.dart';
+import 'Custom_navbar/customDialog.dart';
 
 class Camara extends StatelessWidget {
   @override

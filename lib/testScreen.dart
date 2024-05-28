@@ -19,8 +19,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:convert' as convert;
 
-import 'Api.dart';
-import 'customDialog.dart';
+import 'api/Api.dart';
+import 'Custom_navbar/customDialog.dart';
 import 'myPlanPage.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
