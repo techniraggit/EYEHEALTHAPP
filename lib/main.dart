@@ -27,6 +27,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Custom_navbar/bottom_navbar.dart';
 import 'FirebaseOptions/FirebaseApi.dart';
+import 'eyeFatigueTestReport.dart';
 import 'firebase_options.dart';
 final navigatorKey=GlobalKey<NavigatorState>();
 
@@ -105,7 +106,7 @@ class Splash extends State<SplashScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => HomePage(),
+              builder: (context) =>HomePage(),
             ),
           );
         } else {
