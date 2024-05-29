@@ -1,10 +1,10 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:project_new/rewardStatus.dart';
 
 import 'Custom_navbar/bottom_navbar.dart';
 import 'HomePage.dart';
-import 'knowStatus.dart';
 
 class RedeemSuccessPage extends StatefulWidget {
   @override
@@ -114,7 +114,7 @@ class RedeemSuccess extends State<RedeemSuccessPage> {
 
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => KnowStatus()),
+                            MaterialPageRoute(builder: (context) => RewardStatusScreen()),
                           );
 
                         },

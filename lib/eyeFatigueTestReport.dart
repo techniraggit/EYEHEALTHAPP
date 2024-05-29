@@ -9,6 +9,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:project_new/HomePage.dart';
 import 'package:project_new/sign_up.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -38,275 +39,288 @@ bool isLoading=true;
   @override
   void initState() {
     super.initState();
+     isclose=false; uploaded=false;
+     isLoading = false;
     getReport();
   }
   // Sample data for line 2
   @override
   Widget build(BuildContext context) {
     String formattedDate = DateFormat('dd MMMM').format(DateTime.now());
-    return isLoading
-        ? const Center(
-      child: CircularProgressIndicator(
-        color: Colors.black,
-      ),
-    )
-        :Scaffold(
-      appBar: AppBar(
-        title:  Center(child: Text('Eye Fatigue Test Report',style: TextStyle(fontSize: 15,fontWeight: FontWeight.w500),)),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.notifications),
-            onPressed: () {
-              // Handle notification icon pressed
-            },
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Center(
-              child: Text(
-                created_on??"",
-                // 'Today $formattedDate', // Display formatted current date
-                style: TextStyle(
-                  fontStyle: FontStyle.normal,
-                  color: Colors.grey,
-                ),
-              ),
+    return
+        WillPopScope(
+          onWillPop: () async {
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => HomePage()),
+                    (Route<dynamic> route) => false);
+
+            return false;
+          },
+      child: isLoading
+          ? const Center(
+        child: CircularProgressIndicator(
+          color: Colors.black,
+        ),
+      )
+          :Scaffold(
+        appBar: AppBar(
+          title:  Center(child: Text('Eye Fatigue Test Report',style: TextStyle(fontSize: 15,fontWeight: FontWeight.w500),)),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.notifications),
+              onPressed: () {
+                // Handle notification icon pressed
+              },
             ),
-
-
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 16),
-              child: Text(
-                "Patient's Details",
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
-                ),
-              ),
-            ),
-
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 12),
-              child: Card(
-                child: ListTile(
-                  title: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Full Name'),
-                              Text('${firstname} ${lastname}',style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),),
-                            ],
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text('Age'),
-                              Text(age??""
-                                ,style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),),
-                            ],
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 16),])))),
-
-
-    Padding(
-    padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 12),
-    child: Card(
-    child: ListTile(
-    title: Column(
-    children: [
-                      // Add spacing between the row and the additional columns
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Eye Fatigue in Left',style: TextStyle(fontWeight: FontWeight.w400,fontSize: 15)),
-                              Center(
-                                child: is_fatigue_left! ? Text('Yes',style: TextStyle(color: Colors.green,fontWeight: FontWeight.w400,fontSize: 15),): Text('No',style: TextStyle(color: Colors.green,fontWeight: FontWeight.w400,fontSize: 13)),
-                              ),
-                              // Text('Yes',style: TextStyle(
-                              //   fontSize: 16,
-                              //   fontWeight: FontWeight.bold,
-                              // ),),
-                            ],
-                          ),
-                          SizedBox(width: 10,),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Eye Fatigue in Right',style: TextStyle(fontWeight: FontWeight.w400,fontSize: 15)),
-                              Center(
-                                child: is_fatigue_right! ? Text('Yes',style: TextStyle(color: Colors.green,fontWeight: FontWeight.w400,fontSize: 15),): Text('No',style: TextStyle(color: Colors.green,fontWeight: FontWeight.w400,fontSize: 13)),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 16), // Add spacing between the row and the additional columns
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Tiredness in Left',style: TextStyle(fontWeight: FontWeight.w400,fontSize: 15)),
-                              Center(
-                                child: is_mild_tiredness_left! ? Text('Yes',style: TextStyle(color: Colors.green,fontWeight: FontWeight.w400,fontSize: 15),): Text('No',style: TextStyle(color: Colors.green,fontWeight: FontWeight.w400,fontSize: 13)),
-                              ),
-                              // Text('Yes',style: TextStyle(
-                              //   fontSize: 16,
-                              //   fontWeight: FontWeight.bold,
-                              // ),),
-                            ],
-                          ),
-                          SizedBox(width: 10,),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Tiredness in in Right',style: TextStyle(fontWeight: FontWeight.w400,fontSize: 15)),
-                              Center(
-                                child: is_mild_tiredness_right! ? Text('Yes',style: TextStyle(color: Colors.green,fontWeight: FontWeight.w400,fontSize: 15),): Text('No',style: TextStyle(color: Colors.green,fontWeight: FontWeight.w400,fontSize: 13)),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
+          ],
+        ),
+        body:   SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Center(
+                  child: Text(
+                    created_on??"",
+                    // 'Today $formattedDate', // Display formatted current date
+                    style: TextStyle(
+                      fontStyle: FontStyle.normal,
+                      color: Colors.grey,
+                    ),
                   ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 16),
-              child: const Text(
-                "Patient's Description",
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
-                ),
-              ),
-            ),
 
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 16),
-              child: Card(
-                child: ListTile(
-                  title: Container(
-                    alignment: Alignment.centerLeft,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Test Results',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          ),),
-                        SizedBox(height: 10,),
-                        Text(
-                          testresult!      ,                    style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
+
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 16),
+                  child: Text(
+                    "Patient's Details",
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepPurple,
+                    ),
+                  ),
+                ),
+
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 12),
+                  child: Card(
+                    child: ListTile(
+                      title: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Full Name'),
+                                  Text('${firstname} ${lastname}',style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),),
+                                ],
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text('Age'),
+                                  Text(age??""
+                                    ,style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),),
+                                ],
+                              ),
+                            ],
                           ),
+                          SizedBox(height: 16),])))),
+
+
+              Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 12),
+              child: Card(
+              child: ListTile(
+              title: Column(
+              children: [
+                          // Add spacing between the row and the additional columns
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Eye Fatigue in Left',style: TextStyle(fontWeight: FontWeight.w400,fontSize: 15)),
+                                  Center(
+                                    child: is_fatigue_left! ? Text('Yes',style: TextStyle(color: Colors.green,fontWeight: FontWeight.w400,fontSize: 15),): Text('No',style: TextStyle(color: Colors.red,fontWeight: FontWeight.w400,fontSize: 13)),
+                                  ),
+                                  // Text('Yes',style: TextStyle(
+                                  //   fontSize: 16,
+                                  //   fontWeight: FontWeight.bold,
+                                  // ),),
+                                ],
+                              ),
+                              SizedBox(width: 10,),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Eye Fatigue in Right',style: TextStyle(fontWeight: FontWeight.w400,fontSize: 15)),
+                                  Center(
+                                    child: is_fatigue_right! ? Text('Yes',style: TextStyle(color: Colors.green,fontWeight: FontWeight.w400,fontSize: 15),): Text('No',style: TextStyle(color: Colors.red,fontWeight: FontWeight.w400,fontSize: 13)),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 16), // Add spacing between the row and the additional columns
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Tiredness in Left',style: TextStyle(fontWeight: FontWeight.w400,fontSize: 15)),
+                                  Center(
+                                    child: is_mild_tiredness_left! ? Text('Yes',style: TextStyle(color: Colors.green,fontWeight: FontWeight.w400,fontSize: 15),): Text('No',style: TextStyle(color: Colors.red,fontWeight: FontWeight.w400,fontSize: 13)),
+                                  ),
+                                  // Text('Yes',style: TextStyle(
+                                  //   fontSize: 16,
+                                  //   fontWeight: FontWeight.bold,
+                                  // ),),
+                                ],
+                              ),
+                              SizedBox(width: 10,),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Tiredness in in Right',style: TextStyle(fontWeight: FontWeight.w400,fontSize: 15)),
+                                  Center(
+                                    child: is_mild_tiredness_right! ? Text('Yes',style: TextStyle(color: Colors.green,fontWeight: FontWeight.w400,fontSize: 15),): Text('No',style: TextStyle(color: Colors.red,fontWeight: FontWeight.w400,fontSize: 13)),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 16),
+                  child: const Text(
+                    "Patient's Description",
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepPurple,
+                    ),
+                  ),
+                ),
+
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 16),
+                  child: Card(
+                    child: ListTile(
+                      title: Container(
+                        alignment: Alignment.centerLeft,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Test Results',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),),
+                            SizedBox(height: 10,),
+                            Text(
+                              testresult!      ,                    style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 16),
+                  child: Text(
+                    'Suggestion Test',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),),
+                ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: bulletPoints
+                .map((bullet) => Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: 4.0,left: 8),
+                    child: Icon(Icons.circle,size: 11,color: Colors.grey,),
+                  ),
+                  SizedBox(width: 8.0),
+                  Expanded(
+                    child: Text(
+                      bullet,
+                      style: TextStyle(fontSize: 14.0,fontWeight: FontWeight.w400),
+                    ),
+                  ),
+                ],
+              ),
+            ))
+                .toList(),
+          ),
+
+
+                SizedBox(height: 30,),
+                Padding(
+
+                  padding: const EdgeInsets.all(12.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+              downloadReport();                },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepPurple.shade400,
+                      padding: EdgeInsets.all(16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(26),
+                      ),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(width: 8), // Add spacing between the icon and text
+                        Text(
+                          'Download Report',
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white
+                          ),
+                        ),
+                        Icon(
+                          Icons.picture_as_pdf,
+                          color: Colors.white,
                         ),
                       ],
                     ),
                   ),
                 ),
-              ),
 
-
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 16),
-              child: Text(
-                'Suggestion Test',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),),
-            ),
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: bulletPoints
-            .map((bullet) => Padding(
-          padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top: 4.0,left: 8),
-                child: Icon(Icons.circle,size: 11,color: Colors.grey,),
-              ),
-              SizedBox(width: 8.0),
-              Expanded(
-                child: Text(
-                  bullet,
-                  style: TextStyle(fontSize: 14.0,fontWeight: FontWeight.w400),
-                ),
-              ),
-            ],
-          ),
-        ))
-            .toList(),
-      ),
-
-
-            SizedBox(height: 30,),
-            Padding(
-
-              padding: const EdgeInsets.all(12.0),
-              child: ElevatedButton(
-                onPressed: () {
-downloadReport();                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple.shade400,
-                  padding: EdgeInsets.all(16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(26),
-                  ),
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(width: 8), // Add spacing between the icon and text
-                    Text(
-                      'Download Report',
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white
-                      ),
-                    ),
-                    Icon(
-                      Icons.picture_as_pdf,
-                      color: Colors.white,
-                    ),
-                  ],
-                ),
-              ),
+              ],
             ),
 
-          ],
         ),
       ),
     );

@@ -4,7 +4,10 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
+import 'package:project_new/HomePage.dart';
 import 'package:project_new/eyeFatigueTestReport.dart';
 import 'package:project_new/sign_up.dart';
 import 'package:video_compress/video_compress.dart';
@@ -14,6 +17,7 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'Custom_navbar/ProgressDialog.dart';
 import 'api/Api.dart';
 import 'api/config.dart';
 
@@ -21,8 +25,10 @@ class EyeFatigueStartScreen extends StatefulWidget {
   @override
   EyeFatigueStartScreenState createState() => EyeFatigueStartScreenState();
 }
-bool isclose=false;
+bool isclose=false;bool uploaded=false;
+bool isLoading = false;
 class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
+
   CameraController? _controller;
   late List<CameraDescription> cameras;
   bool isRecording = false;
@@ -71,6 +77,8 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
   @override
   void initState() {
     super.initState();
+    isclose=false; uploaded=false;
+    isLoading = false;
     _initializeCamera();
     sendcustomerDetails();
   }
@@ -86,32 +94,7 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
     _startVideoRecording();
   }
 
-  // Future<void> _startVideoRecording() async {
-  //   if (!_controller!.value.isInitialized) {
-  //     return;
-  //   }
-  //   final directory = await getApplicationDocumentsDirectory();
-  //   videoPath = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
-  //
-  //   try {
-  //     await _controller!.startVideoRecording();
-  //     isRecording = true;
-  //     setState(() {});
-  //
-  //     await Future.delayed(Duration(seconds: 30));
-  //
-  //     if (_controller!.value.isRecordingVideo) {
-  //       final XFile file = await _controller!.stopVideoRecording();
-  //       isRecording = false;
-  //       videoPath = file.path;
-  //       setState(() {});
-  //       print('Video recorded to: $videoPath');
-  //       _uploadVideo(videoPath);
-  //           }
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
+
   Future<void> _startVideoRecording() async {
     if (!_controller!.value.isInitialized) {
       return;
@@ -129,14 +112,21 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
       if (_controller!.value.isRecordingVideo) {
         final XFile file = await _controller!.stopVideoRecording();
         isRecording = false;
-        setState(() {});
+
+
         print('Video recorded to: ${file.path}');
 
         // Verify file existence
         if (await File(file.path).exists()) {
+          setState(() {
+            isLoading=true;
+            print("isLoading========$isLoading");
+
+          });
           final videoFile = File(file.path);
           final videoSizeBytes = await videoFile.length();
           print('Video size: ${videoSizeBytes / (1024 * 1024)} MB'); // Convert bytes to MB for readability
+          // progressDialog = MyProgressDialog.showProgressDialog(context, 'Loading data...');
 
           // await downloadVideoToLocal(file.path);
           final compressedVideo = await VideoCompress.compressVideo(
@@ -145,15 +135,19 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
             deleteOrigin: false, // Set to true if you want to delete the original video after compression
           );
 
-          print('Compressed video path: ${compressedVideo?.path}');
+
+            setState(() {
+                  print('Compressed video path: ${compressedVideo?.path}');
 
 
+                });
 
 
 
 
 
           _uploadVideo(compressedVideo!.path!);
+
 
 
 
@@ -193,16 +187,31 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
 
       print('Fsdfkjvhskvo++++==${response.body}');
       if (response.statusCode == 200) {
+
         print('Video uploaded successfully');
+setState(() {
+  uploaded=true;
+});
         Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => EyeFatigueThirdScreen()),
         );
 
-
+        // MyProgressDialog.dismissProgressDialog(progressDialog!);
 
       } else {
+        // MyProgressDialog.dismissProgressDialog(progressDialog!);
+Fluttertoast.showToast(msg: "face is not captured properly, please test again");
+setState(() {
+   isclose=false; uploaded=false;
+   isLoading = false;
+});
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => HomePage()),
+        );
         print('Failed to upload video');
       }
     } catch (e) {
@@ -229,68 +238,63 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
             },
           ),
         ),
-        body: WillPopScope(
-          onWillPop: () async {
-            return false;
-          },
-          child: Center(
-            child: Column(
-              //  mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  'assets/phone_image.png',
-                  // Replace 'phone_image.svg' with your SVG asset path
-                  width: 300, // Adjust image size as needed
-                  height: 300,
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'Welcome to Eye Health Fatique Meter',
+        body: Center(
+          child: Column(
+            //  mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/phone_image.png',
+                // Replace 'phone_image.svg' with your SVG asset path
+                width: 300, // Adjust image size as needed
+                height: 300,
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Welcome to Eye Health Fatique Meter',
+                style: TextStyle(
+                    color: Colors.purple,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700
+                ), textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 10),
+              Padding(
+                padding: EdgeInsets.fromLTRB(12, 8, 12, 8),
+                child: Text(
+                  'Keep your eyes healthy and productive with Eye Fatigue Meter.'
+                      ' This innovative tool helps you monitor and manage eye strain caused by prolonged '
+                      'screen time and other factors. Simply position yourself in front of '
+                      'the camera as indicated in the provided image.',
                   style: TextStyle(
-                      color: Colors.purple,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700
+                    color: Colors.black,
+                    fontSize: 14,
                   ), textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 10),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(12, 8, 12, 8),
-                  child: Text(
-                    'Keep your eyes healthy and productive with Eye Fatigue Meter.'
-                        ' This innovative tool helps you monitor and manage eye strain caused by prolonged '
-                        'screen time and other factors. Simply position yourself in front of '
-                        'the camera as indicated in the provided image.',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                    ), textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => EyeFatigueSecondScreen()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
+                  // Background color
+                  // Text color
+                  padding: EdgeInsets.all(16),
+                  minimumSize: Size(300, 40),
+                  // Button padding
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(26),
+                    // Button border radius
                   ),
                 ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => EyeFatigueSecondScreen()),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
-                    // Background color
-                    // Text color
-                    padding: EdgeInsets.all(16),
-                    minimumSize: Size(300, 40),
-                    // Button padding
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(26),
-                      // Button border radius
-                    ),
-                  ),
-                  child: Text('Let\'s Check Eyes'),
-                ),
-              ],
-            ),
+                child: Text('Let\'s Check Eyes'),
+              ),
+            ],
           ),
         ),
       ),
@@ -305,105 +309,153 @@ class EyeFatigueSecondScreen extends StatefulWidget {
 
 class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> {
   bool cancel=true;
+@override
+  void initState() {
+
+  isloading();
+    // TODO: implement initState
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(height: 10),
-            Padding(
-              padding: EdgeInsets.fromLTRB(12, 20, 12, 10),
-              child: Text(
-                'Keep your eyes healthy and productive with Eye Fatigue Meter.'
-                    ' This innovative tool helps you monitor and manage eye strain caused by prolonged '
-                    'screen time and other factors. Simply position yourself in front of '
-                    'the camera as indicated in the provided image.',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 14,
-                ), textAlign: TextAlign.center,
+    return WillPopScope(
+      onWillPop: () async {
+        // Handle back button press here
+        // Return true to allow back navigation, false to prevent it
+        return false; // Set to false to prevent back navigation
+      },
+      child: MaterialApp(
+        home: Scaffold(
+          body: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/background_fatigue.png'), // Replace 'assets/background_image.jpg' with your image path
+                fit: BoxFit.cover,
               ),
             ),
-            SizedBox(height: 10),
-            Spacer(),
-            Visibility(
-              visible: cancel,
+            child: isLoading
+                ? Center(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(12, 8, 12, 8),
-                child: Container(
-                  color: Colors.lightBlue.shade300,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            'Read the ON Your screen and we have assessed your eye health based on reading ability',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Please wait, we are fetching your report...",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            )
+                :  Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+      
+      
+      
+      
+      
+      
+                SizedBox(height: 10),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(20, 37, 20, 10),
+                  child: Text(
+                    'Keep your eyes healthy and productive with Eye Fatigue Meter.'
+                        ' This innovative tool helps you monitor and manage eye strain caused by prolonged '
+                        'screen time and other factors. Simply position yourself in front of '
+                        'the camera as indicated in the provided image.',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                    ), textAlign: TextAlign.center,
+                  ),
+                ),
+                SizedBox(height: 10),
+                Spacer(),
+      
+                Visibility(
+                  visible: cancel,
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(12, 8, 12, 8),
+                    child: Container(
+                      color: Colors.lightBlue.shade300,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'Read the ON Your screen and we have assessed your eye health based on reading ability',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                          SizedBox(width: 8),
+                          // Add some space between the text and icon
+                          IconButton(
+                            icon: Icon(
+                              Icons.close,
+                              size: 24,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                cancel=false;
+                              });
+                            },
+                          ),
+                        ],
                       ),
-                      SizedBox(width: 8),
-                      // Add some space between the text and icon
-                      IconButton(
-                        icon: Icon(
-                          Icons.close,
-                          size: 24,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {
-setState(() {
-   cancel=false;
-});
-                        },
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ),
+      
+                // Spacer to push the button to the bottom
+                Padding(
+                  padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+                  child: ElevatedButton(
+                    onPressed: isclose ? () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EyeFatigueThirdScreen(),
+                        ),
+                      );
+                    } : null,
 
-            // Spacer to push the button to the bottom
-            Padding(
-              padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
-              child: ElevatedButton(
-              onPressed: isclose ? () {
-    Navigator.push(
-    context,
-    MaterialPageRoute(
-    builder: (context) => EyeFatigueThirdScreen(),
-    ),
-    );
-    } : null,
-                // onPressed: () {
-                //   Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (context) => EyeFatigueThirdScreen()),
-                //   );
-                // },
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor:  isclose ? Colors.purple.shade300 : Colors.grey.shade300 ,
-
-                  // backgroundColor: Colors.purple.shade300,
-                  minimumSize: Size(350, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor:  isclose ? Colors.purple.shade300 : Colors.grey.shade300 ,
+      
+                      // backgroundColor: Colors.purple.shade300,
+                      minimumSize: Size(350, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    ),
+                    child: Text('Close'),
                   ),
                 ),
-                child: Text('Close'),
-              ),
+      
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
+  }
+
+  Future<void> isloading() async {
+    // Delay for 30 seconds
+    await Future.delayed(Duration(seconds: 30));
+
+    // After 30 seconds, update isLoading
+    setState(() {
+      isLoading = true;
+    });
   }
 }
 
@@ -433,29 +485,94 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Center(
-            // Centering the title horizontally
-            child: Text("Eye Fatigue Test"),
+    return   WillPopScope(
+      onWillPop: () async {
+        // Handle back button press here
+        // Return true to allow back navigation, false to prevent it
+        return false; // Set to false to prevent back navigation
+      },
+      child: MaterialApp(
+        home: Scaffold(
+          appBar: AppBar(
+            title: Center(
+              // Centering the title horizontally
+              child: Text("Eye Fatigue Test"),
+            ),
           ),
+          body:
+           uploaded
+        ? Center(
+        child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          "Please wait, we are fetching your report...",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+          ),
+          textAlign: TextAlign.center,
         ),
-        body: Center(
-          child: FutureBuilder(
-            future: fetchData(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Text(
-                    'Please wait till loading...'); // Display text while loading
-              } else if (snapshot.hasError) {
-                return Text('Error: ${snapshot.error}');
-              } else {
-                Object? data = snapshot.data;
-                return dataLoadedUI(context);
-              }
-            },
-          ),
+      ),
+      )
+          :
+           Column(
+             // mainAxisAlignment: MainAxisAlignment.center,
+             children: [
+               Image.asset(
+                 'assets/congrats_icon.png',
+                 width: 300,
+                 height: 300,
+               ),
+               SizedBox(height: 8),
+               Padding(
+                 padding: EdgeInsets.fromLTRB(20, 8, 20, 8),
+                 child: Text(
+                   'Congratulations! You have completed the Eye Fatigue Test.',
+                   style: TextStyle(
+                     color: Colors.deepPurple,
+                     fontSize: 20,
+                     fontWeight: FontWeight.w700,
+                   ),
+                   textAlign: TextAlign.center,
+                 ),
+               ),
+               SizedBox(height: 10),
+               Padding(
+                 padding: EdgeInsets.fromLTRB(15, 8, 15, 8),
+                 child: Text(
+                   'To view your results, go to the Report section to find your Eye Fatigue Test report and gain insights.',
+                   style: TextStyle(
+                     color: Colors.black,
+                     fontSize: 14,
+                   ),
+                   textAlign: TextAlign.center, // Optional: align text center
+                 ),
+               ),
+               SizedBox(height: 20),
+               ElevatedButton(
+                 onPressed:enable ? () async {
+                   setState(() {
+                     Navigator.push(
+                       context,
+                       MaterialPageRoute(
+                           builder: (context) => EyeFatigueTestReport()),
+                     );
+                   });
+                 }:null,
+                 style: ElevatedButton.styleFrom(
+                   foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
+                   padding: EdgeInsets.all(16),
+                   minimumSize: Size(300, 40),
+                   shape: RoundedRectangleBorder(
+                     borderRadius: BorderRadius.circular(26),
+                   ),
+                 ),
+                 child: Text('GO TO REPORTS'),
+               ),
+             ],
+           )
+
+
         ),
       ),
     );
@@ -463,7 +580,8 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
 
   // Function to build UI after data is loaded
   Widget dataLoadedUI(BuildContext context) {
-    return Column(
+    return
+      Column(
       // mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Image.asset(
@@ -500,6 +618,8 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
         ElevatedButton(
           onPressed:enable ? () async {
             setState(() {
+               uploaded=false;
+               isLoading = false;
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -545,7 +665,9 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
       if (response.statusCode == 200) {
 
         setState(() {
+          uploaded=false;
           enable=true;
+
 
         });
       }
