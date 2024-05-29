@@ -16,6 +16,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart'hide LocationAccuracy;
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:project_new/myPlanPage.dart';
+import 'package:project_new/rewardStatus.dart';
 import 'package:project_new/rewards_sync.dart';
 import 'package:project_new/sign_up.dart';
 import 'package:project_new/user_profile.dart';
@@ -142,51 +143,60 @@ class UserProfiledash extends State<UserDashboard> {
 
 
 
-                        Container(
-                          width: MediaQuery.of(context).size.width/1.3,
-                          height: 60,
-
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(22), // Half of the height for oval shape
-                            color: Colors.grey.withOpacity(0.3),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-
-                              Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Text(
-                                  'Personal Details',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 15,
-                                  ),
-                                ),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.arrow_forward_ios_outlined),
-                                color: Colors.black,iconSize: 14,
-                                onPressed: () {
-    Navigator.push(
-      context,
-      CupertinoPageRoute(
-          builder: (context) =>
-               UserProfile()),
-    );                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                       SizedBox(height: 30,),
                         GestureDetector(
                           onTap: (){
                             Navigator.push(
                               context,
                               CupertinoPageRoute(
                                   builder: (context) =>
-                                      PrescriptionUpload()),
+                                      UserProfile()),
                             );
+                          },
+                          child: Container(
+                            width: MediaQuery.of(context).size.width/1.3,
+                            height: 60,
+
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(22), // Half of the height for oval shape
+                              color: Colors.grey.withOpacity(0.3),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+
+                                Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: Text(
+                                    'Personal Details',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.arrow_forward_ios_outlined),
+                                  color: Colors.black,iconSize: 14,
+                                  onPressed: () {
+                              Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                    builder: (context) =>
+                                         UserProfile()),
+                              );                                },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                       SizedBox(height: 30,),
+                        GestureDetector(
+                          onTap: (){
+                            Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                builder: (context) =>
+                                RewardStatusScreen()));
                           },
                           child: Container(
                             width: MediaQuery.of(context).size.width/1.3,
@@ -214,7 +224,12 @@ class UserProfiledash extends State<UserDashboard> {
                                   icon: Icon(Icons.arrow_forward_ios_outlined),
                                   color: Colors.black,iconSize: 14,
                                   onPressed: () {
-
+                                    Navigator.push(
+                                      context,
+                                      CupertinoPageRoute(
+                                          builder: (context) =>
+                                              RewardStatusScreen()),
+                                    );
                                     // Navigate to next screen
                                   },
                                 ),
@@ -291,7 +306,12 @@ class UserProfiledash extends State<UserDashboard> {
                                   icon: Icon(Icons.arrow_forward_ios_outlined),
                                   color: Colors.black,iconSize: 14,
                                   onPressed: () {
-                                    // Navigate to next screen
+                                    Navigator.push(
+                                      context,
+                                      CupertinoPageRoute(
+                                          builder: (context) =>
+                                              MyPlan()),
+                                    );
                                   },
                                 ),
                               ],

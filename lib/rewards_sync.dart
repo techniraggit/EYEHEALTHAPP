@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -27,6 +28,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Custom_navbar/bottom_navbar.dart';
 import 'HomePage.dart';
+import 'api/Api.dart';
 import 'api/config.dart';
 import 'new_address_screen.dart';
 
@@ -731,7 +733,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
   OfferData? offerData;
   AddressList? address_list;
   bool isChecked = false;
-
+   SharedPreferences? prefs;
   double? userPercentage;
   bool isReedemButtonEnabled = false; // Set your condition here
 
@@ -739,6 +741,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
   final double _currentTime = 80.0; // Initial time
   int _countdownValue = 0;
   Timer? _timer;
+
   String? image_url, title, description;
   Color buttonColor = Colors.disablebutton; // Default color
   int? hours, minutes, seconds;
@@ -746,10 +749,12 @@ class RewardSpecsSync extends State<RewardSpecs> {
   List<bool> isSelectedList = [];
   bool isLoading = true;
   int selectedCount = 0;
-bool selectedCount_=false;
+bool selectedCount_=false; int ino=0;
   @override
   void initState() {
     super.initState();
+    initSharedPreferences(); // Initialize SharedPreferences when widget is created
+
     getOffersDetail();
     getAddress();
     _countdownValue = _currentTime.toInt();
@@ -1384,7 +1389,19 @@ bool selectedCount_=false;
 
                                 Builder(
                                     builder: (context) {
+
+                                      ino=index;
                                       print("--------${isSelectedList[index]} ");
+                                      if(isSelectedList[index]==true){
+if(prefs==null){}else{
+  prefs?.setString('address_id', address_list!.data![ino].addressId!);
+
+}
+                                        // address_id
+                                        print("selcted_id====inntyyyyn====+${ address_list?.data?[ino].addressId}");
+                                      }
+
+
                                       for(int i=0;i<address_list!.data!.length;i++){
                                         if(isSelectedList[index]==true){
                                           selectedCount_=true;
@@ -1404,15 +1421,21 @@ bool selectedCount_=false;
                                                 if (newValue == true) {
                                                   selectedCount++;
                                                   selectedCount_=true;
+                                                  // print("selcted_id========+${ address_list?.data?[i].addressId}");
+
                                                   // Increment count when checkbox is selected
                                                 } else {
                                                   selectedCount--;
                                                   selectedCount_=false;// Decrement count when checkbox is deselected
                                                 }
+
                                               }
+                                              if(prefs==null){}else{
+                                                prefs?.setString('address_id', address_list!.data![ino].addressId!);
+
+                                              }                                              print("selcted_id====00000====+${ address_list?.data?[ino].addressId}");
 
                                             // isSelectedList[index] = newValue ?? false;
-
                                           });
 
 
@@ -1542,9 +1565,12 @@ bool selectedCount_=false;
                               isChecked = newValue!;
 
                               if(isChecked==true){
-                                Navigator.push(context, MaterialPageRoute(
-                                    builder: (context) => RedeemSuccessPage()),
-                                );
+                                
+                                
+                                callredeemApi();
+                                // Navigator.push(context, MaterialPageRoute(
+                                //     builder: (context) => RedeemSuccessPage()),
+                                // );
                               }
 
                             });
@@ -1589,6 +1615,48 @@ bool selectedCount_=false;
                       ),
                     ),
                   ),
+                SizedBox(height: 10,),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 28.0),
+                    child: ElevatedButton(
+
+                      onPressed: () {
+                        callredeemApi();
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(builder: (context) => NewAddressScreen()),
+                        // );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.background, // Background color
+                        padding: EdgeInsets.zero, // No padding
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25), // Adjust the border radius as needed
+                        ),
+                      ),
+                      child: SizedBox(
+                        width: 100,
+                        height: 50,
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 5.0, left: 14),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Next',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+
                 ],
               ),
             );
@@ -1597,7 +1665,67 @@ bool selectedCount_=false;
       },
     );
   }
-}
+
+
+  Future<void> callredeemApi() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken =
+    prefs.getString('access_token') ?? '';
+    String offer_id = prefs.getString('offer_id')??"";
+    String address_id = prefs.getString('address_id')??"";
+
+    final String apiUrl = '${Api.baseurl}/api/redeemed-offers';
+// Replace these headers with your required headers
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $authToken',
+
+    };
+
+
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        body: {
+        "offer_id": offer_id,
+        "address_id": address_id,
+
+        // "device_id":  device_id// cahnge device_token
+
+      },
+
+        headers: headers,
+      );
+
+      print('response === ' + response.body);
+      if (response.statusCode == 201) {
+        Fluttertoast.showToast(msg: "Offer redeemed successfully. Please wait for an admin response.");
+        if (kDebugMode) {
+          print('sddd ${response.body}');
+        }
+        Navigator.push(context, MaterialPageRoute(
+              builder: (context) => RedeemSuccessPage()),
+          );
+        // Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        //
+        // // Extract the customer ID
+        // String customerAccessToken = jsonResponse['data']['token']['access'];
+        // prefs.setString('customer_token', customerAccessToken);
+        // print('customer_acess_token === ' + customerAccessToken);
+
+      } else {
+        print('Failed with status code: ${response.statusCode}');
+        print('Failed sddd ${response.body}');
+      }
+    } catch (e) {
+// Handle exceptions here (e.g., network errors)
+      print('Exception: $e');
+    }
+  }
+
+  Future<void> initSharedPreferences() async {
+    prefs = await SharedPreferences.getInstance(); // Initialize SharedPreferences
+  }}
 
 class PrescriptionUpload extends StatefulWidget {
   const PrescriptionUpload({super.key});
