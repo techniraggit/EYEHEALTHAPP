@@ -11,13 +11,14 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
+import 'package:project_new/HomePage.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:convert' as convert;
 
-import '../../Api.dart';
-import '../../customDialog.dart';
+import '../Custom_navbar/customDialog.dart';
+import '../api/Api.dart';
 import '../camara.dart';
 import 'TestReport.dart';
 import '../../myPlanPage.dart';
@@ -70,7 +71,7 @@ class SelectQuestion extends State<GiveInfo> {
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => GiveInfo()),
+          MaterialPageRoute(builder: (context) => HomePage()),
         );
         return false;
       },
@@ -81,90 +82,95 @@ class SelectQuestion extends State<GiveInfo> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
             onPressed: () {
-              // Add your back button functionality here2
+              // Add your back button functionality here
             },
           ),
         ),
-        body: FutureBuilder<List<Question>>(
-          future: _questionsFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Center(child: Text('No questions available'));
-            } else {
-              return SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Welcome to Eye Health',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.bluebutton,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 40),
-                            child: Text(
-                              'Are you wearing Eyeglasses or Contact Lenses for Vision Correction Faces, or Sightseeing?',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.black,
+        body: Stack(
+          children: [
+            FutureBuilder<List<Question>>(
+              future: _questionsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No questions available'));
+                } else {
+                  return SingleChildScrollView(
+                    padding: EdgeInsets.only(bottom: 100),
+                    // Add padding to avoid button overlap
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Welcome to Eye Health',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.bluebutton,
+                                ),
                               ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          // Dynamically create QuestionCheckbox widgets based on fetched questions
-                          for (var question in snapshot.data!) ...[
-                            QuestionCheckbox(
-                              questionId: question.id,
-                              questionText: question.questionText,
-                              onChanged: (bool? value) {
-                                _onCheckboxChanged(value, question.id);
-                              },
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    Card(
-                      shape: RoundedRectangleBorder(),
-                      elevation: 5,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            submitApi();
-                          },
-                          child: Text('Next'),
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: Color(0xFF5900D9),
-                            padding: EdgeInsets.all(6),
-                            minimumSize:
-                                Size(MediaQuery.of(context).size.width, 50),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(26),
-                            ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 40),
+                                child: Text(
+                                  'Are you wearing Eyeglasses or Contact Lenses for Vision Correction Faces, or Sightseeing?',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.black,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              // Dynamically create QuestionCheckbox widgets based on fetched questions
+                              for (var question in snapshot.data!) ...[
+                                QuestionCheckbox(
+                                  questionId: question.id,
+                                  questionText: question.questionText,
+                                  onChanged: (bool? value) {
+                                    _onCheckboxChanged(value, question.id);
+                                  },
+                                ),
+                              ],
+                            ],
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
+                  );
+                }
+              },
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
+                child: ElevatedButton(
+                  onPressed: () {
+                    submitApi();
+                  },
+                  child: Text('Next'),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Color(0xFF5900D9),
+                    padding: EdgeInsets.all(6),
+                    minimumSize: Size(MediaQuery.of(context).size.width, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(26),
+                    ),
+                  ),
                 ),
-              );
-            }
-          },
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -390,7 +396,7 @@ class LeftEyeTestState extends State<LeftEyeTest> {
                       Padding(
                         padding: EdgeInsets.only(top: 4.0),
                         child: Image.asset(
-                          'assets/right_eye_image.png',
+                          'assets/left_eye_image.png',
                           width: 300,
                           height: 220,
                         ),
@@ -477,7 +483,7 @@ class LeftEyeTestState extends State<LeftEyeTest> {
         print("testname: $test");
         Navigator.push(
           context,
-          CupertinoPageRoute(builder: (context) => AlfabetTest()),
+          CupertinoPageRoute(builder: (context) => AlphabetTest()),
         );
       } else {
         print(response.stream);
@@ -508,19 +514,19 @@ Widget bulletText(String text) {
   );
 }
 
-class AlfabetTest extends StatefulWidget {
+class AlphabetTest extends StatefulWidget {
   @override
-  AlfabetTestState createState() => AlfabetTestState();
+  AlphabetTestState createState() => AlphabetTestState();
 }
 
-class AlfabetTestState extends State<AlfabetTest> {
+class AlphabetTestState extends State<AlphabetTest> {
   CameraController? _controller;
   late List<CameraDescription> _cameras;
 
   @override
   void initState() {
     super.initState();
-    //_initializeCamera();
+    _initializeCamera();
     getSnellFraction();
   }
 
@@ -570,7 +576,7 @@ class AlfabetTestState extends State<AlfabetTest> {
     var distanceType;
 
     var apiUrl =
-        '${Api.baseurl}/calculate-distance'; // Replace with your API endpoint
+        '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
     /* String base64String = await xFileToBase64(image);*/
 
     //print('image$image');
@@ -586,7 +592,6 @@ class AlfabetTestState extends State<AlfabetTest> {
     } else if (text == 'hyperopia') {
       distanceType = 'neardistance';
     }
-    //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
     try {
       var frameData = image;
 
@@ -607,20 +612,18 @@ class AlfabetTestState extends State<AlfabetTest> {
         },
         body: requestBody,
       );
-      print("frameData" + frameData + ", test_distance" + distanceType);
 
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
 
-        print(alertMessage);
+        print("nnnnnnn$alertMessage");
         // Handle the response data here
         print('Request sucxsss with status: ${response.body}');
-
         print("alert$alertMessage");
         setState(() {
-          alert = alertMessage;
+          //  alert = alertMessage;
         });
       } else {
         Map<String, dynamic> data = jsonDecode(response.body);
@@ -843,7 +846,6 @@ class AlfabetTestState extends State<AlfabetTest> {
                           child: ElevatedButton(
                             onPressed: () {
                               Myopia_or_HyperMyopiaTest(context);
-                              _controller?.dispose().then((_) {});
                             },
                             child: Text(
                               'Not able to Read',
@@ -868,7 +870,6 @@ class AlfabetTestState extends State<AlfabetTest> {
                 ],
               ),
               Positioned(
-                top: 10,
                 right: 10,
                 child: Container(
                   width: 100.0,
@@ -877,7 +878,7 @@ class AlfabetTestState extends State<AlfabetTest> {
                     border: Border.all(color: Colors.grey),
                   ),
                   child: InteractiveViewer(
-                    boundaryMargin: EdgeInsets.all(20.0),
+                    // boundaryMargin: EdgeInsets.all(20.0),
                     minScale: 0.1,
                     maxScale: 1.5,
                     child: _controller != null
@@ -1081,10 +1082,11 @@ class Reading extends State<ReadingTest> {
   CameraController? _controller;
   late List<CameraDescription> _cameras;
   bool isLoadingRandomText = false;
+
   @override
   void initState() {
     super.initState();
-    // _initializeCamera();
+    _initializeCamera();
     getReadingSnellFraction();
   }
 
@@ -1131,8 +1133,10 @@ class Reading extends State<ReadingTest> {
   }
 
   Future<void> sendDistanceRequest(String image) async {
+    var distanceType;
+
     var apiUrl =
-        '${Api.baseurl}/api/eye/calculate-distance-api/'; // Replace with your API endpoint
+        '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
     /* String base64String = await xFileToBase64(image);*/
 
     //print('image$image');
@@ -1140,11 +1144,19 @@ class Reading extends State<ReadingTest> {
     String authToken =
         // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
         prefs.getString('access_token') ?? '';
-    //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
+    String CustomerId = prefs.getString('customer_id') ?? '';
+
+    String text = prefs.getString('test') ?? '';
+    if (text == 'myopia') {
+      distanceType = 'fardistance';
+    } else if (text == 'hyperopia') {
+      distanceType = 'neardistance';
+    }
     try {
-      var frameData =
-          image; // Replace this with your frame data as a base64 string
-      var distanceType = 'neardistance'; // Replace this with the distance type
+      var frameData = image;
+
+      // Replace this with your frame data as a base64 string
+      // var distanceType = 'neardistance'; // Replace this with the distance type
 
       var requestBody = jsonEncode({
         'frameData': frameData,
@@ -1156,6 +1168,7 @@ class Reading extends State<ReadingTest> {
         headers: <String, String>{
           'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
+          'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
@@ -1165,32 +1178,20 @@ class Reading extends State<ReadingTest> {
 
         String alertMessage = data['alert'];
 
-        // print(alertMessage);
+        print("nnnnnnn$alertMessage");
         // Handle the response data here
-        //print('Request sucxsss with status: ${response.body}');
-
-        //    print("alert$alertMessage");
+        print('Request sucxsss with status: ${response.body}');
+        print("alert$alertMessage");
         setState(() {
-          alert = alertMessage;
+          //  alert = alertMessage;
         });
       } else {
-        var connectivityResult = await Connectivity().checkConnectivity();
-        if (connectivityResult == ConnectivityResult.none) {
-          Fluttertoast.showToast(
-            msg:
-                'Poor internet connection , make sure you have a good internet',
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-          );
-        }
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
         alert = alertMessage;
-        //   print('Request failed with status: ${response.statusCode}');
-        //   print('Request failed with status: ${response.body}');
+        print('Request failed with status: ${response.statusCode}');
+        print('Request failed with status: ${response.body}');
         setState(() {
           alert = alertMessage;
         });
@@ -1433,7 +1434,7 @@ class Reading extends State<ReadingTest> {
                           ),
                           Container(
                             child: InteractiveViewer(
-                              boundaryMargin: EdgeInsets.all(20.0),
+                             // boundaryMargin: EdgeInsets.all(20.0),
                               minScale: 0.1,
                               maxScale: 1.5,
                               child: _controller != null
@@ -1460,7 +1461,6 @@ class Reading extends State<ReadingTest> {
     );
   }*/
 
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -1486,11 +1486,11 @@ class Reading extends State<ReadingTest> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  /*   image: DecorationImage(
+                    /*   image: DecorationImage(
                     image: AssetImage('assets/test.png'),
                     fit: BoxFit.cover,
                   ),*/
-                ),
+                    ),
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1515,7 +1515,7 @@ class Reading extends State<ReadingTest> {
                             visible: isLoadingRandomText,
                             child: CircularProgressIndicator(
                               valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.grey),
+                                  AlwaysStoppedAnimation<Color>(Colors.grey),
                             ),
                           ),
                         ],
@@ -1630,7 +1630,6 @@ class Reading extends State<ReadingTest> {
                 ],
               ),
               Positioned(
-                top: 10,
                 right: 10,
                 child: Container(
                   width: 100.0,
@@ -1639,7 +1638,7 @@ class Reading extends State<ReadingTest> {
                     border: Border.all(color: Colors.grey),
                   ),
                   child: InteractiveViewer(
-                    boundaryMargin: EdgeInsets.all(20.0),
+                    // boundaryMargin: EdgeInsets.all(20.0),
                     minScale: 0.1,
                     maxScale: 1.5,
                     child: _controller != null
@@ -1922,7 +1921,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
   void initState() {
     super.initState();
     startTimer();
-    //  _initializeCamera();
+    _initializeCamera();
   }
 
   void startTimer() {
@@ -1966,7 +1965,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
       setState(() {});
     }
     // Start capturing images per second
-    // _captureImagePerSecond();
+    _captureImagePerSecond();
   }
 
   void _captureImagePerSecond() async {
@@ -1992,6 +1991,8 @@ class AstigmationTest1 extends State<AstigmationTest> {
   }
 
   Future<void> sendDistanceRequest(String image) async {
+    var distanceType;
+
     var apiUrl =
         '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
     /* String base64String = await xFileToBase64(image);*/
@@ -2003,16 +2004,21 @@ class AstigmationTest1 extends State<AstigmationTest> {
         prefs.getString('access_token') ?? '';
     String CustomerId = prefs.getString('customer_id') ?? '';
 
-    //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
+    String text = prefs.getString('test') ?? '';
+    if (text == 'myopia') {
+      distanceType = 'fardistance';
+    } else if (text == 'hyperopia') {
+      distanceType = 'neardistance';
+    }
     try {
-      var frameData =
-          image; // Replace this with your frame data as a base64 string
-      var distanceType = 'fardistance'; // Replace this with the distance type
+      var frameData = image;
+
+      // Replace this with your frame data as a base64 string
+      // var distanceType = 'neardistance'; // Replace this with the distance type
 
       var requestBody = jsonEncode({
         'frameData': frameData,
         'test_distance': distanceType,
-        'Customer-Id': CustomerId,
       });
 
       var response = await http.post(
@@ -2020,6 +2026,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
         headers: <String, String>{
           'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
+          'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
@@ -2029,13 +2036,12 @@ class AstigmationTest1 extends State<AstigmationTest> {
 
         String alertMessage = data['alert'];
 
-        print(alertMessage);
+        print("nnnnnnn$alertMessage");
         // Handle the response data here
         print('Request sucxsss with status: ${response.body}');
-
         print("alert$alertMessage");
         setState(() {
-          alert = alertMessage;
+          //  alert = alertMessage;
         });
       } else {
         Map<String, dynamic> data = jsonDecode(response.body);
@@ -2052,7 +2058,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
       }
     } catch (e) {
       if (e is SocketException) {
-        CustomAlertDialog.eyetstcomplete(
+        CustomAlertDialog.attractivepopup(
             context, 'poor internet connectivity , please try again later!');
       }
 
@@ -2180,7 +2186,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Padding(
-                    padding: EdgeInsets.fromLTRB(40, 45, 40, 0.5),
+                    padding: EdgeInsets.fromLTRB(40, 0, 40, 0),
                     child: Text(
                       'Astigmatic Test',
                       style: TextStyle(
@@ -2190,11 +2196,11 @@ class AstigmationTest1 extends State<AstigmationTest> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.fromLTRB(5, 0, 5, 1),
+                    padding: EdgeInsets.fromLTRB(5, 0, 5, 10),
                     child: Text(
                       'Choose the part where you can see a more darker line',
                       style: TextStyle(
-                        fontSize: 13.0,
+                        fontSize: 18.0,
                         fontWeight: FontWeight.w400,
                         color: Colors.black,
                       ),
@@ -2290,23 +2296,25 @@ class AstigmationTest1 extends State<AstigmationTest> {
                           fontWeight: FontWeight.w400),
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      CustomElevatedButtonY(
-                        text: 'Decrease',
-                        onPressed: decreaseSize,
-                      ),
-                      CustomElevatedButtonG(
-                        text: 'Increase',
-                        onPressed: increaseSize,
-                      ),
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 30.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        CustomElevatedButtonY(
+                          text: 'Decrease',
+                          onPressed: decreaseSize,
+                        ),
+                        CustomElevatedButtonG(
+                          text: 'Increase',
+                          onPressed: increaseSize,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
               Positioned(
-                top: 10,
                 right: 10,
                 child: Container(
                   width: 100.0,
@@ -2315,7 +2323,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
                     border: Border.all(color: Colors.grey),
                   ),
                   child: InteractiveViewer(
-                    boundaryMargin: EdgeInsets.all(20.0),
+                    // boundaryMargin: EdgeInsets.all(20.0),
                     minScale: 0.1,
                     maxScale: 1.5,
                     child: _controller != null
@@ -2384,7 +2392,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
       setState(() {});
     }
     // Start capturing images per second
-    //_captureImagePerSecond();
+    _captureImagePerSecond();
   }
 
   void _captureImagePerSecond() async {
@@ -2394,7 +2402,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
           ?.takePicture(); // Process the captured image as needed
       print('Image captured: ${image?.path}');
       // Delay to capture image per second
-      //capturePhoto(image!);
+      capturePhoto(image!);
       await Future.delayed(Duration(seconds: 1));
       // regpatient1(image);
     }
@@ -2410,22 +2418,30 @@ class Astigmationtest2 extends State<AstigmationTest2> {
   }
 
   Future<void> sendDistanceRequest(String image) async {
+    var distanceType;
+
     var apiUrl =
-        '${Api.baseurl}/api/eye/calculate-distance/'; // Replace with your API endpoint
+        '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
     /* String base64String = await xFileToBase64(image);*/
 
     //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
         // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ??
-            ''; //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
+        prefs.getString('access_token') ?? '';
     String CustomerId = prefs.getString('customer_id') ?? '';
 
+    String text = prefs.getString('test') ?? '';
+    if (text == 'myopia') {
+      distanceType = 'fardistance';
+    } else if (text == 'hyperopia') {
+      distanceType = 'neardistance';
+    }
     try {
-      var frameData =
-          image; // Replace this with your frame data as a base64 string
-      var distanceType = 'fardistance'; // Replace this with the distance type
+      var frameData = image;
+
+      // Replace this with your frame data as a base64 string
+      // var distanceType = 'neardistance'; // Replace this with the distance type
 
       var requestBody = jsonEncode({
         'frameData': frameData,
@@ -2435,38 +2451,38 @@ class Astigmationtest2 extends State<AstigmationTest2> {
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer ${authToken}',
+          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
-          'Customer-Id': CustomerId
+          'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
-      print("cust$CustomerId");
+
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
 
-        print(alertMessage);
+        print("nnnnnnn$alertMessage");
         // Handle the response data here
         print('Request sucxsss with status: ${response.body}');
-
         print("alert$alertMessage");
+        setState(() {
+          //  alert = alertMessage;
+        });
+      } else {
+        Map<String, dynamic> data = jsonDecode(response.body);
+
+        String alertMessage = data['alert'];
+        alert = alertMessage;
+        print('Request failed with status: ${response.statusCode}');
+        print('Request failed with status: ${response.body}');
         setState(() {
           alert = alertMessage;
         });
+
+        // Handle error response
       }
-      Map<String, dynamic> data = jsonDecode(response.body);
-
-      String alertMessage = data['alert'];
-      alert = alertMessage;
-      print('Request failed with status: ${response.statusCode}');
-      print('Request failed with status: ${response.body}');
-      setState(() {
-        alert = alertMessage;
-      });
-
-      // Handle error response
     } catch (e) {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
@@ -2488,12 +2504,12 @@ class Astigmationtest2 extends State<AstigmationTest2> {
   void initState() {
     super.initState();
     startTimer();
-    //  fetchData();
+    //fetchData();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       delayedAPICall();
     });
     // delayedAPICall();
-    // _initializeCamera();
+    _initializeCamera();
   }
 
   void startTimer() {
@@ -2519,31 +2535,6 @@ class Astigmationtest2 extends State<AstigmationTest2> {
       });
     });
   }
-
-  /**  void startTimer() {
-      _timer?.cancel(); // Cancel the previous timer if it exists
-
-      _timer = Timer.periodic(Duration(seconds: 6), (timer) {
-      setState(() {//&& !increasing
-      if (increasing) {
-      if (imageSize1 < 150.0&& increasing) {
-      imageSize1 += 10.0; // Increase image size by 10 units
-      } else {
-      increasing = false;
-      }
-      }
-      else {
-      if (imageSize1 > 100.0&& !increasing) {
-      imageSize1 -= 10.0; // Decrease image size by 10 units
-      } else {
-      increasing = true;
-      }
-      }
-
-      });
-      });
-      }
-   **/
 
   List<int> dataList = [];
 
@@ -2891,7 +2882,6 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                 ),
               ),
               Positioned(
-                top: 10,
                 right: 10,
                 width: 100,
                 // Adjust the width as needed
@@ -2955,7 +2945,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
   void initState() {
     super.initState();
     startTimer();
-    //  _initializeCamera();
+    _initializeCamera();
   }
 
   void startTimer() {
@@ -2981,30 +2971,6 @@ class AstigmationTestNone extends State<AstigmationTest3> {
       });
     });
   }
-
-  /**void startTimer() {
-      _timer?.cancel(); // Cancel the previous timer if it exists
-
-      _timer = Timer.periodic(Duration(seconds: 6), (timer) {
-      setState(() {//&& !increasing
-      if (increasing) {
-      if (imageSize < 150.0&& increasing) {
-      imageSize += 10.0; // Increase image size by 10 units
-      } else {
-      increasing = false;
-      }
-      }
-      else {
-      if (imageSize > 100.0&& !increasing) {
-      imageSize -= 10.0; // Decrease image size by 10 units
-      } else {
-      increasing = true;
-      }
-      }
-
-      });
-      });
-      }**/
 
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
@@ -3049,10 +3015,10 @@ class AstigmationTestNone extends State<AstigmationTest3> {
   }
 
   Future<void> sendDistanceRequest(String image) async {
-    //isLoadingRandomText = true;
+    var distanceType;
 
     var apiUrl =
-        '${Api.baseurl}/api/eye/calculate-distance-api/'; // Replace with your API endpoint
+        '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
     /* String base64String = await xFileToBase64(image);*/
 
     //print('image$image');
@@ -3061,11 +3027,18 @@ class AstigmationTestNone extends State<AstigmationTest3> {
         // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
         prefs.getString('access_token') ?? '';
     String CustomerId = prefs.getString('customer_id') ?? '';
-    //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
+
+    String text = prefs.getString('test') ?? '';
+    if (text == 'myopia') {
+      distanceType = 'fardistance';
+    } else if (text == 'hyperopia') {
+      distanceType = 'neardistance';
+    }
     try {
-      var frameData =
-          image; // Replace this with your frame data as a base64 string
-      var distanceType = 'fardistance'; // Replace this with the distance type
+      var frameData = image;
+
+      // Replace this with your frame data as a base64 string
+      // var distanceType = 'neardistance'; // Replace this with the distance type
 
       var requestBody = jsonEncode({
         'frameData': frameData,
@@ -3083,37 +3056,35 @@ class AstigmationTestNone extends State<AstigmationTest3> {
       );
 
       if (response.statusCode == 200) {
-        // isLoadingRandomText = false;
-
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
 
-        print(alertMessage);
+        print("nnnnnnn$alertMessage");
         // Handle the response data here
         print('Request sucxsss with status: ${response.body}');
-
         print("alert$alertMessage");
+        setState(() {
+          //  alert = alertMessage;
+        });
+      } else {
+        Map<String, dynamic> data = jsonDecode(response.body);
+
+        String alertMessage = data['alert'];
+        alert = alertMessage;
+        print('Request failed with status: ${response.statusCode}');
+        print('Request failed with status: ${response.body}');
         setState(() {
           alert = alertMessage;
         });
+
+        // Handle error response
       }
-      Map<String, dynamic> data = jsonDecode(response.body);
-
-      String alertMessage = data['alert'];
-      alert = alertMessage;
-      print('Request failed with status: ${response.statusCode}');
-      print('Request failed with status: ${response.body}');
-      setState(() {
-        alert = alertMessage;
-      });
-
-      // Handle error response
     } catch (e) {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
             context, 'poor internet connectivity , please try again later!');
-      } else {}
+      }
 
 // If the server returns an error response, throw an exception
       throw Exception('Failed to send data');
@@ -3126,22 +3097,6 @@ class AstigmationTestNone extends State<AstigmationTest3> {
   double imageSize = 260.0; // Initial image size
   List<int> dataList = [];
 
-  /**
-      void increaseSize() {
-      setState(() {
-      if (imageSize < 150.0) {
-      imageSize += 10.0; // Increase image size by 20 units
-      }
-      });
-      }
-
-      void decreaseSize() {
-      setState(() {
-      if (imageSize >= 150.0) {
-      imageSize -= 10.0; // Decrease image size by 20 units, keeping a minimum size of 20
-      }
-      });
-      }**/
   void increaseSize() {
     setState(() {
       if (imageSize < 260.0 && imageSize >= 220) {
@@ -3170,8 +3125,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
         prefs.getString('access_token') ?? '';
     String CustomerId = prefs.getString('customer_id') ?? '';
 
-    final String apiUrl =
-        'https://testing1.zuktiapp.zuktiinnovations.com/counter-api/?counter_value=0';
+    final String apiUrl = '${Api.baseurl}/counter-api/?counter_value=0';
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Content-Type': 'application/json',
@@ -3208,9 +3162,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
   Future<void> ChoseAstigmation() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String authToken =
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-          prefs.getString('access_token') ?? '';
+      String authToken = prefs.getString('access_token') ?? '';
       String test_id = prefs.getString('test_id') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
       print("choseastigmation_res$CustomerId");
@@ -3249,9 +3201,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
 
   Future<void> fetchData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
+    String authToken = prefs.getString('access_token') ?? '';
     String test_id = prefs.getString('test_id') ?? '';
     await prefs.setString('region', selectedPart);
 // Replace this URL with your PUT API endpoint
@@ -3303,6 +3253,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
     super.dispose();
   }
 
+/*
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -3326,407 +3277,374 @@ class AstigmationTestNone extends State<AstigmationTest3> {
               ),
             ),
             body: Stack(
-              fit: StackFit.expand,
               children: <Widget>[
                 // Background Image
-                Container(
-                  margin: EdgeInsets.fromLTRB(0, 55, 0, 2),
+                Center(
                   child: SingleChildScrollView(
                     child: Column(
-                      //mainAxisAlignment: MainAxisAlignment.center,
-                      //  crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(40, 15, 40, 2),
-                          child: Text(
-                            '  Astigmatic Test',
-                            style: TextStyle(
-                                fontSize: 24.0,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        SizedBox(height: 1.0),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 5, 0, 20),
-                          child: Text(
-                            'Choose the part where you can see a more darker line',
-                            style: TextStyle(
-                                fontSize: 15.0,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w400),
-                          ),
-                        ),
-                        // Text in the Middle
-                        SizedBox(height: 2.0),
-                        Image.asset(
-                          'assets/astigmation3.png',
-                          // height: imageSize,
-                          width: imageSize,
-                        ),
-                        /*   Image.asset(
+                        // Background Image
+                        Container(
+                          margin: EdgeInsets.fromLTRB(0, 55, 0, 2),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              //mainAxisAlignment: MainAxisAlignment.center,
+                              //  crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(40, 15, 40, 2),
+                                  child: Text(
+                                    '  Astigmatic Test',
+                                    style: TextStyle(
+                                        fontSize: 24.0,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                SizedBox(height: 1.0),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(20, 5, 0, 20),
+                                  child: Text(
+                                    'Choose the part where you can see a more darker line',
+                                    style: TextStyle(
+                                        fontSize: 15.0,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                ),
+                                // Text in the Middle
+                                SizedBox(height: 2.0),
+                                Image.asset(
+                                  'assets/astigmation3.png',
+                                  // height: imageSize,
+                                  width: imageSize,
+                                ),
+                                */ /*   Image.asset(
                     'assets/d/s1.svg',
                     // Replace with your image path
                     width: imageSize,
                     height: imageSize,
-                  ),*/
-                        SizedBox(height: 23.0),
+                  ),*/ /*
+                                SizedBox(height: 23.0),
 
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Container(
-                              height: 35,
-                              width: 150,
-                              //padding: const EdgeInsets.fromLTRB(3, 1, 3, 1),
-                              margin: EdgeInsets.fromLTRB(10, 5, 20, 0),
-                              // padding: const EdgeInsets.fromLTRB(30, 14, 30, 10),
-                              // margin: EdgeInsets.fromLTRB(10, 10, 20, 0),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Container(
+                                      height: 35,
+                                      width: 150,
+                                      //padding: const EdgeInsets.fromLTRB(3, 1, 3, 1),
+                                      margin: EdgeInsets.fromLTRB(10, 5, 20, 0),
+                                      // padding: const EdgeInsets.fromLTRB(30, 14, 30, 10),
+                                      // margin: EdgeInsets.fromLTRB(10, 10, 20, 0),
 
-                              child: CustomElevatedButtonY(
-                                text: 'Decrease ',
-                                onPressed: decreaseSize,
-                              ),
-                            ),
-                            Container(
-                              height: 35, width: 150,
-                              //padding: const EdgeInsets.fromLTRB(3, 1, 3, 1),
-                              margin: EdgeInsets.fromLTRB(10, 5, 20, 0),
-
-                              child: CustomElevatedButtonG(
-                                text: 'Increase ',
-                                onPressed: increaseSize,
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        // Two Horizontal Aligned Buttons
-
-                        SizedBox(height: 5.0),
-
-                        // Four Buttons Aligned Horizontally
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: <Widget>[
-                              Container(
-                                height: 35,
-                                width: 60,
-                                margin: const EdgeInsets.all(3),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      containerColor,
-                                      Colors.green
-                                    ], // Adjust colors as needed
-                                  ),
-                                  borderRadius: BorderRadius.circular(18),
-                                ),
-                                child: MaterialButton(
-                                  onPressed: () {},
-                                  child: TextButton(
-                                    child: Text(
-                                      'A',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
+                                      child: CustomElevatedButtonY(
+                                        text: 'Decrease ',
+                                        onPressed: decreaseSize,
                                       ),
                                     ),
-                                    onPressed: () {
-                                      setState(() {
-                                        // Change container color to white
-                                        containerColor = Colors.lightBlueAccent;
-                                        containerColor5 = Colors.bluebutton;
-                                        containerColor3 = Colors.bluebutton;
-                                        containerColor4 = Colors.bluebutton;
-                                        containerColor2 = Colors.bluebutton;
-                                      });
-                                      selectedPart = 'a';
-                                      ChoseAstigmation();
-                                      fetchData();
-                                      Navigator.push(
-                                        context,
-                                        CupertinoPageRoute(
-                                            builder: (context) =>
-                                                AstigmationTest2()),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                height: 35,
-                                width: 60,
-                                margin: const EdgeInsets.all(3),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      containerColor,
-                                      Colors.green
-                                    ], // Adjust colors as needed
-                                  ),
-                                  borderRadius: BorderRadius.circular(18),
-                                ),
-                                child: MaterialButton(
-                                  onPressed: () {},
-                                  child: TextButton(
-                                    child: Text(
-                                      'B',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        // Change container color to white
-                                        containerColor2 =
-                                            Colors.lightBlueAccent;
-                                        containerColor5 = Colors.bluebutton;
-                                        containerColor3 = Colors.bluebutton;
-                                        containerColor4 = Colors.bluebutton;
-                                        containerColor = Colors.bluebutton;
-                                      });
-                                      selectedPart = 'b';
-                                      ChoseAstigmation();
-                                      fetchData();
-                                      Navigator.push(
-                                        context,
-                                        CupertinoPageRoute(
-                                            builder: (context) =>
-                                                AstigmationTest2()),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                height: 35,
-                                width: 60,
-                                margin: const EdgeInsets.all(3),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      containerColor,
-                                      Colors.green
-                                    ], // Adjust colors as needed
-                                  ),
-                                  borderRadius: BorderRadius.circular(18),
-                                ),
-                                child: MaterialButton(
-                                  onPressed: () {},
-                                  child: TextButton(
-                                    child: Text(
-                                      'C',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        // Change container color to white
-                                        containerColor3 =
-                                            Colors.lightBlueAccent;
-                                        containerColor2 = Colors.bluebutton;
-                                        containerColor = Colors.bluebutton;
-                                        containerColor4 = Colors.bluebutton;
-                                        containerColor5 = Colors.bluebutton;
-                                      });
-                                      selectedPart = 'c';
-                                      ChoseAstigmation();
-                                      fetchData();
-                                      Navigator.push(
-                                        context,
-                                        CupertinoPageRoute(
-                                            builder: (context) =>
-                                                AstigmationTest2()),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                height: 35,
-                                width: 60,
-                                margin: const EdgeInsets.all(3),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      containerColor,
-                                      Colors.green
-                                    ], // Adjust colors as needed
-                                  ),
-                                  borderRadius: BorderRadius.circular(18),
-                                ),
-                                child: MaterialButton(
-                                  onPressed: () {},
-                                  child: TextButton(
-                                    child: Text(
-                                      'D',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        // Change container color to white
-                                        containerColor4 =
-                                            Colors.lightBlueAccent;
-                                        containerColor2 = Colors.bluebutton;
-                                        containerColor3 = Colors.bluebutton;
-                                        containerColor5 = Colors.bluebutton;
-                                        containerColor = Colors.bluebutton;
-                                      });
-                                      selectedPart = 'd';
-                                      ChoseAstigmation();
-                                      fetchData();
-                                      Navigator.push(
-                                        context,
-                                        CupertinoPageRoute(
-                                            builder: (context) =>
-                                                AstigmationTest2()),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                height: 35,
-                                width: 85,
-                                margin: EdgeInsets.fromLTRB(3, 3, 10, 0),
+                                    Container(
+                                      height: 35,
+                                      width: 150,
+                                      //padding: const EdgeInsets.fromLTRB(3, 1, 3, 1),
+                                      margin: EdgeInsets.fromLTRB(10, 5, 20, 0),
 
-                                //margin: const EdgeInsets.all(3),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      containerColor,
-                                      Colors.green
-                                    ], // Adjust colors as needed
-                                  ),
-                                  borderRadius: BorderRadius.circular(18),
-                                ),
-                                child: MaterialButton(
-                                  onPressed: () {},
-                                  child: TextButton(
-                                    child: Text(
-                                      'None',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10,
+                                      child: CustomElevatedButtonG(
+                                        text: 'Increase ',
+                                        onPressed: increaseSize,
                                       ),
                                     ),
-                                    onPressed: () {
-                                      setState(() {
-                                        // Change container color to white
-                                        containerColor5 =
-                                            Colors.lightBlueAccent;
-                                        containerColor2 = Colors.bluebutton;
-                                        containerColor3 = Colors.bluebutton;
-                                        containerColor4 = Colors.bluebutton;
-                                        containerColor = Colors.bluebutton;
-                                      });
-                                      CounterApi();
-                                      showCustomToast(
-                                          context, 'Operation Successfully ');
-                                      Navigator.push(
-                                        context,
-                                        CupertinoPageRoute(
-                                            builder: (context) =>
-                                                RedGreenTest()),
-                                      );
-                                    },
+                                  ],
+                                ),
+
+                                // Two Horizontal Aligned Buttons
+
+                                SizedBox(height: 5.0),
+
+                                // Four Buttons Aligned Horizontally
+                                SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: <Widget>[
+                                      Container(
+                                        height: 35,
+                                        width: 60,
+                                        margin: const EdgeInsets.all(3),
+                                        decoration: BoxDecoration(
+                                          color: Colors.bluebutton,
+                                          borderRadius:
+                                              BorderRadius.circular(18),
+                                        ),
+                                        child: MaterialButton(
+                                          onPressed: () {},
+                                          child: TextButton(
+                                            child: Text(
+                                              'A',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              setState(() {
+                                                // Change container color to white
+                                                containerColor =
+                                                    Colors.lightBlueAccent;
+                                                containerColor5 =
+                                                    Colors.bluebutton;
+                                                containerColor3 =
+                                                    Colors.bluebutton;
+                                                containerColor4 =
+                                                    Colors.bluebutton;
+                                                containerColor2 =
+                                                    Colors.bluebutton;
+                                              });
+                                              selectedPart = 'a';
+                                              ChoseAstigmation();
+                                              fetchData();
+                                              Navigator.push(
+                                                context,
+                                                CupertinoPageRoute(
+                                                    builder: (context) =>
+                                                        AstigmationTest2()),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        height: 35,
+                                        width: 60,
+                                        margin: const EdgeInsets.all(3),
+                                        decoration: BoxDecoration(
+                                          color: Colors.bluebutton,
+                                          borderRadius:
+                                              BorderRadius.circular(18),
+                                        ),
+                                        child: MaterialButton(
+                                          onPressed: () {},
+                                          child: TextButton(
+                                            child: Text(
+                                              'B',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              setState(() {
+                                                // Change container color to white
+                                                containerColor2 =
+                                                    Colors.lightBlueAccent;
+                                                containerColor5 =
+                                                    Colors.bluebutton;
+                                                containerColor3 =
+                                                    Colors.bluebutton;
+                                                containerColor4 =
+                                                    Colors.bluebutton;
+                                                containerColor =
+                                                    Colors.bluebutton;
+                                              });
+                                              selectedPart = 'b';
+                                              ChoseAstigmation();
+                                              fetchData();
+                                              Navigator.push(
+                                                context,
+                                                CupertinoPageRoute(
+                                                    builder: (context) =>
+                                                        AstigmationTest2()),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        height: 35,
+                                        width: 60,
+                                        margin: const EdgeInsets.all(3),
+                                        decoration: BoxDecoration(
+                                          color: Colors.bluebutton,
+                                          borderRadius:
+                                              BorderRadius.circular(18),
+                                        ),
+                                        child: MaterialButton(
+                                          onPressed: () {},
+                                          child: TextButton(
+                                            child: Text(
+                                              'C',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              setState(() {
+                                                // Change container color to white
+                                                containerColor3 =
+                                                    Colors.lightBlueAccent;
+                                                containerColor2 =
+                                                    Colors.bluebutton;
+                                                containerColor =
+                                                    Colors.bluebutton;
+                                                containerColor4 =
+                                                    Colors.bluebutton;
+                                                containerColor5 =
+                                                    Colors.bluebutton;
+                                              });
+                                              selectedPart = 'c';
+                                              ChoseAstigmation();
+                                              fetchData();
+                                              Navigator.push(
+                                                context,
+                                                CupertinoPageRoute(
+                                                    builder: (context) =>
+                                                        AstigmationTest2()),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        height: 35,
+                                        width: 60,
+                                        margin: const EdgeInsets.all(3),
+                                        decoration: BoxDecoration(
+                                          color: Colors.bluebutton,
+                                          borderRadius:
+                                              BorderRadius.circular(18),
+                                        ),
+                                        child: MaterialButton(
+                                          onPressed: () {},
+                                          child: TextButton(
+                                            child: Text(
+                                              'D',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              setState(() {
+                                                // Change container color to white
+                                                containerColor4 =
+                                                    Colors.lightBlueAccent;
+                                                containerColor2 =
+                                                    Colors.bluebutton;
+                                                containerColor3 =
+                                                    Colors.bluebutton;
+                                                containerColor5 =
+                                                    Colors.bluebutton;
+                                                containerColor =
+                                                    Colors.bluebutton;
+                                              });
+                                              selectedPart = 'd';
+                                              ChoseAstigmation();
+                                              fetchData();
+                                              Navigator.push(
+                                                context,
+                                                CupertinoPageRoute(
+                                                    builder: (context) =>
+                                                        AstigmationTest2()),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        height: 35,
+                                        width: 85,
+                                        margin:
+                                            EdgeInsets.fromLTRB(3, 3, 10, 0),
+
+                                        //margin: const EdgeInsets.all(3),
+                                        decoration: BoxDecoration(
+                                          color: Colors.bluebutton,
+                                          borderRadius:
+                                              BorderRadius.circular(18),
+                                        ),
+                                        child: MaterialButton(
+                                          onPressed: () {},
+                                          child: TextButton(
+                                            child: Text(
+                                              'None',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              setState(() {
+                                                // Change container color to white
+                                                containerColor5 =
+                                                    Colors.lightBlueAccent;
+                                                containerColor2 =
+                                                    Colors.bluebutton;
+                                                containerColor3 =
+                                                    Colors.bluebutton;
+                                                containerColor4 =
+                                                    Colors.bluebutton;
+                                                containerColor =
+                                                    Colors.bluebutton;
+                                              });
+                                              CounterApi();
+                                              showCustomToast(context,
+                                                  'Operation Successfully ');
+                                              Navigator.push(
+                                                context,
+                                                CupertinoPageRoute(
+                                                    builder: (context) =>
+                                                        RedGreenTest()),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        /** Container(
-                            height: 40,width: 105,
-                            //padding: const EdgeInsets.fromLTRB(30, 24, 30, 0),                    width: 105,
-                            margin: const EdgeInsets.all(3),
-                            decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                            colors: [
-                            Colors.bluebutton,
-                            Colors.green
-                            ], // Adjust colors as needed
-                            ),
-                            borderRadius: BorderRadius.circular(18),
-                            ),
-                            child: MaterialButton(
-                            onPressed: () {},
-                            child: TextButton(
-                            child: Text(
-                            'Next',
-                            style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            ),
-                            ),
-                            onPressed: () {
-                            fetchData();
-                            Navigator.push(
-                            context,
-                            CupertinoPageRoute(
-                            builder: (context) => AstigmationTest2()),
-                            );
-                            },
-                            ),
-                            ),
-                            ),
-                         **/
+                                SizedBox(height: 10),
 
-                        Container(
-                          width: 320,
-                          height: 40,
-                          padding: EdgeInsets.all(8),
-                          child: Center(
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                // Your random text container
-                                Text(
-                                  alert,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 22,
-                                      color: alert == 'Good to go'
-                                          ? Colors.green
-                                          : Colors.red,
-                                      fontWeight: FontWeight.bold
-                                      // Change text color here
-                                      // You can also set other properties like fontWeight, fontStyle, etc.
-                                      ),
+                                Container(
+                                  width: 320,
+                                  height: 40,
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    alert,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 22,
+                                        color: alert == 'Good to go'
+                                            ? Colors.green
+                                            : Colors.red,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Positioned(
+                                  right: 10,
+                                  width: 100,
+                                  // Adjust the width as needed
+                                  height: 150,
+                                  // Adjust the height as needed
+                                  child: _controller != null
+                                      ? CameraPreview(_controller!)
+                                      : Container(
+                                          color: Colors.black,
+                                          child: Center(
+                                            child: Text(
+                                              'Loading Camera...',
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          ),
+                                        ),
                                 ),
                               ],
                             ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 3,
-                        ),
-
-                        Container(
-                          child: InteractiveViewer(
-                            boundaryMargin: EdgeInsets.all(20.0),
-                            minScale: 0.1,
-                            maxScale: 1.5,
-                            child: _controller != null
-                                ? CameraPreview(_controller!)
-                                : Container(),
-                          ),
-                          width: 280.0,
-                          // Set the desired width
-                          height: 300.0,
-                          // Set the desired height
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
                           ),
                         ),
                       ],
@@ -3737,6 +3655,243 @@ class AstigmationTestNone extends State<AstigmationTest3> {
             ),
           ),
         ));
+  }*/
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => GiveInfo()),
+        );
+        return false;
+      },
+      child: MaterialApp(
+        home: Scaffold(
+          appBar: AppBar(
+            title: Text("EYE TEST"),
+            centerTitle: true,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+              onPressed: () {
+                // Add your back button functionality here
+              },
+            ),
+          ),
+          body: Stack(
+            children: <Widget>[
+              // Background Image
+              Center(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      // Background Image
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 55, 0, 2),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.fromLTRB(40, 15, 40, 2),
+                                child: Text(
+                                  'Astigmatic Test',
+                                  style: TextStyle(
+                                    fontSize: 24.0,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 1.0),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(20, 5, 0, 20),
+                                child: Text(
+                                  'Choose the part where you can see a more darker line',
+                                  style: TextStyle(
+                                    fontSize: 15.0,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 2.0),
+                              Image.asset(
+                                'assets/astigmation3.png',
+                                width: 300, // Adjust the size as needed
+                              ),
+                              SizedBox(height: 23.0),
+                              // Four Buttons Aligned Horizontally
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: <Widget>[
+                                    _buildOptionButton(
+                                        'A', Colors.bluebutton, 0),
+                                    _buildOptionButton(
+                                        'B', Colors.bluebutton, 1),
+                                    _buildOptionButton(
+                                        'C', Colors.bluebutton, 2),
+                                    _buildOptionButton(
+                                        'D', Colors.bluebutton, 3),
+                                    _buildOptionButton(
+                                        'None', Colors.bluebutton, 4),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              Container(
+                                width: 320,
+                                height: 40,
+                                padding: EdgeInsets.all(8),
+                                child: Text(
+                                  alert,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    color: alert == 'Good to go'
+                                        ? Colors.green
+                                        : Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 10,
+                top: 10,
+                width: 100,
+                height: 150,
+                child: _controller != null
+                    ? CameraPreview(_controller!)
+                    : Container(
+                        color: Colors.black,
+                        child: Center(
+                          child: Text(
+                            'Loading Camera...',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Container(
+                          height: 40,
+                          width: 140,
+                          child: CustomElevatedButtonY(
+                            text: 'Decrease ',
+                            onPressed: decreaseSize,
+                          ),
+                        ),
+                        Container(
+                          height: 40,
+                          width: 140,
+                          child: CustomElevatedButtonG(
+                            text: 'Increase ',
+                            onPressed: increaseSize,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOptionButton(String label, Color color, int index) {
+    return Container(
+      height: 35,
+      width: index == 4 ? 85 : 60,
+      margin: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: TextButton(
+        child: Text(
+          label,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 12,
+          ),
+        ),
+        onPressed: () {
+          setState(() {
+            if (index == 0) {
+              containerColor4 = Colors.lightBlueAccent;
+              containerColor2 = Colors.bluebutton;
+              containerColor3 = Colors.bluebutton;
+              containerColor5 = Colors.bluebutton;
+              containerColor = Colors.bluebutton;
+              selectedPart = 'a';
+            } else if (index == 1) {
+              containerColor2 = Colors.lightBlueAccent;
+              containerColor = Colors.bluebutton;
+              containerColor3 = Colors.bluebutton;
+              containerColor4 = Colors.bluebutton;
+              containerColor5 = Colors.bluebutton;
+              selectedPart = 'b';
+            } else if (index == 2) {
+              containerColor3 = Colors.lightBlueAccent;
+              containerColor2 = Colors.bluebutton;
+              containerColor = Colors.bluebutton;
+              containerColor4 = Colors.bluebutton;
+              containerColor5 = Colors.bluebutton;
+              selectedPart = 'c';
+            } else if (index == 3) {
+              containerColor4 = Colors.lightBlueAccent;
+              containerColor2 = Colors.bluebutton;
+              containerColor3 = Colors.bluebutton;
+              containerColor5 = Colors.bluebutton;
+              containerColor = Colors.bluebutton;
+              selectedPart = 'd';
+            } else {
+              containerColor5 = Colors.lightBlueAccent;
+              containerColor2 = Colors.bluebutton;
+              containerColor3 = Colors.bluebutton;
+              containerColor4 = Colors.bluebutton;
+              containerColor = Colors.bluebutton;
+              CounterApi();
+              showCustomToast(context, 'Operation Successfully');
+              Navigator.push(
+                context,
+                CupertinoPageRoute(builder: (context) => RedGreenTest()),
+              );
+              return;
+            }
+            ChoseAstigmation();
+            fetchData();
+            Navigator.push(
+              context,
+              CupertinoPageRoute(builder: (context) => AstigmationTest2()),
+            );
+          });
+        },
+      ),
+    );
   }
 }
 
@@ -3752,7 +3907,7 @@ class Cyl extends State<CylTest> {
   @override
   void initState() {
     super.initState();
-    // _initializeCamera();
+    _initializeCamera();
   }
 
   Future<void> _initializeCamera() async {
@@ -3798,20 +3953,30 @@ class Cyl extends State<CylTest> {
   }
 
   Future<void> sendDistanceRequest(String image) async {
+    var distanceType;
+
     var apiUrl =
-        'https://testing1.zuktiapp.zuktiinnovations.com/calculate-distance-api/'; // Replace with your API endpoint
+        '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
     /* String base64String = await xFileToBase64(image);*/
 
     //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String access_token = prefs.getString('access_token') ?? '';
-    //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
+    String authToken =
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
     String CustomerId = prefs.getString('customer_id') ?? '';
 
+    String text = prefs.getString('test') ?? '';
+    if (text == 'myopia') {
+      distanceType = 'fardistance';
+    } else if (text == 'hyperopia') {
+      distanceType = 'neardistance';
+    }
     try {
-      var frameData =
-          image; // Replace this with your frame data as a base64 string
-      var distanceType = 'fardistance'; // Replace this with the distance type
+      var frameData = image;
+
+      // Replace this with your frame data as a base64 string
+      // var distanceType = 'neardistance'; // Replace this with the distance type
 
       var requestBody = jsonEncode({
         'frameData': frameData,
@@ -3821,7 +3986,7 @@ class Cyl extends State<CylTest> {
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer $access_token',
+          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
           'Customer-Id': CustomerId,
         },
@@ -3833,13 +3998,12 @@ class Cyl extends State<CylTest> {
 
         String alertMessage = data['alert'];
 
-        print(alertMessage);
+        print("nnnnnnn$alertMessage");
         // Handle the response data here
         print('Request sucxsss with status: ${response.body}');
-
         print("alert$alertMessage");
         setState(() {
-          alert = alertMessage;
+          //  alert = alertMessage;
         });
       } else {
         Map<String, dynamic> data = jsonDecode(response.body);
@@ -3909,14 +4073,7 @@ class Cyl extends State<CylTest> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(height: 10),
-                  Container(
-                    child: Image.asset(
-                      'assets/zukti_logo.png', // Replace with your logo path
-                      width: 300, // Adjust width as needed
-                      height: 150,
-// Adjust height as needed
-                    ),
-                  ),
+                  Container(),
                   SizedBox(height: 10),
                   Text(
                     'Y',
@@ -4013,7 +4170,7 @@ class Cyl extends State<CylTest> {
                   ),
                   Container(
                     child: InteractiveViewer(
-                      boundaryMargin: EdgeInsets.all(20.0),
+                      // boundaryMargin: EdgeInsets.all(20.0),
                       minScale: 0.1,
                       maxScale: 1.5,
                       child: _controller != null
@@ -4038,37 +4195,31 @@ class Cyl extends State<CylTest> {
 
 class ShadowTest extends StatefulWidget {
   @override
-  shadowtest createState() => shadowtest();
+  _ShadowTestState createState() => _ShadowTestState();
 }
 
-class shadowtest extends State<ShadowTest> {
+class _ShadowTestState extends State<ShadowTest> {
   CameraController? _controller;
   late List<CameraDescription> _cameras;
 
   @override
   void initState() {
     super.initState();
-    // _initializeCamera();
+    initializeCamera();
   }
 
-  Future<void> _initializeCamera() async {
+  Future<void> initializeCamera() async {
     _cameras = await availableCameras();
-    CameraDescription? frontCamera = _cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
-      orElse: () =>
-          _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
-    );
-
-    _controller = CameraController(frontCamera, ResolutionPreset.medium);
-
-    await _controller?.initialize();
-    // _controller?.setZoomLevel(-2.5);
-
-    if (mounted) {
-      setState(() {});
+    if (_cameras!.isNotEmpty) {
+      _controller = CameraController(_cameras![0], ResolutionPreset.medium);
+      await _controller!.initialize();
+      if (mounted) {
+        setState(() {
+          isCameraInitialized = true;
+        });
+        _captureImagePerSecond();
+      }
     }
-    // Start capturing images per second
-    //_captureImagePerSecond();
   }
 
   void _captureImagePerSecond() async {
@@ -4095,27 +4246,29 @@ class shadowtest extends State<ShadowTest> {
 
   Future<void> sendDistanceRequest(String image) async {
     var distanceType;
+
+    var apiUrl =
+        '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
+    /* String base64String = await xFileToBase64(image);*/
+
+    //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String text = prefs.getString('test') ?? '';
+    String authToken =
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
     String CustomerId = prefs.getString('customer_id') ?? '';
 
+    String text = prefs.getString('test') ?? '';
     if (text == 'myopia') {
       distanceType = 'fardistance';
     } else if (text == 'hyperopia') {
       distanceType = 'neardistance';
     }
-    print("ddd$CustomerId");
-    var apiUrl =
-        '${Api.baseurl}/api/eye/calculate-distance/'; // Replace with your API endpoint
-
-    String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
-    //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
     try {
-      var frameData =
-          image; // Replace this with your frame data as a base64 string
-      // var distanceType = 'fardistance'; // Replace this with the distance type
+      var frameData = image;
+
+      // Replace this with your frame data as a base64 string
+      // var distanceType = 'neardistance'; // Replace this with the distance type
 
       var requestBody = jsonEncode({
         'frameData': frameData,
@@ -4125,7 +4278,7 @@ class shadowtest extends State<ShadowTest> {
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer ${authToken}',
+          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
           'Customer-Id': CustomerId,
         },
@@ -4137,26 +4290,26 @@ class shadowtest extends State<ShadowTest> {
 
         String alertMessage = data['alert'];
 
-        print(alertMessage);
+        print("nnnnnnn$alertMessage");
         // Handle the response data here
         print('Request sucxsss with status: ${response.body}');
-
         print("alert$alertMessage");
+        setState(() {
+          //  alert = alertMessage;
+        });
+      } else {
+        Map<String, dynamic> data = jsonDecode(response.body);
+
+        String alertMessage = data['alert'];
+        alert = alertMessage;
+        print('Request failed with status: ${response.statusCode}');
+        print('Request failed with status: ${response.body}');
         setState(() {
           alert = alertMessage;
         });
+
+        // Handle error response
       }
-      Map<String, dynamic> data = jsonDecode(response.body);
-
-      String alertMessage = data['alert'];
-      alert = alertMessage;
-      print('Request failed with status: ${response.statusCode}');
-      print('Request failed with status: ${response.body}');
-      setState(() {
-        alert = alertMessage;
-      });
-
-      // Handle error response
     } catch (e) {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
@@ -4189,6 +4342,8 @@ class shadowtest extends State<ShadowTest> {
       currentTextSize;
     });
   }
+
+  bool isCameraInitialized = false;
 
   @override
   void dispose() {
@@ -4227,66 +4382,75 @@ class shadowtest extends State<ShadowTest> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      SizedBox(height: 5.0),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 5, 4, 0),
-                        child: Text(
-                          'Shadow Test',
-                          style: TextStyle(
-                            fontSize: 24.0,
-                            color: Color(0xFF1E3777),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      // Text in the Middle
-
                       Container(
                         width: MediaQuery.of(context).size.width,
-                        height: 250,
+                        height: MediaQuery.of(context).size.height * 0.5,
                         color: Colors.black,
-                        child: Center(
-                          child: Text(
-                            dynamicText,
-                            // Replace with your dynamic text variable
-                            style: TextStyle(
-                              fontSize: currentTextSize,
-                              // Replace with your text size variable
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 5, 4, 0),
+                              child: Text(
+                                'Shadow Test',
+                                style: TextStyle(
+                                  fontSize: 20.0,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
-                          ),
+                            Spacer(),
+                            // This pushes the next widget to the center
+                            Center(
+                              child: Text(
+                                dynamicText,
+                                // Replace with your dynamic text variable
+                                style: TextStyle(
+                                  fontSize: currentTextSize,
+                                  // Replace with your text size variable
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            Spacer(),
+                            // This pushes the above widget to the center
+                          ],
                         ),
                       ),
 
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Container(
-                            height: 40,
-                            width: 150,
-                            margin: EdgeInsets.fromLTRB(10, 5, 20, 0),
-                            child: CustomElevatedButtonY(
-                              text: 'Decrease',
-                              onPressed: () => changeSize('down'),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Container(
+                              height: 40,
+                              width: 150,
+                              margin: EdgeInsets.fromLTRB(10, 5, 20, 0),
+                              child: CustomElevatedButtonY(
+                                text: 'Decrease',
+                                onPressed: () => changeSize('down'),
+                              ),
                             ),
-                          ),
-                          Container(
-                            height: 40,
-                            margin: EdgeInsets.fromLTRB(10, 5, 20, 0),
-                            child: CustomElevatedButtonG(
-                              text: 'Increase',
-                              onPressed: () => changeSize('up'),
+                            Container(
+                              height: 40,
+                              margin: EdgeInsets.fromLTRB(10, 5, 20, 0),
+                              child: CustomElevatedButtonG(
+                                text: 'Increase',
+                                onPressed: () => changeSize('up'),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                       Text(
-                        'Alert Text Here',
+                        alert,
                         // Replace with your alert text variable
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 22,
+                          fontSize: 20,
                           color: 'Good to go' ==
                                   'Good to go' // Replace with your condition
                               ? Colors.green
@@ -4302,20 +4466,15 @@ class shadowtest extends State<ShadowTest> {
                 ),
               ),
               Positioned(
-                top: 0,
-                right: 0,
-                width: 120,
-                height: 160,
+                right: 10,
+                width: 100,
+                // Adjust the width as needed
+                height: 100,
+                // Adjust the height as needed
                 child: _controller != null
                     ? CameraPreview(_controller!)
                     : Container(
                         color: Colors.black,
-                        child: Center(
-                          child: Text(
-                            'Camera Preview',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
                       ),
               ),
             ],
@@ -4323,7 +4482,7 @@ class shadowtest extends State<ShadowTest> {
           bottomNavigationBar: Padding(
             padding: const EdgeInsets.fromLTRB(15.0, 0, 15, 8),
             child: Container(
-              height: 50.0,
+              height: 40,
               width: double.infinity,
               decoration: BoxDecoration(
                 color: Colors.bluebutton, // Change to your desired color
@@ -4408,7 +4567,7 @@ class redgreen extends State<RedGreenTest> {
   void initState() {
     super.initState();
     fetchData();
-    // _initializeCamera();
+    _initializeCamera();
   }
 
   Future<void> _initializeCamera() async {
@@ -4454,31 +4613,30 @@ class redgreen extends State<RedGreenTest> {
   }
 
   Future<void> sendDistanceRequest(String image) async {
+    var distanceType;
+
     var apiUrl =
-        '${Api.baseurl}/api/eye/calculate-distance/'; // Replace with your API endpoint
+        '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
     /* String base64String = await xFileToBase64(image);*/
 
     //print('image$image');
-    var distanceType;
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    //String access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAyNzQ5NTUxLCJpYXQiOjE3MDI3NDIzNTEsImp0aSI6IjIxMzkzZDRmYzQ3ZDQ1MjM4NDc3Y2VmNzQ4ZTU1NDdhIiwidXNlcl9pZCI6ImZjNTUyNmEwLWFmMGUtNGVkNC04MjI4LTM1ZDhmYzdhYjNkNiJ9.zLipkYla_S2wko9GcrsGho80rlaa0DA_lIz-akHf-7o';
+    String authToken =
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
+    String CustomerId = prefs.getString('customer_id') ?? '';
+
+    String text = prefs.getString('test') ?? '';
+    if (text == 'myopia') {
+      distanceType = 'fardistance';
+    } else if (text == 'hyperopia') {
+      distanceType = 'neardistance';
+    }
     try {
       var frameData = image;
 
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String authToken =
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-          prefs.getString('access_token') ?? '';
-      String text = prefs.getString('test') ?? '';
-      String CustomerId = prefs.getString('customer_id') ?? '';
-
-      if (text == 'myopia') {
-        distanceType = 'fardistance';
-      } else if (text == 'hyperopia') {
-        distanceType = 'neardistance';
-      }
       // Replace this with your frame data as a base64 string
-      //var distanceType = 'neardistance'; // Replace this with the distance type
+      // var distanceType = 'neardistance'; // Replace this with the distance type
 
       var requestBody = jsonEncode({
         'frameData': frameData,
@@ -4488,9 +4646,9 @@ class redgreen extends State<RedGreenTest> {
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer ${authToken}',
+          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
-          'Customer-Id': CustomerId
+          'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
@@ -4500,26 +4658,26 @@ class redgreen extends State<RedGreenTest> {
 
         String alertMessage = data['alert'];
 
-        print(alertMessage);
+        print("nnnnnnn$alertMessage");
         // Handle the response data here
         print('Request sucxsss with status: ${response.body}');
-
         print("alert$alertMessage");
+        setState(() {
+          //  alert = alertMessage;
+        });
+      } else {
+        Map<String, dynamic> data = jsonDecode(response.body);
+
+        String alertMessage = data['alert'];
+        alert = alertMessage;
+        print('Request failed with status: ${response.statusCode}');
+        print('Request failed with status: ${response.body}');
         setState(() {
           alert = alertMessage;
         });
+
+        // Handle error response
       }
-      Map<String, dynamic> data = jsonDecode(response.body);
-
-      String alertMessage = data['alert'];
-      alert = alertMessage;
-      print('Request failed with status: ${response.statusCode}');
-      print('Request failed with status: ${response.body}');
-      setState(() {
-        alert = alertMessage;
-      });
-
-      // Handle error response
     } catch (e) {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
@@ -4771,7 +4929,7 @@ class redgreen extends State<RedGreenTest> {
 
   bool _isCameraVisible = true;
 
-  @override
+  /*@override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -4801,7 +4959,7 @@ class redgreen extends State<RedGreenTest> {
                       border: Border.all(color: Colors.grey),
                     ),
                     child: InteractiveViewer(
-                      boundaryMargin: EdgeInsets.all(20.0),
+                      // boundaryMargin: EdgeInsets.all(20.0),
                       minScale: 0.1,
                       maxScale: 1.5,
                       child: _controller != null
@@ -4857,7 +5015,7 @@ class redgreen extends State<RedGreenTest> {
                         child: Container(
                           width: MediaQuery.of(context).size.width,
                           height: 150,
-                          color: Colors.red,
+                          color: Colors.red.shade700,
                           child: Center(
                             child: Text(
                               randomText,
@@ -4882,7 +5040,7 @@ class redgreen extends State<RedGreenTest> {
                         child: Container(
                           width: MediaQuery.of(context).size.width,
                           height: 150,
-                          color: Colors.green,
+                          color: Colors.green.shade700,
                           child: Center(
                             child: Text(
                               randomText,
@@ -4911,9 +5069,8 @@ class redgreen extends State<RedGreenTest> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 9.0),
                     Container(
-                      height: 60.0,
+                      height: 50.0,
                       width: double.infinity,
                       decoration: BoxDecoration(
                         color: Colors.bluebutton,
@@ -4942,7 +5099,177 @@ class redgreen extends State<RedGreenTest> {
         ],
       ),
     );
+  }*/
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("EYE TEST"),
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+          onPressed: () {
+            // Add your back button functionality here
+          },
+        ),
+      ),
+      body: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          Positioned(
+            top: 16,
+            right: 16,
+            child: Visibility(
+              visible: _isCameraVisible,
+              child: Stack(
+                children: [
+                  Container(
+                    width: 130.0,
+                    height: 150.0,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                    ),
+                    child: InteractiveViewer(
+                      minScale: 0.1,
+                      maxScale: 1.5,
+                      child: _controller != null
+                          ? CameraPreview(_controller!)
+                          : Container(),
+                    ),
+                  ),
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.close,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isCameraVisible = false;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SingleChildScrollView(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 180.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(
+                        'Red/Green Test',
+                        style: TextStyle(
+                          fontSize: 24.0,
+                          color: Color(0xFF1E3777),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
+                      child: InkWell(
+                        onTap: () {
+                          action = "red";
+                          _callAPI();
+                        },
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 150,
+                          color: Colors.red.shade700,
+                          child: Center(
+                            child: Text(
+                              randomText,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: textSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10.0),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
+                      child: InkWell(
+                        onTap: () {
+                          action = "green";
+                          _callAPI();
+                        },
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 150,
+                          color: Colors.green.shade700,
+                          child: Center(
+                            child: Text(
+                              randomText,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: textSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 320,
+                      height: 40,
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        alert,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 22,
+                          color: alert == 'Good to go' ? Colors.green : Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Spacer(),
+                    Container(
+                      height: 50.0,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.bluebutton, // Change to your desired color
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: MaterialButton(
+                        onPressed: () {
+                          // Call your function here
+                          UpdateRedGreenTest();
+                        },
+                        child: Text(
+                          'Next',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
+
 }
 
 class RightEye extends StatelessWidget {
@@ -5085,7 +5412,7 @@ class Righteye extends StatelessWidget {
         //print(await response.stream.bytesToString());
         Navigator.push(
           context,
-          CupertinoPageRoute(builder: (context) => AlfabetTest()),
+          CupertinoPageRoute(builder: (context) => AlphabetTest()),
         );
       } else {
         print(response.reasonPhrase);

@@ -5,15 +5,20 @@ import 'package:flutter/material.dart';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:project_new/eyeFatigueTest.dart';
 import 'package:project_new/digitalEyeTest/testScreen.dart';
+import 'package:project_new/myPlanPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'Api.dart';
+
 import 'Custom_navbar/bottom_navbar.dart';
+import 'api/Api.dart';
+import 'api/config.dart';
 import 'eyeFatigueTest.dart';
+import 'models/fatigueGraphModel.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -175,24 +180,34 @@ class HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            GestureDetector(
-              onTap: ()  {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => AddCustomerPage()),
-                );
-              },
-              child: Image.asset('assets/digital_eye_exam.png'),
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: GestureDetector(
+                onTap: ()  {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) => BottomDialog(),
+                  );
+               /*   Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AddCustomerPage()),
+                  );*/
+                },
+                child: Image.asset('assets/digital_eye_exam.png'),
+              ),
             ),
-            GestureDetector(
-              onTap: ()  {
-                // sendcustomerDetails(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => EyeFatigueStartScreen()),
-                );
-              },
-              child: Image.asset('assets/eyeFatigueTest.png'),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 10),
+              child: GestureDetector(
+                onTap: ()  {
+                  // sendcustomerDetails(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => EyeFatigueStartScreen()),
+                  );
+                },
+                child: Image.asset('assets/eyeFatigueTest.png'),
+              ),
             ),
             GestureDetector(
               onTap: ()  {
@@ -657,146 +672,120 @@ class MyClipper extends CustomClipper<Path> {
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
 
-
-
-class AddCustomerPage extends StatefulWidget {
-  @override
-  _AddCustomerPageState createState() => _AddCustomerPageState();
-}
-
-class _AddCustomerPageState extends State<AddCustomerPage> {
-  final _formKey = GlobalKey<FormState>();
-
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _ageController = TextEditingController();
-
-
-
-
-  InputDecoration _inputDecoration(String labelText) {
-    return InputDecoration(
-      labelText: labelText,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(25),
-        borderSide: BorderSide(color: Colors.bluebutton, width: 2),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(25),
-        borderSide: BorderSide(color: Colors.bluebutton, width: 2),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(25),
-        borderSide: BorderSide(color: Colors.bluebutton, width: 2),
-      ),
-    );
-  }
-
-  String? _validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter an email';
-    }
-    final emailRegExp = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-    if (!emailRegExp.hasMatch(value)) {
-      return 'Please enter a valid email';
-    }
-    return null;
-  }
-
-  String? _validateName(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter a name';
-    }
-    return null;
-  }
-
-  String? _validateAge(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter your age';
-    }
-    final age = int.tryParse(value);
-    if (age == null || age <= 0) {
-      return 'Please enter a valid age';
-    }
-    return null;
-  }
-
-  String? _validateMobile(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter your mobile number';
-    }
-    final mobileRegExp = RegExp(r'^[0-9]{10}$');
-    if (!mobileRegExp.hasMatch(value)) {
-      return 'Please enter a valid mobile number';
-    }
-    return null;
-  }
-
+class BottomDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Add Customer'),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Center(
-          child: Container(
-            padding: EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: Colors.grey, width: 2),
-              borderRadius: BorderRadius.circular(25),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                  offset: Offset(0, 3),
-                ),
-              ],
+    return Container(
+      padding: EdgeInsets.fromLTRB(16.0,16,16,8),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Digital Eye Exam',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+          Divider(thickness: 1, color: Colors.grey.shade500),
+          SizedBox(height: 18),
+          Card(
+          child:GestureDetector(
+              onTap: ()  {
+                Navigator.pop(context);
+                sendcustomerDetails(context, true);
+
+              },
+              child: Image.asset('assets/test_for_myself_img.png'),
             ),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                 
-                  SizedBox(height: 16),
-                  TextFormField(
-                    controller: _nameController,
-                    decoration: _inputDecoration('Name'),
-                    validator: _validateName,
-                  ),
-                  SizedBox(height: 16),
-                  TextFormField(
-                    controller: _ageController,
-                    decoration: _inputDecoration('Age'),
-                    keyboardType: TextInputType.number,
-                    validator: _validateAge,
-                  ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        sendcustomerDetails(context,false, name: _nameController.text, age: _ageController.text);
-                      }
-                    },
-                    child: Text('Submit'),
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white, backgroundColor: Colors.bluebutton,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                    ),
-                  ),
-                ],
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12.0),
+            child: Card(
+              child:  GestureDetector(
+                onTap: ()  {
+                  Navigator.pop(context);
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) => OtherDetailsBottomSheet(),
+                  );
+                },
+                child: Image.asset('assets/test_for_someone_img.png'),
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
+  Future<void> sendcustomerDetails(BuildContext context, bool isSelf, {String? name, String? age}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken = prefs.getString('access_token') ?? '';
+    final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
+
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $authToken',
+      'Content-Type': 'application/json',
+    };
+
+    var body = json.encode({
+      'is_self': isSelf,
+      if (!isSelf) 'name': name,
+      if (!isSelf) 'age': age,
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: body,
+      );
+
+      print('API Response: ${response.statusCode} - ${response.body}');
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        if (jsonResponse.containsKey('customer_id')) {
+          String customerId = jsonResponse['customer_id'];
+
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString('customer_id', customerId);
+
+          print('Customer ID: $customerId');
+
+          // Navigate to GiveInfo screen
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => GiveInfo()),
+          );
+        } else {
+          print('Customer ID not found in response.');
+        }
+      } else {
+        print('API call failed with status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Exception: $e');
+    }
+  }
+}
+
+
+
+class OtherDetailsBottomSheet extends StatefulWidget {
+  @override
+  _OtherDetailsBottomSheetState createState() => _OtherDetailsBottomSheetState();
+}
+
+class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
+  final _nameController = TextEditingController();
+  final _ageController = TextEditingController();
 
   Future<void> sendcustomerDetails(BuildContext context, bool isSelf, {String? name, String? age}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -848,132 +837,128 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
       print('Exception: $e');
     }
   }
-
   @override
-  void dispose() {
-    _nameController.dispose();
-    _ageController.dispose();
-    
-    super.dispose();
-  }
-}
-
-
-void _showTestChoiceDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Choose Test Option'),
-        content: Text('Is this test for yourself or for someone else?'),
-        actions: <Widget>[
-          TextButton(
-            child: Text('Test for Self'),
-            onPressed: () {
-              Navigator.of(context).pop();
-              sendcustomerDetails(context, true);
-            },
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Test For Someone Else',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
           ),
-          TextButton(
-            child: Text('Test for Others'),
-            onPressed: () {
-              Navigator.of(context).pop();
-              _showOtherFormDialog(context);
-            },
+          Divider(thickness: 1.5, color: Colors.grey.shade400),
+          SizedBox(height: 20),
+          SizedBox(
+            height: 55,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
+              child: TextField(
+                controller: _nameController,
+                textInputAction: TextInputAction.next,
+                decoration: InputDecoration(
+                  labelText: 'Full Name',
+                  labelStyle: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.background,
+                    fontWeight: FontWeight.w100,
+                  ),
+                  hintText: 'Enter Full Name',
+                  hintStyle: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.hinttext,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(27.0), // Add circular border
+                  ),
+                  // Set floatingLabelBehavior to always display the label
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  // Add button to the end of the TextField
+                ),
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+              ),
+            ),
+          ),
+          SizedBox(height: 20),
+          SizedBox(
+            height: 55,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
+              child: TextFormField(
+                controller: _ageController,
+                textInputAction: TextInputAction.next,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(3),
+                ],
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter an age';
+                  }
+                  int? age = int.tryParse(value);
+                  if (age == null || age < 12 || age > 100) {
+                    return 'Age must be between 12 and 100';
+                  }
+                  return null;
+                },
+
+                decoration: InputDecoration(
+                  labelText: 'Age',
+                  labelStyle: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.background,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  hintText: 'Age',
+                  hintStyle: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.hinttext,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(27.0), // Add circular border
+                  ),
+                  // Set floatingLabelBehavior to always display the label
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  // Add button to the end of the TextField
+
+                ),
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+              ),
+            ),
+          ),
+          SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+
+              onPressed: () {
+                sendcustomerDetails(context, false, name: _nameController.text, age: _ageController.text);
+              },
+              child: Text('Submit'),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(350, 50),
+                foregroundColor: Colors.white, backgroundColor: Colors.bluebutton,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25),
+                ),
+              ),
+            ),
           ),
         ],
-      );
-    },
-  );
-}
-
-void _showOtherFormDialog(BuildContext context) {
-  final _nameController = TextEditingController();
-  final _ageController = TextEditingController();
-
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Enter Details'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            TextField(
-              controller: _nameController,
-              decoration: InputDecoration(labelText: 'Name'),
-            ),
-            TextField(
-              controller: _ageController,
-              decoration: InputDecoration(labelText: 'Age'),
-              keyboardType: TextInputType.number,
-            ),
-          ],
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: Text('Submit'),
-            onPressed: () {
-              final String name = _nameController.text;
-              final String age = _ageController.text;
-              Navigator.of(context).pop();
-              sendcustomerDetails(context, false, name: name, age: age);
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-Future<void> sendcustomerDetails(BuildContext context, bool isSelf, {String? name, String? age}) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  String authToken = prefs.getString('access_token') ?? '';
-  final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
-
-  Map<String, String> headers = {
-    'Authorization': 'Bearer $authToken',
-    'Content-Type': 'application/json',
-  };
-
-  var body = json.encode({
-    'is_self': isSelf,
-    if (!isSelf) 'name': name,
-    if (!isSelf) 'age': age,
-  });
-
-  try {
-    final response = await http.post(
-      Uri.parse(apiUrl),
-      headers: headers,
-      body: body,
+      ),
     );
-
-    print('API Response: ${response.statusCode} - ${response.body}');
-
-    if (response.statusCode == 200) {
-      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-      if (jsonResponse.containsKey('customer_id')) {
-        String customerId = jsonResponse['customer_id'];
-
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('customer_id', customerId);
-
-        print('Customer ID: $customerId');
-
-        // Navigate to GiveInfo screen
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => GiveInfo()),
-        );
-      } else {
-        print('Customer ID not found in response.');
-      }
-    } else {
-      print('API call failed with status code: ${response.statusCode}');
-    }
-  } catch (e) {
-    print('Exception: $e');
   }
 }
-
-

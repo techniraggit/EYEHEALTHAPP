@@ -71,12 +71,16 @@ late String PlanId;
                   bool isSelected = plan.id == selectedPlanId;
                   return Container(
                     decoration: BoxDecoration(
-                      color: isSelected ? Colors.green.shade600 : Colors.white,
+                      color: isSelected ? Colors.white : Colors.white,
                       borderRadius: BorderRadius.circular(12.0), // Corner radius
-                      border: Border.all(
-                        color: Colors.grey, // Border color
-                        width: 1.0, // Border width
-                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5), // Shadow color with opacity
+                          spreadRadius: 2, // Spread radius
+                          blurRadius: 5, // Blur radius
+                          offset: Offset(0, 3), // Shadow position (x, y)
+                        ),
+                      ],
                     ),
                     child: Padding(
                       padding: EdgeInsets.all(8),
@@ -108,7 +112,7 @@ late String PlanId;
                             children: [
                               Icon(
                                 Icons.check_circle,
-                                color:  isSelected ? Colors.black : Colors.bluebutton,
+                                color:  isSelected ? Colors.bluebutton : Colors.bluebutton,
                                 size: 20,
                               ),
                               SizedBox(width: 5),
@@ -133,16 +137,16 @@ late String PlanId;
                              PlanId= plan.id;
                                 // Add your button onPressed logic here
                               },
-                              child: Text('Buy Plan'),
                               style: ElevatedButton.styleFrom(
                                 foregroundColor:isSelected ? Colors.black : Colors.white,
-                                backgroundColor:  isSelected ? Colors.grey.shade300 : Colors.bluebutton,
+                                backgroundColor:  isSelected ? Colors.deepPurple.shade100 : Colors.bluebutton,
                                 padding: EdgeInsets.all(10),
                                 minimumSize: Size(100, 20),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(26),
                                 ),
                               ),
+                              child: Text(isSelected ? 'Selected': 'Buy Plan'),
                             ),
                           ),
                         ],

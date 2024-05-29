@@ -10,8 +10,10 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert' as convert;
 import 'package:image_picker/image_picker.dart';
-import '../Api.dart';
-import '../customDialog.dart';
+
+import 'Custom_navbar/customDialog.dart';
+import 'api/Api.dart';
+
 
 class Camara extends StatelessWidget {
   @override
@@ -40,77 +42,38 @@ class CameraS extends StatefulWidget {
 class _CameraScreenState extends State<CameraS> {
   late CameraController _controller;
   late List<CameraDescription> _cameras;
+  bool _isCameraInitialized = false; // Flag to track camera initialization
 
   @override
   void initState() {
     super.initState();
-    //validtoken(context);
     _initializeCamera();
   }
 
-  Future<void> validtoken(BuildContext context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
-    Map<String, String> headers = {
-      'Authorization': 'Bearer $authToken',
-    };
-
-    final String apiUrl =
-        'https://testing1.zuktiapp.zuktiinnovations.com/check-token-expiry-api/';
-
-    final response = await http.get(
-      Uri.parse(apiUrl),
-      headers: headers,
-//body: jsonEncode(body),
-    );
-    print(response.body);
-    if (response.statusCode == 200) {
-      print("ValidToken" + response.body);
-    } else {
-      //todo
-      /* Navigator.push
-        (context,
-        CupertinoPageRoute(builder: (context) => MyLogin()),
-      );
-*/
-    }
-  }
-
   Future<void> _initializeCamera() async {
-    /**WidgetsFlutterBinding.ensureInitialized();
-
-        SystemChrome.setPreferredOrientations([
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
-        ]);**/
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
-      orElse: () =>
-          _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
+          (camera) => camera.lensDirection == CameraLensDirection.front,
+      orElse: () => _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
     );
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
-//medium for myopia, zoom level1
-    await _controller?.initialize();
-    //_controller?.setZoomLevel(-1);
+    await _controller.initialize();
 
     if (mounted) {
-      setState(() {});
+      setState(() {
+        _isCameraInitialized = true; // Set the flag to true when initialized
+      });
     }
-    // Start capturing images per second
+
     _captureImagePerSecond();
   }
 
   void _captureImagePerSecond() async {
-    // Capture an image every second
-    while (true) {
+    while (_isCameraInitialized) { // Capture images only if camera is initialized
       try {
-        XFile? image = await _controller?.takePicture();
+        XFile? image = await _controller.takePicture();
         if (image != null) {
-          // Process the captured image as needed
           print('Image captured: ${image.path}');
           capturePhoto(image);
         } else {
@@ -120,14 +83,13 @@ class _CameraScreenState extends State<CameraS> {
         print('Error capturing image: $e');
       }
 
-      // Delay to capture image per second
       await Future.delayed(Duration(seconds: 1));
     }
   }
 
   @override
   void dispose() {
-    _controller?.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -135,125 +97,106 @@ class _CameraScreenState extends State<CameraS> {
 
   @override
   Widget build(BuildContext context) {
-    if (_controller == null || !_controller!.value.isInitialized) {
+    if (!_isCameraInitialized) {
       return const Center(
         child: CircularProgressIndicator(),
       );
     }
     return WillPopScope(
-        onWillPop: () async {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => GiveInfo()),
-            //  (route) => route.isFirst, // Remove until the first route (Screen 1)
-          );
-          return false;
-        },
-        child: Scaffold(
-            appBar: AppBar(
-              title: Text("EYE TEST"),
-              centerTitle: true,
-              leading: IconButton(
-                icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-                onPressed: () {
-                  // Add your back button functionality here
-                },
+      onWillPop: () async {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => GiveInfo()),
+        );
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("EYE TEST"),
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+            onPressed: () {
+              // Add your back button functionality here
+            },
+          ),
+        ),
+        body: Container(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 50.0), // Adjust this value as needed
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: 1),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(height: 90),
+                      Container(
+                        width: 320,
+                        height: 40,
+                        padding: EdgeInsets.all(8),
+                        child: Text(
+                          alert,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: alert == 'Good to go' ? Colors.green : Colors.red,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: 180,
+                        height: 200,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: alert == 'Good to go' ? Colors.green : Colors.red,
+                            width: 2,
+                          ),
+                        ),
+                        child: ClipRect(
+                          child: FittedBox(
+                            fit: BoxFit.cover,
+                            child: SizedBox(
+                              width: _controller.value.previewSize?.height,
+                              height: _controller.value.previewSize?.width,
+                              child: CameraPreview(_controller),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.all(20),
+                        child: ElevatedButton(
+                          onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                CupertinoPageRoute(builder: (context) => LeftEyeTest()),
+                              );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.bluebutton,
+                            padding: EdgeInsets.all(16),
+                            minimumSize: Size(200, 30),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                          child: Text('Start Test Now'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-            body: Container(
-                decoration: BoxDecoration(
-                    /* image: DecorationImage(
-                    image: AssetImage('assets/test.png'),
-                    // Replace with your image asset
-                    fit: BoxFit.cover,
-                  ),*/
-                    ),
-                child: Center(
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(height: 1),
-                        Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              SizedBox(
-                                height: 90,
-                              ),
-                              Container(
-                                width: 320,
-                                height: 40,
-                                padding: EdgeInsets.all(8),
-                                child: Text(
-                                  alert,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: alert == 'Good to go'
-                                        ? Colors.green
-                                        : Colors.red,
-                                    // Change text color here
-                                    // You can also set other properties like fontWeight, fontStyle, etc.
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                width: 180,
-                                height: 200,
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: alert == 'Good to go'
-                                          ? Colors.green
-                                          : Colors.red,
-                                      width: 2),
-                                ),
-                                child: ClipRect(
-                                  child: FittedBox(
-                                    fit: BoxFit.cover,
-                                    child: SizedBox(
-                                      width:
-                                          _controller.value.previewSize?.height,
-                                      height:
-                                          _controller.value.previewSize?.width,
-                                      child: CameraPreview(_controller),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                child: Container(
-                                  margin: EdgeInsets.all(20),
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      _controller.dispose().then((_) {
-                                        Navigator.pushReplacement(
-                                          context,
-                                          CupertinoPageRoute(
-                                              builder: (context) =>
-                                                  LeftEyeTest()),
-                                        );
-                                      });
-                                      // Add your button functionality here
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      foregroundColor: Colors.white,
-                                      backgroundColor: Colors.bluebutton,
-                                      // Text color
-                                      padding: EdgeInsets.all(16),
-                                      minimumSize: Size(200, 30),
-                                      // Button padding
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15),
-                                        // Button border radius
-                                      ),
-                                    ),
-                                    child: Text('Start Test Now'),
-                                  ),
-                                ),
-                              ),
-                            ]),
-                      ]),
-                ))));
+          ),
+        ),
+
+      ),
+    );
   }
 
   void capturePhoto(XFile photo) async {

@@ -6,9 +6,9 @@ import 'package:project_new/HomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../Custom_navbar/customDialog.dart';
 
-import '../Api.dart';
-import '../customDialog.dart';
+import '../api/Api.dart';
 import 'testScreen.dart';
 
 class TestReport extends StatefulWidget {
