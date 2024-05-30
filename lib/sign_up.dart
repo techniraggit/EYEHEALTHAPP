@@ -438,16 +438,16 @@ if(isNumeric(_phoneController.text)){
                             // crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
                               SizedBox(height: 20,),
-                              const Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  'Enter the OTP',
-                                  style: TextStyle(
-                                    fontSize: 14.0,
-                                    color: Colors.background,
-                                  ),
-                                ),
-                              ),
+                              // const Align(
+                              //   alignment: Alignment.center,
+                              //   child: Text(
+                              //     'Enter the OTP',
+                              //     style: TextStyle(
+                              //       fontSize: 14.0,
+                              //       color: Colors.background,
+                              //     ),
+                              //   ),
+                              // ),
                               const SizedBox(
                                 height: 20,
                               ),
@@ -514,7 +514,7 @@ if(isNumeric(_phoneController.text)){
                               ),
                               SizedBox(
                                   height:
-                                  MediaQuery.of(context).size.width / 4.2),
+                                  MediaQuery.of(context).size.width / 8),
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 22.0),
                                 child: Align(
@@ -1504,16 +1504,16 @@ double Latitude=0.0;double Longitude=0.0;
                             // crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
                               SizedBox(height: 20,),
-                              const Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  'Enter the OTP',
-                                  style: TextStyle(
-                                    fontSize: 14.0,
-                                    color: Colors.background,
-                                  ),
-                                ),
-                              ),
+                              // const Align(
+                              //   alignment: Alignment.center,
+                              //   child: Text(
+                              //     'Enter the OTP',
+                              //     style: TextStyle(
+                              //       fontSize: 14.0,
+                              //       color: Colors.background,
+                              //     ),
+                              //   ),
+                              // ),
                               const SizedBox(
                                 height: 20,
                               ),
@@ -1580,7 +1580,7 @@ double Latitude=0.0;double Longitude=0.0;
                               ),
                               SizedBox(
                                   height:
-                                  MediaQuery.of(context).size.width / 4.2),
+                                  MediaQuery.of(context).size.width / 8),
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 22.0),
                                 child: Align(
@@ -1733,16 +1733,16 @@ double Latitude=0.0;double Longitude=0.0;
                           // crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
 SizedBox(height: 20,),
-                            const Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Enter the OTP',
-                                style: TextStyle(
-                                  fontSize: 14.0,
-                                  color: Colors.background,
-                                ),
-                              ),
-                            ),
+                            // const Align(
+                            //   alignment: Alignment.center,
+                            //   child: Text(
+                            //     'Enter the OTP',
+                            //     style: TextStyle(
+                            //       fontSize: 14.0,
+                            //       color: Colors.background,
+                            //     ),
+                            //   ),
+                            // ),
                             const SizedBox(
                               height: 20,
                             ),
@@ -1809,7 +1809,7 @@ SizedBox(height: 20,),
                             ),
                             SizedBox(
                                 height:
-                                MediaQuery.of(context).size.width / 4.2),
+                                MediaQuery.of(context).size.width / 8),
                             Padding(
                               padding: const EdgeInsets.only(bottom: 22.0),
                               child: Align(

@@ -751,16 +751,16 @@ class SignUpScreen extends State<UserProfile> {
                               SizedBox(
                                 height: 20,
                               ),
-                              const Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  'Enter the OTP',
-                                  style: TextStyle(
-                                    fontSize: 14.0,
-                                    color: Colors.background,
-                                  ),
-                                ),
-                              ),
+                              // const Align(
+                              //   alignment: Alignment.center,
+                              //   child: Text(
+                              //     'Enter the OTP',
+                              //     style: TextStyle(
+                              //       fontSize: 14.0,
+                              //       color: Colors.background,
+                              //     ),
+                              //   ),
+                              // ),
                               const SizedBox(
                                 height: 20,
                               ),
@@ -769,7 +769,7 @@ class SignUpScreen extends State<UserProfile> {
                                   padding: const EdgeInsets.all(10.0),
                                   child: PinCodeTextField(
                                     appContext: context,
-                                    length: 6,
+                                    length: 4,
                                     // controller: _otpController,
                                     obscureText: false,
                                     keyboardType: TextInputType.number,
@@ -791,7 +791,7 @@ class SignUpScreen extends State<UserProfile> {
                                     // Set the font size here
 
                                     onChanged: (String pin) {
-                                      if (pin.length == 6) {
+                                      if (pin.length == 4) {
                                         pincode = pin;
                                         buttonColor = Colors
                                             .background; // Change button color to green when enabled
@@ -830,7 +830,7 @@ class SignUpScreen extends State<UserProfile> {
                               ),
                               SizedBox(
                                   height:
-                                      MediaQuery.of(context).size.width / 4.2),
+                                      MediaQuery.of(context).size.width / 8),
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 22.0),
                                 child: Align(
@@ -973,16 +973,16 @@ class SignUpScreen extends State<UserProfile> {
                               SizedBox(
                                 height: 20,
                               ),
-                              const Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  'Enter the OTP',
-                                  style: TextStyle(
-                                    fontSize: 14.0,
-                                    color: Colors.background,
-                                  ),
-                                ),
-                              ),
+                              // const Align(
+                              //   alignment: Alignment.center,
+                              //   child: Text(
+                              //     'Enter the OTP',
+                              //     style: TextStyle(
+                              //       fontSize: 14.0,
+                              //       color: Colors.background,
+                              //     ),
+                              //   ),
+                              // ),
                               const SizedBox(
                                 height: 20,
                               ),
@@ -991,7 +991,7 @@ class SignUpScreen extends State<UserProfile> {
                                   padding: const EdgeInsets.all(10.0),
                                   child: PinCodeTextField(
                                     appContext: context,
-                                    length: 6,
+                                    length: 4,
                                     // controller: _otpController,
                                     obscureText: false,
                                     keyboardType: TextInputType.number,
@@ -1013,7 +1013,7 @@ class SignUpScreen extends State<UserProfile> {
                                     // Set the font size here
 
                                     onChanged: (String pin) {
-                                      if (pin.length == 6) {
+                                      if (pin.length == 4) {
                                         pincode = pin;
                                         buttonColor = Colors
                                             .background; // Change button color to green when enabled
@@ -1052,7 +1052,7 @@ class SignUpScreen extends State<UserProfile> {
                               ),
                               SizedBox(
                                   height:
-                                      MediaQuery.of(context).size.width / 4.2),
+                                      MediaQuery.of(context).size.width / 8),
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 22.0),
                                 child: Align(

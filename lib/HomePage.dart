@@ -78,10 +78,11 @@ class HomePageState extends State<HomePage> {
             child: InkWell(
               onTap: () {
                 Navigator.push(
-                  context,
-                  CupertinoPageRoute(
-                    builder: (context) => HomePage(),
+                  context, CupertinoPageRoute(
+                  builder: (context) => HomePage(
                   ),
+                ),
+
                 );
               },
               child: SizedBox(
@@ -89,8 +90,7 @@ class HomePageState extends State<HomePage> {
                 height: 50.0, // Height of the FloatingActionButton
                 child: Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    // Add padding for the icon
+                    padding: const EdgeInsets.all(8.0), // Add padding for the icon
                     child: Image.asset(
                       "assets/home_icon.png",
                       width: 20,
@@ -127,13 +127,13 @@ class HomePageState extends State<HomePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           GestureDetector(
-                            onTap: () {
+                            onTap:(){
                               Navigator.push(
                                 context,
                                 CupertinoPageRoute(
-                                    builder: (context) => setReminder()),
-                              );
-                            },
+                                    builder: (context) =>
+                                        setReminder()),
+                              );                            } ,
                             child: Text(
                               salutation,
                               style: const TextStyle(
@@ -184,13 +184,12 @@ class HomePageState extends State<HomePage> {
             Padding(
               padding: const EdgeInsets.all(15.0),
               child: GestureDetector(
-                onTap: () {
-                  getGraph();
-              /*    showModalBottomSheet(
+                onTap: ()  {
+                  showModalBottomSheet(
                     context: context,
                     builder: (context) => BottomDialog(),
-                  );*/
-                  /*   Navigator.push(
+                  );
+               /*   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => AddCustomerPage()),
                   );*/
@@ -199,22 +198,20 @@ class HomePageState extends State<HomePage> {
               ),
             ),
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 10),
               child: GestureDetector(
-                onTap: () {
+                onTap: ()  {
                   // sendcustomerDetails(context);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) => EyeFatigueStartScreen()),
+                    MaterialPageRoute(builder: (context) => EyeFatigueStartScreen()),
                   );
                 },
                 child: Image.asset('assets/eyeFatigueTest.png'),
               ),
             ),
             GestureDetector(
-              onTap: () {
+              onTap: ()  {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => MyPlan()),
@@ -338,7 +335,7 @@ class HomePageState extends State<HomePage> {
             const Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
               child: Text(
-                'EYE FATIGUE GRAPH OVERVIEW', // Display formatted current date
+                'EYE HEALTH GRAPH OVERVIEW', // Display formatted current date
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -347,10 +344,10 @@ class HomePageState extends State<HomePage> {
             ),
             Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
+              const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
               child: Card(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5.0,horizontal: 16.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -358,7 +355,7 @@ class HomePageState extends State<HomePage> {
                         padding: EdgeInsets.all(1),
                         child: ListTile(
                           title: Text(
-                            'Eye Health',
+                            'Right Eye Health',
                             style: TextStyle(
                               fontSize: 16.0,
                               fontWeight: FontWeight.bold,
@@ -367,18 +364,9 @@ class HomePageState extends State<HomePage> {
                           subtitle: Text('April 30-May 30'),
                         ),
                       ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  width: double.infinity,
-                  height: 300,
-                  child: LineChart(
-                    LineChartData(borderData: FlBorderData(show: false), lineBarsData: [
-                      LineChartBarData(
-                          spots: _spots),
-                    ]),
-                  ),
+
                       // Container with fixed height to contain the LineChart
-                   /*   Container(
+                      Container(
                         height: 200,
                         width: MediaQuery.of(context).size.width,
 
@@ -389,7 +377,14 @@ class HomePageState extends State<HomePage> {
                             LineChartData(
                               lineBarsData: [
                                 LineChartBarData(
-                                  spots:_spots,
+                                  spots: [
+                                    FlSpot(0, 4),
+                                    FlSpot(2, 4),
+                                    FlSpot(4, 6),
+                                    FlSpot(6, 3),
+                                    FlSpot(8, 4),
+                                    FlSpot(10, 5),
+                                  ],
                                   isCurved: true,
                                   colors: [Colors.deepPurple],
                                   barWidth: 4,
@@ -435,8 +430,8 @@ class HomePageState extends State<HomePage> {
                             ),
                           ),
                         ),
-                      ),*/
-                ),],
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -539,9 +534,44 @@ class HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      bottomNavigationBar: CustomBottomAppBar(),
+
+      bottomNavigationBar:
+      CustomBottomAppBar(),
+
+
+
     );
   }
+  Future<void> sendcustomerDetails(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
+    final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
+// Replace these headers with your required headers
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $authToken',
+      'Content-Type': 'application/json',
+
+    };
+
+    var body = json.encode({
+      "is_self": true,
+    });
+
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: body,
+      );
+      print('response === ' + response.body);
+      if (response.statusCode == 200) {
+        if (kDebugMode) {
+          print('sddd ${response.body}');
+        }
+        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
 
   String _status = '';
   List<FlSpot> _value = [];
@@ -551,6 +581,15 @@ class HomePageState extends State<HomePage> {
   bool midtiredness_right= false;
   bool midtiredness_left=false;
 
+      } else {
+        print('Failed with status code: ${response.statusCode}');
+        print('Failed sddd ${response.body}');
+      }
+    } catch (e) {
+// Handle exceptions here (e.g., network errors)
+      print('Exception: $e');
+    }
+  }
 
   Future<void> getGraph() async {
 
@@ -595,12 +634,15 @@ class HomePageState extends State<HomePage> {
           _spots;
         });
 
-        return json.decode(response.body);
-      } else {
-        print(response.body);
-      }
-  /*  } catch (e) {
-      // _progressDialog!.hide();
+      return json.decode(response.body);
+
+    } else {
+
+      print(response.body);
+
+    }
+  }
+  catch (e) {     // _progressDialog!.hide();
 
       print("exception:$e");
     }
@@ -609,11 +651,13 @@ class HomePageState extends State<HomePage> {
 }}
 
 class setReminder extends StatefulWidget {
+
   @override
   State<setReminder> createState() => ReminderState();
 }
 
 class ReminderState extends State<setReminder> {
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -622,8 +666,12 @@ class ReminderState extends State<setReminder> {
               title: const Text('Plugin example app'),
             ),
             body: Builder(builder: (context) {
-              return Center();
-            })));
+              return Center(
+
+              );
+            }
+            )
+        ));
   }
 }
 
@@ -671,6 +719,7 @@ class BottomDialog extends StatelessWidget {
               onTap: () {
                 Navigator.pop(context);
                 sendcustomerDetails(context, true);
+
               },
               child: Image.asset('assets/test_for_myself_img.png'),
             ),
@@ -678,8 +727,8 @@ class BottomDialog extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 12.0),
             child: Card(
-              child: GestureDetector(
-                onTap: () {
+              child:  GestureDetector(
+                onTap: ()  {
                   Navigator.pop(context);
                   showModalBottomSheet(
                     context: context,
@@ -911,6 +960,7 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                   // Set floatingLabelBehavior to always display the label
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   // Add button to the end of the TextField
+
                 ),
                 style:
                     const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
@@ -921,6 +971,7 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
+
               onPressed: () {
                 sendcustomerDetails(context, false,
                     name: _nameController.text, age: _ageController.text);

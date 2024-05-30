@@ -6,33 +6,235 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:light_compressor/light_compressor.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:project_new/HomePage.dart';
 import 'package:project_new/eyeFatigueTestReport.dart';
 import 'package:project_new/sign_up.dart';
-import 'package:video_compress/video_compress.dart';
+// import 'package:video_compress/video_compress.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'Custom_navbar/ProgressDialog.dart';
 import 'api/Api.dart';
 import 'api/config.dart';
-
+bool isclose=false;bool uploaded=false;
+bool isLoading = false;
 class EyeFatigueStartScreen extends StatefulWidget {
   @override
   EyeFatigueStartScreenState createState() => EyeFatigueStartScreenState();
 }
-bool isclose=false;bool uploaded=false;
-bool isLoading = false;
+
 class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
 
+
+  @override
+  void initState() {
+    super.initState();
+    isclose=false; uploaded=false;
+    isLoading = false;
+
+  }
+
+
+
+
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text("Eye Fatigue Test"),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              // Add your back button functionality here
+            },
+          ),
+        ),
+        body: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              //  mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 5),
+                Image.asset(
+                  'assets/phone_image.png',
+
+                  // Replace 'phone_image.svg' with your SVG asset path
+                  width: 200, // Adjust image size as needed
+                  height: 200,
+                ),
+                const SizedBox(height: 4),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: const Text(
+                    'Welcome to Eye Health Fatique Meter',
+                    style: TextStyle(
+                        color: Colors.purple,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700
+                    ), textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: 4),
+
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: const Text(
+                    'Keep your eyes healthy and productive with Eye Fatigue Meter. This innovative tool helps you monitor and manage eye strain caused by prolonged screen time and other factors.',
+                    style: TextStyle(
+                        color: Colors.black54,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400
+                    ), textAlign: TextAlign.center,
+                  ),
+                ),
+
+                const SizedBox(height: 4),
+
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: const Text(
+                    'Given below are a set of instructions. Take a moment to read them carefully. ',
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600
+                    ), textAlign: TextAlign.center,
+                  ),
+                ),
+
+                const SizedBox(height: 2),
+
+                Padding(
+                  padding: EdgeInsets.fromLTRB(12, 8, 12, 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
+                        leading: Icon(Icons.camera_alt),
+                        title: Text('Position the camera at a reading distance parallel to your face.',style: TextStyle(fontSize: 15,fontWeight: FontWeight.w400),),
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.arrow_forward),
+                        title: Text('In the next step, you’ll see some text appear at the top of the screen.',style: TextStyle(fontSize: 15,fontWeight: FontWeight.w400)),
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.record_voice_over),
+                        title: Text('Simply read the content aloud until it ends.',style: TextStyle(fontSize: 15,fontWeight: FontWeight.w400)),
+                      ),
+                      // ListTile(
+                      //   leading: Icon(Icons.timer),
+                      //   title: Text('Once you’ve finished reading, kindly allow us a moment to review your results and create your customized report.'),
+                      // ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => EyeFatigueSecondScreen()),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
+                    // Background color
+                    // Text color
+                    padding: const EdgeInsets.all(16),
+                    minimumSize: const Size(300, 40),
+                    // Button padding
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(26),
+                      // Button border radius
+                    ),
+                  ),
+                  child: const Text('Let\'s Check Eyes'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class EyeFatigueSecondScreen extends StatefulWidget {
+  @override
+  EyeFatigueSecondScreenState createState() => EyeFatigueSecondScreenState();
+}
+
+class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with SingleTickerProviderStateMixin{
+  bool cancel=true;  final LightCompressor _lightCompressor = LightCompressor();
+  bool isRecording = false;
+  late String videoPath;  String? _compressedVideoPath;
   CameraController? _controller;
   late List<CameraDescription> cameras;
-  bool isRecording = false;
-  late String videoPath;
+  late AnimationController _animationController;
+  final List<String> _lines = [
+    'Keep your eyes healthy and productive with Eye',
+    'Fatigue Meter. This innovative tool helps you',
+    'Monitor and manage eye strain caused by ',
+    'Prolonged screen time and other factors. Simply',
+    'Position yourself in front of the camera as ',
+    'Indicated in the provided image',
+  ];
+  int _startIndex = 0;
+  bool _firstTime = true;
+  @override
+  void dispose() {
+    _controller?.dispose();
+    _animationController.dispose();
+
+    super.dispose();
+  }
+  @override
+
+  void initState() {
+    isclose=false; uploaded=false;
+    isLoading = false;
+
+    _initializeCamera();
+
+    sendcustomerDetails();
+  isloading();
+
+
+
+
+
+
+
+
+
+
+
+    // TODO: implement initState
+    super.initState();
+    _animationController = AnimationController(
+      duration: Duration(seconds: 9), // Adjust duration as needed
+      vsync: this,
+    );
+
+    _startAnimation();
+
+  }
+  void _startAnimation() async {
+    await _animationController.forward().orCancel;
+    _startIndex += 3;
+    if (_startIndex >= _lines.length) _startIndex = 0;
+    _animationController.reset();
+    _startAnimation();
+  }
   Future<void> sendcustomerDetails() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
@@ -74,14 +276,6 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
       print('Exception: $e');
     }
   }
-  @override
-  void initState() {
-    super.initState();
-    isclose=false; uploaded=false;
-    isLoading = false;
-    _initializeCamera();
-    sendcustomerDetails();
-  }
 
   Future<void> _initializeCamera() async {
     cameras = await availableCameras();
@@ -93,76 +287,6 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
     await _controller!.initialize();
     _startVideoRecording();
   }
-
-
-  Future<void> _startVideoRecording() async {
-    if (!_controller!.value.isInitialized) {
-      return;
-    }
-    final directory = await getApplicationDocumentsDirectory();
-    videoPath = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
-
-    try {
-      await _controller!.startVideoRecording();
-      isRecording = true;
-      setState(() {});
-
-      await Future.delayed(Duration(seconds: 30));
-
-      if (_controller!.value.isRecordingVideo) {
-        final XFile file = await _controller!.stopVideoRecording();
-        isRecording = false;
-
-
-        print('Video recorded to: ${file.path}');
-
-        // Verify file existence
-        if (await File(file.path).exists()) {
-          setState(() {
-            isLoading=true;
-            print("isLoading========$isLoading");
-
-          });
-          final videoFile = File(file.path);
-          final videoSizeBytes = await videoFile.length();
-          print('Video size: ${videoSizeBytes / (1024 * 1024)} MB'); // Convert bytes to MB for readability
-          // progressDialog = MyProgressDialog.showProgressDialog(context, 'Loading data...');
-
-          // await downloadVideoToLocal(file.path);
-          final compressedVideo = await VideoCompress.compressVideo(
-            file.path,
-            quality: VideoQuality.DefaultQuality,
-            deleteOrigin: false, // Set to true if you want to delete the original video after compression
-          );
-
-
-            setState(() {
-                  print('Compressed video path: ${compressedVideo?.path}');
-
-
-                });
-
-
-
-
-
-          _uploadVideo(compressedVideo!.path!);
-
-
-
-
-
-
-        } else {
-          print('File does not exist.');
-        }
-      }
-    } catch (e) {
-      print("Error: $e");
-    }
-  }
-
-
   Future<void> _uploadVideo(String videoFile) async {
     isclose=true;
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -185,13 +309,13 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
       final response = await http.Response.fromStream(streamedResponse);
 
 
-      print('Fsdfkjvhskvo++++==${response.body}');
+      print('Video upload=response=${response.body}');
       if (response.statusCode == 200) {
 
         print('Video uploaded successfully');
-setState(() {
-  uploaded=true;
-});
+        setState(() {
+          uploaded=true;
+        });
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -202,11 +326,11 @@ setState(() {
 
       } else {
         // MyProgressDialog.dismissProgressDialog(progressDialog!);
-Fluttertoast.showToast(msg: "face is not captured properly, please test again");
-setState(() {
-   isclose=false; uploaded=false;
-   isLoading = false;
-});
+        Fluttertoast.showToast(msg: "face is not captured properly, please test again");
+        setState(() {
+          isclose=false; uploaded=false;
+          isLoading = false;
+        });
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -215,106 +339,101 @@ setState(() {
         print('Failed to upload video');
       }
     } catch (e) {
+      isclose=false; uploaded=false;
+      isLoading = false;
       print('Error uploading video: $e');
     }
   }
 
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text("Eye Fatigue Test"),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              // Add your back button functionality here
-            },
-          ),
-        ),
-        body: Center(
-          child: Column(
-            //  mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/phone_image.png',
-                // Replace 'phone_image.svg' with your SVG asset path
-                width: 300, // Adjust image size as needed
-                height: 300,
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Welcome to Eye Health Fatique Meter',
-                style: TextStyle(
-                    color: Colors.purple,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700
-                ), textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 10),
-              Padding(
-                padding: EdgeInsets.fromLTRB(12, 8, 12, 8),
-                child: Text(
-                  'Keep your eyes healthy and productive with Eye Fatigue Meter.'
-                      ' This innovative tool helps you monitor and manage eye strain caused by prolonged '
-                      'screen time and other factors. Simply position yourself in front of '
-                      'the camera as indicated in the provided image.',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 14,
-                  ), textAlign: TextAlign.center,
-                ),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => EyeFatigueSecondScreen()),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
-                  // Background color
-                  // Text color
-                  padding: EdgeInsets.all(16),
-                  minimumSize: Size(300, 40),
-                  // Button padding
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(26),
-                    // Button border radius
-                  ),
-                ),
-                child: Text('Let\'s Check Eyes'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
+  Future<void> _startVideoRecording() async {
+    if (!_controller!.value.isInitialized) {
+      return;
+    }
+    final directory = await getApplicationDocumentsDirectory();
+    videoPath = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
 
-class EyeFatigueSecondScreen extends StatefulWidget {
-  @override
-  EyeFatigueSecondScreenState createState() => EyeFatigueSecondScreenState();
-}
+    try {
+      await _controller!.startVideoRecording();
+      isRecording = true;
+      setState(() {});
 
-class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> {
-  bool cancel=true;
-@override
-  void initState() {
+      await Future.delayed(const Duration(seconds: 30));
 
-  isloading();
-    // TODO: implement initState
-    super.initState();
+      if (_controller!.value.isRecordingVideo) {
+        final XFile file = await _controller!.stopVideoRecording();
+        isRecording = false;
+
+
+        print('Video recorded to: ${file.path}');
+
+        // Verify file existence
+        if (await File(file.path).exists()) {
+          setState(() {
+            isLoading=true;
+            print("isLoading========$isLoading");
+
+          });
+          final videoFile = File(file.path);
+          final videoSizeBytes = await videoFile.length();
+          print('Video size: ${videoSizeBytes / (1024 * 1024)} MB'); // Convert bytes to MB for readability
+
+          setState(() {
+            _compressedVideoPath = null; // Reset compressed video path
+          });
+
+          final String videoName =
+              'MyVideo-${DateTime.now().millisecondsSinceEpoch}.mp4';
+
+          final Result response = await _lightCompressor.compressVideo(
+            path: file.path,
+            videoQuality: VideoQuality.low,
+            isMinBitrateCheckEnabled: false,
+            video: Video(videoName: videoName),
+            android: AndroidConfig(isSharedStorage: true, saveAt: SaveAt.Movies),
+            ios: IOSConfig(saveInGallery: false),
+          );
+
+          if (response is OnSuccess) {
+            setState(() async {
+              final videoFile = File(response.destinationPath);
+              final videoSizeBytes = await videoFile.length();
+              print('Compressed Video size: ${videoSizeBytes / (1024 * 1024)} MB');
+              _uploadVideo(response.destinationPath);
+
+              print('Compressed video path: ${response.destinationPath}');
+            });
+          } else if (response is OnFailure) {
+            setState(() {
+              Fluttertoast.showToast(msg: "${response.message}");
+
+            });
+          } else if (response is OnCancelled) {
+            Fluttertoast.showToast(msg: "${response.isCancelled}");
+            print(response.isCancelled);
+          }
+          // setState(() {
+          //   _compressedVideoPath = response;
+          // });
+
+
+
+
+
+          // _uploadVideo(compressedVideo!.path!);
+
+
+
+
+
+
+        } else {
+          print('File does not exist.');
+        }
+      }
+    } catch (e) {
+      print("Error: $e");
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -327,16 +446,17 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> {
       child: MaterialApp(
         home: Scaffold(
           body: Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/background_fatigue.png'), // Replace 'assets/background_image.jpg' with your image path
                 fit: BoxFit.cover,
               ),
             ),
             child: isLoading
-                ? Center(
+                ?
+            const Center(
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(8.0),
                 child: Text(
                   "Please wait, we are fetching your report...",
                   style: TextStyle(
@@ -356,66 +476,90 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> {
       
       
       
-                SizedBox(height: 10),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(20, 37, 20, 10),
-                  child: Text(
-                    'Keep your eyes healthy and productive with Eye Fatigue Meter.'
-                        ' This innovative tool helps you monitor and manage eye strain caused by prolonged '
-                        'screen time and other factors. Simply position yourself in front of '
-                        'the camera as indicated in the provided image.',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                    ), textAlign: TextAlign.center,
-                  ),
-                ),
-                SizedBox(height: 10),
-                Spacer(),
-      
-                Visibility(
-                  visible: cancel,
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(12, 8, 12, 8),
-                    child: Container(
-                      color: Colors.lightBlue.shade300,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                'Read the ON Your screen and we have assessed your eye health based on reading ability',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
+                const SizedBox(height: 10),
+              Column(
+                children: [
+                  AnimatedBuilder(
+                    animation: _animationController,
+                    builder: (context, child) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: List.generate(3, (index) {
+                          final lineIndex = (_startIndex + index) % _lines.length;
+                          final line = _lines[lineIndex];
+                          final animationValue = _animationController.value;
+                          final opacity = 1.0 - animationValue;
+                          final translateY = (1.0 - opacity) * 100.0;
+                          return Transform.translate(
+                            offset: Offset(0.0, translateY),
+                            child: Opacity(
+                              opacity: opacity,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  line,
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          SizedBox(width: 8),
-                          // Add some space between the text and icon
-                          IconButton(
-                            icon: Icon(
-                              Icons.close,
-                              size: 24,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                cancel=false;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                          );
+                        }),
+                      );
+                    },
+                  )
+                ],
+              ),
+
+
+                const SizedBox(height: 10),
+                const Spacer(),
+      
+                // Visibility(
+                //   visible: cancel,
+                //   child: Padding(
+                //     padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                //     child: Container(
+                //       color: Colors.lightBlue.shade300,
+                //       child: Row(
+                //         children: [
+                //           const Expanded(
+                //             child: Padding(
+                //               padding: EdgeInsets.all(8.0),
+                //               child: Text(
+                //                 'Read the ON Your screen and we have assessed your eye health based on reading ability',
+                //                 style: TextStyle(
+                //                   color: Colors.white,
+                //                   fontSize: 14,
+                //                 ),
+                //               ),
+                //             ),
+                //           ),
+                //           const SizedBox(width: 8),
+                //           // Add some space between the text and icon
+                //           IconButton(
+                //             icon: const Icon(
+                //               Icons.close,
+                //               size: 24,
+                //               color: Colors.white,
+                //             ),
+                //             onPressed: () {
+                //               setState(() {
+                //                 cancel=false;
+                //               });
+                //             },
+                //           ),
+                //         ],
+                //       ),
+                //     ),
+                //   ),
+                // ),
       
                 // Spacer to push the button to the bottom
                 Padding(
-                  padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
                   child: ElevatedButton(
                     onPressed: isclose ? () {
                       Navigator.push(
@@ -431,12 +575,12 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> {
                       backgroundColor:  isclose ? Colors.purple.shade300 : Colors.grey.shade300 ,
       
                       // backgroundColor: Colors.purple.shade300,
-                      minimumSize: Size(350, 50),
+                      minimumSize: const Size(350, 50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(25),
                       ),
                     ),
-                    child: Text('Close'),
+                    child: const Text('Close'),
                   ),
                 ),
       
@@ -450,7 +594,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> {
 
   Future<void> isloading() async {
     // Delay for 30 seconds
-    await Future.delayed(Duration(seconds: 30));
+    await Future.delayed(const Duration(seconds: 30));
 
     // After 30 seconds, update isLoading
     setState(() {
@@ -494,16 +638,16 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
       child: MaterialApp(
         home: Scaffold(
           appBar: AppBar(
-            title: Center(
+            title: const Center(
               // Centering the title horizontally
               child: Text("Eye Fatigue Test"),
             ),
           ),
           body:
            uploaded
-        ? Center(
+        ? const Center(
         child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: EdgeInsets.all(8.0),
         child: Text(
           "Please wait, we are fetching your report...",
           style: TextStyle(
@@ -523,8 +667,8 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
                  width: 300,
                  height: 300,
                ),
-               SizedBox(height: 8),
-               Padding(
+               const SizedBox(height: 8),
+               const Padding(
                  padding: EdgeInsets.fromLTRB(20, 8, 20, 8),
                  child: Text(
                    'Congratulations! You have completed the Eye Fatigue Test.',
@@ -536,8 +680,8 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
                    textAlign: TextAlign.center,
                  ),
                ),
-               SizedBox(height: 10),
-               Padding(
+               const SizedBox(height: 10),
+               const Padding(
                  padding: EdgeInsets.fromLTRB(15, 8, 15, 8),
                  child: Text(
                    'To view your results, go to the Report section to find your Eye Fatigue Test report and gain insights.',
@@ -548,7 +692,7 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
                    textAlign: TextAlign.center, // Optional: align text center
                  ),
                ),
-               SizedBox(height: 20),
+               const SizedBox(height: 20),
                ElevatedButton(
                  onPressed:enable ? () async {
                    setState(() {
@@ -561,13 +705,13 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
                  }:null,
                  style: ElevatedButton.styleFrom(
                    foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
-                   padding: EdgeInsets.all(16),
-                   minimumSize: Size(300, 40),
+                   padding: const EdgeInsets.all(16),
+                   minimumSize: const Size(300, 40),
                    shape: RoundedRectangleBorder(
                      borderRadius: BorderRadius.circular(26),
                    ),
                  ),
-                 child: Text('GO TO REPORTS'),
+                 child: const Text('GO TO REPORTS'),
                ),
              ],
            )
@@ -589,8 +733,8 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
           width: 300,
           height: 300,
         ),
-        SizedBox(height: 8),
-        Padding(
+        const SizedBox(height: 8),
+        const Padding(
           padding: EdgeInsets.fromLTRB(20, 8, 20, 8),
           child: Text(
             'Congratulations! You have completed the Eye Fatigue Test.',
@@ -602,8 +746,8 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
             textAlign: TextAlign.center,
           ),
         ),
-        SizedBox(height: 10),
-        Padding(
+        const SizedBox(height: 10),
+        const Padding(
           padding: EdgeInsets.fromLTRB(15, 8, 15, 8),
           child: Text(
             'To view your results, go to the Report section to find your Eye Fatigue Test report and gain insights.',
@@ -614,7 +758,7 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
             textAlign: TextAlign.center, // Optional: align text center
           ),
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         ElevatedButton(
           onPressed:enable ? () async {
             setState(() {
@@ -629,13 +773,13 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
           }:null,
           style: ElevatedButton.styleFrom(
             foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
-            padding: EdgeInsets.all(16),
-            minimumSize: Size(300, 40),
+            padding: const EdgeInsets.all(16),
+            minimumSize: const Size(300, 40),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(26),
             ),
           ),
-          child: Text('GO TO REPORTS'),
+          child: const Text('GO TO REPORTS'),
         ),
       ],
     );
@@ -660,37 +804,63 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
         headers: headers,
       );
       print("senddata====0000000===========${response.body}");
+      print("senddata====0000000=========== status code ${response.statusCode}");
+
       final responseData = json.decode(response.body);
 
       if (response.statusCode == 200) {
-
         setState(() {
           uploaded=false;
           enable=true;
-
-
         });
       }
-      else if (response.statusCode == 401) {
+      else if (response.statusCode == 401)
+      {
+        setState(() {
+          isclose=false; uploaded=false;
+          isLoading = false;
+        });
         Fluttertoast.showToast(msg: "Session Expired");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => SignIn()),
         );
       }
-      else {
+      else if(response.statusCode == 500) {
+        setState(() {
+           isclose=false; uploaded=false;
+           isLoading = false;
+        });
+        Fluttertoast.showToast(msg: "Server error occurred, Please try again.");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      }else{
+        setState(() {
+          isclose=false; uploaded=false;
+          isLoading = false;
+        });
         if (responseData.containsKey('error')) {
+
           // Handle the case when no data is found
           String errorMessage = responseData['error'];
           String message = responseData['msg'];
           print('$errorMessage: $message');
           Fluttertoast.showToast(msg:message );
-
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomePage()),
+          );
           // You can show an appropriate message to the user or take other actions as needed
         }
         throw Exception('Failed to load data');
       }
     } on DioError catch (e) {
+      setState(() {
+        isclose=false; uploaded=false;
+        isLoading = false;
+      });
       if (e.response != null || e.response!.statusCode == 401) {
         // Handle 401 error
 
@@ -711,7 +881,7 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
 
   // Function to fetch demo data (replace with your actual API call)
   Future<Map<String, dynamic>> fetchData() async {
-    await Future.delayed(Duration(seconds: 2)); // Simulating API call delay
+    await Future.delayed(const Duration(seconds: 2)); // Simulating API call delay
     return {'message': 'Hello from API'}; // Demo data
   }
 }
