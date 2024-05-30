@@ -615,10 +615,10 @@ class HomePageState extends State<HomePage> {
 
       return json.decode(response.body);
 
-    } else {
+    }
+    else {
 
       print(response.body);
-
     }
   }
   catch (e) {     // _progressDialog!.hide();

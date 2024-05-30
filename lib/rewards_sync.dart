@@ -680,7 +680,7 @@ class _RewardsContactsSync extends State<RewardContact> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String token =
-      prefs.getString('access_token') ?? '';
+          prefs.getString('access_token') ?? '';
 
       final response = await http.get(
         Uri.parse('${ApiProvider.baseUrl + ApiProvider.myReffrealcontacts}'),
@@ -733,7 +733,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
   OfferData? offerData;
   AddressList? address_list;
   bool isChecked = false;
-   SharedPreferences? prefs;
+  SharedPreferences? prefs;
   double? userPercentage;
   bool isReedemButtonEnabled = false; // Set your condition here
 
@@ -749,7 +749,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
   List<bool> isSelectedList = [];
   bool isLoading = true;
   int selectedCount = 0;
-bool selectedCount_=false; int ino=0;
+  bool selectedCount_=false; int ino=0;
   @override
   void initState() {
     super.initState();
@@ -1393,10 +1393,10 @@ bool selectedCount_=false; int ino=0;
                                       ino=index;
                                       print("--------${isSelectedList[index]} ");
                                       if(isSelectedList[index]==true){
-if(prefs==null){}else{
-  prefs?.setString('address_id', address_list!.data![ino].addressId!);
+                                        if(prefs==null){}else{
+                                          prefs?.setString('address_id', address_list!.data![ino].addressId!);
 
-}
+                                        }
                                         // address_id
                                         print("selcted_id====inntyyyyn====+${ address_list?.data?[ino].addressId}");
                                       }
@@ -1416,24 +1416,24 @@ if(prefs==null){}else{
                                           // isSelectedList[index] = newValue ?? false;
 
                                           setState(() {
-                                              for (int i = 0; i < isSelectedList.length; i++) {
-                                                isSelectedList[i] = (i == index && newValue == true);
-                                                if (newValue == true) {
-                                                  selectedCount++;
-                                                  selectedCount_=true;
-                                                  // print("selcted_id========+${ address_list?.data?[i].addressId}");
+                                            for (int i = 0; i < isSelectedList.length; i++) {
+                                              isSelectedList[i] = (i == index && newValue == true);
+                                              if (newValue == true) {
+                                                selectedCount++;
+                                                selectedCount_=true;
+                                                // print("selcted_id========+${ address_list?.data?[i].addressId}");
 
-                                                  // Increment count when checkbox is selected
-                                                } else {
-                                                  selectedCount--;
-                                                  selectedCount_=false;// Decrement count when checkbox is deselected
-                                                }
-
+                                                // Increment count when checkbox is selected
+                                              } else {
+                                                selectedCount--;
+                                                selectedCount_=false;// Decrement count when checkbox is deselected
                                               }
-                                              if(prefs==null){}else{
-                                                prefs?.setString('address_id', address_list!.data![ino].addressId!);
 
-                                              }                                              print("selcted_id====00000====+${ address_list?.data?[ino].addressId}");
+                                            }
+                                            if(prefs==null){}else{
+                                              prefs?.setString('address_id', address_list!.data![ino].addressId!);
+
+                                            }                                              print("selcted_id====00000====+${ address_list?.data?[ino].addressId}");
 
                                             // isSelectedList[index] = newValue ?? false;
                                           });
@@ -1565,8 +1565,8 @@ if(prefs==null){}else{
                               isChecked = newValue!;
 
                               if(isChecked==true){
-                                
-                                
+
+
                                 callredeemApi();
                                 // Navigator.push(context, MaterialPageRoute(
                                 //     builder: (context) => RedeemSuccessPage()),
@@ -1615,7 +1615,7 @@ if(prefs==null){}else{
                       ),
                     ),
                   ),
-                SizedBox(height: 10,),
+                  SizedBox(height: 10,),
 
                   Padding(
                     padding: const EdgeInsets.only(bottom: 28.0),
@@ -1670,7 +1670,7 @@ if(prefs==null){}else{
   Future<void> callredeemApi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    prefs.getString('access_token') ?? '';
+        prefs.getString('access_token') ?? '';
     String offer_id = prefs.getString('offer_id')??"";
     String address_id = prefs.getString('address_id')??"";
 
@@ -1687,12 +1687,12 @@ if(prefs==null){}else{
       final response = await http.post(
         Uri.parse(apiUrl),
         body: {
-        "offer_id": offer_id,
-        "address_id": address_id,
+          "offer_id": offer_id,
+          "address_id": address_id,
 
-        // "device_id":  device_id// cahnge device_token
+          // "device_id":  device_id// cahnge device_token
 
-      },
+        },
 
         headers: headers,
       );
@@ -1704,8 +1704,8 @@ if(prefs==null){}else{
           print('sddd ${response.body}');
         }
         Navigator.push(context, MaterialPageRoute(
-              builder: (context) => RedeemSuccessPage()),
-          );
+            builder: (context) => RedeemSuccessPage()),
+        );
         // Map<String, dynamic> jsonResponse = jsonDecode(response.body);
         //
         // // Extract the customer ID
@@ -1761,7 +1761,7 @@ class PresUpload extends State<PrescriptionUpload> {
   @override
   void initState() {
     super.initState();
-    getOffersDetail();
+
 
     getPrescriptionFiles();
   }
@@ -1771,74 +1771,68 @@ class PresUpload extends State<PrescriptionUpload> {
     _timer?.cancel();
     super.dispose();
   }
-
-  Future<void> getOffersDetail() async {
+  Future getPrescriptionFiles() async {
+    var sharedPref = await SharedPreferences.getInstance();
+    String userToken = sharedPref.getString("access_token") ?? '';
     try {
-      String userToken = '';
-      var sharedPref = await SharedPreferences.getInstance();
-      userToken =
-      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE2MjcyODc2LCJpYXQiOjE3MTYxODY0NzYsImp0aSI6ImYyMjJhM2VlZDNjYTRlZjc4MmNmNmEyNTYzOGQxMmU1IiwidXNlcl9pZCI6IjkxOTNhOTE1LWY5YzItNDQ0MC04MDVlLTQxNDBhYTc5ZDQzOSJ9.2Gj1laeNGLhy0FxYQCQVoB_Idt5W0F0X621BVPtNaic";
-      sharedPref.getString("access_token") ?? '';
+      setState(() {
+        _files1.clear();
+        _files.clear();
+      });
       Map<String, String> headers = {
         'Authorization': 'Bearer $userToken', // Bearer token type
-        'Content-Type': 'application/json',
+        // 'Content-Type': 'application/json',
       };
-      print("statusCode================${userToken}");
+      // Make the API request to fetch project sites
+      var response = await Dio().get(
+          "${ApiProvider.baseUrl}${ApiProvider.uploadPrescription}",
+          options: Options(headers: headers));
 
-      final response = await http.get(
-        Uri.parse(
-            '${ApiProvider.baseUrl}${ApiProvider.getOffers_detail +"?offer_id=$offer_id"}'),
-        headers: headers,
-      );
-      print("statusCode================${response.statusCode}");
+      // Check the response status code
       if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        offerData = OfferData.fromJson(responseData);
-        isLoading = false;
-        print("statusCode================${offerData?.data?.description}");
-        image_url = offerData!.data!.image!;
-        EyeHealthPoints = offerData!.userPoints!;
-        totalPoints = offerData!.data!.requiredPoints!;
-        title = offerData!.data!.title!;
-        description = offerData!.data!.description!;
 
-        userPercentage =
-            double.tryParse(offerData?.userPercentage.toString() ?? '0.0') ??
-                0.0;
-        if (userPercentage == 100.0) {
-          isReedemButtonEnabled = true;
-        } else {
-          isReedemButtonEnabled = false;
+        Map<String, dynamic> data = json.decode(response.toString());
+        totalPoints   =data['total_points_by_prescription_upload'];
+        EyeHealthPoints=data['you_can_get_points_by_prescription_upload'];
+        List<dynamic> prescriptionFiles = data['data']; // Specify the file name
+        List<String> prescriptionNames = [];
+        isLoading = false;
+        for (var fileEntry in prescriptionFiles) {
+          String invoiceFile = fileEntry['file'];
+          String date = fileEntry['created_on'];
+          String status = fileEntry['status'];
+          String prescription_id = fileEntry['prescription_id'];
+
+          prescriptionNames.add(invoiceFile);
+          dates.add(date);
+          statuses.add(status);
+          prescriptionid.add(prescription_id);
         }
+        print('Purchase Orderdd: $prescriptionNames');
+        // Extract the invoice_file values and create PlatformFile objects
+        List<PlatformFile> platformFiles = [];
+        for (var fileEntry in prescriptionFiles) {
+          String invoiceFilePath = fileEntry['file'];
+          PlatformFile platformFile = PlatformFile(
+            name: invoiceFilePath.split('/').last,
+            size: 0, // Set appropriate file size
+            bytes: null, // Set appropriate file bytes
+          );
+          platformFiles.add(platformFile);
+        }
+        _files.addAll(platformFiles);
 
         setState(() {});
-      } else if (response.statusCode == 401) {
-        Fluttertoast.showToast(msg: "Session Expired");
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => SignIn()),
-        );
       } else {
-        throw Exception('Failed to load data');
+        // If the request was not successful, throw an error
+        throw Exception('Failed to load data: ${response.statusCode}');
       }
-    } on DioError catch (e) {
-      if (e.response != null || e.response!.statusCode == 401) {
-        // Handle 401 error
-
-        Fluttertoast.showToast(msg: "Session Expired");
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => SignIn()),
-        );
-      } else {
-        // Handle other Dio errors
-        print("DioError: ${e.error}");
-      }
-    } catch (e) {
-      // Handle other exceptions
-      print("Exception---: $e");
+    } catch (e, stacktrace) {
+      // If an error occurs during the request, throw the error
+      throw Exception('Failed to load data: $e    $stacktrace');
     }
   }
+
 
 
 
@@ -2298,63 +2292,4 @@ class PresUpload extends State<PrescriptionUpload> {
     }
   }
 
-  Future getPrescriptionFiles() async {
-    var sharedPref = await SharedPreferences.getInstance();
-    String userToken = sharedPref.getString("access_token") ?? '';
-    try {
-      setState(() {
-        _files1.clear();
-        _files.clear();
-      });
-      Map<String, String> headers = {
-        'Authorization': 'Bearer $userToken', // Bearer token type
-        // 'Content-Type': 'application/json',
-      };
-      // Make the API request to fetch project sites
-      var response = await Dio().get(
-          "${ApiProvider.baseUrl}${ApiProvider.uploadPrescription}",
-          options: Options(headers: headers));
-
-      // Check the response status code
-      if (response.statusCode == 200) {
-        Map<String, dynamic> data = json.decode(response.toString());
-
-        List<dynamic> prescriptionFiles = data['data']; // Specify the file name
-        List<String> prescriptionNames = [];
-
-        for (var fileEntry in prescriptionFiles) {
-          String invoiceFile = fileEntry['file'];
-          String date = fileEntry['created_on'];
-          String status = fileEntry['status'];
-          String prescription_id = fileEntry['prescription_id'];
-
-          prescriptionNames.add(invoiceFile);
-          dates.add(date);
-          statuses.add(status);
-          prescriptionid.add(prescription_id);
-        }
-        print('Purchase Orderdd: $prescriptionNames');
-        // Extract the invoice_file values and create PlatformFile objects
-        List<PlatformFile> platformFiles = [];
-        for (var fileEntry in prescriptionFiles) {
-          String invoiceFilePath = fileEntry['file'];
-          PlatformFile platformFile = PlatformFile(
-            name: invoiceFilePath.split('/').last,
-            size: 0, // Set appropriate file size
-            bytes: null, // Set appropriate file bytes
-          );
-          platformFiles.add(platformFile);
-        }
-        _files.addAll(platformFiles);
-
-        setState(() {});
-      } else {
-        // If the request was not successful, throw an error
-        throw Exception('Failed to load data: ${response.statusCode}');
-      }
-    } catch (e, stacktrace) {
-      // If an error occurs during the request, throw the error
-      throw Exception('Failed to load data: $e    $stacktrace');
-    }
-  }
 }

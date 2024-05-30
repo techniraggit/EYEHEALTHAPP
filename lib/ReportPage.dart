@@ -1,12 +1,17 @@
+import 'dart:convert';
 import 'dart:math';
+import 'package:http/http.dart' as http;
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:project_new/HomePage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'Custom_navbar/bottom_navbar.dart'; // Import intl package
+import 'Custom_navbar/bottom_navbar.dart';
+import 'api/config.dart'; // Import intl package
 
 class ReportPage extends StatefulWidget {
   @override
@@ -16,6 +21,10 @@ class ReportPage extends StatefulWidget {
 class ReportPageState extends State<ReportPage> {
   bool isSelected = false;
   bool isLeftEyeSelected = false;
+  List<dynamic> itemsdata = [];
+
+
+
   List<double> data1 = [10, 30, 20, 40, 30]; // Sample data for line 1
   List<double> data2 = [30, 50, 60, 50, 60]; // Sample data for line 2
 
@@ -25,7 +34,13 @@ class ReportPageState extends State<ReportPage> {
     'Item 3 - 02:45 PM, 2024-05-16',
   ];
   String testResult='Good';
+@override
+void initState() {
+    // TODO: implement initState
+    super.initState();
 
+    getReports();
+  }
   @override
   Widget build(BuildContext context) {
     String formattedDate = DateFormat('dd MMMM').format(DateTime.now());
@@ -87,118 +102,24 @@ class ReportPageState extends State<ReportPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 0, 0, 8),
-              child: Text(
-                'Today $formattedDate', // Display formatted current date
-                style: TextStyle(
-                  fontStyle: FontStyle.normal,
-                  color: Colors.grey,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(25),
-                  color: Colors.grey[200],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isLeftEyeSelected = true;
-                        });
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(6.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(35),
-                            color: isLeftEyeSelected ? Colors.white : Colors
-                                .transparent,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10.0, vertical: 8),
-                            child: Text(
-                              'Left Eye Health',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isLeftEyeSelected = false;
-                        });
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(23),
-                            color: !isLeftEyeSelected ? Colors.white : Colors
-                                .transparent,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Right Eye Health',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 10, 15, 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Eye Fatigue Statistics',
+            Builder(
+              builder: (context) {
+
+                return Padding(
+                  padding: EdgeInsets.fromLTRB(16.0, 10, 0, 8),
+                  child: Text(
+                    'Today $formattedDate', // Display formatted current date
                     style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.deepPurple,
+                      fontStyle: FontStyle.normal,fontSize: 15,fontWeight: FontWeight.w700,
+                      color: Colors.grey,
                     ),
                   ),
-                  SizedBox(width: 8),
-                  TextButton(
-                    onPressed: () async {
-                      final DateTime? picked = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime(2101),
-                      );
-                      if (picked != null) {
-                        setState(() {});
-                      }
-                    },
-                    child: Image.asset('assets/calender.png'),
-                  ),
-                ],
-              ),
+                );
+              }
             ),
-            SizedBox(height: 20),
-            // Add spacing between the row and the eye health widgets
-            isLeftEyeSelected ? LeftEyeHealthWidget() : RightEyeHealthWidget(),
-            // Text and toggle button below the graph
+
+            // SizedBox(height: 20),
+
             Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 15, 10),
               child: Row(
@@ -232,65 +153,69 @@ class ReportPageState extends State<ReportPage> {
             ),
             ListView.builder(
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
+              // physics: NeverScrollableScrollPhysics(),
               itemCount: items.length,
               itemBuilder: (context, index) {
                 return Card(
-                  elevation: 3,
-                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  elevation: 1,
+                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(17.0), // Adjust the radius as needed
+                  ),
                   child: Container(
-                    color: Colors.white, // Background color of the box
-                    padding: EdgeInsets.all(8), // Padding around the content
+                    // color: Colors.white, // Background color of the box
+                    padding: EdgeInsets.symmetric(horizontal: 2,vertical: 11), // Padding around the content
                     child: ListTile(
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      title: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          Align(
+                            alignment: Alignment.centerLeft,                            child: Text(
+                            'Date: '+  items[index].substring(items[index].indexOf('-') + 2),
+                              style: TextStyle(fontStyle: FontStyle.normal),
+                            ),
+                          ),
+                          SizedBox(height: 10,),
+                          Row(
                             children: [
                               Text(
-                                items[index].substring(items[index].indexOf('-') + 2),
-                                style: TextStyle(fontStyle: FontStyle.normal),
-                              ),
-                              RichText(
-                                text: TextSpan(
-                                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-                                  children: [
-                                    TextSpan(
-                                      text: 'Test Result: ',
-                                      style: TextStyle(color: Colors.black),
+                                'Test Result : ',
+                                style: TextStyle(
+                                  color: Colors.black,fontWeight: FontWeight.w700,fontSize: 16
+                                )),
+                              Text(
+                                   testResult,
+                                  style: TextStyle(fontWeight: FontWeight.w500,fontSize: 16,
+                                    color: testResult == 'Good' ? Colors.green : Colors.red,
+                                  )),
+                              Expanded(
+
+                                // alignment: Alignment.centerRight,
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+
+                                child: ElevatedButton(
+                                    onPressed: () {
+                                      // Add button onPressed logic here
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.white, backgroundColor: Colors.background,
+                                      shape: CircleBorder(),
+                                      minimumSize: Size(30, 30), // Adjust the size as needed
                                     ),
-                                    TextSpan(
-                                      text: testResult,
-                                      style: TextStyle(
-                                        color: testResult == 'Good' ? Colors.green : Colors.red,
+                                    child: Transform.rotate(
+                                      angle: -pi / 1, // Angle in radians. Use negative angle for counter-clockwise rotation.
+                                      child: Transform.scale(
+                                        scale: 0.6, // Adjust the scale factor as needed
+                                        child: Icon(Icons.arrow_back_ios_new),
                                       ),
                                     ),
-                                  ],
+                                  ),
                                 ),
-                              ),
+                              )
                             ],
                           ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(10, 0,0,0),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                // Add button onPressed logic here
-                              },
-                              style: ElevatedButton.styleFrom(
-                                foregroundColor: Colors.white, backgroundColor: Colors.indigo.shade900,
-                                shape: CircleBorder(),
-                                minimumSize: Size(30, 30), // Adjust the size as needed
-                              ),
-                              child: Transform.rotate(
-                                angle: -pi / 1, // Angle in radians. Use negative angle for counter-clockwise rotation.
-                                child: Transform.scale(
-                                  scale: 0.6, // Adjust the scale factor as needed
-                                  child: Icon(Icons.arrow_back_ios_new),
-                                ),
-                              ),
-                            ),
-                          )
+
                         ],
                       ),
                     ),
@@ -310,7 +235,49 @@ class ReportPageState extends State<ReportPage> {
 
 
     );
-  }}
+  }
+  Future<void> getReports() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken = prefs.getString('access_token') ?? '';
+      final response = await http.get(
+        Uri.parse('${ApiProvider.baseUrl}/api/fatigue/fatigue-reports'),
+        headers: <String, String>{
+          'Authorization': 'Bearer $authToken',
+
+
+        },
+
+      );
+
+      if (response.statusCode == 200) {
+
+        final responseData = json.decode(response.body);
+
+        setState(() {
+          // Update your state variable with the response data
+          // itemsdata = json.decode(response.body)['data']; // Assuming 'items' is your state variable
+        });
+
+        print("graphdata===:${response.body}");
+
+
+        return json.decode(response.body);
+
+      }
+      else {
+
+        print(response.body);
+      }
+    }
+    catch (e) {     // _progressDialog!.hide();
+
+      print("exception:$e");
+    }
+    throw Exception('');
+  }
+
+}
 
 class LeftEyeHealthWidget extends StatelessWidget {
   @override
@@ -417,7 +384,7 @@ class RightEyeHealthWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Second Card for Heading and Graph
+
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 1),
           child: Card(

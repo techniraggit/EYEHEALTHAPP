@@ -29,7 +29,7 @@ class fatigueGraph {
 
 class Data {
   String? date;
-  int? value;
+  double? value;
   bool? isFatigueRight;
   bool? isMildTirednessRight;
   bool? isFatigueLeft;

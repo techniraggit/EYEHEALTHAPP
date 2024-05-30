@@ -158,7 +158,7 @@ class FirebaseApi{
 
 
   Future<void> getdeviceToken()async {
-    final fcmToken=await _firebaseMessaging.getToken();
+    final fcmToken= await _firebaseMessaging.getToken();
     print('Token--:$fcmToken');
 
     SharedPreferences prefs = await SharedPreferences.getInstance();

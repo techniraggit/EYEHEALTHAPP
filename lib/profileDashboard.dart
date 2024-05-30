@@ -79,7 +79,7 @@ class UserProfiledash extends State<UserDashboard> {
 //             ),
             ClipOval(
               child: SizedBox(
-                width: 80.0,
+                width: 86.0,height: 86,
                 // height: 80.0,
                 child: imageUrl1 != ""
                     ? Image.network(
@@ -89,6 +89,7 @@ class UserProfiledash extends State<UserDashboard> {
                     : _imageFile == null && imageUrl1 == ""
                     ? Image.asset(
                   'assets/profile_pic.png',
+                  width: 50,
                   fit: BoxFit.cover,
                 )
                     : Image.file(
