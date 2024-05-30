@@ -2,13 +2,13 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:package_rename/package_rename.dart';
 import 'package:project_new/eyeFatigueTest.dart';
 import 'package:project_new/digitalEyeTest/testScreen.dart';
 import 'package:project_new/myPlanPage.dart';
@@ -26,10 +26,10 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  bool isSelected = false;fatigueGraph? fatigueGraphData;
+  bool isSelected = false;
+  late FatigueGraph fatigueGraphData;
   bool isLeftEyeSelected = false;
-  List<double> data1 = [10, 30, 20, 40, 30]; // Sample data for line 1
-  List<double> data2 = [30, 50, 60, 50, 60];
+
   int currentHour = DateTime.now().hour;
   late DateTime selectedDate;
 
@@ -48,6 +48,7 @@ class HomePageState extends State<HomePage> {
       });
     }
   }
+
   @override
   void initState() {
     super.initState();
@@ -77,11 +78,10 @@ class HomePageState extends State<HomePage> {
             child: InkWell(
               onTap: () {
                 Navigator.push(
-                  context, CupertinoPageRoute(
-                  builder: (context) => HomePage(
+                  context,
+                  CupertinoPageRoute(
+                    builder: (context) => HomePage(),
                   ),
-                ),
-
                 );
               },
               child: SizedBox(
@@ -89,7 +89,8 @@ class HomePageState extends State<HomePage> {
                 height: 50.0, // Height of the FloatingActionButton
                 child: Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0), // Add padding for the icon
+                    padding: const EdgeInsets.all(8.0),
+                    // Add padding for the icon
                     child: Image.asset(
                       "assets/home_icon.png",
                       width: 20,
@@ -126,13 +127,13 @@ class HomePageState extends State<HomePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           GestureDetector(
-                            onTap:(){
+                            onTap: () {
                               Navigator.push(
                                 context,
                                 CupertinoPageRoute(
-                                    builder: (context) =>
-                                        setReminder()),
-                              );                            } ,
+                                    builder: (context) => setReminder()),
+                              );
+                            },
                             child: Text(
                               salutation,
                               style: const TextStyle(
@@ -183,12 +184,13 @@ class HomePageState extends State<HomePage> {
             Padding(
               padding: const EdgeInsets.all(15.0),
               child: GestureDetector(
-                onTap: ()  {
-                  showModalBottomSheet(
+                onTap: () {
+                  getGraph();
+              /*    showModalBottomSheet(
                     context: context,
                     builder: (context) => BottomDialog(),
-                  );
-               /*   Navigator.push(
+                  );*/
+                  /*   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => AddCustomerPage()),
                   );*/
@@ -197,20 +199,22 @@ class HomePageState extends State<HomePage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 10),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
               child: GestureDetector(
-                onTap: ()  {
+                onTap: () {
                   // sendcustomerDetails(context);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => EyeFatigueStartScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => EyeFatigueStartScreen()),
                   );
                 },
                 child: Image.asset('assets/eyeFatigueTest.png'),
               ),
             ),
             GestureDetector(
-              onTap: ()  {
+              onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => MyPlan()),
@@ -254,7 +258,7 @@ class HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            const Padding(
+             Padding(
               padding: EdgeInsets.all(8.0),
               child: Card(
                 child: ListTile(
@@ -266,9 +270,10 @@ class HomePageState extends State<HomePage> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('No. of eye fatigue test'),
+                              Text('Fatigue Right'),
                               Text(
-                                'value',
+                                fatigue_right ? 'Yes' : 'No',
+
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -276,19 +281,19 @@ class HomePageState extends State<HomePage> {
                               ),
                             ],
                           ),
-                          // Column(
-                          //   crossAxisAlignment: CrossAxisAlignment.end,
-                          //   children: [
-                          //     Text('No. of digital eye test'),
-                          //     Text(
-                          //       'Value ',
-                          //       style: TextStyle(
-                          //         fontSize: 16,
-                          //         fontWeight: FontWeight.bold,
-                          //       ),
-                          //     ),
-                          //   ],
-                          // ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text('Mild Tiredness Right'),
+                              Text(
+                                midtiredness_right ? 'Yes' : 'No',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                       SizedBox(height: 16),
@@ -299,9 +304,10 @@ class HomePageState extends State<HomePage> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Prescription uploaded'),
+                              Text('Fatigue left'),
                               Text(
-                                'value',
+
+                                fatigue_left ? 'Yes' : 'No',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -309,19 +315,19 @@ class HomePageState extends State<HomePage> {
                               ),
                             ],
                           ),
-                          // Column(
-                          //   crossAxisAlignment: CrossAxisAlignment.end,
-                          //   children: [
-                          //     Text('visit to optemistist'),
-                          //     Text(
-                          //       'Value',
-                          //       style: TextStyle(
-                          //         fontSize: 16,
-                          //         fontWeight: FontWeight.bold,
-                          //       ),
-                          //     ),
-                          //   ],
-                          // ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text('Mild Tiredness Left'),
+                              Text(
+                                midtiredness_left ? 'Yes' : 'No',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ],
@@ -332,7 +338,7 @@ class HomePageState extends State<HomePage> {
             const Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
               child: Text(
-                'EYE HEALTH GRAPH OVERVIEW', // Display formatted current date
+                'EYE FATIGUE GRAPH OVERVIEW', // Display formatted current date
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -341,10 +347,10 @@ class HomePageState extends State<HomePage> {
             ),
             Padding(
               padding:
-              const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
               child: Card(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.symmetric(vertical: 5.0,horizontal: 16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -352,7 +358,7 @@ class HomePageState extends State<HomePage> {
                         padding: EdgeInsets.all(1),
                         child: ListTile(
                           title: Text(
-                            'Right Eye Health',
+                            'Eye Health',
                             style: TextStyle(
                               fontSize: 16.0,
                               fontWeight: FontWeight.bold,
@@ -361,9 +367,18 @@ class HomePageState extends State<HomePage> {
                           subtitle: Text('April 30-May 30'),
                         ),
                       ),
-
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  width: double.infinity,
+                  height: 300,
+                  child: LineChart(
+                    LineChartData(borderData: FlBorderData(show: false), lineBarsData: [
+                      LineChartBarData(
+                          spots: _spots),
+                    ]),
+                  ),
                       // Container with fixed height to contain the LineChart
-                      Container(
+                   /*   Container(
                         height: 200,
                         width: MediaQuery.of(context).size.width,
 
@@ -374,14 +389,7 @@ class HomePageState extends State<HomePage> {
                             LineChartData(
                               lineBarsData: [
                                 LineChartBarData(
-                                  spots: [
-                                    FlSpot(0, 4),
-                                    FlSpot(2, 4),
-                                    FlSpot(4, 6),
-                                    FlSpot(6, 3),
-                                    FlSpot(8, 4),
-                                    FlSpot(10, 5),
-                                  ],
+                                  spots:_spots,
                                   isCurved: true,
                                   colors: [Colors.deepPurple],
                                   barWidth: 4,
@@ -427,8 +435,8 @@ class HomePageState extends State<HomePage> {
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ),*/
+                ),],
                   ),
                 ),
               ),
@@ -531,114 +539,81 @@ class HomePageState extends State<HomePage> {
           ],
         ),
       ),
-
-      bottomNavigationBar:
-      CustomBottomAppBar(),
-
-
-
+      bottomNavigationBar: CustomBottomAppBar(),
     );
   }
-  Future<void> sendcustomerDetails(BuildContext context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
-    final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
-// Replace these headers with your required headers
-    Map<String, String> headers = {
-      'Authorization': 'Bearer $authToken',
-      'Content-Type': 'application/json',
 
-    };
+  String _status = '';
+  List<FlSpot> _value = [];
+  List<FlSpot> _spots = [FlSpot(0, 0)];// Initialize _spots as needed
+  bool fatigue_left=false;
+  bool fatigue_right=false;
+  bool midtiredness_right= false;
+  bool midtiredness_left=false;
 
-    var body = json.encode({
-      "is_self": true,
-    });
-
-
-    try {
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        headers: headers,
-        body: body,
-      );
-      print('response === ' + response.body);
-      if (response.statusCode == 200) {
-        if (kDebugMode) {
-          print('sddd ${response.body}');
-        }
-        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-
-        // Extract the customer ID
-        String customerId = jsonResponse['customer_id'];
-        prefs.setString('customer_id', customerId);
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => GiveInfo()),
-        );
-
-      } else {
-        print('Failed with status code: ${response.statusCode}');
-        print('Failed sddd ${response.body}');
-      }
-    } catch (e) {
-// Handle exceptions here (e.g., network errors)
-      print('Exception: $e');
-    }
-  }
 
   Future<void> getGraph() async {
-    try {
+
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken = prefs.getString('access_token') ?? '';
-    final response = await http.get(
-      Uri.parse('${ApiProvider.baseUrl}/api/fatigue/fatigue-graph'),
-      headers: <String, String>{
-      'Authorization': 'Bearer $authToken',
-
-
-    },
-
-    );
-
-    if (response.statusCode == 200) {
-
-      final responseData = json.decode(response.body);
-      fatigueGraphData = fatigueGraph.fromJson(responseData);
-      setState(() {
-
-      });
-
+      final response = await http.get(
+        Uri.parse('${ApiProvider.baseUrl}/api/fatigue/fatigue-graph'),
+        headers: <String, String>{
+          'Authorization': 'Bearer $authToken',
+        },
+      );
       print("graphdata===:${response.body}");
 
+      if (response.statusCode == 200) {
+        print("graphdata===:${response.body}");
 
-      return json.decode(response.body);
+        final responseData = json.decode(response.body);
+        final fatigueGraphData = FatigueGraph.fromJson(responseData);
+        midtiredness_left=fatigueGraphData.data.first.isMildTirednessLeft;
+        midtiredness_left=fatigueGraphData.data.first.isMildTirednessLeft;
+        fatigue_left=fatigueGraphData.data.first.isFatigueLeft;
 
-    } else {
+        fatigue_right=fatigueGraphData.data.first.isFatigueRight;
+ setState(() {
+   midtiredness_left;
+   midtiredness_right;
+   fatigue_right;
+   fatigue_left;
+ });
+        if (_spots != null ) {
+          _spots = fatigueGraphData.data
+              .asMap()
+              .entries
+              .map((entry) => FlSpot(entry.value.value,10))
+              .toList();
 
-      print(response.body);
+        } else {
+          _spots = [FlSpot(0, 0)];
+        }
+        print('ssssssssssss${_spots}');
+        setState(() {
+          _spots;
+        });
 
+        return json.decode(response.body);
+      } else {
+        print(response.body);
+      }
+  /*  } catch (e) {
+      // _progressDialog!.hide();
+
+      print("exception:$e");
     }
-  }
-  catch (e) {     // _progressDialog!.hide();
-
-    print("exception:$e");
-  }
-  throw Exception('');
-  }
-
-}
-
+    throw Exception('');
+  }*/
+}}
 
 class setReminder extends StatefulWidget {
-
   @override
   State<setReminder> createState() => ReminderState();
 }
 
 class ReminderState extends State<setReminder> {
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -647,12 +622,8 @@ class ReminderState extends State<setReminder> {
               title: const Text('Plugin example app'),
             ),
             body: Builder(builder: (context) {
-              return Center(
-
-              );
-            }
-            )
-        ));
+              return Center();
+            })));
   }
 }
 
@@ -676,7 +647,7 @@ class BottomDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.fromLTRB(16.0,16,16,8),
+      padding: EdgeInsets.fromLTRB(16.0, 16, 16, 8),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -696,11 +667,10 @@ class BottomDialog extends StatelessWidget {
           Divider(thickness: 1, color: Colors.grey.shade500),
           SizedBox(height: 18),
           Card(
-          child:GestureDetector(
-              onTap: ()  {
+            child: GestureDetector(
+              onTap: () {
                 Navigator.pop(context);
                 sendcustomerDetails(context, true);
-
               },
               child: Image.asset('assets/test_for_myself_img.png'),
             ),
@@ -708,8 +678,8 @@ class BottomDialog extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 12.0),
             child: Card(
-              child:  GestureDetector(
-                onTap: ()  {
+              child: GestureDetector(
+                onTap: () {
                   Navigator.pop(context);
                   showModalBottomSheet(
                     context: context,
@@ -724,7 +694,9 @@ class BottomDialog extends StatelessWidget {
       ),
     );
   }
-  Future<void> sendcustomerDetails(BuildContext context, bool isSelf, {String? name, String? age}) async {
+
+  Future<void> sendcustomerDetails(BuildContext context, bool isSelf,
+      {String? name, String? age}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken = prefs.getString('access_token') ?? '';
     final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
@@ -759,11 +731,13 @@ class BottomDialog extends StatelessWidget {
 
           print('Customer ID: $customerId');
 
-          // Navigate to GiveInfo screen
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => GiveInfo()),
-          );
+          // Check if the context is still mounted before navigating
+          if (context.mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => GiveInfo()),
+            );
+          }
         } else {
           print('Customer ID not found in response.');
         }
@@ -773,21 +747,20 @@ class BottomDialog extends StatelessWidget {
     } catch (e) {
       print('Exception: $e');
     }
-  }
-}
-
-
+  }}
 
 class OtherDetailsBottomSheet extends StatefulWidget {
   @override
-  _OtherDetailsBottomSheetState createState() => _OtherDetailsBottomSheetState();
+  _OtherDetailsBottomSheetState createState() =>
+      _OtherDetailsBottomSheetState();
 }
 
 class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
   final _nameController = TextEditingController();
   final _ageController = TextEditingController();
 
-  Future<void> sendcustomerDetails(BuildContext context, bool isSelf, {String? name, String? age}) async {
+  Future<void> sendcustomerDetails(BuildContext context, bool isSelf,
+      {String? name, String? age}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken = prefs.getString('access_token') ?? '';
     final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
@@ -837,6 +810,7 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
       print('Exception: $e');
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -862,7 +836,8 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
           SizedBox(
             height: 55,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
               child: TextField(
                 controller: _nameController,
                 textInputAction: TextInputAction.next,
@@ -880,13 +855,15 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                     fontWeight: FontWeight.w400,
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(27.0), // Add circular border
+                    borderRadius:
+                        BorderRadius.circular(27.0), // Add circular border
                   ),
                   // Set floatingLabelBehavior to always display the label
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   // Add button to the end of the TextField
                 ),
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+                style:
+                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
               ),
             ),
           ),
@@ -894,7 +871,8 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
           SizedBox(
             height: 55,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
               child: TextFormField(
                 controller: _ageController,
                 textInputAction: TextInputAction.next,
@@ -913,7 +891,6 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                   }
                   return null;
                 },
-
                 decoration: InputDecoration(
                   labelText: 'Age',
                   labelStyle: const TextStyle(
@@ -928,14 +905,15 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                     fontWeight: FontWeight.w400,
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(27.0), // Add circular border
+                    borderRadius:
+                        BorderRadius.circular(27.0), // Add circular border
                   ),
                   // Set floatingLabelBehavior to always display the label
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   // Add button to the end of the TextField
-
                 ),
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+                style:
+                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
               ),
             ),
           ),
@@ -943,14 +921,15 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
-
               onPressed: () {
-                sendcustomerDetails(context, false, name: _nameController.text, age: _ageController.text);
+                sendcustomerDetails(context, false,
+                    name: _nameController.text, age: _ageController.text);
               },
               child: Text('Submit'),
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(350, 50),
-                foregroundColor: Colors.white, backgroundColor: Colors.bluebutton,
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.bluebutton,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(25),
                 ),
