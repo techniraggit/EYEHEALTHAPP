@@ -724,9 +724,9 @@ double Latitude=0.0;double Longitude=0.0;
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: _selectedDate ?? DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
+      initialDate: _selectedDate ??  DateTime.now().subtract(Duration(days: 70 * 365)), // Default to 20 years ago
+      firstDate: DateTime.now().subtract(Duration(days: 70 * 365)), // 70 years ago
+      lastDate: DateTime.now().subtract(Duration(days: 10 * 365)),
     );
     if (picked != null && picked != _selectedDate) {
       setState(() {
@@ -1041,7 +1041,8 @@ double Latitude=0.0;double Longitude=0.0;
                           style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
                         ),
                       ),
-                    ),                        const SizedBox(height: 25),
+                    ),
+                        const SizedBox(height: 25),
                         SizedBox(
                           height: 55,
                           child: Padding(
@@ -2082,7 +2083,13 @@ else
           if (responseMap['status'] == false) {
             // Check if the response data contains the 'phone_number' field
             if (responseMap.containsKey('data') && responseMap['data'] != null) {
-              // Check if the 'phone_number' field is a list and not empty
+              if (responseMap['data']['dob'] is List && responseMap['data']['dob'].isNotEmpty) {
+                String errorMessage = responseMap['data']['dob'][0];
+                print(errorMessage);
+                Fluttertoast.showToast(msg: '${responseMap['data']['dob'][0]}');
+              }
+
+                // Check if the 'phone_number' field is a list and not empty
               if (responseMap['data']['phone_number'] is List && responseMap['data']['phone_number'].isNotEmpty) {
                 // Fetch the message from the 'phone_number' list
                 String errorMessage = responseMap['data']['phone_number'][0];
@@ -2168,6 +2175,7 @@ else
       return false;
 
     }
+
     if(_dobController.text.trim().isEmpty){
       Fluttertoast.showToast(msg: " Enter D.O.B");
       return false;

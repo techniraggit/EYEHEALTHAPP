@@ -200,6 +200,8 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
   @override
 
   void initState() {
+    // TODO: implement initState
+    super.initState();
     isclose=false; uploaded=false;
     isLoading = false;
 
@@ -218,8 +220,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
 
 
 
-    // TODO: implement initState
-    super.initState();
+
     _animationController = AnimationController(
       duration: Duration(seconds: 9), // Adjust duration as needed
       vsync: this,
@@ -612,9 +613,10 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
   bool success = false;bool enable=false;
 @override
   void initState() {
-  sendReportDb();
+
     // TODO: implement initState
     super.initState();
+    sendReportDb();
   }
   /*Future<Map<String, dynamic>> fetchData() async {
     final response = await http.get(Uri.parse('https://api.example.com/data'));
@@ -723,67 +725,6 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
   }
 
   // Function to build UI after data is loaded
-  Widget dataLoadedUI(BuildContext context) {
-    return
-      Column(
-      // mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Image.asset(
-          'assets/congrats_icon.png',
-          width: 300,
-          height: 300,
-        ),
-        const SizedBox(height: 8),
-        const Padding(
-          padding: EdgeInsets.fromLTRB(20, 8, 20, 8),
-          child: Text(
-            'Congratulations! You have completed the Eye Fatigue Test.',
-            style: TextStyle(
-              color: Colors.deepPurple,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        const SizedBox(height: 10),
-        const Padding(
-          padding: EdgeInsets.fromLTRB(15, 8, 15, 8),
-          child: Text(
-            'To view your results, go to the Report section to find your Eye Fatigue Test report and gain insights.',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 14,
-            ),
-            textAlign: TextAlign.center, // Optional: align text center
-          ),
-        ),
-        const SizedBox(height: 20),
-        ElevatedButton(
-          onPressed:enable ? () async {
-            setState(() {
-               uploaded=false;
-               isLoading = false;
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => EyeFatigueTestReport()),
-              );
-            });
-          }:null,
-          style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
-            padding: const EdgeInsets.all(16),
-            minimumSize: const Size(300, 40),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(26),
-            ),
-          ),
-          child: const Text('GO TO REPORTS'),
-        ),
-      ],
-    );
-  }
   Future<void> sendReportDb() async {
     try {
       var sharedPref = await SharedPreferences.getInstance();
@@ -809,10 +750,19 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
       final responseData = json.decode(response.body);
 
       if (response.statusCode == 200) {
-        setState(() {
+        setState(()  {
+        int  report_id=responseData['data']['report_id'];
+
+        sharedPref.setInt('report_id', report_id);
+        print("report____--id${report_id.toString()}");
           uploaded=false;
           enable=true;
         });
+
+
+
+
+
       }
       else if (response.statusCode == 401)
       {

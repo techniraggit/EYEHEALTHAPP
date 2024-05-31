@@ -426,15 +426,16 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> {
     try {
       var sharedPref = await SharedPreferences.getInstance();
       String userToken = sharedPref.getString("access_token") ?? '';
+      report_id =  sharedPref.getInt("report_id") ?? 0;
 
+      print('report-----report_id $report_id');
       Map<String, String> headers = {
         'Authorization': 'Bearer $userToken',
 // Bearer token type
       };
-      print("statusCode================${userToken}");
 
       final response = await http.get(
-        Uri.parse('${ApiProvider.baseUrl}/api/fatigue/fatigue-reports'),
+        Uri.parse('${ApiProvider.baseUrl}/api/fatigue/fatigue-reports?report_id=$report_id'),
         headers: headers,
       );
       print("statusCode================${response.body}");
@@ -442,19 +443,20 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> {
         isLoading = false;
         final responseData = json.decode(response.body);
         // address_list = AddressList.fromJson(responseData);
-        firstname = responseData['data'][0]['user']['first_name'];
-        lastname = responseData['data'][0]['user']['last_name'];
-        age = responseData['data'][0]['user']['age'].toString();
-        testresult = responseData['data'][0]['suggestion'];
+        firstname = responseData['data']['user']['first_name'];
+        lastname = responseData['data']['user']['last_name'];
+        age = responseData['data']['user']['age'].toString();
+        testresult = responseData['data']['suggestion'];
         created_on =
-            responseData['data'][0]['created_on'].toString().substring(0, 10);
-        report_id = responseData['data'][0]['report_id'];
-        is_fatigue_right = responseData['data'][0]['is_fatigue_right'];
+            responseData['data']['created_on'].toString().substring(0, 10);
+
+
+        is_fatigue_right = responseData['data']['is_fatigue_right'];
         is_mild_tiredness_right =
-            responseData['data'][0]['is_mild_tiredness_right'];
-        is_fatigue_left = responseData['data'][0]['is_fatigue_left'];
+            responseData['data']['is_mild_tiredness_right'];
+        is_fatigue_left = responseData['data']['is_fatigue_left'];
         is_mild_tiredness_left =
-            responseData['data'][0]['is_mild_tiredness_left'];
+            responseData['data']['is_mild_tiredness_left'];
         setState(() {});
       } else if (response.statusCode == 401) {
         Fluttertoast.showToast(msg: "Session Expired");
@@ -488,17 +490,17 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> {
     try {
       var sharedPref = await SharedPreferences.getInstance();
       String userToken = sharedPref.getString("access_token") ?? '';
-
+      int report_id = sharedPref.getInt('report_id') ?? 0;
       Map<String, String> headers = {
         'Authorization': 'Bearer $userToken',
       };
 
       final response = await http.get(
         Uri.parse(
-            '${ApiProvider.baseUrl}/api/fatigue/download-report?report_id=83'), // Adjust the URL as needed
+            '${ApiProvider.baseUrl}/api/fatigue/download-report?report_id=$report_id'), // Adjust the URL as needed
         headers: headers,
       );
-
+      print('PDFreport_id $report_id');
       if (response.statusCode == 200) {
         Directory appDocDir = await getApplicationDocumentsDirectory();
 
