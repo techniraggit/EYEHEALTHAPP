@@ -95,6 +95,7 @@ dependencies:
   json_serializable: ^6.8.0
   flutter_ffmpeg: ^0.4.2
   light_compressor: ^2.2.0
+  draw_graph: ^1.0.0
 
 plugin:
   package: com.gdelataillade.alarm.alarm

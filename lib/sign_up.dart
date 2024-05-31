@@ -365,7 +365,7 @@ if(isNumeric(_phoneController.text)){
     if(checkValidationForLogin()){
 
 
-
+      print('username Body: ${_phoneController.text.trim()}');
 
       EasyLoading.show();
       try {

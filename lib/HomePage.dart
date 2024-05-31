@@ -1,7 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
+import 'package:alarm/alarm.dart';
+import 'package:alarm/model/alarm_settings.dart';
+import 'package:draw_graph/draw_graph.dart';
+import 'package:draw_graph/models/feature.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,6 +13,8 @@ import 'package:flutter/services.dart';
 
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:permission_handler/permission_handler.dart';
+import 'package:project_new/alarm/demo_main.dart';
 import 'package:project_new/eyeFatigueTest.dart';
 import 'package:project_new/digitalEyeTest/testScreen.dart';
 import 'package:project_new/myPlanPage.dart';
@@ -19,6 +25,7 @@ import 'api/Api.dart';
 import 'api/config.dart';
 import 'eyeFatigueTest.dart';
 import 'models/fatigueGraphModel.dart';
+
 class EyeHealthData {
   final String date;
   final double value;
@@ -47,22 +54,40 @@ class EyeHealthData {
     );
   }
 }
+
 class HomePage extends StatefulWidget {
   @override
   HomePageState createState() => HomePageState();
 }
 
 class HomePageState extends State<HomePage> {
-  List<double>? _data;int i=0;
-  bool isSelected = false;fatigueGraph? fatigueGraphData;
+  List<double>? _data; List<String>? dates;
+  int i = 0; List<Feature>? features; List<String>? labelX ; List<String>? labelY;
+
+  String _status = '';
+  List<FlSpot> _value = [];
+  List<FlSpot> _spots = [FlSpot(0, 0)]; // Initialize _spots as needed
+  bool fatigue_left = false;
+  bool fatigue_right = false;
+  bool midtiredness_right = false;
+  bool midtiredness_left = false;
+  bool isSelected = false;
+  FatigueGraph? fatigueGraphData;
   bool isLeftEyeSelected = false;
   List<double> data1 = [10, 30, 20, 40, 30]; // Sample data for line 1
   List<double> data2 = [30, 50, 60, 50, 60];
   int currentHour = DateTime.now().hour;
   late DateTime selectedDate;
-  String no_of_eye_test="0";String eye_health_score="";String name="";String no_of_fatigue_test="0";
+  String no_of_eye_test = "0";
+  String eye_health_score = "";
+  String name = "";
+  String no_of_fatigue_test = "0";
 
   // Define selectedDate within the _CalendarButtonState class
+
+  late List<AlarmSettings> alarms;
+
+  static StreamSubscription<AlarmSettings>? subscription;
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -77,9 +102,17 @@ class HomePageState extends State<HomePage> {
       });
     }
   }
+
   @override
   void initState() {
     super.initState();
+
+    if (Alarm.android) {
+      checkAndroidNotificationPermission();
+      checkAndroidScheduleExactAlarmPermission();
+    }
+
+    subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
     // getGraph();
     getGraph().then((data) {
       setState(() {
@@ -88,6 +121,63 @@ class HomePageState extends State<HomePage> {
     }).catchError((error) {
       print(error);
     });
+  }
+
+  Future<void> checkAndroidNotificationPermission() async {
+    final status = await Permission.notification.status;
+    if (status.isDenied) {
+      final res = await Permission.notification.request();
+    }
+  }
+
+  void loadAlarms() {
+    setState(() {
+      alarms = Alarm.getAlarms();
+      alarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
+    });
+  }
+
+  Future<void> navigateToRingScreen(AlarmSettings alarmSettings) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        builder: (context) =>
+            ExampleAlarmRingScreen(alarmSettings: alarmSettings),
+      ),
+    );
+    loadAlarms();
+  }
+
+  Future<void> checkAndroidExternalStoragePermission() async {
+    final status = await Permission.storage.status;
+    if (status.isDenied) {
+      final res = await Permission.storage.request();
+    }
+  }
+
+  Future<void> checkAndroidScheduleExactAlarmPermission() async {
+    final status = await Permission.scheduleExactAlarm.status;
+    if (status.isDenied) {
+      final res = await Permission.scheduleExactAlarm.request();
+    }
+  }
+
+  Future<void> navigateToAlarmScreen(AlarmSettings? settings) async {
+    final res = await showModalBottomSheet<bool?>(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      builder: (context) {
+        return FractionallySizedBox(
+          heightFactor: 0.75,
+          child: ExampleAlarmEditScreen(alarmSettings: settings),
+        );
+      },
+    );
+
+    if (res != null && res == true) loadAlarms();
   }
 
   @override
@@ -113,11 +203,10 @@ class HomePageState extends State<HomePage> {
             child: InkWell(
               onTap: () {
                 Navigator.push(
-                  context, CupertinoPageRoute(
-                  builder: (context) => HomePage(
+                  context,
+                  CupertinoPageRoute(
+                    builder: (context) => HomePage(),
                   ),
-                ),
-
                 );
               },
               child: SizedBox(
@@ -125,7 +214,8 @@ class HomePageState extends State<HomePage> {
                 height: 50.0, // Height of the FloatingActionButton
                 child: Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0), // Add padding for the icon
+                    padding:
+                        const EdgeInsets.all(8.0), // Add padding for the icon
                     child: Image.asset(
                       "assets/home_icon.png",
                       width: 20,
@@ -154,7 +244,7 @@ class HomePageState extends State<HomePage> {
               padding: const EdgeInsets.all(16.0),
               child: SizedBox(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8.0, 20.0, 0, 4),
+                  padding: const EdgeInsets.fromLTRB(8.0, 10.0, 0, 4),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -162,23 +252,27 @@ class HomePageState extends State<HomePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           GestureDetector(
-                            onTap:(){
+                            onTap: () {
                               Navigator.push(
                                 context,
                                 CupertinoPageRoute(
-                                    builder: (context) =>
-                                        setReminder()),
-                              );                            } ,
+                                    builder: (context) => setReminder()),
+                              );
+                            },
                             child: Text(
                               salutation,
                               style: const TextStyle(
                                   color: Colors.white, fontSize: 16),
                             ),
                           ),
-                          Image.asset('assets/notification.png')
+                          GestureDetector(
+                              onTap: () {
+                                navigateToAlarmScreen(null);
+                              },
+                              child: Image.asset('assets/notification.png'))
                         ],
                       ),
-                       Text(
+                      Text(
                         name,
                         style: TextStyle(
                             color: Colors.lightBlueAccent, fontSize: 18),
@@ -219,12 +313,12 @@ class HomePageState extends State<HomePage> {
             Padding(
               padding: const EdgeInsets.all(15.0),
               child: GestureDetector(
-                onTap: ()  {
+                onTap: () {
                   showModalBottomSheet(
                     context: context,
                     builder: (context) => BottomDialog(),
                   );
-               /*   Navigator.push(
+                  /*   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => AddCustomerPage()),
                   );*/
@@ -233,20 +327,22 @@ class HomePageState extends State<HomePage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 10),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
               child: GestureDetector(
-                onTap: ()  {
+                onTap: () {
                   // sendcustomerDetails(context);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => EyeFatigueStartScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => EyeFatigueStartScreen()),
                   );
                 },
                 child: Image.asset('assets/eyeFatigueTest.png'),
               ),
             ),
             GestureDetector(
-              onTap: ()  {
+              onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => MyPlan()),
@@ -290,7 +386,7 @@ class HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(8.0),
               child: Card(
                 child: ListTile(
@@ -302,9 +398,9 @@ class HomePageState extends State<HomePage> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('No. of eye fatigue test'),
+                              Text('Fatigue Right'),
                               Text(
-                                'value',
+                                fatigue_right ? 'Yes' : 'No',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -312,19 +408,19 @@ class HomePageState extends State<HomePage> {
                               ),
                             ],
                           ),
-                          // Column(
-                          //   crossAxisAlignment: CrossAxisAlignment.end,
-                          //   children: [
-                          //     Text('No. of digital eye test'),
-                          //     Text(
-                          //       'Value ',
-                          //       style: TextStyle(
-                          //         fontSize: 16,
-                          //         fontWeight: FontWeight.bold,
-                          //       ),
-                          //     ),
-                          //   ],
-                          // ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text('Mild Tiredness Right'),
+                              Text(
+                                midtiredness_right ? 'Yes' : 'No',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                       SizedBox(height: 16),
@@ -335,9 +431,9 @@ class HomePageState extends State<HomePage> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Prescription uploaded'),
+                              Text('Fatigue left'),
                               Text(
-                                'value',
+                                fatigue_left ? 'Yes' : 'No',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -345,19 +441,19 @@ class HomePageState extends State<HomePage> {
                               ),
                             ],
                           ),
-                          // Column(
-                          //   crossAxisAlignment: CrossAxisAlignment.end,
-                          //   children: [
-                          //     Text('visit to optemistist'),
-                          //     Text(
-                          //       'Value',
-                          //       style: TextStyle(
-                          //         fontSize: 16,
-                          //         fontWeight: FontWeight.bold,
-                          //       ),
-                          //     ),
-                          //   ],
-                          // ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text('Mild Tiredness Left'),
+                              Text(
+                                midtiredness_left ? 'Yes' : 'No',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ],
@@ -375,12 +471,9 @@ class HomePageState extends State<HomePage> {
                     color: Colors.deepPurple),
               ),
             ),
-
-
-
-
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: Card(
@@ -389,79 +482,86 @@ class HomePageState extends State<HomePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Padding(
-                          padding: EdgeInsets.all(1),
-                          child: ListTile(
-                            title: Text(
-                              'Right Eye Health',
-                              style: TextStyle(
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            subtitle: Text('April 30-May 30'),
-                          ),
-                        ),
+
                         Container(
-                          height: 200,
-                          width: MediaQuery.of(context).size.width, // Adjust the width as needed
+                          height: 270,
+                          width: MediaQuery.of(context)
+                              .size
+                              .height/0.9, // Adjust the width as needed
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: AspectRatio(
                               aspectRatio: 1.40,
                               child: _data != null
-                                  ? Builder(
-                                    builder: (context) {
-
-
-                                      if(_data!.length>10){
-                                         i=10;
-
-                                      }else{
-                                         i=_data!.length;
+                                  ? Builder(builder: (context) {
+                                      if (_data!.length > 10) {
+                                        i = 10;
+                                      } else {
+                                        i = _data!.length;
                                       }
-                                      return LineChart(
-                                                                      LineChartData(
-                                      lineBarsData: [
-                                        LineChartBarData(
-                                          spots: _data!
-                                               .sublist(0, i)
-                                              .asMap()
-                                              .entries
-                                              .map((entry) {
-                                            return FlSpot(
-                                                entry.key.toDouble(), entry.value);
-                                          }).toList(),
-                                          isCurved: true,
-                                          colors: [Colors.deepPurple],
-                                          barWidth: 4,
-                                          isStrokeCapRound: true,
-                                          belowBarData: BarAreaData(
-                                            show: true,
-                                            colors: [
-                                              Colors.deepPurple.withOpacity(0.1)
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                      gridData: FlGridData(
-                                        drawVerticalLine: true,
-                                        drawHorizontalLine: false,
-                                      ),
-                                      titlesData: FlTitlesData(
-                                        leftTitles: SideTitles(
-                                          showTitles: true,
-                                          interval: 10.0,
-                                        ),
-                                      ),
-                                      minX: 0,
-                                      maxX: 10, // Initially show only 10 values
-                                      minY: 10,
-                                      maxY: 100,
-                                                                      ),
-                                                                    );
-                                    }
-                                  )
+                                      return
+                                        Builder(
+                                          builder: (context) {
+
+                                            return  LineGraph(
+                                              features: features ?? [], // Ensure features is not null
+                                              size: Size(300, 270),
+                                              labelX: labelX ?? [], // Ensure labelX is not null
+                                              labelY: labelY ?? [], // Ensure labelY is not null
+                                              showDescription: true,
+                                              graphColor: Colors.black,
+                                              graphOpacity: 0.2,
+                                              verticalFeatureDirection: true,
+                                              descriptionHeight: 30,
+                                            );
+
+                                          }
+                                        );
+                                      //   LineChart(
+                                      //   LineChartData(
+                                      //
+                                      //     lineBarsData: [
+                                      //       LineChartBarData(
+                                      //         spots: _data!
+                                      //             .sublist(0, i)
+                                      //             .asMap()
+                                      //             .entries
+                                      //             .map((entry) {
+                                      //           return FlSpot(
+                                      //               entry.key.toDouble(),
+                                      //               entry.value);
+                                      //         }).toList(),
+                                      //         isCurved: true,
+                                      //         colors: [Colors.deepPurple],
+                                      //         barWidth: 4,
+                                      //         isStrokeCapRound: true,
+                                      //         belowBarData: BarAreaData(
+                                      //           show: true,
+                                      //           colors: [
+                                      //             Colors.deepPurple
+                                      //                 .withOpacity(0.1)
+                                      //           ],
+                                      //         ),
+                                      //       ),
+                                      //     ],
+                                      //     gridData: FlGridData(
+                                      //       drawVerticalLine: true,
+                                      //       drawHorizontalLine: false,
+                                      //     ),
+                                      //     titlesData: FlTitlesData(
+                                      //       leftTitles: SideTitles(
+                                      //         showTitles: true,
+                                      //         interval: 10.0,
+                                      //       ),
+                                      //     ),
+                                      //     minX: 0,
+                                      //     maxX:
+                                      //         10, // Initially show only 10 values
+                                      //     minY: 10,
+                                      //     maxY: 100,
+                                      //   ),
+                                      // );
+                                    })
                                   : CircularProgressIndicator(),
                             ),
                           ),
@@ -472,11 +572,6 @@ class HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-
-
-
-
-
             const Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
               child: Text(
@@ -503,14 +598,16 @@ class HomePageState extends State<HomePage> {
                           // Replace with your image asset
                         ),
                       ),
-                      child:  Column(
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(height: 28,),
+                          SizedBox(
+                            height: 28,
+                          ),
                           Padding(
                             padding: EdgeInsets.symmetric(vertical: 8.0),
                             child: Text(
-                              no_of_eye_test??"0",
+                              no_of_eye_test ?? "0",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 22,
@@ -540,16 +637,17 @@ class HomePageState extends State<HomePage> {
                           // Replace with your image asset
                         ),
                       ),
-                      child:  Column(
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(height: 28,),
-
+                          SizedBox(
+                            height: 28,
+                          ),
                           Padding(
                             padding: EdgeInsets.symmetric(
                                 vertical: 12.0, horizontal: 8.0),
                             child: Text(
-                             no_of_fatigue_test??"0",
+                              no_of_fatigue_test ?? "0",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 22,
@@ -578,31 +676,25 @@ class HomePageState extends State<HomePage> {
           ],
         ),
       ),
-
-      bottomNavigationBar:
-      CustomBottomAppBar(),
-
-
-
+      bottomNavigationBar: CustomBottomAppBar(),
     );
   }
+
   Future<void> sendcustomerDetails(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
     final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Authorization': 'Bearer $authToken',
       'Content-Type': 'application/json',
-
     };
 
     var body = json.encode({
       "is_self": true,
     });
-
 
     try {
       final response = await http.post(
@@ -616,15 +708,6 @@ class HomePageState extends State<HomePage> {
           print('sddd ${response.body}');
         }
         Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-
-        // Extract the customer ID
-        String customerId = jsonResponse['customer_id'];
-        prefs.setString('customer_id', customerId);
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => GiveInfo()),
-        );
-
       } else {
         print('Failed with status code: ${response.statusCode}');
         print('Failed sddd ${response.body}');
@@ -639,60 +722,96 @@ class HomePageState extends State<HomePage> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken = prefs.getString('access_token') ?? '';
-    final response = await http.get(
-      Uri.parse('${ApiProvider.baseUrl}/api/fatigue/fatigue-graph'),
-      headers: <String, String>{
-      'Authorization': 'Bearer $authToken',
-      },
+      final response = await http.get(
+        Uri.parse('${ApiProvider.baseUrl}/api/fatigue/fatigue-graph'),
+        headers: <String, String>{
+          'Authorization': 'Bearer $authToken',
+        },
+      );
 
-    );
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        fatigueGraphData = FatigueGraph.fromJson(responseData);
 
-    if (response.statusCode == 200) {
+        print("graphdata===:${response.body}");
 
-      final responseData = json.decode(response.body);
-      fatigueGraphData = fatigueGraph.fromJson(responseData);
+        Map<String, dynamic> jsonData = jsonDecode(response.body);
+        List<dynamic> data = jsonData['data'];
+        name = jsonData['name'];
 
 
-      print("graphdata===:${response.body}");
 
-      Map<String, dynamic> jsonData = jsonDecode(response.body);
-      List<dynamic> data = jsonData['data'];
-       name=jsonData['name'];
-      int no_of_fatigue=jsonData['no_of_fatigue_test'];
-      int  no_of_eye_=jsonData['no_of_eye_test'];
-      int eye_hscore=jsonData['eye_health_score'];
-      setState(() {
-        no_of_fatigue_test=no_of_fatigue.toString();
-        no_of_eye_test=no_of_eye_.toString();
-        eye_health_score=eye_hscore.toString();
-      });
 
-      return data.map((item) => double.parse(item['value'].toString())).toList();
 
+        fatigue_left = data[0]['is_fatigue_left'];
+        fatigue_right = data[0]['is_fatigue_right'];
+        midtiredness_right = data[0]['is_mild_tiredness_right'];
+        midtiredness_left = data[0]['is_mild_tiredness_left'];
+        int no_of_fatigue = jsonData['no_of_fatigue_test'];
+        int no_of_eye_ = jsonData['no_of_eye_test'];
+        int eye_hscore = jsonData['eye_health_score'];
+        setState(() {
+          no_of_fatigue_test = no_of_fatigue.toString();
+          no_of_eye_test = no_of_eye_.toString();
+          eye_health_score = eye_hscore.toString();
+        });
+        List<dynamic> data1 = responseData['data'];
+
+        List<String> dates = data1.map((item) => item['date'].toString().substring(0, 2)).toList();
+        List<double> values = data1.map((item) => double.parse(item['value'].toString())).toList();
+
+        List<String> labelX1 = dates;
+        List<String> labelY1 = ['10%','20%','30%','40%','50%','60%', '70%', '80%', '90%', '100%'];
+        List<Feature> features1 = [
+        Feature(
+          title: "Drink Water",
+          color: Colors.blue,
+          data: values,
+        ),];
+        // List<Feature> features1 = data.map((item) {
+        //   final double value = item['value'] ;
+        //   final String date = item['date'].toString().substring(0, 10) ;
+
+        //   return Feature(
+        //       // title: "Drink Water",
+        //
+        //     title: date,
+        //     color: Colors.blue,
+        //     data: [value], // Assuming you want to display only one value per feature
+        //   );
+        // }).toList();
+
+        setState(() {
+          labelY=labelY1;
+          labelX=labelX1;
+          features=features1;
+          // Set labelX and labelY
+          // Other state updates here if needed
+        });
+
+        return values;
+        // return data
+        //     .map((item) => double.parse(item['value'].toString()))
+        //     .toList();
+      } else {
+        print(response.body);
+      }
+    } catch (e) {
+      // _progressDialog!.hide();
+
+      print("exception:$e");
     }
-    else {
-
-      print(response.body);
-    }
-  }
-  catch (e) {     // _progressDialog!.hide();
-
-    print("exception:$e");
-  }
-  throw Exception('');
+    throw Exception('');
   }
 
 }
 
-
 class setReminder extends StatefulWidget {
-
   @override
   State<setReminder> createState() => ReminderState();
 }
 
 class ReminderState extends State<setReminder> {
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -701,12 +820,8 @@ class ReminderState extends State<setReminder> {
               title: const Text('Plugin example app'),
             ),
             body: Builder(builder: (context) {
-              return Center(
-
-              );
-            }
-            )
-        ));
+              return Center();
+            })));
   }
 }
 
@@ -730,7 +845,7 @@ class BottomDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.fromLTRB(16.0,16,16,8),
+      padding: EdgeInsets.fromLTRB(16.0, 16, 16, 8),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -750,11 +865,10 @@ class BottomDialog extends StatelessWidget {
           Divider(thickness: 1, color: Colors.grey.shade500),
           SizedBox(height: 18),
           Card(
-          child:GestureDetector(
-              onTap: ()  {
+            child: GestureDetector(
+              onTap: () {
                 Navigator.pop(context);
                 sendcustomerDetails(context, true);
-
               },
               child: Image.asset('assets/test_for_myself_img.png'),
             ),
@@ -762,8 +876,8 @@ class BottomDialog extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 12.0),
             child: Card(
-              child:  GestureDetector(
-                onTap: ()  {
+              child: GestureDetector(
+                onTap: () {
                   Navigator.pop(context);
                   showModalBottomSheet(
                     context: context,
@@ -778,7 +892,9 @@ class BottomDialog extends StatelessWidget {
       ),
     );
   }
-  Future<void> sendcustomerDetails(BuildContext context, bool isSelf, {String? name, String? age}) async {
+
+  Future<void> sendcustomerDetails(BuildContext context, bool isSelf,
+      {String? name, String? age}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken = prefs.getString('access_token') ?? '';
     final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
@@ -813,11 +929,13 @@ class BottomDialog extends StatelessWidget {
 
           print('Customer ID: $customerId');
 
-          // Navigate to GiveInfo screen
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => GiveInfo()),
-          );
+          // Check if the context is still mounted before navigating
+          if (context.mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => GiveInfo()),
+            );
+          }
         } else {
           print('Customer ID not found in response.');
         }
@@ -830,18 +948,18 @@ class BottomDialog extends StatelessWidget {
   }
 }
 
-
-
 class OtherDetailsBottomSheet extends StatefulWidget {
   @override
-  _OtherDetailsBottomSheetState createState() => _OtherDetailsBottomSheetState();
+  _OtherDetailsBottomSheetState createState() =>
+      _OtherDetailsBottomSheetState();
 }
 
 class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
   final _nameController = TextEditingController();
   final _ageController = TextEditingController();
 
-  Future<void> sendcustomerDetails(BuildContext context, bool isSelf, {String? name, String? age}) async {
+  Future<void> sendcustomerDetails(BuildContext context, bool isSelf,
+      {String? name, String? age}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken = prefs.getString('access_token') ?? '';
     final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
@@ -891,6 +1009,7 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
       print('Exception: $e');
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -916,7 +1035,8 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
           SizedBox(
             height: 55,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
               child: TextField(
                 controller: _nameController,
                 textInputAction: TextInputAction.next,
@@ -934,13 +1054,15 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                     fontWeight: FontWeight.w400,
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(27.0), // Add circular border
+                    borderRadius:
+                        BorderRadius.circular(27.0), // Add circular border
                   ),
                   // Set floatingLabelBehavior to always display the label
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   // Add button to the end of the TextField
                 ),
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+                style:
+                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
               ),
             ),
           ),
@@ -948,7 +1070,8 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
           SizedBox(
             height: 55,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
               child: TextFormField(
                 controller: _ageController,
                 textInputAction: TextInputAction.next,
@@ -967,7 +1090,6 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                   }
                   return null;
                 },
-
                 decoration: InputDecoration(
                   labelText: 'Age',
                   labelStyle: const TextStyle(
@@ -982,14 +1104,15 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                     fontWeight: FontWeight.w400,
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(27.0), // Add circular border
+                    borderRadius:
+                        BorderRadius.circular(27.0), // Add circular border
                   ),
                   // Set floatingLabelBehavior to always display the label
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   // Add button to the end of the TextField
-
                 ),
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+                style:
+                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
               ),
             ),
           ),
@@ -997,14 +1120,15 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
-
               onPressed: () {
-                sendcustomerDetails(context, false, name: _nameController.text, age: _ageController.text);
+                sendcustomerDetails(context, false,
+                    name: _nameController.text, age: _ageController.text);
               },
               child: Text('Submit'),
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(350, 50),
-                foregroundColor: Colors.white, backgroundColor: Colors.bluebutton,
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.bluebutton,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(25),
                 ),
@@ -1012,6 +1136,65 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ExampleAlarmRingScreen extends StatelessWidget {
+  const ExampleAlarmRingScreen({required this.alarmSettings, super.key});
+
+  final AlarmSettings alarmSettings;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Text(
+              'You alarm (${alarmSettings.id}) is ringing...',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const Text('🔔', style: TextStyle(fontSize: 50)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                RawMaterialButton(
+                  onPressed: () {
+                    final now = DateTime.now();
+                    Alarm.set(
+                      alarmSettings: alarmSettings.copyWith(
+                        dateTime: DateTime(
+                          now.year,
+                          now.month,
+                          now.day,
+                          now.hour,
+                          now.minute,
+                        ).add(const Duration(minutes: 1)),
+                      ),
+                    ).then((_) => Navigator.pop(context));
+                  },
+                  child: Text(
+                    'Snooze',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ),
+                RawMaterialButton(
+                  onPressed: () {
+                    Alarm.stop(alarmSettings.id)
+                        .then((_) => Navigator.pop(context));
+                  },
+                  child: Text(
+                    'Stop',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

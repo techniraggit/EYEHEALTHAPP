@@ -30,6 +30,7 @@ import 'Custom_navbar/bottom_navbar.dart';
 import 'HomePage.dart';
 import 'api/Api.dart';
 import 'api/config.dart';
+import 'eyeFatigueTest.dart';
 import 'new_address_screen.dart';
 
 class RewardContact extends StatefulWidget {
@@ -1236,27 +1237,35 @@ class RewardSpecsSync extends State<RewardSpecs> {
                             ),
                             const SizedBox(height: 18),
 
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(18.0, 10, 18, 10),
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                      bottom: BorderSide(
-                                        color: Colors
-                                            .background, // Change the color as needed
-                                        width:
-                                        1.5, // Change the width as needed
+                            GestureDetector(
+                              onTap:(){
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => EyeFatigueStartScreen()),
+                                );
+                              },
+                              child: Padding(
+                                padding: EdgeInsets.fromLTRB(18.0, 10, 18, 10),
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: DecoratedBox(
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: Colors
+                                              .background, // Change the color as needed
+                                          width:
+                                          1.5, // Change the width as needed
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  child: Text(
-                                    'Test your eye fatigue',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.background,
-                                      fontWeight: FontWeight.w500,
+                                    child: Text(
+                                      'Test your eye fatigue',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.background,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                   ),
                                 ),

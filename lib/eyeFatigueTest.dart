@@ -1,9 +1,12 @@
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:light_compressor/light_compressor.dart';
@@ -20,6 +23,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'api/Api.dart';
 import 'api/config.dart';
+import 'dinogame/cactus.dart';
+import 'dinogame/cloud.dart';
+import 'dinogame/constants.dart';
+import 'dinogame/dino.dart';
+import 'dinogame/game_object.dart';
+import 'dinogame/ground.dart';
 bool isclose=false;bool uploaded=false;
 bool isLoading = false;
 class EyeFatigueStartScreen extends StatefulWidget {
@@ -48,6 +57,7 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
           title: const Text("Eye Fatigue Test"),
           leading: IconButton(
@@ -167,6 +177,20 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
     );
   }
 }
+class MyTickerProvider1 implements TickerProvider {
+  @override
+  Ticker createTicker(TickerCallback onTick) => Ticker(onTick);
+}
+
+class MyTickerProvider2 implements TickerProvider {
+  @override
+  Ticker createTicker(TickerCallback onTick) => Ticker(onTick);
+}
+
+
+
+
+
 
 class EyeFatigueSecondScreen extends StatefulWidget {
   @override
@@ -176,6 +200,40 @@ class EyeFatigueSecondScreen extends StatefulWidget {
 class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with SingleTickerProviderStateMixin{
   bool cancel=true;  final LightCompressor _lightCompressor = LightCompressor();
   bool isRecording = false;
+
+  Dino dino = Dino();
+  double runVelocity = initialVelocity;
+  double runDistance = 0;
+  int highScore = 0;
+  TextEditingController gravityController =
+  TextEditingController(text: gravity.toString());
+  TextEditingController accelerationController =
+  TextEditingController(text: acceleration.toString());
+  TextEditingController jumpVelocityController =
+  TextEditingController(text: jumpVelocity.toString());
+  TextEditingController runVelocityController =
+  TextEditingController(text: initialVelocity.toString());
+  TextEditingController dayNightOffestController =
+  TextEditingController(text: dayNightOffest.toString());
+  double _position = 1.0;
+  Timer? _timer;
+  int _secondsLeft = 30;
+  late AnimationController worldController;
+  Duration lastUpdateCall = const Duration();
+
+  List<Cactus> cacti = [Cactus(worldLocation: const Offset(200, 0))];
+
+  List<Ground> ground = [
+    Ground(worldLocation: const Offset(0, 0)),
+    Ground(worldLocation: Offset(groundSprite.imageWidth / 10, 0))
+  ];
+
+  List<Cloud> clouds = [
+    Cloud(worldLocation: const Offset(100, 20)),
+    Cloud(worldLocation: const Offset(200, 10)),
+    Cloud(worldLocation: const Offset(350, -10)),
+  ];
+
   late String videoPath;  String? _compressedVideoPath;
   CameraController? _controller;
   late List<CameraDescription> cameras;
@@ -190,13 +248,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
   ];
   int _startIndex = 0;
   bool _firstTime = true;
-  @override
-  void dispose() {
-    _controller?.dispose();
-    _animationController.dispose();
 
-    super.dispose();
-  }
   @override
 
   void initState() {
@@ -208,6 +260,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
     _initializeCamera();
 
     sendcustomerDetails();
+    startTimer();
   isloading();
 
 
@@ -223,12 +276,164 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
 
     _animationController = AnimationController(
       duration: Duration(seconds: 9), // Adjust duration as needed
-      vsync: this,
+      vsync: MyTickerProvider1(),
     );
 
     _startAnimation();
 
+    worldController = AnimationController(
+      duration: const Duration(days: 99),
+      vsync: MyTickerProvider2(),
+    );
+    worldController.addListener(_update);
+    // worldController.forward();
+    _die();
+
   }
+
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    _animationController.dispose();
+    gravityController.dispose();
+    accelerationController.dispose();
+    jumpVelocityController.dispose();
+    runVelocityController.dispose();
+    dayNightOffestController.dispose();
+    _timer?.cancel();
+
+    super.dispose();
+  }
+  void startTimer() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _secondsLeft--;
+        _position = _secondsLeft / 30;
+      });
+      if (_secondsLeft <= 0) {
+        _timer?.cancel();
+      }
+    });
+  }
+
+  void _die() {
+    setState(() {
+      worldController.stop();
+      dino.die();
+    });
+  }
+
+  void _newGame() {
+    setState(() {
+      highScore = max(highScore, runDistance.toInt());
+      runDistance = 0;
+      runVelocity = initialVelocity;
+      dino.state = DinoState.running;
+      dino.dispY = 0;
+      worldController.reset();
+      cacti = [
+        Cactus(worldLocation: const Offset(200, 0)),
+        Cactus(worldLocation: const Offset(300, 0)),
+        Cactus(worldLocation: const Offset(450, 0)),
+      ];
+
+      ground = [
+        Ground(worldLocation: const Offset(0, 0)),
+        Ground(worldLocation: Offset(groundSprite.imageWidth / 10, 0))
+      ];
+
+      clouds = [
+        Cloud(worldLocation: const Offset(100, 20)),
+        Cloud(worldLocation: const Offset(200, 10)),
+        Cloud(worldLocation: const Offset(350, -15)),
+        Cloud(worldLocation: const Offset(500, 10)),
+        Cloud(worldLocation: const Offset(550, -10)),
+      ];
+
+      worldController.forward();
+    });
+  }
+
+  _update() {
+    try {
+      double elapsedTimeSeconds;
+      dino.update(lastUpdateCall, worldController.lastElapsedDuration);
+      try {
+        elapsedTimeSeconds =
+            (worldController.lastElapsedDuration! - lastUpdateCall)
+                .inMilliseconds /
+                1000;
+      } catch (_) {
+        elapsedTimeSeconds = 0;
+      }
+
+      runDistance += runVelocity * elapsedTimeSeconds;
+      if (runDistance < 0) runDistance = 0;
+      runVelocity += acceleration * elapsedTimeSeconds;
+
+      Size screenSize = MediaQuery.of(context).size;
+
+      Rect dinoRect = dino.getRect(screenSize, runDistance);
+      for (Cactus cactus in cacti) {
+        Rect obstacleRect = cactus.getRect(screenSize, runDistance);
+        if (dinoRect.overlaps(obstacleRect.deflate(20))) {
+          _die();
+        }
+
+        if (obstacleRect.right < 0) {
+          setState(() {
+            cacti.remove(cactus);
+            cacti.add(Cactus(
+                worldLocation: Offset(
+                    runDistance +
+                        Random().nextInt(100) +
+                        MediaQuery.of(context).size.width / worlToPixelRatio,
+                    0)));
+          });
+        }
+      }
+
+      for (Ground groundlet in ground) {
+        if (groundlet.getRect(screenSize, runDistance).right < 0) {
+          setState(() {
+            ground.remove(groundlet);
+            ground.add(
+              Ground(
+                worldLocation: Offset(
+                  ground.last.worldLocation.dx + groundSprite.imageWidth / 10,
+                  0,
+                ),
+              ),
+            );
+          });
+        }
+      }
+
+      for (Cloud cloud in clouds) {
+        if (cloud.getRect(screenSize, runDistance).right < 0) {
+          setState(() {
+            clouds.remove(cloud);
+            clouds.add(
+              Cloud(
+                worldLocation: Offset(
+                  clouds.last.worldLocation.dx +
+                      Random().nextInt(200) +
+                      MediaQuery.of(context).size.width / worlToPixelRatio,
+                  Random().nextInt(50) - 25.0,
+                ),
+              ),
+            );
+          });
+        }
+      }
+
+      lastUpdateCall = worldController.lastElapsedDuration!;
+    } catch (e) {
+      //
+    }
+  }
+
   void _startAnimation() async {
     await _animationController.forward().orCancel;
     _startIndex += 3;
@@ -236,6 +441,8 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
     _animationController.reset();
     _startAnimation();
   }
+
+
   Future<void> sendcustomerDetails() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
@@ -436,8 +643,34 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
       print("Error: $e");
     }
   }
+
+
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.of(context).size;
+    List<Widget> children = [];
+    for (GameObject object in [...clouds, ...ground, ...cacti, dino]) {
+      children.add(
+        AnimatedBuilder(
+          animation: worldController,
+          builder: (context, _) {
+            Rect objectRect = object.getRect(screenSize, runDistance);
+            return Positioned(
+              left: objectRect.left,
+              top: objectRect.top,
+              width: objectRect.width,
+              height: objectRect.height,
+              child: object.render(),
+            );
+          },
+        ),
+      );
+    }
     return WillPopScope(
       onWillPop: () async {
         // Handle back button press here
@@ -454,20 +687,277 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
               ),
             ),
             child: isLoading
-                ?
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text(
-                  "Please wait, we are fetching your report...",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
-                  textAlign: TextAlign.center,
+                ?AnimatedContainer(
+              duration: const Duration(milliseconds: 5000),
+              color: (runDistance ~/ dayNightOffest) % 2 == 0
+                  ? Colors.white
+                  : Colors.black,
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: () {
+                  if (dino.state != DinoState.dead) {
+                    dino.jump();
+                  }
+                  if (dino.state == DinoState.dead) {
+                    _newGame();
+                  }
+                },
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    ...children,
+                    AnimatedBuilder(
+                      animation: worldController,
+                      builder: (context, _) {
+                        return Positioned(
+                          left: screenSize.width / 2 - 30,
+                          top: 100,
+                          child: Text(
+                            'Score: ' + runDistance.toInt().toString(),
+                            style: TextStyle(
+                              color: (runDistance ~/ dayNightOffest) % 2 == 0
+                                  ? Colors.black
+                                  : Colors.white,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    AnimatedBuilder(
+                      animation: worldController,
+                      builder: (context, _) {
+                        return Positioned(
+                          left: screenSize.width / 2 - 50,
+                          top: 120,
+                          child: Text(
+                            'High Score: ' + highScore.toString(),
+                            style: TextStyle(
+                              color: (runDistance ~/ dayNightOffest) % 2 == 0
+                                  ? Colors.black
+                                  : Colors.white,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    Positioned(
+                      right: 20,
+                      top: 20,
+                      child: IconButton(
+                        icon: const Icon(Icons.settings),
+                        onPressed: () {
+                          _die();
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text("Change Physics"),
+                                actions: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: SizedBox(
+                                      height: 25,
+                                      width: 280,
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text("Gravity:"),
+                                          SizedBox(
+                                            child: TextField(
+                                              controller: gravityController,
+                                              key: UniqueKey(),
+                                              keyboardType: TextInputType.number,
+                                              decoration: InputDecoration(
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                  BorderRadius.circular(5),
+                                                ),
+                                              ),
+                                            ),
+                                            height: 25,
+                                            width: 75,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: SizedBox(
+                                      height: 25,
+                                      width: 280,
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text("Acceleration:"),
+                                          SizedBox(
+                                            child: TextField(
+                                              controller: accelerationController,
+                                              key: UniqueKey(),
+                                              keyboardType: TextInputType.number,
+                                              decoration: InputDecoration(
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                  BorderRadius.circular(5),
+                                                ),
+                                              ),
+                                            ),
+                                            height: 25,
+                                            width: 75,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: SizedBox(
+                                      height: 25,
+                                      width: 280,
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text("Initial Velocity:"),
+                                          SizedBox(
+                                            child: TextField(
+                                              controller: runVelocityController,
+                                              key: UniqueKey(),
+                                              keyboardType: TextInputType.number,
+                                              decoration: InputDecoration(
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                  BorderRadius.circular(5),
+                                                ),
+                                              ),
+                                            ),
+                                            height: 25,
+                                            width: 75,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: SizedBox(
+                                      height: 25,
+                                      width: 280,
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text("Jump Velocity:"),
+                                          SizedBox(
+                                            child: TextField(
+                                              controller: jumpVelocityController,
+                                              key: UniqueKey(),
+                                              keyboardType: TextInputType.number,
+                                              decoration: InputDecoration(
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                  BorderRadius.circular(5),
+                                                ),
+                                              ),
+                                            ),
+                                            height: 25,
+                                            width: 75,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: SizedBox(
+                                      height: 25,
+                                      width: 280,
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text("Day-Night Offset:"),
+                                          SizedBox(
+                                            child: TextField(
+                                              controller: dayNightOffestController,
+                                              key: UniqueKey(),
+                                              keyboardType: TextInputType.number,
+                                              decoration: InputDecoration(
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                  BorderRadius.circular(5),
+                                                ),
+                                              ),
+                                            ),
+                                            height: 25,
+                                            width: 75,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      gravity = int.parse(gravityController.text);
+                                      acceleration =
+                                          double.parse(accelerationController.text);
+                                      initialVelocity =
+                                          double.parse(runVelocityController.text);
+                                      jumpVelocity =
+                                          double.parse(jumpVelocityController.text);
+                                      dayNightOffest =
+                                          int.parse(dayNightOffestController.text);
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text(
+                                      "Done",
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                  )
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 10,
+                      child: TextButton(
+                        onPressed: () {
+                          _die();
+                        },
+                        child: const Text(
+                          "Force Kill Dino",
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             )
+            // const Center(
+            //   child: Padding(
+            //     padding: EdgeInsets.all(8.0),
+            //     child: Text(
+            //       "Please wait, we are fetching your report...",
+            //       style: TextStyle(
+            //         color: Colors.black,
+            //         fontSize: 16,
+            //       ),
+            //       textAlign: TextAlign.center,
+            //     ),
+            //   ),
+            // )
+
                 :  Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -517,7 +1007,30 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
 
                 const SizedBox(height: 10),
                 const Spacer(),
-      
+
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    height: 8,
+                    width: MediaQuery.of(context).size.width,
+                    color: Colors.grey[300],
+                    child: Stack(
+                      children: [
+                        AnimatedPositioned(
+                          duration: Duration(seconds: 1),
+                          curve: Curves.linear,
+                          right: MediaQuery.of(context).size.width * (1 - _position),
+                          child: Container(
+                            height: 10,
+                            width: MediaQuery.of(context).size.width * _position,
+                            color: Colors.background,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 40),
                 // Visibility(
                 //   visible: cancel,
                 //   child: Padding(
