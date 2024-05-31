@@ -19,19 +19,48 @@ import 'api/Api.dart';
 import 'api/config.dart';
 import 'eyeFatigueTest.dart';
 import 'models/fatigueGraphModel.dart';
+class EyeHealthData {
+  final String date;
+  final double value;
+  final bool isFatigueRight;
+  final bool isMildTirednessRight;
+  final bool isFatigueLeft;
+  final bool isMildTirednessLeft;
 
+  EyeHealthData({
+    required this.date,
+    required this.value,
+    required this.isFatigueRight,
+    required this.isMildTirednessRight,
+    required this.isFatigueLeft,
+    required this.isMildTirednessLeft,
+  });
+
+  factory EyeHealthData.fromJson(Map<String, dynamic> json) {
+    return EyeHealthData(
+      date: json['date'],
+      value: json['value'].toDouble(),
+      isFatigueRight: json['is_fatigue_right'],
+      isMildTirednessRight: json['is_mild_tiredness_right'],
+      isFatigueLeft: json['is_fatigue_left'],
+      isMildTirednessLeft: json['is_mild_tiredness_left'],
+    );
+  }
+}
 class HomePage extends StatefulWidget {
   @override
   HomePageState createState() => HomePageState();
 }
 
 class HomePageState extends State<HomePage> {
+  List<double>? _data;int i=0;
   bool isSelected = false;fatigueGraph? fatigueGraphData;
   bool isLeftEyeSelected = false;
   List<double> data1 = [10, 30, 20, 40, 30]; // Sample data for line 1
   List<double> data2 = [30, 50, 60, 50, 60];
   int currentHour = DateTime.now().hour;
   late DateTime selectedDate;
+  String no_of_eye_test="0";String eye_health_score="";String name="";String no_of_fatigue_test="0";
 
   // Define selectedDate within the _CalendarButtonState class
 
@@ -51,7 +80,14 @@ class HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    getGraph();
+    // getGraph();
+    getGraph().then((data) {
+      setState(() {
+        _data = data;
+      });
+    }).catchError((error) {
+      print(error);
+    });
   }
 
   @override
@@ -142,8 +178,8 @@ class HomePageState extends State<HomePage> {
                           Image.asset('assets/notification.png')
                         ],
                       ),
-                      const Text(
-                        'Name',
+                       Text(
+                        name,
                         style: TextStyle(
                             color: Colors.lightBlueAccent, fontSize: 18),
                       ),
@@ -155,7 +191,7 @@ class HomePageState extends State<HomePage> {
                             style: TextStyle(color: Colors.white, fontSize: 18),
                           ),
                           Text(
-                            '2034',
+                            eye_health_score,
                             style: TextStyle(
                               color: Colors.yellowAccent,
                               fontSize: 28,
@@ -339,100 +375,108 @@ class HomePageState extends State<HomePage> {
                     color: Colors.deepPurple),
               ),
             ),
+
+
+
+
             Padding(
-              padding:
-              const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(1),
-                        child: ListTile(
-                          title: Text(
-                            'Right Eye Health',
-                            style: TextStyle(
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.bold,
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(1),
+                          child: ListTile(
+                            title: Text(
+                              'Right Eye Health',
+                              style: TextStyle(
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
+                            subtitle: Text('April 30-May 30'),
                           ),
-                          subtitle: Text('April 30-May 30'),
                         ),
-                      ),
+                        Container(
+                          height: 200,
+                          width: MediaQuery.of(context).size.width, // Adjust the width as needed
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: AspectRatio(
+                              aspectRatio: 1.40,
+                              child: _data != null
+                                  ? Builder(
+                                    builder: (context) {
 
-                      // Container with fixed height to contain the LineChart
-                      Container(
-                        height: 200,
-                        width: MediaQuery.of(context).size.width,
 
-                        // Adjust the height as needed
-                        child: AspectRatio(
-                          aspectRatio: 1.40,
-                          child: LineChart(
-                            LineChartData(
-                              lineBarsData: [
-                                LineChartBarData(
-                                  spots: [
-                                    FlSpot(0, 4),
-                                    FlSpot(2, 4),
-                                    FlSpot(4, 6),
-                                    FlSpot(6, 3),
-                                    FlSpot(8, 4),
-                                    FlSpot(10, 5),
-                                  ],
-                                  isCurved: true,
-                                  colors: [Colors.deepPurple],
-                                  barWidth: 4,
-                                  isStrokeCapRound: true,
-                                  belowBarData: BarAreaData(
-                                    show: true,
-                                    colors: [
-                                      Colors.deepPurple.withOpacity(0.1)
-                                    ],
-                                  ),
-                                ),
-                              ],
-                              titlesData: FlTitlesData(
-                                bottomTitles: SideTitles(
-                                  showTitles: true,
-                                  getTitles: (value) {
-                                    switch (value.toInt()) {
-                                      case 0:
-                                        return 'Mon';
-                                      case 2:
-                                        return 'Tue';
-                                      case 4:
-                                        return 'Wed';
-                                      case 6:
-                                        return 'Thu';
-                                      case 8:
-                                        return 'Fri';
-                                      case 10:
-                                        return 'Sat';
+                                      if(_data!.length>10){
+                                         i=10;
+
+                                      }else{
+                                         i=_data!.length;
+                                      }
+                                      return LineChart(
+                                                                      LineChartData(
+                                      lineBarsData: [
+                                        LineChartBarData(
+                                          spots: _data!
+                                               .sublist(0, i)
+                                              .asMap()
+                                              .entries
+                                              .map((entry) {
+                                            return FlSpot(
+                                                entry.key.toDouble(), entry.value);
+                                          }).toList(),
+                                          isCurved: true,
+                                          colors: [Colors.deepPurple],
+                                          barWidth: 4,
+                                          isStrokeCapRound: true,
+                                          belowBarData: BarAreaData(
+                                            show: true,
+                                            colors: [
+                                              Colors.deepPurple.withOpacity(0.1)
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                      gridData: FlGridData(
+                                        drawVerticalLine: true,
+                                        drawHorizontalLine: false,
+                                      ),
+                                      titlesData: FlTitlesData(
+                                        leftTitles: SideTitles(
+                                          showTitles: true,
+                                          interval: 10.0,
+                                        ),
+                                      ),
+                                      minX: 0,
+                                      maxX: 10, // Initially show only 10 values
+                                      minY: 10,
+                                      maxY: 100,
+                                                                      ),
+                                                                    );
                                     }
-                                    return '';
-                                  },
-                                ),
-                                leftTitles: SideTitles(
-                                  showTitles: false,
-                                ),
-                              ),
-                              gridData: FlGridData(
-                                show: true,
-                                drawVerticalLine: true,
-                                drawHorizontalLine: false,
-                              ),
+                                  )
+                                  : CircularProgressIndicator(),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
+
+
+
+
+
             const Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
               child: Text(
@@ -459,13 +503,14 @@ class HomePageState extends State<HomePage> {
                           // Replace with your image asset
                         ),
                       ),
-                      child: const Column(
+                      child:  Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
+                          SizedBox(height: 28,),
                           Padding(
-                            padding: EdgeInsets.symmetric(vertical: 12.0),
+                            padding: EdgeInsets.symmetric(vertical: 8.0),
                             child: Text(
-                              '300',
+                              no_of_eye_test??"0",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 22,
@@ -474,7 +519,7 @@ class HomePageState extends State<HomePage> {
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.symmetric(vertical: 2.0),
+                            padding: EdgeInsets.symmetric(vertical: 5.0),
                             child: Text(
                               'Eye Test',
                               style: TextStyle(
@@ -495,14 +540,16 @@ class HomePageState extends State<HomePage> {
                           // Replace with your image asset
                         ),
                       ),
-                      child: const Column(
+                      child:  Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
+                          SizedBox(height: 28,),
+
                           Padding(
                             padding: EdgeInsets.symmetric(
-                                vertical: 12.0, horizontal: 4.0),
+                                vertical: 12.0, horizontal: 8.0),
                             child: Text(
-                              '300',
+                             no_of_fatigue_test??"0",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 22,
@@ -512,7 +559,7 @@ class HomePageState extends State<HomePage> {
                           ),
                           Padding(
                             padding: EdgeInsets.symmetric(
-                                vertical: 2.0, horizontal: 4.0),
+                                vertical: 5.0, horizontal: 4.0),
                             child: Text(
                               'Eye Fatigue Test',
                               style: TextStyle(
@@ -588,7 +635,7 @@ class HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> getGraph() async {
+  Future<List<double>> getGraph() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken = prefs.getString('access_token') ?? '';
@@ -596,9 +643,7 @@ class HomePageState extends State<HomePage> {
       Uri.parse('${ApiProvider.baseUrl}/api/fatigue/fatigue-graph'),
       headers: <String, String>{
       'Authorization': 'Bearer $authToken',
-
-
-    },
+      },
 
     );
 
@@ -606,14 +651,23 @@ class HomePageState extends State<HomePage> {
 
       final responseData = json.decode(response.body);
       fatigueGraphData = fatigueGraph.fromJson(responseData);
-      setState(() {
 
-      });
 
       print("graphdata===:${response.body}");
 
+      Map<String, dynamic> jsonData = jsonDecode(response.body);
+      List<dynamic> data = jsonData['data'];
+       name=jsonData['name'];
+      int no_of_fatigue=jsonData['no_of_fatigue_test'];
+      int  no_of_eye_=jsonData['no_of_eye_test'];
+      int eye_hscore=jsonData['eye_health_score'];
+      setState(() {
+        no_of_fatigue_test=no_of_fatigue.toString();
+        no_of_eye_test=no_of_eye_.toString();
+        eye_health_score=eye_hscore.toString();
+      });
 
-      return json.decode(response.body);
+      return data.map((item) => double.parse(item['value'].toString())).toList();
 
     }
     else {
