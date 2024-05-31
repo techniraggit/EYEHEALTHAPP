@@ -1,6 +1,7 @@
 import 'dart:async';
 
-
+import 'package:alarm/alarm.dart';
+import 'package:alarm/model/alarm_settings.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,9 @@ import 'package:permission_handler/permission_handler.dart';
 
 import 'Custom_navbar/bottom_navbar.dart';
 import 'HomePage.dart';
+import 'alarm/edit_alarm.dart';
+import 'alarm/ring.dart';
+import 'alarm/shortcut_alarmButton.dart';
 
 class EyeHealthTrackDashboard extends StatefulWidget {
   @override

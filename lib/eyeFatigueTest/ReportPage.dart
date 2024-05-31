@@ -10,8 +10,9 @@ import 'package:intl/intl.dart';
 import 'package:project_new/HomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Custom_navbar/bottom_navbar.dart';
-import '../api/config.dart'; // Import intl package
+import 'Custom_navbar/bottom_navbar.dart';
+import 'FatigueReportDetails.dart';
+import 'api/config.dart'; // Import intl package
 
 class ReportPage extends StatefulWidget {
   @override
@@ -19,24 +20,20 @@ class ReportPage extends StatefulWidget {
 }
 
 class ReportPageState extends State<ReportPage> {
-  bool isSelected = false;
-  bool isLeftEyeSelected = false;
+
   List<dynamic> itemsdata = [];
 
 
 
-  List<double> data1 = [10, 30, 20, 40, 30]; // Sample data for line 1
-  List<double> data2 = [30, 50, 60, 50, 60]; // Sample data for line 2
+  List<dynamic> percentage = [];
 
-  final List<String> items = [
-    'Item 1 - 10:00 AM, 2024-05-14',
-    'Item 2 - 11:30 AM, 2024-05-15',
-    'Item 3 - 02:45 PM, 2024-05-16',
-  ];
+   List<dynamic> items = [];
+  List<dynamic> ReportIds = [];
   String testResult='Good';
+
 @override
 void initState() {
-    // TODO: implement initState
+
     super.initState();
 
     getReports();
@@ -170,10 +167,11 @@ void initState() {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Align(
-                            alignment: Alignment.centerLeft,                            child: Text(
-                            'Date: '+  items[index].substring(items[index].indexOf('-') + 2),
-                              style: TextStyle(fontStyle: FontStyle.normal),
-                            ),
+                            alignment: Alignment.centerLeft,
+                        child: Text(
+                            'Date: '+ items[index].toString().substring(0,10) , style: TextStyle(fontStyle: FontStyle.normal),),//items[index].substring(items[index].indexOf('-') + 2
+
+
                           ),
                           SizedBox(height: 10,),
                           Row(
@@ -183,11 +181,21 @@ void initState() {
                                 style: TextStyle(
                                   color: Colors.black,fontWeight: FontWeight.w700,fontSize: 16
                                 )),
-                              Text(
-                                   testResult,
-                                  style: TextStyle(fontWeight: FontWeight.w500,fontSize: 16,
-                                    color: testResult == 'Good' ? Colors.green : Colors.red,
-                                  )),
+                              Builder(
+                                builder: (context) {
+                                  print("percentage[index]====n ${percentage[index]}");
+                                  if(percentage[index]>50.0){
+                                    testResult="Good";
+                                  }else{
+                                    testResult="Bad";
+                                  }
+                                  return Text(
+                                       testResult,
+                                      style: TextStyle(fontWeight: FontWeight.w500,fontSize: 16,
+                                        color: testResult == 'Good' ? Colors.green : Colors.red,
+                                      ));
+                                }
+                              ),
                               Expanded(
 
                                 // alignment: Alignment.centerRight,
@@ -196,6 +204,14 @@ void initState() {
 
                                 child: ElevatedButton(
                                     onPressed: () {
+                                      Navigator.push(
+                                        context, CupertinoPageRoute(
+                                        builder: (context) => ReportDetails(reportId: ReportIds[index]
+                                        ),
+                                      ),
+
+                                      );
+
                                       // Add button onPressed logic here
                                     },
                                     style: ElevatedButton.styleFrom(
@@ -237,7 +253,7 @@ void initState() {
     );
   }
   Future<void> getReports() async {
-    try {
+    // try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken = prefs.getString('access_token') ?? '';
       final response = await http.get(
@@ -256,10 +272,20 @@ void initState() {
 
         setState(() {
           // Update your state variable with the response data
-          // itemsdata = json.decode(response.body)['data']; // Assuming 'items' is your state variable
+          itemsdata = responseData['data'];
+          for(int i=0;i<itemsdata.length;i++){
+            int id=json.decode(response.body)['data'][i]['report_id'];
+           String date=json.decode(response.body)['data'][i]['created_on'];
+           double percentage_=json.decode(response.body)['data'][i]['percentage'];
+           ReportIds.add(id);//.toString().substring(0,10);
+            items.add(date);
+            percentage.add(percentage_);
+          }
+          // Assuming 'items' is your state variable
         });
 
         print("graphdata===:${response.body}");
+        print("itemsdata.length===:${itemsdata.length}");
 
 
         return json.decode(response.body);
@@ -269,13 +295,13 @@ void initState() {
 
         print(response.body);
       }
-    }
-    catch (e) {     // _progressDialog!.hide();
+    // }
+    // catch (e) {     // _progressDialog!.hide();
 
       print("exception:$e");
     }
-    throw Exception('');
-  }
+  //   throw Exception('');
+  // }
 
 }
 

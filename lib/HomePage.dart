@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_rename/package_rename.dart';
-import 'package:project_new/eyeFatigueTest/eyeFatigueTest.dart';
+import 'package:project_new/eyeFatigueTest.dart';
 import 'package:project_new/digitalEyeTest/testScreen.dart';
 import 'package:project_new/myPlanPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,21 +17,50 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'Custom_navbar/bottom_navbar.dart';
 import 'api/Api.dart';
 import 'api/config.dart';
-import 'eyeFatigueTest/eyeFatigueTest.dart';
+import 'eyeFatigueTest.dart';
 import 'models/fatigueGraphModel.dart';
+class EyeHealthData {
+  final String date;
+  final double value;
+  final bool isFatigueRight;
+  final bool isMildTirednessRight;
+  final bool isFatigueLeft;
+  final bool isMildTirednessLeft;
 
+  EyeHealthData({
+    required this.date,
+    required this.value,
+    required this.isFatigueRight,
+    required this.isMildTirednessRight,
+    required this.isFatigueLeft,
+    required this.isMildTirednessLeft,
+  });
+
+  factory EyeHealthData.fromJson(Map<String, dynamic> json) {
+    return EyeHealthData(
+      date: json['date'],
+      value: json['value'].toDouble(),
+      isFatigueRight: json['is_fatigue_right'],
+      isMildTirednessRight: json['is_mild_tiredness_right'],
+      isFatigueLeft: json['is_fatigue_left'],
+      isMildTirednessLeft: json['is_mild_tiredness_left'],
+    );
+  }
+}
 class HomePage extends StatefulWidget {
   @override
   HomePageState createState() => HomePageState();
 }
 
 class HomePageState extends State<HomePage> {
-  bool isSelected = false;
-  late FatigueGraph fatigueGraphData;
+  List<double>? _data;int i=0;
+  bool isSelected = false;fatigueGraph? fatigueGraphData;
   bool isLeftEyeSelected = false;
-
+  List<double> data1 = [10, 30, 20, 40, 30]; // Sample data for line 1
+  List<double> data2 = [30, 50, 60, 50, 60];
   int currentHour = DateTime.now().hour;
   late DateTime selectedDate;
+  String no_of_eye_test="0";String eye_health_score="";String name="";String no_of_fatigue_test="0";
 
   // Define selectedDate within the _CalendarButtonState class
 
@@ -52,7 +81,14 @@ class HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    getGraph();
+    // getGraph();
+    getGraph().then((data) {
+      setState(() {
+        _data = data;
+      });
+    }).catchError((error) {
+      print(error);
+    });
   }
 
   @override
@@ -78,10 +114,11 @@ class HomePageState extends State<HomePage> {
             child: InkWell(
               onTap: () {
                 Navigator.push(
-                  context,
-                  CupertinoPageRoute(
-                    builder: (context) => HomePage(),
+                  context, CupertinoPageRoute(
+                  builder: (context) => HomePage(
                   ),
+                ),
+
                 );
               },
               child: SizedBox(
@@ -89,8 +126,7 @@ class HomePageState extends State<HomePage> {
                 height: 50.0, // Height of the FloatingActionButton
                 child: Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    // Add padding for the icon
+                    padding: const EdgeInsets.all(8.0), // Add padding for the icon
                     child: Image.asset(
                       "assets/home_icon.png",
                       width: 20,
@@ -127,13 +163,13 @@ class HomePageState extends State<HomePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           GestureDetector(
-                            onTap: () {
+                            onTap:(){
                               Navigator.push(
                                 context,
                                 CupertinoPageRoute(
-                                    builder: (context) => setReminder()),
-                              );
-                            },
+                                    builder: (context) =>
+                                        setReminder()),
+                              );                            } ,
                             child: Text(
                               salutation,
                               style: const TextStyle(
@@ -143,8 +179,8 @@ class HomePageState extends State<HomePage> {
                           Image.asset('assets/notification.png')
                         ],
                       ),
-                      const Text(
-                        'Name',
+                       Text(
+                        name,
                         style: TextStyle(
                             color: Colors.lightBlueAccent, fontSize: 18),
                       ),
@@ -156,7 +192,7 @@ class HomePageState extends State<HomePage> {
                             style: TextStyle(color: Colors.white, fontSize: 18),
                           ),
                           Text(
-                            '2034',
+                            eye_health_score,
                             style: TextStyle(
                               color: Colors.yellowAccent,
                               fontSize: 28,
@@ -184,12 +220,12 @@ class HomePageState extends State<HomePage> {
             Padding(
               padding: const EdgeInsets.all(15.0),
               child: GestureDetector(
-                onTap: () {
+                onTap: ()  {
                   showModalBottomSheet(
                     context: context,
                     builder: (context) => BottomDialog(),
                   );
-                  /*   Navigator.push(
+               /*   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => AddCustomerPage()),
                   );*/
@@ -257,7 +293,7 @@ class HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            Padding(
+             Padding(
               padding: EdgeInsets.all(8.0),
               child: Card(
                 child: ListTile(
@@ -272,6 +308,7 @@ class HomePageState extends State<HomePage> {
                               Text('Fatigue Right'),
                               Text(
                                 fatigue_right ? 'Yes' : 'No',
+
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -304,6 +341,7 @@ class HomePageState extends State<HomePage> {
                             children: [
                               Text('Fatigue left'),
                               Text(
+
                                 fatigue_left ? 'Yes' : 'No',
                                 style: TextStyle(
                                   fontSize: 16,
@@ -344,7 +382,7 @@ class HomePageState extends State<HomePage> {
             ),
             Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
+              const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
               child: Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -462,13 +500,14 @@ class HomePageState extends State<HomePage> {
                           // Replace with your image asset
                         ),
                       ),
-                      child: const Column(
+                      child:  Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
+                          SizedBox(height: 28,),
                           Padding(
-                            padding: EdgeInsets.symmetric(vertical: 12.0),
+                            padding: EdgeInsets.symmetric(vertical: 8.0),
                             child: Text(
-                              '300',
+                              no_of_eye_test??"0",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 22,
@@ -477,7 +516,7 @@ class HomePageState extends State<HomePage> {
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.symmetric(vertical: 2.0),
+                            padding: EdgeInsets.symmetric(vertical: 5.0),
                             child: Text(
                               'Eye Test',
                               style: TextStyle(
@@ -498,14 +537,16 @@ class HomePageState extends State<HomePage> {
                           // Replace with your image asset
                         ),
                       ),
-                      child: const Column(
+                      child:  Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
+                          SizedBox(height: 28,),
+
                           Padding(
                             padding: EdgeInsets.symmetric(
-                                vertical: 12.0, horizontal: 4.0),
+                                vertical: 12.0, horizontal: 8.0),
                             child: Text(
-                              '300',
+                             no_of_fatigue_test??"0",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 22,
@@ -515,7 +556,7 @@ class HomePageState extends State<HomePage> {
                           ),
                           Padding(
                             padding: EdgeInsets.symmetric(
-                                vertical: 2.0, horizontal: 4.0),
+                                vertical: 5.0, horizontal: 4.0),
                             child: Text(
                               'Eye Fatigue Test',
                               style: TextStyle(
@@ -534,25 +575,31 @@ class HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      bottomNavigationBar: CustomBottomAppBar(),
+
+      bottomNavigationBar:
+      CustomBottomAppBar(),
+
+
+
     );
   }
-
   Future<void> sendcustomerDetails(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Authorization': 'Bearer $authToken',
       'Content-Type': 'application/json',
+
     };
 
     var body = json.encode({
       "is_self": true,
     });
+
 
     try {
       final response = await http.post(
@@ -576,28 +623,40 @@ class HomePageState extends State<HomePage> {
     }
   }
 
-  String _status = '';
-  List<FlSpot> _value = [];
-  List<FlSpot> _spots = [FlSpot(0, 0)]; // Initialize _spots as needed
-  bool fatigue_left = false;
-  bool fatigue_right = false;
-  bool midtiredness_right = false;
-  bool midtiredness_left = false;
+        // Extract the customer ID
+        String customerId = jsonResponse['customer_id'];
+        prefs.setString('customer_id', customerId);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => GiveInfo()),
+        );
 
-  Future<void> getGraph() async {
+      } else {
+        print('Failed with status code: ${response.statusCode}');
+        print('Failed sddd ${response.body}');
+      }
+    } catch (e) {
+// Handle exceptions here (e.g., network errors)
+      print('Exception: $e');
+    }
+  }
+
+  Future<List<double>> getGraph() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken = prefs.getString('access_token') ?? '';
-      final response = await http.get(
-        Uri.parse('${ApiProvider.baseUrl}/api/fatigue/fatigue-graph'),
-        headers: <String, String>{
-          'Authorization': 'Bearer $authToken',
-        },
-      );
-      print("graphdata===:${response.body}");
+    final response = await http.get(
+      Uri.parse('${ApiProvider.baseUrl}/api/fatigue/fatigue-graph'),
+      headers: <String, String>{
+      'Authorization': 'Bearer $authToken',
+      },
 
-      if (response.statusCode == 200) {
-        print("graphdata===:${response.body}");
+    );
+
+    if (response.statusCode == 200) {
+
+      final responseData = json.decode(response.body);
+      fatigueGraphData = fatigueGraph.fromJson(responseData);
 
         final responseData = json.decode(response.body);
         final fatigueGraphData = FatigueGraph.fromJson(responseData);
@@ -605,6 +664,19 @@ class HomePageState extends State<HomePage> {
         midtiredness_left = fatigueGraphData.data.first.isMildTirednessLeft;
         fatigue_left = fatigueGraphData.data.first.isFatigueLeft;
 
+      print("graphdata===:${response.body}");
+
+      Map<String, dynamic> jsonData = jsonDecode(response.body);
+      List<dynamic> data = jsonData['data'];
+       name=jsonData['name'];
+      int no_of_fatigue=jsonData['no_of_fatigue_test'];
+      int  no_of_eye_=jsonData['no_of_eye_test'];
+      int eye_hscore=jsonData['eye_health_score'];
+      setState(() {
+        no_of_fatigue_test=no_of_fatigue.toString();
+        no_of_eye_test=no_of_eye_.toString();
+        eye_health_score=eye_hscore.toString();
+      });
         fatigue_right = fatigueGraphData.data.first.isFatigueRight;
         setState(() {
           midtiredness_left;
@@ -626,25 +698,32 @@ class HomePageState extends State<HomePage> {
           _spots;
         });
 
-        return json.decode(response.body);
-      } else {
-        print(response.body);
-      }
-    } catch (e) {
-      // _progressDialog!.hide();
+      return data.map((item) => double.parse(item['value'].toString())).toList();
 
-      print("exception:$e");
     }
-    throw Exception('');
+    else {
+
+      print(response.body);
+    }
   }
+  catch (e) {     // _progressDialog!.hide();
+
+    print("exception:$e");
+  }
+  throw Exception('');
+  }
+
 }
 
+
 class setReminder extends StatefulWidget {
+
   @override
   State<setReminder> createState() => ReminderState();
 }
 
 class ReminderState extends State<setReminder> {
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -702,6 +781,7 @@ class BottomDialog extends StatelessWidget {
               onTap: () {
                 Navigator.pop(context);
                 sendcustomerDetails(context, true);
+
               },
               child: Image.asset('assets/test_for_myself_img.png'),
             ),
@@ -709,8 +789,8 @@ class BottomDialog extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 12.0),
             child: Card(
-              child: GestureDetector(
-                onTap: () {
+              child:  GestureDetector(
+                onTap: ()  {
                   Navigator.pop(context);
                   showModalBottomSheet(
                     context: context,
@@ -778,8 +858,7 @@ class BottomDialog extends StatelessWidget {
     } catch (e) {
       print('Exception: $e');
     }
-  }
-}
+  }}
 
 class OtherDetailsBottomSheet extends StatefulWidget {
   @override
@@ -788,6 +867,9 @@ class OtherDetailsBottomSheet extends StatefulWidget {
 }
 
 class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
+  final _nameController = TextEditingController();
+  final _ageController = TextEditingController();
+
   Future<void> sendcustomerDetails(BuildContext context, bool isSelf,
       {String? name, String? age}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

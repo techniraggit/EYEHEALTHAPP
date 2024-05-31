@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:alarm/alarm.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -18,7 +19,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:platform_device_id_v2/platform_device_id_v2.dart';
 import 'package:project_new/HomePage.dart';
-import 'package:project_new/digitalEyeTest/TestReport.dart';
 import 'package:project_new/eyeHealthTrack.dart';
 import 'package:project_new/Rewards/rewards_sync.dart';
 import 'package:project_new/sign_up.dart';
@@ -53,7 +53,7 @@ Future<void> main() async {
   // FlutterAlarmBackgroundTrigger.initialize();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  // await Alarm.init();
+  await Alarm.init();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await FirebaseMessaging.instance.setAutoInitEnabled(true);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -85,7 +85,7 @@ class MyApp extends StatelessWidget {
         // theme: ThemeData.dark(),
         routes: {'/notification_screen':(context)=>  SignIn(),
           },//Notificationpage(
-        //debugShowCheckedModeBanner: false,
+        debugShowCheckedModeBanner: false,
       );
 
   }

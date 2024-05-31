@@ -99,33 +99,39 @@ class RewardsScreenState extends State<RewardsScreen> {
   }
 
 
+  // Sample data for line 2
   @override
   Widget build(BuildContext context) {
     String formattedDate = DateFormat('dd MMMM').format(DateTime.now());
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8.0), // Add padding
         child: ClipOval(
           child: Material(
-            color: Colors.white,
-            elevation: 4.0,
+            color: Colors.white, // Background color
+            elevation: 4.0, // Shadow
             child: InkWell(
               onTap: () {
                 Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HomePage()),
+                  context, CupertinoPageRoute(
+                  builder: (context) => HomePage(
+                  ),
+                ),
+
                 );
               },
               child: SizedBox(
-                width: 53.0,
-                height: 50.0,
+                width: 53.0, // Width of the FloatingActionButton
+                height: 50.0, // Height of the FloatingActionButton
                 child: Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8.0), // Add padding for the icon
                     child: Image.asset(
                       "assets/home_icon.png",
                       width: 20,
+                      // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
+                      // color: Colors.grey, // Uncomment if you want to apply a color to the image
                     ),
                   ),
                 ),
@@ -135,18 +141,18 @@ class RewardsScreenState extends State<RewardsScreen> {
         ),
       ),
       appBar: AppBar(
-        title: Text(
-          'Rewards',
-          style: TextStyle(
-            fontSize: 26.0,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
+        title: Text('Rewards', style: TextStyle(
+          fontSize: 26.0,
+          fontWeight: FontWeight.bold,
+          color: Colors.black, // Adjust size as needed
+          // Add other styling properties as needed
+        ),),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.notifications),
-            onPressed: () {},
+            onPressed: () {
+              // Handle notification icon pressed
+            },
           ),
         ],
       ),
@@ -157,11 +163,9 @@ class RewardsScreenState extends State<RewardsScreen> {
             Padding(
               padding: EdgeInsets.fromLTRB(16.0, 0, 0, 8),
               child: Text(
-                'Today $formattedDate',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey,
-                ),
+                'Today $formattedDate', // Display formatted current date
+                style:
+                TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
               ),
             ),
             Stack(
@@ -170,6 +174,7 @@ class RewardsScreenState extends State<RewardsScreen> {
                 Image.asset(
                   'assets/reward.png',
                   fit: BoxFit.contain,
+                  // Add any additional properties to style the image
                 ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -178,29 +183,32 @@ class RewardsScreenState extends State<RewardsScreen> {
                       'Your Eye Health Score',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 20.0,
-                        color: Colors.white,
+                          fontSize: 20.0,
+                          color: Colors.white // Adjust size as needed
+                        // Add other styling properties as needed
                       ),
                     ),
                     Text(
-                      "85", // Replace with dynamic value
+                      eyeHealthScore, // Convert double to String
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 30.0,
                         fontWeight: FontWeight.bold,
                         color: Colors.amber,
                         decoration: TextDecoration.underline,
-                        decorationColor: Colors.amber,
+                        decorationColor: Colors.amber, // Adjust size as needed
+                        // Add other styling properties as needed
                       ),
                     ),
                   ],
                 ),
               ],
             ),
+            // Add spacing between titles and dynamic list
             Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
               child: Text(
-                'Offers',
+                'Offers', // Display formatted current date
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -209,9 +217,9 @@ class RewardsScreenState extends State<RewardsScreen> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding:  EdgeInsets.all(8.0),
               child: FutureBuilder<List<Offer>>(
-                future: futureOffers, // Ensure this is defined and returns a future
+                future: futureOffers,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
@@ -221,73 +229,77 @@ class RewardsScreenState extends State<RewardsScreen> {
                     return Center(child: Text('No offers found'));
                   } else {
                     return SizedBox(
-                      height: MediaQuery.of(context).size.height / 2.3,
+                      height: MediaQuery.of(context).size.height/2.3, // Set a fixed height or any height you deem appropriate
                       child: ListView.builder(
                         itemCount: snapshot.data!.length,
                         itemBuilder: (context, index) {
                           final offer = snapshot.data![index];
                           return Padding(
-                            padding: EdgeInsets.all(8.0),
+                            padding:  EdgeInsets.all(8.0),
                             child: Card(
                               child: Row(
                                 children: [
+                                  // Image on the left side
                                   Image.network(
                                     '${ApiProvider.baseUrl}${offer.image}',
-                                    width: 100,
-                                    height: 100,
+                                    width: 100, // Set the desired width
+                                    height: 100, // Set the desired height
                                     fit: BoxFit.cover,
                                   ),
+                                  // Columns on the right side
                                   Expanded(
-                                    child: Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Padding(
-                                            padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-                                            child: Text(
-                                              offer.title,
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding:  EdgeInsets.symmetric(
+                                              vertical: 4.0, horizontal: 8.0),
+                                          child: Text(
+                                            offer.title,
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding:  EdgeInsets.symmetric(
+                                              vertical: 4.0, horizontal: 8.0),
+                                          child: Text(
+                                            offer.description,
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding:  EdgeInsets.all(2.0),
+                                          child: ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(builder: (context) => RewardSpecs(offer_id:offer.offerId)),
+                                              );
+
+                                            },
+                                            child: Text('Explore More'),
+                                            style: ElevatedButton.styleFrom(
+                                              foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
+                                              // Text color
+                                              padding: EdgeInsets.all(10),
+                                              minimumSize: Size(100, 20),
+                                              // Button padding
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(26),
+                                                // Button border radius
                                               ),
                                             ),
                                           ),
-                                          Padding(
-                                            padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-                                            child: Text(
-                                              offer.description,
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.all(2.0),
-                                            child: ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(builder: (context) => RewardSpecs(offer_id: offer.offerId)),
-                                                );
-                                              },
-                                              child: Text('Explore More'),
-                                              style: ElevatedButton.styleFrom(
-                                                foregroundColor: Colors.white,
-                                                backgroundColor: Colors.deepPurple,
-                                                padding: EdgeInsets.all(10),
-                                                minimumSize: Size(100, 20),
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(26),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],
@@ -300,11 +312,12 @@ class RewardsScreenState extends State<RewardsScreen> {
                   }
                 },
               ),
-            ),
+
+            ), // Add spacing between titles and dynamic list
             Padding(
               padding: EdgeInsets.fromLTRB(16.0, 0, 0, 10),
               child: Text(
-                'Refer & Earn',
+                'Refer & Earn', // Display formatted current date
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -313,24 +326,25 @@ class RewardsScreenState extends State<RewardsScreen> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding:  EdgeInsets.all(8.0),
               child: Card(
                 child: Row(
                   children: [
+                    // Image on the left side
                     Image.asset(
                       'assets/refer_earn.png',
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
+                      // Add any additional properties to style the image
                     ),
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0),
+                    // Columns on the right side
+                    Padding(
+                      padding:  EdgeInsets.all(8.0),
+                      child: Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                              padding:  EdgeInsets.symmetric(
+                                  vertical: 4.0, horizontal: 8.0),
                               child: Text(
                                 'First Text',
                                 style: TextStyle(
@@ -341,7 +355,8 @@ class RewardsScreenState extends State<RewardsScreen> {
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                              padding:  EdgeInsets.symmetric(
+                                  vertical: 4.0, horizontal: 8.0),
                               child: Text(
                                 'Second Text',
                                 style: TextStyle(
@@ -352,7 +367,7 @@ class RewardsScreenState extends State<RewardsScreen> {
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.all(2.0),
+                              padding:  EdgeInsets.all(2.0),
                               child: ElevatedButton(
                                 onPressed: () {
                                   Navigator.push(
@@ -362,12 +377,16 @@ class RewardsScreenState extends State<RewardsScreen> {
                                 },
                                 child: Text('Explore More'),
                                 style: ElevatedButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  backgroundColor: Colors.deepPurple,
+                                  foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
+                                  // Background color
+                                  // Text color
                                   padding: EdgeInsets.all(10),
+
                                   minimumSize: Size(100, 20),
+                                  // Button padding
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(26),
+                                    // Button border radius
                                   ),
                                 ),
                               ),
@@ -380,10 +399,20 @@ class RewardsScreenState extends State<RewardsScreen> {
                 ),
               ),
             ),
+
+
+
+
+
+
+
+
+
+
             Padding(
               padding: EdgeInsets.fromLTRB(16.0, 0, 0, 10),
               child: Text(
-                'Upload Prescription',
+                'Upload Prescription', // Display formatted current date
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -392,26 +421,27 @@ class RewardsScreenState extends State<RewardsScreen> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding:  EdgeInsets.all(8.0),
               child: Card(
                 child: Row(
                   children: [
+                    // Image on the left side
                     Image.asset(
-                      'assets/upload_icon.png',
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
+                      'assets/refer_earn.png',
+                      // Add any additional properties to style the image
                     ),
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0),
+                    // Columns on the right side
+                    Padding(
+                      padding:  EdgeInsets.all(8.0),
+                      child: Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                              padding:  EdgeInsets.symmetric(
+                                  vertical: 4.0, horizontal: 8.0),
                               child: Text(
-                                'Upload your prescription and get exciting rewards.',
+                                'First Text',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -420,9 +450,10 @@ class RewardsScreenState extends State<RewardsScreen> {
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                              padding:  EdgeInsets.symmetric(
+                                  vertical: 4.0, horizontal: 8.0),
                               child: Text(
-                                'Upload now and receive special discounts.',
+                                'Second Text',
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
@@ -431,7 +462,7 @@ class RewardsScreenState extends State<RewardsScreen> {
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.all(2.0),
+                              padding:  EdgeInsets.all(2.0),
                               child: ElevatedButton(
                                 onPressed: () {
                                   Navigator.push(
@@ -439,14 +470,18 @@ class RewardsScreenState extends State<RewardsScreen> {
                                     MaterialPageRoute(builder: (context) => PrescriptionUpload()),
                                   );
                                 },
-                                child: Text('Upload Now'),
+                                child: Text('Explore More'),
                                 style: ElevatedButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  backgroundColor: Colors.deepPurple,
+                                  foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
+                                  // Background color
+                                  // Text color
                                   padding: EdgeInsets.all(10),
+
                                   minimumSize: Size(100, 20),
+                                  // Button padding
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(26),
+                                    // Button border radius
                                   ),
                                 ),
                               ),
@@ -458,12 +493,13 @@ class RewardsScreenState extends State<RewardsScreen> {
                   ],
                 ),
               ),
-            ),
+            )
           ],
         ),
       ),
-      bottomNavigationBar: CustomBottomAppBar(),
+
+      bottomNavigationBar:
+      CustomBottomAppBar(),
     );
   }
 }
-
