@@ -10,8 +10,8 @@ import 'package:intl/intl.dart';
 import 'package:project_new/HomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'Custom_navbar/bottom_navbar.dart';
-import 'api/config.dart'; // Import intl package
+import '../Custom_navbar/bottom_navbar.dart';
+import '../api/config.dart'; // Import intl package
 
 class ReportPage extends StatefulWidget {
   @override

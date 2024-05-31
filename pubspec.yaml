@@ -65,7 +65,7 @@ dependencies:
   
   firebase_core: ^2.31.0
   firebase_messaging: ^14.9.2
-
+  flutter_tts: ^3.4.0
 
   fluttertoast: ^8.2.5
   flutter_easyloading: ^3.0.5
@@ -88,18 +88,12 @@ dependencies:
   flutter_multi_formatter: ^2.12.8
   flutter_datetime_picker_plus: ^2.2.0
   timezone: ^0.9.3
-  alarm: ^3.1.4
   video_compress: ^3.1.2
   animated_text_kit: ^4.2.2
   json_annotation: ^4.9.0
   json_serializable: ^6.8.0
   flutter_ffmpeg: ^0.4.2
   light_compressor: ^2.2.0
-
-plugin:
-  package: com.gdelataillade.alarm.alarm
-  pluginClass: AlarmPlugin
-
 
 dev_dependencies:
   flutter_test:

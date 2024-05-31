@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
@@ -19,7 +20,7 @@ import 'dart:convert' as convert;
 
 import '../Custom_navbar/customDialog.dart';
 import '../api/Api.dart';
-import '../camara.dart';
+import 'camara.dart';
 import 'TestReport.dart';
 import '../../myPlanPage.dart';
 
@@ -57,16 +58,205 @@ class SelectQuestion extends State<GiveInfo> {
   void initState() {
     super.initState();
     _questionsFuture = getQuestionApi();
+    _configureTts();
+    _onReplayPressed();
   }
 
   @override
   void dispose() {
     // Dispose of the progress dialog when the state is disposed
     _progressDialog?.hide();
+    flutterTts.stop();
     super.dispose();
   }
 
+  final FlutterTts flutterTts = FlutterTts();
+
+  void _configureTts() async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.speak(text);
+  }
+
+  void _onReplayPressed() {
+    const String replayText =
+        "Please read and answer the below questions to the best of your understanding. Your response will help us conduct the eye test effectively. All questions are mandatory.";
+    _speak(replayText);
+  }
+
   @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("EYE TEST"),
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+            onPressed: () {
+              // Add your back button functionality here
+            },
+          ),
+        ),
+        body: Stack(
+          children: [
+            FutureBuilder<List<Question>>(
+              future: _questionsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No questions available'));
+                } else {
+                  return SingleChildScrollView(
+                    padding: EdgeInsets.only(bottom: 50),
+                    // Add padding to avoid button overlap
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              GestureDetector(
+                                onTap: _onReplayPressed,
+                                child: Container(
+                                  padding: EdgeInsets.only(bottom: 10),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.play_circle_fill,
+                                        color: Colors.bluebutton,
+                                      ),
+                                      SizedBox(width: 8),
+                                      // Adjust spacing between icon and text
+                                      Text(
+                                        'Replay Audio',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                'Welcome to Eye Health',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.bluebutton,
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 40),
+                                child: Text(
+                                  'Are you wearing Eyeglasses or Contact Lenses for Vision Correction Faces, or Sightseeing?',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.black,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              // Dynamically create QuestionCheckbox widgets based on fetched questions
+                              for (var question in snapshot.data!) ...[
+                                QuestionCheckbox(
+                                  questionId: question.id,
+                                  questionText: question.questionText,
+                                  onChanged: (bool? value) {
+                                    _onCheckboxChanged(value, question.id);
+                                  },
+                                ),
+                              ],
+                              // Your existing widgets
+                              /* Positioned(
+                                bottom: 20,
+                                right: 20,
+                                child: GestureDetector(
+                                  onTap: _onReplayPressed,
+                                  child: Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+
+                                      borderRadius: BorderRadius.circular(25),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.play_circle_fill,
+                                          color: Colors.bluebutton,
+                                        ),
+                                        SizedBox(width: 8), // Adjust spacing between icon and text
+                                        Text(
+                                          'Replay Audio',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),*/
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              },
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(10, 10, 0, 10),
+                child: ElevatedButton(
+                  onPressed: () {
+                    submitApi();
+                  },
+                  child: Text('Next'),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Color(0xFF5900D9),
+                    padding: EdgeInsets.all(6),
+                    minimumSize: Size(MediaQuery.of(context).size.width, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(26),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+/*  @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
@@ -174,67 +364,8 @@ class SelectQuestion extends State<GiveInfo> {
         ),
       ),
     );
-  }
-
-/*  Future<void> getQuestionApi() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-    prefs.getString('access_token') ?? '';
-    String customer=
-        prefs.getString('customer_id') ?? '';
-
-    var headers = {
-      'Authorization': 'Bearer $authToken',
-      'Customer-Id' : customer,
-      // Remove or modify Content-Type header here
-      'Content-Type': 'application/json',
-    };
-    try {
-      // Update message while API call is in progress
-      //  _progressDialog!.update(message: 'please wait...');
-
-      http.Response response = await http.get(
-        Uri.parse('${Api.baseurl}/api/eye/get-question-details'),
-        headers: headers,
-      );
-      print(headers);
-
-      if (response.statusCode == 200) {
-        // _progressDialog!.hide();
-        print(response.body);
-
-        List<Question> parseQuestions(String responseBody) {
-          final parsed = jsonDecode(responseBody);
-          final List<dynamic> data = parsed['data'];
-
-          return data.map<Question>((json) {
-            // Assign custom names like "qst1", "qst2", etc., to the questions
-            final customName = 'qst${json['id']}';
-            return Question(id: json['id'], questionText: json['question_text']);
-          }).toList();
-      }} else {
-        // _progressDialog!.hide();
-
-        CustomAlertDialog.attractivepopupnodelay(
-            context, 'Please answer the questions carefully');
-// Map<String, dynamic> parsedJson = json.decode(response.body);
-        print(response.reasonPhrase);
-      }
-    } catch (e) {
-      // _progressDialog!.hide();
-
-      if (e is SocketException) {
-        CustomAlertDialog.attractivepopupnodelay(
-            context, 'poor internet connectivity , please try again later!');
-      }
-
-// If the server returns an error response, throw an exception
-      //  throw Exception('Failed to send data');
-    } finally {
-      //  _progressDialog!.hide();
-    }
-    // _progressDialog!.hide();
   }*/
+
   Future<List<Question>> getQuestionApi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken = prefs.getString('access_token') ?? '';
@@ -351,6 +482,31 @@ class LeftEyeTest extends StatefulWidget {
 
 class LeftEyeTestState extends State<LeftEyeTest> {
   @override
+  void initState() {
+    super.initState();
+    _configureTts();
+    _onReplayPressed();
+  }
+
+  final FlutterTts flutterTts = FlutterTts();
+
+  void _configureTts() async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.speak(text);
+  }
+
+  void _onReplayPressed() {
+    const String replayText =
+        "We will start by testing your left eye. Please place your left hand palm on your left eye gently covering the eye. At any time do not put pressure on the eye or squint to see. Start by clicking on button Left Eye.";
+    _speak(replayText);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -365,24 +521,42 @@ class LeftEyeTestState extends State<LeftEyeTest> {
       ),
       body: Stack(
         children: [
-          Container(
-            decoration: BoxDecoration(
-                /*    image: DecorationImage(
-                    image: AssetImage('assets/test.png'),
-                    // Replace with your image
-                    fit: BoxFit.cover,
-                  ),*/
-                ),
-          ),
           Column(
             children: [
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      const Center(
+                      GestureDetector(
+                        onTap: _onReplayPressed,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.play_circle_fill,
+                                color: Colors.bluebutton,
+                              ),
+                              SizedBox(width: 8),
+                              // Adjust spacing between icon and text
+                              Text(
+                                'Replay Audio',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                       Center(
                         child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10.0),
+                          padding: EdgeInsets.fromLTRB(10,10,10.0,0),
                           child: Text(
                             'Eye Test Instructions for Optimal Results',
                             style: TextStyle(
@@ -528,6 +702,26 @@ class AlphabetTestState extends State<AlphabetTest> {
     super.initState();
     _initializeCamera();
     getSnellFraction();
+    _configureTts();
+    _onReplayPressed();
+  }
+
+  final FlutterTts flutterTts = FlutterTts();
+
+  void _configureTts() async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.speak(text);
+  }
+
+  void _onReplayPressed() {
+    const String replayText =
+        "Please read the letters on the screen. If you are able to read clearly click green button. Keep clicking on green button until you are unable to see or letters are blurred. If letters are blurred click on black button. If you are unable to read the letters click on red button.";
+    _speak(replayText);
   }
 
   Future<void> _initializeCamera() async {
@@ -699,6 +893,7 @@ class AlphabetTestState extends State<AlphabetTest> {
   @override
   void dispose() {
     _controller?.dispose();
+    flutterTts.stop();
     super.dispose();
   }
 
@@ -726,16 +921,38 @@ class AlphabetTestState extends State<AlphabetTest> {
           body: Stack(
             children: [
               Container(
-                decoration: BoxDecoration(
-                    /*   image: DecorationImage(
-                    image: AssetImage('assets/test.png'),
-                    fit: BoxFit.cover,
-                  ),*/
-                    ),
+                decoration: BoxDecoration(),
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  GestureDetector(
+                    onTap: _onReplayPressed,
+                    child: Container(
+                      padding: EdgeInsets.only(bottom: 10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.play_circle_fill,
+                            color: Colors.bluebutton,
+                          ),
+                          SizedBox(width: 8),
+                          // Adjust spacing between icon and text
+                          Text(
+                            'Replay Audio',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                   SizedBox(height: 70),
                   Container(
                     width: 150,
@@ -1088,6 +1305,25 @@ class Reading extends State<ReadingTest> {
     super.initState();
     _initializeCamera();
     getReadingSnellFraction();
+    _configureTts();
+    _onReplayPressed();
+  }
+  final FlutterTts flutterTts = FlutterTts();
+
+  void _configureTts() async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.speak(text);
+  }
+
+  void _onReplayPressed() {
+    const String replayText =
+        "We are now going to test your eyesight for near reading or reading small letters at one hand distance. The problem of near reading is age related. In this test, you will be shown a word at different sizes. You have to stop and move ahead when you are able to read the word clearly. The words will start from small to big.You need to stop the moment you are able to read clearly. Lets begin";
+    _speak(replayText);
   }
 
   Future<void> _initializeCamera() async {
@@ -1208,7 +1444,12 @@ class Reading extends State<ReadingTest> {
       throw Exception('Failed to send data');
     }
   }
-
+  @override
+  void dispose() {
+    _controller?.dispose();
+    flutterTts.stop();
+    super.dispose();
+  }
   String alert = '';
   String randomText = 'Test';
   var len;
@@ -1241,7 +1482,8 @@ class Reading extends State<ReadingTest> {
         var connectivityResult = await Connectivity().checkConnectivity();
         if (connectivityResult == ConnectivityResult.none) {
           Fluttertoast.showToast(
-            msg: 'Poor internet connection , make sure you have a good internet',
+            msg:
+                'Poor internet connection , make sure you have a good internet',
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.BOTTOM,
             backgroundColor: Colors.black,
@@ -1261,11 +1503,7 @@ class Reading extends State<ReadingTest> {
     }
   }
 
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
-  }
+
 
 /*  @override
   Widget build(BuildContext context) {
@@ -1735,9 +1973,7 @@ class Reading extends State<ReadingTest> {
         'Customer-Id': CustomerId,
       };
       var request = http.Request(
-          'POST',
-          Uri.parse(
-              '${Api.baseurl}/api/eye/random-word-test'));
+          'POST', Uri.parse('${Api.baseurl}/api/eye/random-word-test'));
       request.body =
           json.encode({"test_id": id, "snellen_fraction": nextFraction});
       request.headers.addAll(headers);
@@ -1919,7 +2155,27 @@ class AstigmationTest1 extends State<AstigmationTest> {
     super.initState();
     startTimer();
     _initializeCamera();
+    _configureTts();
+    _onReplayPressed();
   }
+  final FlutterTts flutterTts = FlutterTts();
+
+  void _configureTts() async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.speak(text);
+  }
+
+  void _onReplayPressed() {
+    const String replayText =
+    "Focus on the black dot for 10 second. After 10 second look at the lines and click on the region which is more darker than others. Region A, Region B, Region C or Region D. If unable to see the lines clearly, click on Increase or click on decrease till you see any one region darker than others. If you are able to see all regions equally darker then click on option None. Once you select the region, click next";
+    _speak(replayText);
+  }
+
 
   void startTimer() {
     _timer?.cancel(); // Cancel the previous timer if it exists
@@ -2152,6 +2408,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
   @override
   void dispose() {
     _controller?.dispose();
+    flutterTts.stop();
     super.dispose();
   }
 
@@ -2191,9 +2448,36 @@ class AstigmationTest1 extends State<AstigmationTest> {
                           color: Colors.black,
                           fontWeight: FontWeight.bold),
                     ),
+
+                  ),GestureDetector(
+                    onTap: _onReplayPressed,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 0,horizontal: 0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.play_circle_fill,
+                            color: Colors.bluebutton,
+                          ),
+                          SizedBox(width: 8),
+                          // Adjust spacing between icon and text
+                          Text(
+                            'Replay Audio',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                   Padding(
-                    padding: EdgeInsets.fromLTRB(5, 0, 5, 10),
+                    padding: EdgeInsets.fromLTRB(10,0, 10,0 ),
                     child: Text(
                       'Choose the part where you can see a more darker line',
                       style: TextStyle(
@@ -2507,6 +2791,25 @@ class Astigmationtest2 extends State<AstigmationTest2> {
     });
     // delayedAPICall();
     _initializeCamera();
+    _configureTts();
+    _onReplayPressed();
+  }
+  final FlutterTts flutterTts = FlutterTts();
+
+  void _configureTts() async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.speak(text);
+  }
+
+  void _onReplayPressed() {
+    const String replayText =
+    "Focus on the black dot for 10 second. After 10 second look at the lines and click on the region which is more darker than others. Region A, Region B, Region C or Region D. If unable to see the lines clearly, click on Increase or click on decrease till you see any one region darker than others. If you are able to see all regions equally darker then click on option None. Once you select the region, click next";
+    _speak(replayText);
   }
 
   void startTimer() {
@@ -2680,11 +2983,13 @@ class Astigmationtest2 extends State<AstigmationTest2> {
   void dispose() {
     _controller?.dispose();
     _timer?.cancel();
+    flutterTts.stop();
     super.dispose();
   }
 
   @override
   int selectedValue = 0;
+
 /*
   @override
   Widget build(BuildContext context) {
@@ -2930,9 +3235,8 @@ class Astigmationtest2 extends State<AstigmationTest2> {
               Center(
                 child: SingleChildScrollView(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      SizedBox(height: 5),
                       Padding(
                         padding: EdgeInsets.fromLTRB(40, 10, 10, 2),
                         child: Text(
@@ -2942,7 +3246,34 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                               color: Colors.black,
                               fontWeight: FontWeight.bold),
                         ),
+                      ),GestureDetector(
+                        onTap: _onReplayPressed,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.play_circle_fill,
+                                color: Colors.bluebutton,
+                              ),
+                              SizedBox(width: 8),
+                              // Adjust spacing between icon and text
+                              Text(
+                                'Replay Audio',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
+                      SizedBox(height: 5),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
                         child: Text(
@@ -2960,61 +3291,61 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                         child: currentImage.isEmpty
                             ? CircularProgressIndicator()
                             : Image.asset(
-                          currentImage,
-                          width: imageSize1,
-                          fit: BoxFit.fill,
-                        ),
+                                currentImage,
+                                width: imageSize1,
+                                fit: BoxFit.fill,
+                              ),
                       ),
                       SizedBox(height: 10.0),
                       Center(
                         child: dataList.isEmpty
                             ? CircularProgressIndicator()
                             : SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceEvenly,
-                            children: dataList.map((value) {
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: OutlinedButton(
-                                  onPressed: () {
-                                    print('Button $value pressed');
-                                    ChoseAstigmation(value);
-                                    Degree = value;
-                                    setState(() {
-                                      selectedValue = value;
-                                    });
-                                  },
-                                  style: ButtonStyle(
-                                    backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                      selectedValue == value
-                                          ? Colors.lightBlueAccent
-                                          : Colors.bluebutton,
-                                    ),
-                                    side: MaterialStateProperty.all<
-                                        BorderSide>(
-                                      BorderSide(
-                                        color: Colors
-                                            .white, // Blue border color
-                                        width: 2.0,
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: dataList.map((value) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: OutlinedButton(
+                                        onPressed: () {
+                                          print('Button $value pressed');
+                                          ChoseAstigmation(value);
+                                          Degree = value;
+                                          setState(() {
+                                            selectedValue = value;
+                                          });
+                                        },
+                                        style: ButtonStyle(
+                                          backgroundColor:
+                                              MaterialStateProperty.all<Color>(
+                                            selectedValue == value
+                                                ? Colors.lightBlueAccent
+                                                : Colors.bluebutton,
+                                          ),
+                                          side: MaterialStateProperty.all<
+                                              BorderSide>(
+                                            BorderSide(
+                                              color: Colors
+                                                  .white, // Blue border color
+                                              width: 2.0,
+                                            ),
+                                          ),
+                                        ),
+                                        child: Text(
+                                          value.toString(),
+                                          style: TextStyle(
+                                            color: selectedValue == value
+                                                ? Colors.white
+                                                : Colors.white,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    value.toString(),
-                                    style: TextStyle(
-                                      color: selectedValue == value
-                                          ? Colors.white
-                                          : Colors.white,
-                                    ),
-                                  ),
+                                    );
+                                  }).toList(),
                                 ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
+                              ),
                       ),
                       SizedBox(height: 10.0),
                       Row(
@@ -3063,14 +3394,14 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                 child: _controller != null
                     ? CameraPreview(_controller!)
                     : Container(
-                  color: Colors.black,
-                  child: Center(
-                    child: Text(
-                      'Loading Camera...',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
+                        color: Colors.black,
+                        child: Center(
+                          child: Text(
+                            'Loading Camera...',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
               ),
               Positioned(
                 bottom: 10,
@@ -3079,31 +3410,35 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                 child: Column(
                   children: [
                     SizedBox(height: 10), // Adjust as needed
-                    Container(
-                      height: 40,
-                      decoration: BoxDecoration(
-                        // Adjust colors as needed
-                        color: Colors.bluebutton,
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: MaterialButton(
-                        onPressed: () {
-                          if (Degree == 500) {
-                            CustomAlertDialog.attractivepopup(
-                                context, 'please select the degree');
-                          } else {
-                            Navigator.push(
-                              context,
-                              CupertinoPageRoute(
-                                  builder: (context) => ShadowTest()),
-                            );
-                          }
-                        },
-                        child: Text(
-                          'Next',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Container(
+
+                        decoration: BoxDecoration(
+                          // Adjust colors as needed
+                          color: Colors.bluebutton,
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: MaterialButton(
+                          minWidth: double.infinity,
+                          onPressed: () {
+                            if (Degree == 500) {
+                              CustomAlertDialog.attractivepopup(
+                                  context, 'please select the degree');
+                            } else {
+                              Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                    builder: (context) => ShadowTest()),
+                              );
+                            }
+                          },
+                          child: Text(
+                            'Next',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                       ),
@@ -3158,6 +3493,25 @@ class AstigmationTestNone extends State<AstigmationTest3> {
     super.initState();
     startTimer();
     _initializeCamera();
+    _configureTts();
+    _onReplayPressed();
+  }
+  final FlutterTts flutterTts = FlutterTts();
+
+  void _configureTts() async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.speak(text);
+  }
+
+  void _onReplayPressed() {
+    const String replayText =
+    "Focus on the black dot for 10 second. After 10 second look at the lines and click on the degree option which is more darker than others. If unable to see the lines clearly, click on Increase or click on decrease till you see any one line darker than others. Once you select the degree, click next" ;
+    _speak(replayText);
   }
 
   void startTimer() {
@@ -3462,6 +3816,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
   @override
   void dispose() {
     _controller?.dispose();
+    flutterTts.stop();
     super.dispose();
   }
 
@@ -3915,6 +4270,33 @@ class AstigmationTestNone extends State<AstigmationTest3> {
                                   ),
                                 ),
                               ),
+                              GestureDetector(
+                                onTap: _onReplayPressed,
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.play_circle_fill,
+                                        color: Colors.bluebutton,
+                                      ),
+                                      SizedBox(width: 8),
+                                      // Adjust spacing between icon and text
+                                      Text(
+                                        'Replay Audio',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                               SizedBox(height: 1.0),
                               Padding(
                                 padding:
@@ -4107,7 +4489,6 @@ class AstigmationTestNone extends State<AstigmationTest3> {
   }
 }
 
-
 class ShadowTest extends StatefulWidget {
   @override
   _ShadowTestState createState() => _ShadowTestState();
@@ -4121,14 +4502,34 @@ class _ShadowTestState extends State<ShadowTest> {
   void initState() {
     super.initState();
     _initializeCamera();
+    _configureTts();
+    _onReplayPressed();
   }
+  final FlutterTts flutterTts = FlutterTts();
+
+  void _configureTts() async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.speak(text);
+  }
+
+  void _onReplayPressed() {
+    const String replayText =
+    "you are doing well. Now we are at a crucial part of the eye test. In this test you will observe a small letter with a shadow and with increase in size of the letter the shadow will starts to decrease. You will encounter a point where the letter will appear better than the first time you saw the letter. Please select that state and then press Next. For clear instruction and visual example click on ‘?’ icon at the top of the screen. Start by clicking on increase or decrease. When done click on next.";
+    _speak(replayText);
+  }
+
 
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
-          (camera) => camera.lensDirection == CameraLensDirection.front,
+      (camera) => camera.lensDirection == CameraLensDirection.front,
       orElse: () =>
-      _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
+          _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
     );
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
@@ -4175,8 +4576,8 @@ class _ShadowTestState extends State<ShadowTest> {
     //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
     String CustomerId = prefs.getString('customer_id') ?? '';
 
     String text = prefs.getString('test') ?? '';
@@ -4241,7 +4642,12 @@ class _ShadowTestState extends State<ShadowTest> {
       throw Exception('Failed to send data');
     }
   }
-
+  @override
+  void dispose() {
+    _controller?.dispose();
+    flutterTts.stop();
+    super.dispose();
+  }
   String alert = '';
   String dynamicText = 'A';
   double currentTextSize = 15.118110236220474; //4-29
@@ -4266,12 +4672,9 @@ class _ShadowTestState extends State<ShadowTest> {
 
   bool isCameraInitialized = false;
 
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
-  }
 
+
+/*
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -4312,6 +4715,7 @@ class _ShadowTestState extends State<ShadowTest> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
+
                               Padding(
                                 padding: const EdgeInsets.fromLTRB(0, 10, 4, 0),
                                 child: Text(
@@ -4323,6 +4727,7 @@ class _ShadowTestState extends State<ShadowTest> {
                                   ),
                                 ),
                               ),
+
                               Spacer(),
                               // This pushes the next widget to the center
                               Center(
@@ -4377,7 +4782,7 @@ class _ShadowTestState extends State<ShadowTest> {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 20,
-                            color:alert== 'Good to go'
+                            color: alert == 'Good to go'
                                 ? Colors.green
                                 : Colors.red,
                             fontWeight: FontWeight.bold,
@@ -4433,6 +4838,181 @@ class _ShadowTestState extends State<ShadowTest> {
       ),
     );
   }
+*/
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => GiveInfo()),
+        );
+        return false;
+      },
+      child: MaterialApp(
+        home: Scaffold(
+          appBar: AppBar(
+            title: Text("EYE TEST"),
+            centerTitle: true,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+              onPressed: () {
+                // Add your back button functionality here
+              },
+            ),
+          ),
+          body: Stack(
+            fit: StackFit.expand,
+            children: <Widget>[
+              SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    GestureDetector(
+                      onTap: _onReplayPressed,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.play_circle_fill,
+                              color: Colors.bluebutton,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'Replay Audio',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20), // Add some space after the button
+                    Padding(
+                      padding: const EdgeInsets.only(top:90.0),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height * 0.4,
+                        color: Colors.black,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 10, 4, 0),
+                              child: Text(
+                                'Shadow Test',
+                                style: TextStyle(
+                                  fontSize: 20.0,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            Spacer(),
+                            Center(
+                              child: Text(
+                                dynamicText,
+                                style: TextStyle(
+                                  fontSize: currentTextSize,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            Spacer(),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20), // Add some space after the container
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Container(
+                            height: 40,
+                            width: 150,
+                            margin: EdgeInsets.fromLTRB(10, 5, 20, 0),
+                            child: CustomElevatedButtonY(
+                              text: 'Decrease',
+                              onPressed: () => changeSize('down'),
+                            ),
+                          ),
+                          Container(
+                            height: 40,
+                            margin: EdgeInsets.fromLTRB(10, 5, 20, 0),
+                            child: CustomElevatedButtonG(
+                              text: 'Increase',
+                              onPressed: () => changeSize('up'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(
+                        alert,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: alert == 'Good to go' ? Colors.green : Colors.red,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                right: 10,
+                width: 100,
+                height: 150,
+                child: _controller != null
+                    ? CameraPreview(_controller!)
+                    : Container(
+                  color: Colors.black,
+                ),
+              ),
+            ],
+          ),
+          bottomNavigationBar: Padding(
+            padding: const EdgeInsets.fromLTRB(15.0, 0, 15, 8),
+            child: Container(
+              height: 40,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.bluebutton,
+                borderRadius: BorderRadius.circular(25),
+              ),
+              child: MaterialButton(
+                onPressed: () {
+                  // Call your function here
+                  CylTestApi();
+                },
+                child: Text(
+                  'Next',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14.0,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+
 
   Future<void> CylTestApi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -4494,6 +5074,25 @@ class redgreen extends State<RedGreenTest> {
     super.initState();
     fetchData();
     _initializeCamera();
+    _configureTts();
+    _onReplayPressed();
+  }
+  final FlutterTts flutterTts = FlutterTts();
+
+  void _configureTts() async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.speak(text);
+  }
+
+  void _onReplayPressed() {
+    const String replayText =
+    "Thanks for going through the test. We are now going to show you random letters basis your test results on a red and green background. You have to observe and tell in which colour do you see letters more better.You only need to identify and tell which colour background is better than the other. Lets start the test. if more than 2 times same colour chosen We recommend you to redo the test and follow all instructions correctly";
+        _speak(replayText);
   }
 
   Future<void> _initializeCamera() async {
@@ -4614,7 +5213,12 @@ class redgreen extends State<RedGreenTest> {
       throw Exception('Failed to send data');
     }
   }
-
+  @override
+  void dispose() {
+    _controller?.dispose();
+    flutterTts.stop();
+    super.dispose();
+  }
   String alert = '';
   Map<String, dynamic> _data = {};
   static String action = "";
@@ -4797,7 +5401,7 @@ class redgreen extends State<RedGreenTest> {
             jsonResponseMap["data"].containsKey("data") &&
             jsonResponseMap["data"]["data"].containsKey("eye_status")) {
           String eyeStatus = jsonResponseMap["data"]["data"]["eye_status"];
-        //  String patientName = jsonResponseMap["data"]["data"]["full_name"];
+          //  String patientName = jsonResponseMap["data"]["data"]["full_name"];
           String patientAge = jsonResponseMap["data"]["user_age"];
           int age = int.tryParse(patientAge) ?? 0; // Safely parse age
           print("Patient Age: $age");
@@ -4813,13 +5417,14 @@ class redgreen extends State<RedGreenTest> {
               if (age < 40 && jsonResponseMap["data"]['data']["is_completed"]) {
                 print("ssssssssss");
                 // If age < 40 and the test is completed, navigate to the TestReport
-                  CustomAlertDialog.attractivepopup(
-                      context, 'You Have Successfully Completed Eye Test.....');
+                CustomAlertDialog.attractivepopup(
+                    context, 'You Have Successfully Completed Eye Test.....');
                 SharedPreferences prefs = await SharedPreferences.getInstance();
                 await prefs.setString('page', "redgreen");
                 Navigator.push(
                     context,
-                    CupertinoPageRoute(builder: (context) => const TestReport()));
+                    CupertinoPageRoute(
+                        builder: (context) => const TestReport()));
               } else {
                 // Otherwise, navigate to the next appropriate screen
                 Navigator.push(
@@ -4902,11 +5507,7 @@ class redgreen extends State<RedGreenTest> {
     }
   }
 
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
-  }
+
 
   bool _isCameraVisible = true;
 
@@ -4927,7 +5528,7 @@ class redgreen extends State<RedGreenTest> {
         children: <Widget>[
           SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.only(top: 180.0),
+              padding: const EdgeInsets.only(top: 100.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -4940,6 +5541,35 @@ class redgreen extends State<RedGreenTest> {
                         fontSize: 24.0,
                         color: Color(0xFF1E3777),
                         fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: GestureDetector(
+                      onTap: _onReplayPressed,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.play_circle_fill,
+                              color: Colors.bluebutton,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'Replay Audio',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -4992,7 +5622,7 @@ class redgreen extends State<RedGreenTest> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 10,height: 10),
+                  SizedBox(width: 10, height: 10),
                   Container(
                     padding: EdgeInsets.all(8),
                     child: Text(
@@ -5000,18 +5630,19 @@ class redgreen extends State<RedGreenTest> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 20,
-                        color: alert == 'Good to go' ? Colors.green : Colors.red,
+                        color:
+                            alert == 'Good to go' ? Colors.green : Colors.red,
                         fontWeight: FontWeight.normal,
                       ),
                     ),
                   ),
-                  SizedBox(height: 60), // Add some space to avoid overlap with the button
+                  SizedBox(height: 60),
+                  // Add some space to avoid overlap with the button
                 ],
               ),
             ),
           ),
           Positioned(
-            top: 10,
             right: 10,
             child: Visibility(
               visible: _isCameraVisible,
@@ -5061,54 +5692,91 @@ class redgreen extends State<RedGreenTest> {
       ),
     );
   }
-
-
-
-
 }
 
-class RightEye extends StatelessWidget {
+class RightEye extends StatefulWidget {
+//for Red Green Test Screen
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text("EYE TEST"),
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-            onPressed: () {
-              // Add your back button functionality here
-            },
-          ),
-          // Set AppBar background color
-        ),
-        body: Righteye(),
-      ),
-    );
-  }
+  RightEyeState createState() => RightEyeState();
 }
+class RightEyeState extends State<RightEye> {
+
+  @override
+  void initState() {
+    super.initState();
+    _configureTts();
+    _onReplayPressed();
+  }
+  final FlutterTts flutterTts = FlutterTts();
+
+  void _configureTts() async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.speak(text);
+  }
+
+  void _onReplayPressed() {
+    const String replayText =
+    "We will start by testing your right eye. Please place your right hand palm on your right eye gently covering the eye. At any time do not put pressure on the eye or squint to see. Start by clicking on button right Eye";
+    _speak(replayText);
+  }
 
 // Add your desired functionality here
-
-class Righteye extends StatelessWidget {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-
+      appBar: AppBar(
+        title: Text("EYE TEST"),
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+          onPressed: () {
+            // Add your back button functionality here
+          },
+        ),
+      ),
       body: Stack(
         children: [
-          Container(
-            decoration: BoxDecoration(
-            ),
-          ),
           Column(
             children: [
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      const Center(
-                        child: Padding(
+                      GestureDetector(
+                        onTap: _onReplayPressed,
+                        child: Container(
+                          padding: EdgeInsets.only(bottom: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.play_circle_fill,
+                                color: Colors.bluebutton,
+                              ),
+                              SizedBox(width: 8),
+                              // Adjust spacing between icon and text
+                              Text(
+                                'Replay Audio',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                       Center(
+                        child:
+                        Padding(
                           padding: EdgeInsets.symmetric(horizontal: 10.0),
                           child: Text(
                             'Eye Test Instructions for Optimal Results',

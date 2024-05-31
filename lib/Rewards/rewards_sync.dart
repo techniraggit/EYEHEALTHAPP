@@ -21,15 +21,15 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:project_new/models/OfferData.dart';
 import 'package:project_new/models/address_list.dart';
-import 'package:project_new/redeem_sucess.dart';
+import 'package:project_new/Rewards/redeem_sucess.dart';
 import 'package:project_new/sign_up.dart';
 import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'Custom_navbar/bottom_navbar.dart';
-import 'HomePage.dart';
-import 'api/Api.dart';
-import 'api/config.dart';
+import '../Custom_navbar/bottom_navbar.dart';
+import '../HomePage.dart';
+import '../api/Api.dart';
+import '../api/config.dart';
 import 'new_address_screen.dart';
 
 class RewardContact extends StatefulWidget {

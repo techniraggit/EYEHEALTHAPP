@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_rename/package_rename.dart';
-import 'package:project_new/eyeFatigueTest.dart';
+import 'package:project_new/eyeFatigueTest/eyeFatigueTest.dart';
 import 'package:project_new/digitalEyeTest/testScreen.dart';
 import 'package:project_new/myPlanPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,7 +17,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'Custom_navbar/bottom_navbar.dart';
 import 'api/Api.dart';
 import 'api/config.dart';
-import 'eyeFatigueTest.dart';
+import 'eyeFatigueTest/eyeFatigueTest.dart';
 import 'models/fatigueGraphModel.dart';
 
 class HomePage extends StatefulWidget {
@@ -78,11 +78,10 @@ class HomePageState extends State<HomePage> {
             child: InkWell(
               onTap: () {
                 Navigator.push(
-                  context, CupertinoPageRoute(
-                  builder: (context) => HomePage(
+                  context,
+                  CupertinoPageRoute(
+                    builder: (context) => HomePage(),
                   ),
-                ),
-
                 );
               },
               child: SizedBox(
@@ -90,7 +89,8 @@ class HomePageState extends State<HomePage> {
                 height: 50.0, // Height of the FloatingActionButton
                 child: Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0), // Add padding for the icon
+                    padding: const EdgeInsets.all(8.0),
+                    // Add padding for the icon
                     child: Image.asset(
                       "assets/home_icon.png",
                       width: 20,
@@ -127,13 +127,13 @@ class HomePageState extends State<HomePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           GestureDetector(
-                            onTap:(){
+                            onTap: () {
                               Navigator.push(
                                 context,
                                 CupertinoPageRoute(
-                                    builder: (context) =>
-                                        setReminder()),
-                              );                            } ,
+                                    builder: (context) => setReminder()),
+                              );
+                            },
                             child: Text(
                               salutation,
                               style: const TextStyle(
@@ -184,12 +184,12 @@ class HomePageState extends State<HomePage> {
             Padding(
               padding: const EdgeInsets.all(15.0),
               child: GestureDetector(
-                onTap: ()  {
+                onTap: () {
                   showModalBottomSheet(
                     context: context,
                     builder: (context) => BottomDialog(),
                   );
-               /*   Navigator.push(
+                  /*   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => AddCustomerPage()),
                   );*/
@@ -198,20 +198,22 @@ class HomePageState extends State<HomePage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 10),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
               child: GestureDetector(
-                onTap: ()  {
+                onTap: () {
                   // sendcustomerDetails(context);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => EyeFatigueStartScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => EyeFatigueStartScreen()),
                   );
                 },
                 child: Image.asset('assets/eyeFatigueTest.png'),
               ),
             ),
             GestureDetector(
-              onTap: ()  {
+              onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => MyPlan()),
@@ -255,7 +257,7 @@ class HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-             Padding(
+            Padding(
               padding: EdgeInsets.all(8.0),
               child: Card(
                 child: ListTile(
@@ -270,7 +272,6 @@ class HomePageState extends State<HomePage> {
                               Text('Fatigue Right'),
                               Text(
                                 fatigue_right ? 'Yes' : 'No',
-
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -303,7 +304,6 @@ class HomePageState extends State<HomePage> {
                             children: [
                               Text('Fatigue left'),
                               Text(
-
                                 fatigue_left ? 'Yes' : 'No',
                                 style: TextStyle(
                                   fontSize: 16,
@@ -344,7 +344,7 @@ class HomePageState extends State<HomePage> {
             ),
             Padding(
               padding:
-              const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
               child: Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -534,31 +534,25 @@ class HomePageState extends State<HomePage> {
           ],
         ),
       ),
-
-      bottomNavigationBar:
-      CustomBottomAppBar(),
-
-
-
+      bottomNavigationBar: CustomBottomAppBar(),
     );
   }
+
   Future<void> sendcustomerDetails(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
     final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Authorization': 'Bearer $authToken',
       'Content-Type': 'application/json',
-
     };
 
     var body = json.encode({
       "is_self": true,
     });
-
 
     try {
       final response = await http.post(
@@ -572,15 +566,6 @@ class HomePageState extends State<HomePage> {
           print('sddd ${response.body}');
         }
         Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-
-  String _status = '';
-  List<FlSpot> _value = [];
-  List<FlSpot> _spots = [FlSpot(0, 0)];// Initialize _spots as needed
-  bool fatigue_left=false;
-  bool fatigue_right=false;
-  bool midtiredness_right= false;
-  bool midtiredness_left=false;
-
       } else {
         print('Failed with status code: ${response.statusCode}');
         print('Failed sddd ${response.body}');
@@ -591,8 +576,16 @@ class HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> getGraph() async {
+  String _status = '';
+  List<FlSpot> _value = [];
+  List<FlSpot> _spots = [FlSpot(0, 0)]; // Initialize _spots as needed
+  bool fatigue_left = false;
+  bool fatigue_right = false;
+  bool midtiredness_right = false;
+  bool midtiredness_left = false;
 
+  Future<void> getGraph() async {
+    try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken = prefs.getString('access_token') ?? '';
       final response = await http.get(
@@ -608,24 +601,23 @@ class HomePageState extends State<HomePage> {
 
         final responseData = json.decode(response.body);
         final fatigueGraphData = FatigueGraph.fromJson(responseData);
-        midtiredness_left=fatigueGraphData.data.first.isMildTirednessLeft;
-        midtiredness_left=fatigueGraphData.data.first.isMildTirednessLeft;
-        fatigue_left=fatigueGraphData.data.first.isFatigueLeft;
+        midtiredness_left = fatigueGraphData.data.first.isMildTirednessLeft;
+        midtiredness_left = fatigueGraphData.data.first.isMildTirednessLeft;
+        fatigue_left = fatigueGraphData.data.first.isFatigueLeft;
 
-        fatigue_right=fatigueGraphData.data.first.isFatigueRight;
- setState(() {
-   midtiredness_left;
-   midtiredness_right;
-   fatigue_right;
-   fatigue_left;
- });
-        if (_spots != null ) {
+        fatigue_right = fatigueGraphData.data.first.isFatigueRight;
+        setState(() {
+          midtiredness_left;
+          midtiredness_right;
+          fatigue_right;
+          fatigue_left;
+        });
+        if (_spots != null) {
           _spots = fatigueGraphData.data
               .asMap()
               .entries
-              .map((entry) => FlSpot(entry.value.value,10))
+              .map((entry) => FlSpot(entry.value.value, 10))
               .toList();
-
         } else {
           _spots = [FlSpot(0, 0)];
         }
@@ -634,30 +626,25 @@ class HomePageState extends State<HomePage> {
           _spots;
         });
 
-      return json.decode(response.body);
-
-    } else {
-
-      print(response.body);
-
-    }
-  }
-  catch (e) {     // _progressDialog!.hide();
+        return json.decode(response.body);
+      } else {
+        print(response.body);
+      }
+    } catch (e) {
+      // _progressDialog!.hide();
 
       print("exception:$e");
     }
     throw Exception('');
-  }*/
-}}
+  }
+}
 
 class setReminder extends StatefulWidget {
-
   @override
   State<setReminder> createState() => ReminderState();
 }
 
 class ReminderState extends State<setReminder> {
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -666,12 +653,8 @@ class ReminderState extends State<setReminder> {
               title: const Text('Plugin example app'),
             ),
             body: Builder(builder: (context) {
-              return Center(
-
-              );
-            }
-            )
-        ));
+              return Center();
+            })));
   }
 }
 
@@ -719,7 +702,6 @@ class BottomDialog extends StatelessWidget {
               onTap: () {
                 Navigator.pop(context);
                 sendcustomerDetails(context, true);
-
               },
               child: Image.asset('assets/test_for_myself_img.png'),
             ),
@@ -727,8 +709,8 @@ class BottomDialog extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 12.0),
             child: Card(
-              child:  GestureDetector(
-                onTap: ()  {
+              child: GestureDetector(
+                onTap: () {
                   Navigator.pop(context);
                   showModalBottomSheet(
                     context: context,
@@ -796,7 +778,8 @@ class BottomDialog extends StatelessWidget {
     } catch (e) {
       print('Exception: $e');
     }
-  }}
+  }
+}
 
 class OtherDetailsBottomSheet extends StatefulWidget {
   @override
@@ -805,9 +788,6 @@ class OtherDetailsBottomSheet extends StatefulWidget {
 }
 
 class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
-  final _nameController = TextEditingController();
-  final _ageController = TextEditingController();
-
   Future<void> sendcustomerDetails(BuildContext context, bool isSelf,
       {String? name, String? age}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -860,134 +840,147 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
     }
   }
 
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _ageController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Test For Someone Else',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              IconButton(
-                icon: Icon(Icons.close),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          ),
-          Divider(thickness: 1.5, color: Colors.grey.shade400),
-          SizedBox(height: 20),
-          SizedBox(
-            height: 55,
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
-              child: TextField(
-                controller: _nameController,
-                textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  labelText: 'Full Name',
-                  labelStyle: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.background,
-                    fontWeight: FontWeight.w100,
-                  ),
-                  hintText: 'Enter Full Name',
-                  hintStyle: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.hinttext,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius:
-                        BorderRadius.circular(27.0), // Add circular border
-                  ),
-                  // Set floatingLabelBehavior to always display the label
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                  // Add button to the end of the TextField
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Test For Someone Else',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-                style:
-                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+                IconButton(
+                  icon: Icon(Icons.close),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+            Divider(thickness: 1.5, color: Colors.grey.shade400),
+            SizedBox(height: 20),
+            SizedBox(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
+                child: TextFormField(
+                  controller: _nameController,
+                  textInputAction: TextInputAction.next,
+                  decoration: InputDecoration(
+                    labelText: 'Full Name',
+                    labelStyle: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w100,
+                    ),
+                    hintText: 'Enter Full Name',
+                    hintStyle: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius:
+                          BorderRadius.circular(27.0), // Add circular border
+                    ),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                  ),
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(30),
+                    // Limit to 30 characters
+                  ],
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a full name';
+                    }
+                    final nameRegExp = RegExp(r'^[a-zA-Z\s]+$');
+                    if (!nameRegExp.hasMatch(value)) {
+                      return 'Name must contain only alphabets';
+                    }
+                    return null;
+                  },
+                ),
               ),
             ),
-          ),
-          SizedBox(height: 20),
-          SizedBox(
-            height: 55,
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
-              child: TextFormField(
-                controller: _ageController,
-                textInputAction: TextInputAction.next,
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(3),
-                ],
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter an age';
+            SizedBox(height: 20),
+            SizedBox(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
+                child: TextFormField(
+                  controller: _ageController,
+                  textInputAction: TextInputAction.next,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(3),
+                  ],
+                  decoration: InputDecoration(
+                    labelText: 'Age',
+                    labelStyle: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    hintText: 'Age',
+                    hintStyle: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius:
+                          BorderRadius.circular(27.0), // Add circular border
+                    ),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                  ),
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter an age';
+                    }
+                    int? age = int.tryParse(value);
+                    if (age == null || age < 12 || age > 100) {
+                      return 'Age must be between 12 and 100';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    sendcustomerDetails(context, false,
+                        name: _nameController.text, age: _ageController.text);
                   }
-                  int? age = int.tryParse(value);
-                  if (age == null || age < 12 || age > 100) {
-                    return 'Age must be between 12 and 100';
-                  }
-                  return null;
                 },
-                decoration: InputDecoration(
-                  labelText: 'Age',
-                  labelStyle: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.background,
-                    fontWeight: FontWeight.w400,
+                child: Text('Submit'),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size(350, 50),
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.bluebutton,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
                   ),
-                  hintText: 'Age',
-                  hintStyle: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.hinttext,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius:
-                        BorderRadius.circular(27.0), // Add circular border
-                  ),
-                  // Set floatingLabelBehavior to always display the label
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                  // Add button to the end of the TextField
-
-                ),
-                style:
-                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
-              ),
-            ),
-          ),
-          SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
-
-              onPressed: () {
-                sendcustomerDetails(context, false,
-                    name: _nameController.text, age: _ageController.text);
-              },
-              child: Text('Submit'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(350, 50),
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.bluebutton,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

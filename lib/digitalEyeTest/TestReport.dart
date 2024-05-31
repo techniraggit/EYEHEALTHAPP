@@ -341,41 +341,29 @@ class TestReportState extends State<TestReport> {
                     child: CircularProgressIndicator(),
                   )
                 : Column(
-                    //
-                    //  child:SingleChildScrollView(
 
-                    //mainAxisAlignment: MainAxisAlignment.center,
-                    //crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      /**
-                    Container(
-                    child:Image.asset(
-                    'assets/zukti_logo.png', // Replace with your logo path
-                    width: 300, // Adjust width as needed
-                    height: 150,
-                    // Adjust height as needed
-                    ),),**/
-
                       SizedBox(height: 80.0),
                       Container(
-                        child: const Text(
+                        child:  Text(
                           'Patient Report', // Text content
                           style: TextStyle(
                             fontSize: 20, // Font size
                             fontWeight: FontWeight.bold, // Font weight
-                            color: Color(0xFF1E3777), // Text color
+                            color: Colors.deepPurple, // Text color
                             fontStyle: FontStyle.normal, // Font style
+
                           ),
                         ),
                       ),
                       Container(
                         padding: EdgeInsets.all(10),
-                        child: const Text(
+                        child:  Text(
                           'Patient Details', // Text content
                           style: TextStyle(
                             fontSize: 12, // Font size
                             fontWeight: FontWeight.bold, // Font weight
-                            color: Color(0xFF1E3777), // Text color
+                            color: Colors.black, // Text color
                             fontStyle: FontStyle.normal, // Font style
                           ),
                         ),
@@ -391,11 +379,11 @@ class TestReportState extends State<TestReport> {
                           children: <Widget>[
                             Text('Full name',
                                 style: TextStyle(
-                                    fontSize: 16, color: Color(0xFF1E3777))),
+                                    fontSize: 16, color: Colors.black)),
                             Text(
                               'Age',
                               style: TextStyle(
-                                  fontSize: 16, color: Color(0xFF1E3777)),
+                                  fontSize: 16, color: Colors.black),
                             ),
                           ],
                         ),
@@ -425,27 +413,29 @@ class TestReportState extends State<TestReport> {
                             Text(
                               'EYE',
                               style: TextStyle(
-                                  fontSize: 16, color: Color(0xFF1E3777)),
+                                  fontSize: 16, color: Colors.black),
                             ),
                             Text(
                               'SPH',
                               style: TextStyle(
-                                  fontSize: 16, color: Color(0xFF1E3777)),
+                                  fontSize: 16, color: Colors.black),
                             ),
                             Text(
                               'CYL',
                               style: TextStyle(
-                                  fontSize: 16, color: Color(0xFF1E3777)),
+                                  fontSize: 16, color: Colors.black),
                             ),
                             Text(
                               'AXIS',
                               style: TextStyle(
-                                  fontSize: 16, color: Color(0xFF1E3777)),
+                                  fontSize: 16, color: Colors.black),
                             ),
                             Text(
                               'ADD',
                               style: TextStyle(
-                                  fontSize: 16, color: Color(0xFF1E3777)),
+                                  fontSize: 16, color: Colors.black
+
+                              ),
                             ),
                           ],
                         ),

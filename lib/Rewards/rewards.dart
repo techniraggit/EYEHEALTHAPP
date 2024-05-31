@@ -7,12 +7,12 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:project_new/api/config.dart';
-import 'package:project_new/rewards_sync.dart';
+import 'package:project_new/Rewards/rewards_sync.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'Custom_navbar/bottom_navbar.dart';
-import 'HomePage.dart';
-import 'Custom_navbar/customDialog.dart'; // Import intl package
+import '../Custom_navbar/bottom_navbar.dart';
+import '../HomePage.dart';
+import '../Custom_navbar/customDialog.dart'; // Import intl package
 
 class Offer {
   final String offerId;

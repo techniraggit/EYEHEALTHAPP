@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:project_new/ReportPage.dart';
+import 'package:project_new/eyeFatigueTest/ReportPage.dart';
 import 'package:project_new/eyeHealthTrack.dart';
-import 'package:project_new/rewards.dart';
+import 'package:project_new/Rewards/rewards.dart';
 import 'package:project_new/user_profile.dart';
 
 import '../notification/notification_dashboard.dart';
 import '../profileDashboard.dart';
-import '../rewards_sync.dart';
+import '../Rewards/rewards_sync.dart';
 
 
 class CustomBottomAppBar extends StatelessWidget {

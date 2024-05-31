@@ -15,11 +15,11 @@ import 'package:geocoding/geocoding.dart'hide Location;
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart';
 import 'package:location/location.dart'hide LocationAccuracy;
-import 'package:project_new/rewards_sync.dart';
+import 'package:project_new/Rewards/rewards_sync.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'api/config.dart';
+import '../api/config.dart';
 
 
 class NewAddressScreen extends StatefulWidget {
