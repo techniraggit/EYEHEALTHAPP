@@ -133,7 +133,8 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('alarm 3.1.4')),
       body: SafeArea(
-        child: alarms.isNotEmpty
+        child:
+        alarms.isNotEmpty
             ? ListView.separated(
           itemCount: alarms.length,
           separatorBuilder: (context, index) => const Divider(height: 1),

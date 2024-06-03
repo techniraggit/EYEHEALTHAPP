@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:alarm/alarm.dart';
 import 'package:alarm/model/alarm_settings.dart';
 import 'package:draw_graph/draw_graph.dart';
@@ -13,6 +14,7 @@ import 'package:flutter/services.dart';
 
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:project_new/alarm/demo_main.dart';
 import 'package:project_new/eyeFatigueTest.dart';
@@ -86,19 +88,24 @@ class HomePageState extends State<HomePage> {
   // Define selectedDate within the _CalendarButtonState class
 
   late List<AlarmSettings> alarms;
-
+  List<Map<String, dynamic>>? _datagraph;
   static StreamSubscription<AlarmSettings>? subscription;
-
-  Future<void> _selectDate(BuildContext context) async {
+  late DateTime _fromDate;
+  late DateTime _toDate;
+  Future<void> _selectDate(BuildContext context, bool isFromDate) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2015, 8),
+      initialDate: isFromDate ? _fromDate : _toDate,
+      firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
-    if (picked != null && picked != selectedDate) {
+    if (picked != null && picked != (isFromDate ? _fromDate : _toDate)) {
       setState(() {
-        selectedDate = picked;
+        if (isFromDate) {
+          _fromDate = picked;
+        } else {
+          _toDate = picked;
+        }
       });
     }
   }
@@ -111,9 +118,9 @@ class HomePageState extends State<HomePage> {
       checkAndroidNotificationPermission();
       checkAndroidScheduleExactAlarmPermission();
     }
+    // loadAlarms();
 
     subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
-    // getGraph();
     getGraph().then((data) {
       setState(() {
         _data = data;
@@ -147,7 +154,11 @@ class HomePageState extends State<HomePage> {
     );
     loadAlarms();
   }
-
+  @override
+  void dispose() {
+    subscription?.cancel();
+    super.dispose();
+  }
   Future<void> checkAndroidExternalStoragePermission() async {
     final status = await Permission.storage.status;
     if (status.isDenied) {
@@ -350,42 +361,19 @@ class HomePageState extends State<HomePage> {
               },
               child: Image.asset('assets/find_near_by_store.png'),
             ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 10, 15, 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'EYE HEALTH STATUS',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.deepPurple,
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  TextButton(
-                    onPressed: () async {
-                      final DateTime? picked = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(2000),
-                        //_fromDates[index] != null ? _fromDates[index]! : DateTime(2000),
+             Padding(
+               padding:
+               const EdgeInsets.symmetric(horizontal: 17.0, vertical: 10),               child: Text(
+                'EYE HEALTH STATUS',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepPurple,
+                ),
+                           ),
+             ),
+            SizedBox(width: 8),
 
-                        // firstDate:_fromDates[index] != null?? DateTime(2000), // Set the first selectable date to the current date
-                        lastDate: DateTime(2101),
-                      );
-                      if (picked != null) {
-                        // _toDates[index] = picked;
-
-                        setState(() {});
-                      }
-                    },
-                    child: Image.asset('assets/calender.png'),
-                  ),
-                ],
-              ),
-            ),
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Card(
@@ -461,7 +449,7 @@ class HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            const Padding(
+             Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
               child: Text(
                 'EYE HEALTH GRAPH OVERVIEW', // Display formatted current date
@@ -472,107 +460,133 @@ class HomePageState extends State<HomePage> {
               ),
             ),
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+              padding: EdgeInsets.fromLTRB(16.0, 10, 15, 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Row(
+                    children: [
+                      Text('From: '),//${DateFormat('yyyy-MM-dd').format(_fromDate)}
+                      SizedBox(width: 8),
 
-                        Container(
-                          height: 270,
-                          width: MediaQuery.of(context)
-                              .size
-                              .height/0.9, // Adjust the width as needed
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: AspectRatio(
-                              aspectRatio: 1.40,
-                              child: _data != null
-                                  ? Builder(builder: (context) {
-                                      if (_data!.length > 10) {
-                                        i = 10;
-                                      } else {
-                                        i = _data!.length;
-                                      }
-                                      return
-                                        Builder(
-                                          builder: (context) {
 
-                                            return  LineGraph(
-                                              features: features ?? [], // Ensure features is not null
-                                              size: Size(300, 270),
-                                              labelX: labelX ?? [], // Ensure labelX is not null
-                                              labelY: labelY ?? [], // Ensure labelY is not null
-                                              showDescription: true,
-                                              graphColor: Colors.black,
-                                              graphOpacity: 0.2,
-                                              verticalFeatureDirection: true,
-                                              descriptionHeight: 30,
-                                            );
+                      TextButton(
+                        onPressed: () async {
+                          final DateTime? picked = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(2000),
 
-                                          }
-                                        );
-                                      //   LineChart(
-                                      //   LineChartData(
-                                      //
-                                      //     lineBarsData: [
-                                      //       LineChartBarData(
-                                      //         spots: _data!
-                                      //             .sublist(0, i)
-                                      //             .asMap()
-                                      //             .entries
-                                      //             .map((entry) {
-                                      //           return FlSpot(
-                                      //               entry.key.toDouble(),
-                                      //               entry.value);
-                                      //         }).toList(),
-                                      //         isCurved: true,
-                                      //         colors: [Colors.deepPurple],
-                                      //         barWidth: 4,
-                                      //         isStrokeCapRound: true,
-                                      //         belowBarData: BarAreaData(
-                                      //           show: true,
-                                      //           colors: [
-                                      //             Colors.deepPurple
-                                      //                 .withOpacity(0.1)
-                                      //           ],
-                                      //         ),
-                                      //       ),
-                                      //     ],
-                                      //     gridData: FlGridData(
-                                      //       drawVerticalLine: true,
-                                      //       drawHorizontalLine: false,
-                                      //     ),
-                                      //     titlesData: FlTitlesData(
-                                      //       leftTitles: SideTitles(
-                                      //         showTitles: true,
-                                      //         interval: 10.0,
-                                      //       ),
-                                      //     ),
-                                      //     minX: 0,
-                                      //     maxX:
-                                      //         10, // Initially show only 10 values
-                                      //     minY: 10,
-                                      //     maxY: 100,
-                                      //   ),
-                                      // );
-                                    })
-                                  : CircularProgressIndicator(),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                            lastDate: DateTime(2101),
+                          );
+                          if (picked != null) {
+                            // _fr[index] = picked;
+
+                            setState(() {});
+                          }
+                        },
+                        child: Image.asset('assets/calender.png'),
+                      ),
+                    ],
                   ),
-                ),
+
+                  SizedBox(width: 20),
+                  Row(
+                    children: [
+                      Text('To: '),
+                      SizedBox(width: 8),
+                      TextButton(
+                        onPressed: () async {
+                          final DateTime? picked = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(2000),
+                            //_fromDates[index] != null ? _fromDates[index]! : DateTime(2000),
+
+                            // firstDate:_fromDates[index] != null?? DateTime(2000), // Set the first selectable date to the current date
+                            lastDate: DateTime(2101),
+                          );
+                          if (picked != null) {
+                            // _toDates[index] = picked;
+
+                            setState(() {});
+                          }
+                        },
+                        child: Image.asset('assets/calender.png'),
+                      ),
+                    ],
+                  ),//${DateFormat('yyyy-MM-dd').format(_toDate)}
+
+                ],
               ),
             ),
-            const Padding(
+
+            SizedBox(height: 20),
+            Builder(
+              builder: (context) {
+                final List<Color> gradientColors = [
+                  Colors.background.withOpacity(0.6),Colors.white.withOpacity(0.8)
+
+                ];
+                return AspectRatio(
+                aspectRatio: 1.5,
+                child: LineChart(
+                  LineChartData(
+                    lineBarsData: [
+                      LineChartBarData(
+                        spots: _datagraph?.asMap().entries
+                            .map((entry) {
+                          final date = DateTime.parse(entry.value['date']);
+                          final value = entry.value['value'] as double;
+                          return FlSpot(entry.key.toDouble(), value);
+                        })
+                            .toList()
+                            .sublist(0,11), // Take the first 10 entries
+                        isCurved: true,
+                        colors: gradientColors,
+                        barWidth: 1.6,
+                        belowBarData: BarAreaData(
+                          show: true,
+                          colors: gradientColors
+                              .map((color) => color.withOpacity(0.3))
+                              .toList(),
+                        ),
+                        dotData: FlDotData(show: true),
+                        isStrokeCapRound: true,
+                        curveSmoothness: 0.3,
+                      ),
+                    ],
+                    gridData: FlGridData(show: false),
+                    titlesData: FlTitlesData(
+                      show: true,
+                      bottomTitles: SideTitles(
+                        showTitles: true,
+                        margin: 8,
+                        reservedSize: 3,
+                        interval: 1, // Interval is set to 1 to show all labels
+                        getTitles: (value) {
+                          final index = value.toInt();
+                          if (index >= 0 && index < 10) { // Show only the first 10 dates
+                            final date = DateTime.parse(_datagraph![index]['date']);
+                            return '${date.day}/${date.month}';
+                          }
+                          return '';
+                        },
+                      ),
+                    ),
+                    borderData: FlBorderData(show: true),
+                    minX: 0,
+                    maxX: 9, // Set to 9 because we are showing 10 values (0-indexed)
+                    minY: 0,
+                    maxY: 100,
+                  ),
+                ),
+                );
+
+
+              }
+            ),
+             Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
               child: Text(
                 'YOU HAVE TESTED SO FAR', // Display formatted current date
@@ -718,6 +732,7 @@ class HomePageState extends State<HomePage> {
     }
   }
 
+
   Future<List<double>> getGraph() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -727,77 +742,39 @@ class HomePageState extends State<HomePage> {
         headers: <String, String>{
           'Authorization': 'Bearer $authToken',
         },
+
       );
 
       if (response.statusCode == 200) {
+
         final responseData = json.decode(response.body);
         fatigueGraphData = FatigueGraph.fromJson(responseData);
+
 
         print("graphdata===:${response.body}");
 
         Map<String, dynamic> jsonData = jsonDecode(response.body);
         List<dynamic> data = jsonData['data'];
-        name = jsonData['name'];
-
-
-
-
-
-        fatigue_left = data[0]['is_fatigue_left'];
-        fatigue_right = data[0]['is_fatigue_right'];
-        midtiredness_right = data[0]['is_mild_tiredness_right'];
-        midtiredness_left = data[0]['is_mild_tiredness_left'];
-        int no_of_fatigue = jsonData['no_of_fatigue_test'];
-        int no_of_eye_ = jsonData['no_of_eye_test'];
-        int eye_hscore = jsonData['eye_health_score'];
+        name=jsonData['name'];
+        int no_of_fatigue=jsonData['no_of_fatigue_test'];
+        int  no_of_eye_=jsonData['no_of_eye_test'];
+        int eye_hscore=jsonData['eye_health_score'];
         setState(() {
-          no_of_fatigue_test = no_of_fatigue.toString();
-          no_of_eye_test = no_of_eye_.toString();
-          eye_health_score = eye_hscore.toString();
-        });
-        List<dynamic> data1 = responseData['data'];
-
-        List<String> dates = data1.map((item) => item['date'].toString().substring(0, 2)).toList();
-        List<double> values = data1.map((item) => double.parse(item['value'].toString())).toList();
-
-        List<String> labelX1 = dates;
-        List<String> labelY1 = ['10%','20%','30%','40%','50%','60%', '70%', '80%', '90%', '100%'];
-        List<Feature> features1 = [
-        Feature(
-          title: "Drink Water",
-          color: Colors.blue,
-          data: values,
-        ),];
-        // List<Feature> features1 = data.map((item) {
-        //   final double value = item['value'] ;
-        //   final String date = item['date'].toString().substring(0, 10) ;
-
-        //   return Feature(
-        //       // title: "Drink Water",
-        //
-        //     title: date,
-        //     color: Colors.blue,
-        //     data: [value], // Assuming you want to display only one value per feature
-        //   );
-        // }).toList();
-
-        setState(() {
-          labelY=labelY1;
-          labelX=labelX1;
-          features=features1;
-          // Set labelX and labelY
-          // Other state updates here if needed
+          _datagraph = List<Map<String, dynamic>>.from(jsonData['data']);
+          no_of_fatigue_test=no_of_fatigue.toString();
+          no_of_eye_test=no_of_eye_.toString();
+          eye_health_score=eye_hscore.toString();
         });
 
-        return values;
-        // return data
-        //     .map((item) => double.parse(item['value'].toString()))
-        //     .toList();
-      } else {
+        return data.map((item) => double.parse(item['value'].toString())).toList();
+
+      }
+      else {
+
         print(response.body);
       }
-    } catch (e) {
-      // _progressDialog!.hide();
+    }
+    catch (e) {     // _progressDialog!.hide();
 
       print("exception:$e");
     }
@@ -1199,3 +1176,8 @@ class ExampleAlarmRingScreen extends StatelessWidget {
     );
   }
 }
+
+
+
+
+

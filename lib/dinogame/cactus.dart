@@ -11,16 +11,16 @@ import 'game_object.dart';
 List<Sprite> cacti = [
   Sprite()
     ..imagePath = "assets/cacti/cacti_group.png"
-    ..imageWidth = 104
-    ..imageHeight = 100,
+    ..imageWidth = 85
+    ..imageHeight = 80,
   Sprite()
     ..imagePath = "assets/cacti/cacti_large_1.png"
     ..imageWidth = 50
-    ..imageHeight = 100,
+    ..imageHeight = 110,
   Sprite()
     ..imagePath = "assets/cacti/cacti_large_2.png"
-    ..imageWidth = 98
-    ..imageHeight = 100,
+    ..imageWidth = 78
+    ..imageHeight = 80,
   Sprite()
     ..imagePath = "assets/cacti/cacti_small_1.png"
     ..imageWidth = 34

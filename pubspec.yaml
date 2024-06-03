@@ -125,6 +125,9 @@ flutter:
   uses-material-design: true
   assets:
      - assets/
+     - assets/dino/
+     - assets/cacti/
+     - assets/ptera/
      - assets/long_blank.mp3
      - assets/not_blank.mp3
   #   - images/a_dot_ham.jpeg

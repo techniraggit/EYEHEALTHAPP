@@ -8,28 +8,28 @@ import 'game_object.dart';
 List<Sprite> dino = [
   Sprite()
     ..imagePath = "assets/dino/dino_1.png"
-    ..imageWidth = 88
-    ..imageHeight = 94,
+    ..imageWidth = 70
+    ..imageHeight = 70,
   Sprite()
     ..imagePath = "assets/dino/dino_2.png"
-    ..imageWidth = 88
-    ..imageHeight = 94,
+    ..imageWidth = 70
+    ..imageHeight = 70,
   Sprite()
     ..imagePath = "assets/dino/dino_3.png"
-    ..imageWidth = 88
-    ..imageHeight = 94,
+    ..imageWidth = 70
+    ..imageHeight = 70,
   Sprite()
     ..imagePath = "assets/dino/dino_4.png"
-    ..imageWidth = 88
-    ..imageHeight = 94,
+    ..imageWidth = 70
+    ..imageHeight = 70,
   Sprite()
     ..imagePath = "assets/dino/dino_5.png"
-    ..imageWidth = 88
-    ..imageHeight = 94,
+    ..imageWidth = 70
+    ..imageHeight = 70,
   Sprite()
     ..imagePath = "assets/dino/dino_6.png"
-    ..imageWidth = 88
-    ..imageHeight = 94,
+    ..imageWidth = 70
+    ..imageHeight = 70,
 ];
 
 enum DinoState {

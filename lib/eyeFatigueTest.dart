@@ -580,46 +580,47 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
           setState(() {
             isLoading=true;
             print("isLoading========$isLoading");
+            _compressAndUploadVideo(file.path);
 
           });
-          final videoFile = File(file.path);
-          final videoSizeBytes = await videoFile.length();
-          print('Video size: ${videoSizeBytes / (1024 * 1024)} MB'); // Convert bytes to MB for readability
+          // final videoFile = File(file.path);
+          // final videoSizeBytes = await videoFile.length();
+          // print('Video size: ${videoSizeBytes / (1024 * 1024)} MB'); // Convert bytes to MB for readability
+          //
+          // setState(() {
+          //   _compressedVideoPath = null; // Reset compressed video path
+          // });
+          //
+          // final String videoName =
+          //     'MyVideo-${DateTime.now().millisecondsSinceEpoch}.mp4';
+          //
+          // final Result response = await _lightCompressor.compressVideo(
+          //   path: file.path,
+          //   videoQuality: VideoQuality.low,
+          //   isMinBitrateCheckEnabled: false,
+          //   video: Video(videoName: videoName),
+          //   android: AndroidConfig(isSharedStorage: true, saveAt: SaveAt.Movies),
+          //   ios: IOSConfig(saveInGallery: false),
+          // );
 
-          setState(() {
-            _compressedVideoPath = null; // Reset compressed video path
-          });
-
-          final String videoName =
-              'MyVideo-${DateTime.now().millisecondsSinceEpoch}.mp4';
-
-          final Result response = await _lightCompressor.compressVideo(
-            path: file.path,
-            videoQuality: VideoQuality.low,
-            isMinBitrateCheckEnabled: false,
-            video: Video(videoName: videoName),
-            android: AndroidConfig(isSharedStorage: true, saveAt: SaveAt.Movies),
-            ios: IOSConfig(saveInGallery: false),
-          );
-
-          if (response is OnSuccess) {
-            setState(() async {
-              final videoFile = File(response.destinationPath);
-              final videoSizeBytes = await videoFile.length();
-              print('Compressed Video size: ${videoSizeBytes / (1024 * 1024)} MB');
-              _uploadVideo(response.destinationPath);
-
-              print('Compressed video path: ${response.destinationPath}');
-            });
-          } else if (response is OnFailure) {
-            setState(() {
-              Fluttertoast.showToast(msg: "${response.message}");
-
-            });
-          } else if (response is OnCancelled) {
-            Fluttertoast.showToast(msg: "${response.isCancelled}");
-            print(response.isCancelled);
-          }
+          // if (response is OnSuccess) {
+          //   setState(() async {
+          //     final videoFile = File(response.destinationPath);
+          //     final videoSizeBytes = await videoFile.length();
+          //     print('Compressed Video size: ${videoSizeBytes / (1024 * 1024)} MB');
+          //     _uploadVideo(response.destinationPath);
+          //
+          //     print('Compressed video path: ${response.destinationPath}');
+          //   });
+          // } else if (response is OnFailure) {
+          //   setState(() {
+          //     Fluttertoast.showToast(msg: "${response.message}");
+          //
+          //   });
+          // } else if (response is OnCancelled) {
+          //   Fluttertoast.showToast(msg: "${response.isCancelled}");
+          //   print(response.isCancelled);
+          // }
           // setState(() {
           //   _compressedVideoPath = response;
           // });
@@ -643,7 +644,49 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
       print("Error: $e");
     }
   }
+  void _compressAndUploadVideo(String videoPath) async {
+    final String videoName =
+        'MyVideo-${DateTime.now().millisecondsSinceEpoch}.mp4';
 
+    final Result response = await _lightCompressor.compressVideo(
+      path: videoPath,
+      videoQuality: VideoQuality.low,
+      isMinBitrateCheckEnabled: false,android: AndroidConfig(isSharedStorage: true, saveAt: SaveAt.Movies),
+      ios: IOSConfig(saveInGallery: false), video: Video(videoName: videoName),
+    );
+
+    // if (response is OnSuccess) {
+    //   final File compressedVideoFile = File(response.destinationPath);
+    //   final videoSizeBytes = await compressedVideoFile.length();
+    //   print('Compressed Video size: ${videoSizeBytes / (1024 * 1024)} MB');
+    //   _uploadVideo(response.destinationPath);
+    //
+    //   print('Compressed video path: ${response.destinationPath}');
+    // } else if (response is OnFailure) {
+    //   Fluttertoast.showToast(msg: "${response.message}");
+    // } else if (response is OnCancelled) {
+    //   Fluttertoast.showToast(msg: "${response.isCancelled}");
+    //   print(response.isCancelled);
+    // }
+    if (response is OnSuccess) {
+      setState(() async {
+        final videoFile = File(response.destinationPath);
+        final videoSizeBytes = await videoFile.length();
+        print('Compressed Video size: ${videoSizeBytes / (1024 * 1024)} MB');
+        _uploadVideo(response.destinationPath);
+
+        print('Compressed video path: ${response.destinationPath}');
+      });
+    } else if (response is OnFailure) {
+      setState(() {
+        Fluttertoast.showToast(msg: "${response.message}");
+
+      });
+    } else if (response is OnCancelled) {
+      Fluttertoast.showToast(msg: "${response.isCancelled}");
+      print(response.isCancelled);
+    }
+  }
 
 
 

@@ -28,6 +28,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Custom_navbar/bottom_navbar.dart';
 import 'FirebaseOptions/FirebaseApi.dart';
+import 'alarm/demo_main.dart';
 import 'eyeFatigueTestReport.dart';
 import 'firebase_options.dart';
 
@@ -87,7 +88,7 @@ class MyApp extends StatelessWidget {
     return
       MaterialApp(
         builder: EasyLoading.init(),
-        home: SplashScreen(),// SplashScreen(),
+        home:SplashScreen(),// ExampleAlarmHomeScreen(),// SplashScreen(),
         navigatorKey: navigatorKey,
 
         // theme: ThemeData.dark(),
