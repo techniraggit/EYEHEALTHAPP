@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +47,7 @@ class TestReportState extends State<TestReport> {
     String access_token = prefs.getString('access_token') ?? '';
     String id = prefs.getString('test_id') ?? '';
     String CustomerId = prefs.getString('customer_id') ?? '';
-    print('sssssssssss$access_token$id$CustomerId');
+
     String test_id = id;
     final String apiUrl =
         '${Api.baseurl}/api/eye/generate-report?test_id=$test_id';
@@ -65,7 +64,6 @@ class TestReportState extends State<TestReport> {
         headers: headers,
 //body: jsonEncode(body),
       );
-      print("dddddddddd${response.body}");
       if (response.statusCode == 200) {
         Map<String, dynamic> parsedJson = jsonDecode(response.body);
         if (parsedJson['status'] == true && parsedJson['status_code'] == 200) {
@@ -73,7 +71,7 @@ class TestReportState extends State<TestReport> {
             parsedJson['data']['right_eye'],
             parsedJson['data']['left_eye']
           ];
-        //  name = parsedJson['data']['right_eye']['full_name'];
+          name = parsedJson['data']['right_eye']['full_name'];
           // age = parsedJson['data']['age']; // Assuming you get age data from somewhere else
 
           for (var test in tests) {
@@ -348,13 +346,13 @@ class TestReportState extends State<TestReport> {
                     //crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       /**
-                    Container(
-                    child:Image.asset(
-                    'assets/zukti_logo.png', // Replace with your logo path
-                    width: 300, // Adjust width as needed
-                    height: 150,
-                    // Adjust height as needed
-                    ),),**/
+                        Container(
+                        child:Image.asset(
+                        'assets/zukti_logo.png', // Replace with your logo path
+                        width: 300, // Adjust width as needed
+                        height: 150,
+                        // Adjust height as needed
+                        ),),**/
 
                       SizedBox(height: 80.0),
                       Container(
@@ -550,36 +548,36 @@ class TestReportState extends State<TestReport> {
                         ),
                       )
                       /**  Container(
-                    width: 300.0, // Set the desired width
-                    height: 100.0, // Set the desired height
-                    padding: EdgeInsets.all(8.0),
-                    margin: EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                    borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: TextField(
-                    controller: textEditingController1, // Attach the controller
-                    decoration: InputDecoration(
-                    border: InputBorder.none, // Remove underline
-                    hintText: 'Write to Us Your Experience',
-                    ),),), Container(
-                    margin: EdgeInsets.all(16.0), // Set t
-                    child: ElevatedButton(
-                    onPressed: () {
-                    SubmitFeedback(); // Add your button functionality here
-                    },
-                    style: ElevatedButton.styleFrom(
-                    foregroundColor: Color(0xFF1E3777), backgroundColor: Color(0xFFCADAE1), // Text color
-                    padding: EdgeInsets.all(16),
-                    minimumSize: Size(200, 40),// Button padding
-                    shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8), // Button border radius
-                    ),
-                    ),
-                    child: Text('Submit'),
-                    ),
-                    ),**/
+                        width: 300.0, // Set the desired width
+                        height: 100.0, // Set the desired height
+                        padding: EdgeInsets.all(8.0),
+                        margin: EdgeInsets.all(10.0),
+                        decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black),
+                        borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: TextField(
+                        controller: textEditingController1, // Attach the controller
+                        decoration: InputDecoration(
+                        border: InputBorder.none, // Remove underline
+                        hintText: 'Write to Us Your Experience',
+                        ),),), Container(
+                        margin: EdgeInsets.all(16.0), // Set t
+                        child: ElevatedButton(
+                        onPressed: () {
+                        SubmitFeedback(); // Add your button functionality here
+                        },
+                        style: ElevatedButton.styleFrom(
+                        foregroundColor: Color(0xFF1E3777), backgroundColor: Color(0xFFCADAE1), // Text color
+                        padding: EdgeInsets.all(16),
+                        minimumSize: Size(200, 40),// Button padding
+                        shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8), // Button border radius
+                        ),
+                        ),
+                        child: Text('Submit'),
+                        ),
+                        ),**/
                     ],
                   ),
           ),

@@ -93,7 +93,7 @@ class MyApp extends StatelessWidget {
 
         // theme: ThemeData.dark(),
         routes: {'/notification_screen':(context)=>  SignIn(),
-          },//Notificationpage(
+        },//Notificationpage(
         debugShowCheckedModeBanner: false,
 
       );

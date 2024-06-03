@@ -22,7 +22,7 @@ class EyeHealthTrackDashboard extends StatefulWidget {
 
 class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
   bool fatigue_left=false; List<double>? _data;int i=0;
-  bool fatigue_right=false;FatigueGraph? fatigueGraphData;
+  bool fatigue_right=false;fatigueGraph? fatigueGraphData;
   bool midtiredness_right= false;
   bool midtiredness_left=false;
   String no_of_eye_test="0";String eye_health_score="";String name="";String no_of_fatigue_test="0";
@@ -43,7 +43,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
       if (response.statusCode == 200) {
 
         final responseData = json.decode(response.body);
-        fatigueGraphData = FatigueGraph.fromJson(responseData);
+        fatigueGraphData = fatigueGraph.fromJson(responseData);
 
 
         print("graphdata===:${response.body}");
@@ -227,6 +227,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
                               ),
                             ],
                           ),
+                          SizedBox(width: 3,),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
@@ -280,79 +281,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
                   ),
                 ),
               ),
-            ),
-            // Padding(
-            //   padding: const EdgeInsets.all(8.0),
-            //   child: Card(
-            //     child: ListTile(
-            //       title: Column(
-            //         children: [
-            //           Row(
-            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //             children: [
-            //               Column(
-            //                 crossAxisAlignment: CrossAxisAlignment.start,
-            //                 children: [
-            //                   Text('No. of eye fatigue test',style: TextStyle(
-            //                     fontSize: 14,
-            //                     fontWeight: FontWeight.w400,)),
-            //                   Text('value',style: TextStyle(
-            //                     fontSize: 14,
-            //                     fontWeight: FontWeight.bold,
-            //                   ),),
-            //                 ],
-            //               ),
-            //               SizedBox(width: 3,),
-            //               Column(
-            //                 crossAxisAlignment: CrossAxisAlignment.end,
-            //                 children: [
-            //                   Text('No. of digital eye test',style: TextStyle(
-            //                     fontSize: 14,
-            //                     fontWeight: FontWeight.w400,)),
-            //                   Text('Value ',style: TextStyle(
-            //                     fontSize: 14,
-            //                     fontWeight: FontWeight.bold,
-            //                   ),),
-            //                 ],
-            //               ),
-            //             ],
-            //           ),
-            //           SizedBox(height: 16), // Add spacing between the row and the additional columns
-            //           Row(
-            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //             children: [
-            //               Column(
-            //                 crossAxisAlignment: CrossAxisAlignment.start,
-            //                 children: [
-            //                   Text('Prescription uploaded',style: TextStyle(
-            //             fontSize: 14,
-            //             fontWeight: FontWeight.w400,)),
-            //                   Text('value',style: TextStyle(
-            //                     fontSize: 14,
-            //                     fontWeight: FontWeight.bold,
-            //                   ),),
-            //                 ],
-            //               ),
-            //               Column(
-            //                 crossAxisAlignment: CrossAxisAlignment.end,
-            //                 children: [
-            //                   Text('visit to optemistist',style: TextStyle(
-            //                     fontSize: 14,
-            //                     fontWeight: FontWeight.w400,)),
-            //                   Text('Value',style: TextStyle(
-            //                     fontSize: 14,
-            //                     fontWeight: FontWeight.bold,
-            //                   ),),
-            //                 ],
-            //               ),
-            //             ],
-            //           ),
-            //         ],
-            //       ),
-            //     ),
-            //   ),
-            // ),
-            const Padding(
+            ),const Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
               child: Text(
                 'EYE HEALTH GRAPH OVERVIEW', // Display formatted current date

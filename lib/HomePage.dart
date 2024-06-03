@@ -74,7 +74,7 @@ class HomePageState extends State<HomePage> {
   bool midtiredness_right = false;
   bool midtiredness_left = false;
   bool isSelected = false;
-  FatigueGraph? fatigueGraphData;
+  fatigueGraph? fatigueGraphData;
   bool isLeftEyeSelected = false;
   List<double> data1 = [10, 30, 20, 40, 30]; // Sample data for line 1
   List<double> data2 = [30, 50, 60, 50, 60];
@@ -226,7 +226,7 @@ class HomePageState extends State<HomePage> {
                 child: Center(
                   child: Padding(
                     padding:
-                        const EdgeInsets.all(8.0), // Add padding for the icon
+                    const EdgeInsets.all(8.0), // Add padding for the icon
                     child: Image.asset(
                       "assets/home_icon.png",
                       width: 20,
@@ -339,7 +339,7 @@ class HomePageState extends State<HomePage> {
             ),
             Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
+              const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
               child: GestureDetector(
                 onTap: () {
                   // sendcustomerDetails(context);
@@ -361,17 +361,17 @@ class HomePageState extends State<HomePage> {
               },
               child: Image.asset('assets/find_near_by_store.png'),
             ),
-             Padding(
-               padding:
-               const EdgeInsets.symmetric(horizontal: 17.0, vertical: 10),               child: Text(
-                'EYE HEALTH STATUS',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
-                ),
-                           ),
-             ),
+            Padding(
+              padding:
+              const EdgeInsets.symmetric(horizontal: 17.0, vertical: 10),               child: Text(
+              'EYE HEALTH STATUS',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.deepPurple,
+              ),
+            ),
+            ),
             SizedBox(width: 8),
 
             Padding(
@@ -449,7 +449,7 @@ class HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-             Padding(
+            Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
               child: Text(
                 'EYE HEALTH GRAPH OVERVIEW', // Display formatted current date
@@ -523,70 +523,70 @@ class HomePageState extends State<HomePage> {
 
             SizedBox(height: 20),
             Builder(
-              builder: (context) {
-                final List<Color> gradientColors = [
-                  Colors.background.withOpacity(0.6),Colors.white.withOpacity(0.8)
+                builder: (context) {
+                  final List<Color> gradientColors = [
+                    Colors.background.withOpacity(0.6),Colors.white.withOpacity(0.8)
 
-                ];
-                return AspectRatio(
-                aspectRatio: 1.5,
-                child: LineChart(
-                  LineChartData(
-                    lineBarsData: [
-                      LineChartBarData(
-                        spots: _datagraph?.asMap().entries
-                            .map((entry) {
-                          final date = DateTime.parse(entry.value['date']);
-                          final value = entry.value['value'] as double;
-                          return FlSpot(entry.key.toDouble(), value);
-                        })
-                            .toList()
-                            .sublist(0,11), // Take the first 10 entries
-                        isCurved: true,
-                        colors: gradientColors,
-                        barWidth: 1.6,
-                        belowBarData: BarAreaData(
+                  ];
+                  return AspectRatio(
+                    aspectRatio: 1.5,
+                    child: LineChart(
+                      LineChartData(
+                        lineBarsData: [
+                          LineChartBarData(
+                            spots: _datagraph?.asMap().entries
+                                .map((entry) {
+                              final date = DateTime.parse(entry.value['date']);
+                              final value = entry.value['value'] as double;
+                              return FlSpot(entry.key.toDouble(), value);
+                            })
+                                .toList()
+                                .sublist(0,11), // Take the first 10 entries
+                            isCurved: true,
+                            colors: gradientColors,
+                            barWidth: 1.6,
+                            belowBarData: BarAreaData(
+                              show: true,
+                              colors: gradientColors
+                                  .map((color) => color.withOpacity(0.3))
+                                  .toList(),
+                            ),
+                            dotData: FlDotData(show: true),
+                            isStrokeCapRound: true,
+                            curveSmoothness: 0.3,
+                          ),
+                        ],
+                        gridData: FlGridData(show: false),
+                        titlesData: FlTitlesData(
                           show: true,
-                          colors: gradientColors
-                              .map((color) => color.withOpacity(0.3))
-                              .toList(),
+                          bottomTitles: SideTitles(
+                            showTitles: true,
+                            margin: 8,
+                            reservedSize: 3,
+                            interval: 1, // Interval is set to 1 to show all labels
+                            getTitles: (value) {
+                              final index = value.toInt();
+                              if (index >= 0 && index < 10) { // Show only the first 10 dates
+                                final date = DateTime.parse(_datagraph![index]['date']);
+                                return '${date.day}/${date.month}';
+                              }
+                              return '';
+                            },
+                          ),
                         ),
-                        dotData: FlDotData(show: true),
-                        isStrokeCapRound: true,
-                        curveSmoothness: 0.3,
-                      ),
-                    ],
-                    gridData: FlGridData(show: false),
-                    titlesData: FlTitlesData(
-                      show: true,
-                      bottomTitles: SideTitles(
-                        showTitles: true,
-                        margin: 8,
-                        reservedSize: 3,
-                        interval: 1, // Interval is set to 1 to show all labels
-                        getTitles: (value) {
-                          final index = value.toInt();
-                          if (index >= 0 && index < 10) { // Show only the first 10 dates
-                            final date = DateTime.parse(_datagraph![index]['date']);
-                            return '${date.day}/${date.month}';
-                          }
-                          return '';
-                        },
+                        borderData: FlBorderData(show: true),
+                        minX: 0,
+                        maxX: 9, // Set to 9 because we are showing 10 values (0-indexed)
+                        minY: 0,
+                        maxY: 100,
                       ),
                     ),
-                    borderData: FlBorderData(show: true),
-                    minX: 0,
-                    maxX: 9, // Set to 9 because we are showing 10 values (0-indexed)
-                    minY: 0,
-                    maxY: 100,
-                  ),
-                ),
-                );
+                  );
 
 
-              }
+                }
             ),
-             Padding(
+            Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
               child: Text(
                 'YOU HAVE TESTED SO FAR', // Display formatted current date
@@ -697,8 +697,8 @@ class HomePageState extends State<HomePage> {
   Future<void> sendcustomerDetails(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
 // Replace these headers with your required headers
     Map<String, String> headers = {
@@ -748,7 +748,7 @@ class HomePageState extends State<HomePage> {
       if (response.statusCode == 200) {
 
         final responseData = json.decode(response.body);
-        fatigueGraphData = FatigueGraph.fromJson(responseData);
+        fatigueGraphData = fatigueGraph.fromJson(responseData);
 
 
         print("graphdata===:${response.body}");
@@ -1013,7 +1013,7 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
             height: 55,
             child: Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
+              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
               child: TextField(
                 controller: _nameController,
                 textInputAction: TextInputAction.next,
@@ -1032,14 +1032,14 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                   ),
                   border: OutlineInputBorder(
                     borderRadius:
-                        BorderRadius.circular(27.0), // Add circular border
+                    BorderRadius.circular(27.0), // Add circular border
                   ),
                   // Set floatingLabelBehavior to always display the label
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   // Add button to the end of the TextField
                 ),
                 style:
-                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+                const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
               ),
             ),
           ),
@@ -1048,7 +1048,7 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
             height: 55,
             child: Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
+              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
               child: TextFormField(
                 controller: _ageController,
                 textInputAction: TextInputAction.next,
@@ -1082,14 +1082,14 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                   ),
                   border: OutlineInputBorder(
                     borderRadius:
-                        BorderRadius.circular(27.0), // Add circular border
+                    BorderRadius.circular(27.0), // Add circular border
                   ),
                   // Set floatingLabelBehavior to always display the label
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   // Add button to the end of the TextField
                 ),
                 style:
-                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+                const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
               ),
             ),
           ),
