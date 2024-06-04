@@ -169,7 +169,7 @@ class FirebaseApi{
     if(message==null) {
       return;
     }
-    navigatorKey.currentState?.pushNamed('/notification_screen',arguments:message,);
+     navigatorKey.currentState?.pushNamed('/notification_screen',arguments:message,);
 
   }
   Future initPushNotifications()async{//handleMessage

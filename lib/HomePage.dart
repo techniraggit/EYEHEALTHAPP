@@ -567,7 +567,7 @@ class HomePageState extends State<HomePage> {
                             getTitles: (value) {
                               final index = value.toInt();
                               if (index >= 0 && index < 10) { // Show only the first 10 dates
-                                final date = DateTime.parse(_datagraph![index]['date']);
+                                final date = DateTime.parse(_datagraph?[index]['date']);
                                 return '${date.day}/${date.month}';
                               }
                               return '';

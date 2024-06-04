@@ -589,14 +589,9 @@ if(isNumeric(_phoneController.text)){
     }
   }
   bool checkValidationForLoginOtp() {
-
-    setState(() {
-
-    });
     if(pincode.isEmpty || pincode.length!=4){
       Fluttertoast.showToast(msg: "Enter Otp");
       return false;
-
     }
     return true;
   }
@@ -605,7 +600,6 @@ if(isNumeric(_phoneController.text)){
     await prefs.setBool('isLoggedIn', value);
   }
   void VerifyLoginOtp() async {
-
     if(checkValidationForLoginOtp()){
 
 
