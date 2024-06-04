@@ -10,6 +10,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:light_compressor/light_compressor.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:project_new/HomePage.dart';
 import 'package:project_new/eyeFatigueTestReport.dart';
@@ -18,7 +19,6 @@ import 'package:project_new/sign_up.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'api/Api.dart';
@@ -30,7 +30,7 @@ import 'dinogame/dino.dart';
 import 'dinogame/game_object.dart';
 import 'dinogame/ground.dart';
 bool isclose=false;bool uploaded=false;
-bool isLoading = false;
+bool isLoading = false;bool startgame=false;bool gamepermission=false;
 class EyeFatigueStartScreen extends StatefulWidget {
   @override
   EyeFatigueStartScreenState createState() => EyeFatigueStartScreenState();
@@ -43,7 +43,7 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
   void initState() {
     super.initState();
     isclose=false; uploaded=false;
-    isLoading = false;
+    isLoading = false;startgame=false;gamepermission=false;
 
   }
 
@@ -239,23 +239,22 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
   late List<CameraDescription> cameras;
   late AnimationController _animationController;
   final List<String> _lines = [
-    'Keep your eyes healthy and productive with Eye',
-    'Fatigue Meter. This innovative tool helps you',
-    'Monitor and manage eye strain caused by ',
-    'Prolonged screen time and other factors. Simply',
-    'Position yourself in front of the camera as ',
-    'Indicated in the provided image',
+    'Eyes, like tranquil pools reflecting the serenity of a forest, whisper tales of peace.',
+    "In the gaze of nature's eyes, one finds solace amidst the chaos, a sanctuary of tranquility.",
+    'With each glance, nature unfolds a silent symphony, a gentle reminder of its timeless beauty.',
+    "Within nature's gaze lies the boundless expanse of the starlit sky, serene and captivating.",
+    'Eyes, like serene sunsets painting the sky with hues of gold and amber, embody the warmth and calmness of nature.',
+    "Within the depths of nature's eyes, discover the tranquil beauty of a forest glade, where sunlight dances through the leaves and birds sing melodies of peace.",
   ];
   int _startIndex = 0;
   bool _firstTime = true;
-
   @override
 
   void initState() {
     // TODO: implement initState
     super.initState();
     isclose=false; uploaded=false;
-    isLoading = false;
+    isLoading = false;startgame=false;gamepermission=false;
 
     _initializeCamera();
 
@@ -436,7 +435,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
 
   void _startAnimation() async {
     await _animationController.forward().orCancel;
-    _startIndex += 3;
+    _startIndex += 2;
     if (_startIndex >= _lines.length) _startIndex = 0;
     _animationController.reset();
     _startAnimation();
@@ -521,6 +520,10 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
       if (response.statusCode == 200) {
 
         print('Video uploaded successfully');
+
+
+
+        deleteVideo(videoFile);
         setState(() {
           uploaded=true;
         });
@@ -537,7 +540,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
         Fluttertoast.showToast(msg: "face is not captured properly, please test again");
         setState(() {
           isclose=false; uploaded=false;
-          isLoading = false;
+          isLoading = false;startgame=false;gamepermission=false;
         });
         Navigator.push(
           context,
@@ -548,8 +551,16 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
       }
     } catch (e) {
       isclose=false; uploaded=false;
-      isLoading = false;
+      isLoading = false;startgame=false;gamepermission=false;
       print('Error uploading video: $e');
+      Fluttertoast.showToast(msg: "something went wrong ! please do test again ..");
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => HomePage()),
+      );
+
     }
   }
 
@@ -558,8 +569,8 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
     if (!_controller!.value.isInitialized) {
       return;
     }
-    final directory = await getApplicationDocumentsDirectory();
-    videoPath = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
+    final directory = await getTemporaryDirectory(); // Get temporary directory
+     videoPath = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.mp4'; // Set the path in the temporary directory
 
     try {
       await _controller!.startVideoRecording();
@@ -574,62 +585,17 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
 
 
         print('Video recorded to: ${file.path}');
-
         // Verify file existence
         if (await File(file.path).exists()) {
           setState(() {
+            gamepermission=true;
+
             isLoading=true;
             print("isLoading========$isLoading");
             _compressAndUploadVideo(file.path);
 
           });
-          // final videoFile = File(file.path);
-          // final videoSizeBytes = await videoFile.length();
-          // print('Video size: ${videoSizeBytes / (1024 * 1024)} MB'); // Convert bytes to MB for readability
-          //
-          // setState(() {
-          //   _compressedVideoPath = null; // Reset compressed video path
-          // });
-          //
-          // final String videoName =
-          //     'MyVideo-${DateTime.now().millisecondsSinceEpoch}.mp4';
-          //
-          // final Result response = await _lightCompressor.compressVideo(
-          //   path: file.path,
-          //   videoQuality: VideoQuality.low,
-          //   isMinBitrateCheckEnabled: false,
-          //   video: Video(videoName: videoName),
-          //   android: AndroidConfig(isSharedStorage: true, saveAt: SaveAt.Movies),
-          //   ios: IOSConfig(saveInGallery: false),
-          // );
 
-          // if (response is OnSuccess) {
-          //   setState(() async {
-          //     final videoFile = File(response.destinationPath);
-          //     final videoSizeBytes = await videoFile.length();
-          //     print('Compressed Video size: ${videoSizeBytes / (1024 * 1024)} MB');
-          //     _uploadVideo(response.destinationPath);
-          //
-          //     print('Compressed video path: ${response.destinationPath}');
-          //   });
-          // } else if (response is OnFailure) {
-          //   setState(() {
-          //     Fluttertoast.showToast(msg: "${response.message}");
-          //
-          //   });
-          // } else if (response is OnCancelled) {
-          //   Fluttertoast.showToast(msg: "${response.isCancelled}");
-          //   print(response.isCancelled);
-          // }
-          // setState(() {
-          //   _compressedVideoPath = response;
-          // });
-
-
-
-
-
-          // _uploadVideo(compressedVideo!.path!);
 
 
 
@@ -655,28 +621,16 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
       ios: IOSConfig(saveInGallery: false), video: Video(videoName: videoName),
     );
 
-    // if (response is OnSuccess) {
-    //   final File compressedVideoFile = File(response.destinationPath);
-    //   final videoSizeBytes = await compressedVideoFile.length();
-    //   print('Compressed Video size: ${videoSizeBytes / (1024 * 1024)} MB');
-    //   _uploadVideo(response.destinationPath);
-    //
-    //   print('Compressed video path: ${response.destinationPath}');
-    // } else if (response is OnFailure) {
-    //   Fluttertoast.showToast(msg: "${response.message}");
-    // } else if (response is OnCancelled) {
-    //   Fluttertoast.showToast(msg: "${response.isCancelled}");
-    //   print(response.isCancelled);
-    // }
+
     if (response is OnSuccess) {
-      setState(() async {
+      // setState(() async {
         final videoFile = File(response.destinationPath);
         final videoSizeBytes = await videoFile.length();
         print('Compressed Video size: ${videoSizeBytes / (1024 * 1024)} MB');
         _uploadVideo(response.destinationPath);
 
         print('Compressed video path: ${response.destinationPath}');
-      });
+      // });
     } else if (response is OnFailure) {
       setState(() {
         Fluttertoast.showToast(msg: "${response.message}");
@@ -722,427 +676,281 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
       },
       child: MaterialApp(
         home: Scaffold(
-          body: Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/background_fatigue.png'), // Replace 'assets/background_image.jpg' with your image path
-                fit: BoxFit.cover,
+          body:
+
+          Stack(
+            children: [
+
+              Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/background_fatigue.png'), // Replace with your image path
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
-            ),
-            child: isLoading
-                ?AnimatedContainer(
-              duration: const Duration(milliseconds: 5000),
-              color: (runDistance ~/ dayNightOffest) % 2 == 0
-                  ? Colors.white
-                  : Colors.black,
-              child: GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onTap: () {
-                  if (dino.state != DinoState.dead) {
-                    dino.jump();
-                  }
-                  if (dino.state == DinoState.dead) {
-                    _newGame();
-                  }
-                },
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    ...children,
-                    AnimatedBuilder(
-                      animation: worldController,
-                      builder: (context, _) {
-                        return Positioned(
-                          left: screenSize.width / 2 - 30,
-                          top: 100,
-                          child: Text(
-                            'Score: ' + runDistance.toInt().toString(),
-                            style: TextStyle(
-                              color: (runDistance ~/ dayNightOffest) % 2 == 0
-                                  ? Colors.black
-                                  : Colors.white,
+              // Text and clickable span
+              Visibility(
+                visible:gamepermission,
+                child: Center(
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        startgame=true;
+                      });
+
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                      child: RichText(
+                        text: TextSpan(
+                          text: 'Want to play a game while you wait? ',
+                          style: TextStyle(color: Colors.black, fontSize: 20),
+                          children: [
+                            TextSpan(
+                              text: 'Launch Game',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                decoration: TextDecoration.none, // Remove underline
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
-                    AnimatedBuilder(
-                      animation: worldController,
-                      builder: (context, _) {
-                        return Positioned(
-                          left: screenSize.width / 2 - 50,
-                          top: 120,
-                          child: Text(
-                            'High Score: ' + highScore.toString(),
-                            style: TextStyle(
-                              color: (runDistance ~/ dayNightOffest) % 2 == 0
-                                  ? Colors.black
-                                  : Colors.white,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    Positioned(
-                      right: 20,
-                      top: 20,
-                      child: IconButton(
-                        icon: const Icon(Icons.settings),
-                        onPressed: () {
-                          _die();
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: const Text("Change Physics"),
-                                actions: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: SizedBox(
-                                      height: 25,
-                                      width: 280,
-                                      child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          const Text("Gravity:"),
-                                          SizedBox(
-                                            child: TextField(
-                                              controller: gravityController,
-                                              key: UniqueKey(),
-                                              keyboardType: TextInputType.number,
-                                              decoration: InputDecoration(
-                                                border: OutlineInputBorder(
-                                                  borderRadius:
-                                                  BorderRadius.circular(5),
-                                                ),
-                                              ),
-                                            ),
-                                            height: 25,
-                                            width: 75,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: SizedBox(
-                                      height: 25,
-                                      width: 280,
-                                      child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          const Text("Acceleration:"),
-                                          SizedBox(
-                                            child: TextField(
-                                              controller: accelerationController,
-                                              key: UniqueKey(),
-                                              keyboardType: TextInputType.number,
-                                              decoration: InputDecoration(
-                                                border: OutlineInputBorder(
-                                                  borderRadius:
-                                                  BorderRadius.circular(5),
-                                                ),
-                                              ),
-                                            ),
-                                            height: 25,
-                                            width: 75,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: SizedBox(
-                                      height: 25,
-                                      width: 280,
-                                      child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          const Text("Initial Velocity:"),
-                                          SizedBox(
-                                            child: TextField(
-                                              controller: runVelocityController,
-                                              key: UniqueKey(),
-                                              keyboardType: TextInputType.number,
-                                              decoration: InputDecoration(
-                                                border: OutlineInputBorder(
-                                                  borderRadius:
-                                                  BorderRadius.circular(5),
-                                                ),
-                                              ),
-                                            ),
-                                            height: 25,
-                                            width: 75,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: SizedBox(
-                                      height: 25,
-                                      width: 280,
-                                      child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          const Text("Jump Velocity:"),
-                                          SizedBox(
-                                            child: TextField(
-                                              controller: jumpVelocityController,
-                                              key: UniqueKey(),
-                                              keyboardType: TextInputType.number,
-                                              decoration: InputDecoration(
-                                                border: OutlineInputBorder(
-                                                  borderRadius:
-                                                  BorderRadius.circular(5),
-                                                ),
-                                              ),
-                                            ),
-                                            height: 25,
-                                            width: 75,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: SizedBox(
-                                      height: 25,
-                                      width: 280,
-                                      child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          const Text("Day-Night Offset:"),
-                                          SizedBox(
-                                            child: TextField(
-                                              controller: dayNightOffestController,
-                                              key: UniqueKey(),
-                                              keyboardType: TextInputType.number,
-                                              decoration: InputDecoration(
-                                                border: OutlineInputBorder(
-                                                  borderRadius:
-                                                  BorderRadius.circular(5),
-                                                ),
-                                              ),
-                                            ),
-                                            height: 25,
-                                            width: 75,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      gravity = int.parse(gravityController.text);
-                                      acceleration =
-                                          double.parse(accelerationController.text);
-                                      initialVelocity =
-                                          double.parse(runVelocityController.text);
-                                      jumpVelocity =
-                                          double.parse(jumpVelocityController.text);
-                                      dayNightOffest =
-                                          int.parse(dayNightOffestController.text);
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: const Text(
-                                      "Done",
-                                      style: TextStyle(color: Colors.grey),
-                                    ),
-                                  )
-                                ],
-                              );
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 10,
-                      child: TextButton(
-                        onPressed: () {
-                          _die();
-                        },
-                        child: const Text(
-                          "Force Kill Dino",
-                          style: TextStyle(color: Colors.red),
+                            TextSpan(text: ''),
+                          ],
                         ),
                       ),
                     ),
+                  ),
+                ),
+              ),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              Container(
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/background_fatigue.png'), // Replace 'assets/background_image.jpg' with your image path
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: isLoading
+                    ?Visibility(
+                  visible: startgame,
+                      child: AnimatedContainer(
+                                        duration: const Duration(milliseconds: 5000),
+                                        color: (runDistance ~/ dayNightOffest) % 2 == 0
+                        ? Colors.white
+                        : Colors.black,
+                                        child: GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onTap: () {
+                        if (dino.state != DinoState.dead) {
+                          dino.jump();
+                        }
+                        if (dino.state == DinoState.dead) {
+                          _newGame();
+                        }
+                      },
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          ...children,
+                          AnimatedBuilder(
+                            animation: worldController,
+                            builder: (context, _) {
+                              return Positioned(
+                                left: screenSize.width / 2 - 30,
+                                top: 100,
+                                child: Text(
+                                  'Score: ' + runDistance.toInt().toString(),
+                                  style: TextStyle(
+                                    color: (runDistance ~/ dayNightOffest) % 2 == 0
+                                        ? Colors.black
+                                        : Colors.white,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          AnimatedBuilder(
+                            animation: worldController,
+                            builder: (context, _) {
+                              return Positioned(
+                                left: screenSize.width / 2 - 50,
+                                top: 120,
+                                child: Text(
+                                  'High Score: ' + highScore.toString(),
+                                  style: TextStyle(
+                                    color: (runDistance ~/ dayNightOffest) % 2 == 0
+                                        ? Colors.black
+                                        : Colors.white,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+
+                        ],
+                      ),
+                                        ),
+                                      ),
+                    )
+
+
+                    :  Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+
+
+
+
+
+
+                    const SizedBox(height: 10),
+                  Column(
+                    children: [
+                      AnimatedBuilder(
+                        animation: _animationController,
+                        builder: (context, child) {
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: List.generate(2, (index) {
+                              final lineIndex = (_startIndex + index) % _lines.length;
+                              final line = _lines[lineIndex];
+                              final animationValue = _animationController.value;
+                              final opacity = 1.0 - animationValue;
+                              final translateY = (1.0 - opacity) * 100.0;
+                              return Transform.translate(
+                                offset: Offset(0.0, translateY),
+                                child: Opacity(
+                                  opacity: opacity,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      line,
+                                      style: TextStyle(
+                                        fontSize: 20.0,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }),
+                          );
+                        },
+                      )
+                    ],
+                  ),
+
+                    Spacer(),
+                    SizedBox(height: 10,),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        height: 8,
+                        width: MediaQuery.of(context).size.width,
+                        color: Colors.grey[300],
+                        child: Stack(
+                          children: [
+                            AnimatedPositioned(
+                              duration: Duration(seconds: 1),
+                              curve: Curves.linear,
+                              right: MediaQuery.of(context).size.width * (1 - _position),
+                              child: Container(
+                                height: 10,
+                                width: MediaQuery.of(context).size.width * _position,
+                                color: Colors.background,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // SizedBox(height: 40),
+
                   ],
                 ),
               ),
-            )
-            // const Center(
-            //   child: Padding(
-            //     padding: EdgeInsets.all(8.0),
-            //     child: Text(
-            //       "Please wait, we are fetching your report...",
-            //       style: TextStyle(
-            //         color: Colors.black,
-            //         fontSize: 16,
-            //       ),
-            //       textAlign: TextAlign.center,
-            //     ),
-            //   ),
-            // )
+              // Visibility(
+              //   visible: cancel,
+              //   child: Padding(
+              //     padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+              //     child: Container(
+              //       color: Colors.lightBlue.shade300,
+              //       child: Row(
+              //         children: [
+              //           const Expanded(
+              //             child: Padding(
+              //               padding: EdgeInsets.all(8.0),
+              //               child: Text(
+              //                 'Read the ON Your screen and we have assessed your eye health based on reading ability',
+              //                 style: TextStyle(
+              //                   color: Colors.white,
+              //                   fontSize: 14,
+              //                 ),
+              //               ),
+              //             ),
+              //           ),
+              //           const SizedBox(width: 8),
+              //           // Add some space between the text and icon
+              //           IconButton(
+              //             icon: const Icon(
+              //               Icons.close,
+              //               size: 24,
+              //               color: Colors.white,
+              //             ),
+              //             onPressed: () {
+              //               setState(() {
+              //                 cancel=false;
+              //               });
+              //             },
+              //           ),
+              //         ],
+              //       ),
+              //     ),
+              //   ),
+              // ),
 
-                :  Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-      
-      
-      
-      
-      
-      
-                const SizedBox(height: 10),
-              Column(
-                children: [
-                  AnimatedBuilder(
-                    animation: _animationController,
-                    builder: (context, child) {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: List.generate(3, (index) {
-                          final lineIndex = (_startIndex + index) % _lines.length;
-                          final line = _lines[lineIndex];
-                          final animationValue = _animationController.value;
-                          final opacity = 1.0 - animationValue;
-                          final translateY = (1.0 - opacity) * 100.0;
-                          return Transform.translate(
-                            offset: Offset(0.0, translateY),
-                            child: Opacity(
-                              opacity: opacity,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  line,
-                                  style: TextStyle(
-                                    fontSize: 20.0,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        }),
-                      );
-                    },
-                  )
-                ],
-              ),
+              // Spacer to push the button to the bottom
+              // Padding(
+              //   padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+              //   child: ElevatedButton(
+              //     onPressed: isclose ? () {
+              //       Navigator.push(
+              //         context,
+              //         MaterialPageRoute(
+              //           builder: (context) => EyeFatigueThirdScreen(),
+              //         ),
+              //       );
+              //     } : null,
+              //
+              //     style: ElevatedButton.styleFrom(
+              //       foregroundColor: Colors.white,
+              //       backgroundColor:  isclose ? Colors.purple.shade300 : Colors.grey.shade300 ,
+              //
+              //       // backgroundColor: Colors.purple.shade300,
+              //       minimumSize: const Size(350, 50),
+              //       shape: RoundedRectangleBorder(
+              //         borderRadius: BorderRadius.circular(25),
+              //       ),
+              //     ),
+              //     child: const Text('Close'),
+              //   ),
+              // ),
 
-
-                const SizedBox(height: 10),
-                const Spacer(),
-
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    height: 8,
-                    width: MediaQuery.of(context).size.width,
-                    color: Colors.grey[300],
-                    child: Stack(
-                      children: [
-                        AnimatedPositioned(
-                          duration: Duration(seconds: 1),
-                          curve: Curves.linear,
-                          right: MediaQuery.of(context).size.width * (1 - _position),
-                          child: Container(
-                            height: 10,
-                            width: MediaQuery.of(context).size.width * _position,
-                            color: Colors.background,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(height: 40),
-                // Visibility(
-                //   visible: cancel,
-                //   child: Padding(
-                //     padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-                //     child: Container(
-                //       color: Colors.lightBlue.shade300,
-                //       child: Row(
-                //         children: [
-                //           const Expanded(
-                //             child: Padding(
-                //               padding: EdgeInsets.all(8.0),
-                //               child: Text(
-                //                 'Read the ON Your screen and we have assessed your eye health based on reading ability',
-                //                 style: TextStyle(
-                //                   color: Colors.white,
-                //                   fontSize: 14,
-                //                 ),
-                //               ),
-                //             ),
-                //           ),
-                //           const SizedBox(width: 8),
-                //           // Add some space between the text and icon
-                //           IconButton(
-                //             icon: const Icon(
-                //               Icons.close,
-                //               size: 24,
-                //               color: Colors.white,
-                //             ),
-                //             onPressed: () {
-                //               setState(() {
-                //                 cancel=false;
-                //               });
-                //             },
-                //           ),
-                //         ],
-                //       ),
-                //     ),
-                //   ),
-                // ),
-      
-                // Spacer to push the button to the bottom
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-                  child: ElevatedButton(
-                    onPressed: isclose ? () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EyeFatigueThirdScreen(),
-                        ),
-                      );
-                    } : null,
-
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor:  isclose ? Colors.purple.shade300 : Colors.grey.shade300 ,
-      
-                      // backgroundColor: Colors.purple.shade300,
-                      minimumSize: const Size(350, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                    ),
-                    child: const Text('Close'),
-                  ),
-                ),
-      
-              ],
-            ),
+            ],
           ),
         ),
       ),
@@ -1158,7 +966,20 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
       isLoading = true;
     });
   }
-}
+
+  Future<void> deleteVideo(String videoPath) async {
+    try {
+      final file = File(videoPath);
+      if (await file.exists()) {
+        await file.delete();
+        print('Video deleted successfully');
+      } else {
+        print('Video file does not exist at the specified path');
+      }
+    } catch (e) {
+      print('Error deleting video: $e');
+    }
+  }}
 
 class EyeFatigueThirdScreen extends StatefulWidget {
   @override
@@ -1202,21 +1023,21 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
             ),
           ),
           body:
-           uploaded
-        ? const Center(
-        child: Padding(
-        padding: EdgeInsets.all(8.0),
-        child: Text(
-          "Please wait, we are fetching your report...",
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ),
-      )
-          :
+      //      uploaded
+      //   ? const Center(
+      //   child: Padding(
+      //   padding: EdgeInsets.all(8.0),
+      //   child: Text(
+      //     "Please wait, we are fetching your report...",
+      //     style: TextStyle(
+      //       color: Colors.black,
+      //       fontSize: 16,
+      //     ),
+      //     textAlign: TextAlign.center,
+      //   ),
+      // ),
+      // )
+      //     :
            Column(
              // mainAxisAlignment: MainAxisAlignment.center,
              children: [
@@ -1306,6 +1127,7 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
       final responseData = json.decode(response.body);
 
       if (response.statusCode == 200) {
+
         setState(()  {
         int  report_id=responseData['data']['report_id'];
 
@@ -1324,7 +1146,7 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
       {
         setState(() {
           isclose=false; uploaded=false;
-          isLoading = false;
+          isLoading = false;startgame=false;gamepermission=false;
         });
         Fluttertoast.showToast(msg: "Session Expired");
         Navigator.pushReplacement(
@@ -1335,7 +1157,7 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
       else if(response.statusCode == 500) {
         setState(() {
            isclose=false; uploaded=false;
-           isLoading = false;
+           isLoading = false;startgame=false;gamepermission=false;
         });
         Fluttertoast.showToast(msg: "Server error occurred, Please try again.");
         Navigator.pushReplacement(
@@ -1345,7 +1167,7 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
       }else{
         setState(() {
           isclose=false; uploaded=false;
-          isLoading = false;
+          isLoading = false;startgame=false;gamepermission=false;
         });
         if (responseData.containsKey('error')) {
 
@@ -1365,7 +1187,7 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
     } on DioError catch (e) {
       setState(() {
         isclose=false; uploaded=false;
-        isLoading = false;
+        isLoading = false;startgame=false;gamepermission=false;
       });
       if (e.response != null || e.response!.statusCode == 401) {
         // Handle 401 error

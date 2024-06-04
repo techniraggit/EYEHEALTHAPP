@@ -1,4 +1,3 @@
-// ignore_for_file: library_private_types_in_public_api, avoid_print
 
 import 'dart:async';
 import 'dart:convert';
@@ -134,14 +133,7 @@ class Splash extends State<SplashScreen> {
         }
       },
     );
-    // Timer(const Duration(seconds: 3),
-    //         ()=>Navigator.push(context,
-    //         MaterialPageRoute(builder:
-    //             (context) =>const RewardContact()
-    //             // RewardContact()//change this in final step  SecondScreen
-    //         )
-    //     )
-    // );
+
   }
   Future<bool> checkLoggedIn() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -345,10 +337,6 @@ class _OnBoardingScreen1State extends State<OnBoardingScreen1> {
   }
 }
 
-
-
-
-
 class OnBoardingScreen2 extends StatefulWidget {
   @override
   _OnBoardingScreen2State createState() => _OnBoardingScreen2State();
@@ -483,14 +471,6 @@ class _OnBoardingScreen2State extends State<OnBoardingScreen2> {
     );
   }
 }
-
-
-
-
-
-
-
-
 
 class OnBoardingScreen3 extends StatefulWidget {
   @override
@@ -635,4 +615,108 @@ class _OnBoardingScreen3State extends State<OnBoardingScreen3> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
+//
+// import 'package:flutter/cupertino.dart';
+// import 'package:flutter/material.dart';
+// import 'package:syncfusion_flutter_charts/charts.dart';
+//
+// void main() {
+//   runApp(MyApp());
+// }
+//
+// class DayData {
+//   final String day;
+//   final List<double> values;
+//
+//   DayData(this.day, this.values);
+// }
+//
+//
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'Syncfusion Graph Example',
+//       theme: ThemeData(
+//         primarySwatch: Colors.blue,
+//       ),
+//       home: SyncfusionGraph(),
+//     );
+//   }
+// }
+//
+// List<DayData> chartData = [
+//   DayData('Mon', [0.5, 0.7, 0.4]),
+//   DayData('Tue', [0.6, 0.8, 0.3]),
+//   DayData('Wed', [0.6, 0.8, 0.3]),
+//   DayData('Thu', [0.6, 0.8, 0.3]),
+//   DayData('Fri', [0.6, 0.8, 0.3]),
+//   DayData('Sat', [0.6, 0.8, 0.3]),
+//   // Add data for other weekdays
+// ];
+//
+// class SyncfusionGraph extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Syncfusion Graph'),
+//       ),
+//       body: Container(
+//         width: MediaQuery.of(context).size.width / 0.3,
+//         height: 200,
+//         child: SfCartesianChart(
+//           primaryXAxis: CategoryAxis(
+//             majorGridLines: MajorGridLines(width: 0), // Hide vertical gridlines
+//           ),
+//           primaryYAxis: NumericAxis(
+//             majorGridLines: MajorGridLines(width: 0), // Hide horizontal gridlines
+//           ),
+//           series: <CartesianSeries>[
+//             for (var i = 0; i < 3; i++)
+//               SplineAreaSeries<DayData, String>(
+//                 dataSource: chartData,
+//                 xValueMapper: (DayData data, _) => data.day,
+//                 yValueMapper: (DayData data, _) => data.values[i],
+//                 name: 'Value ${i + 1}',
+//           isVisibleInLegend:true,// Name of the series
+//                 // isVisible: true, // Show the series
+//                 color: Colors.blue.withOpacity(0.2), // Change the color of the data area
+//                 markerSettings: MarkerSettings(
+//                   isVisible: true, // Show markers
+//                 ),
+//               ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
 

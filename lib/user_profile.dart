@@ -141,6 +141,31 @@ class SignUpScreen extends State<UserProfile> {
                       child: Stack(
                         children: [
                           // Circular image
+                          // CircleAvatar(
+                          //   radius: 50.0,
+                          //   backgroundColor: Colors.transparent,
+                          //   child: ClipOval(
+                          //     child: SizedBox(
+                          //       width: 80.0,
+                          //       height: 80.0,
+                          //       child: imageUrl1 != ''
+                          //           ? Image.network(
+                          //               imageUrl1,
+                          //               fit: BoxFit.cover,
+                          //             )
+                          //           : _imageFile == null && imageUrl1 == ""
+                          //               ? Image.asset(
+                          //                   'assets/profile_pic.png',
+                          //                   fit: BoxFit.cover,
+                          //                 )
+                          //               : Image.file(
+                          //                   _imageFile!,
+                          //                   fit: BoxFit.cover,
+                          //                 ),
+                          //     ),
+                          //   ),
+                          // ),
+                          // Icon for editing
                           CircleAvatar(
                             radius: 50.0,
                             backgroundColor: Colors.transparent,
@@ -148,24 +173,24 @@ class SignUpScreen extends State<UserProfile> {
                               child: SizedBox(
                                 width: 80.0,
                                 height: 80.0,
-                                child: imageUrl1 != ""
+                                child: _imageFile != null
+                                    ? Image.file(
+                                  _imageFile!,
+                                  fit: BoxFit.cover,
+                                )
+                                    : imageUrl1.isNotEmpty
                                     ? Image.network(
-                                        imageUrl1,
-                                        fit: BoxFit.cover,
-                                      )
-                                    : _imageFile == null && imageUrl1 == ""
-                                        ? Image.asset(
-                                            'assets/profile_pic.png',
-                                            fit: BoxFit.cover,
-                                          )
-                                        : Image.file(
-                                            _imageFile!,
-                                            fit: BoxFit.cover,
-                                          ),
+                                  imageUrl1,
+                                  fit: BoxFit.cover,
+                                )
+                                    : Image.asset(
+                                  'assets/profile_pic.png',
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                           ),
-                          // Icon for editing
+
                           Positioned(
                             bottom: 0,
                             right: 0,
@@ -552,6 +577,11 @@ class SignUpScreen extends State<UserProfile> {
       // await updateProfilePicture();
     }
   }
+
+
+
+
+
 
   Future<void> updateProfilePicture() async {
     const String apiUrl =
