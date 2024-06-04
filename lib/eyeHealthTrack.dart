@@ -7,7 +7,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Custom_navbar/bottom_navbar.dart';
@@ -43,7 +43,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
       if (response.statusCode == 200) {
 
         final responseData = json.decode(response.body);
-        fatigueGraphData = fatigueGraph?.fromJson(responseData);
+        fatigueGraphData = fatigueGraph.fromJson(responseData);
 
 
         print("graphdata===:${response.body}");
@@ -58,14 +58,11 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
         midtiredness_left=data[0]['is_mild_tiredness_left'];
         int no_of_fatigue=jsonData['no_of_fatigue_test'];
         int  no_of_eye_=jsonData['no_of_eye_test'];
-        double eye_hscore=jsonData['eye_health_score'];
-
+        int eye_hscore=jsonData['eye_health_score'];
         setState(() {
           no_of_fatigue_test=no_of_fatigue.toString();
           no_of_eye_test=no_of_eye_.toString();
           eye_health_score=eye_hscore.toString();
-          print("gphdata===:${eye_health_score}");
-
         });
 
         return data.map((item) => double.parse(item['value'].toString())).toList();
@@ -94,103 +91,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
       print(error);
     });
   }
-  //  List<AlarmSettings> alarms=[];
-  //
-  // static StreamSubscription<AlarmSettings>? subscription;
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   if (Alarm.android) {
-  //     checkAndroidNotificationPermission();
-  //     checkAndroidScheduleExactAlarmPermission();
-  //   }
-  //   loadAlarms();
-  //   subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
-  // }
-  //
-  // void loadAlarms() {
-  //   setState(() {
-  //     alarms = Alarm.getAlarms();
-  //     alarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
-  //   });
-  // }
-  //
-  // Future<void> navigateToRingScreen(AlarmSettings alarmSettings) async {
-  //   await Navigator.push(
-  //     context,
-  //     MaterialPageRoute<void>(
-  //       builder: (context) =>
-  //           ExampleAlarmRingScreen(alarmSettings: alarmSettings),
-  //     ),
-  //   );
-  //   loadAlarms();
-  // }
-  //
-  // Future<void> navigateToAlarmScreen(AlarmSettings? settings) async {
-  //   final res = await showModalBottomSheet<bool?>(
-  //     context: context,
-  //     isScrollControlled: true,
-  //     shape: RoundedRectangleBorder(
-  //       borderRadius: BorderRadius.circular(10),
-  //     ),
-  //     builder: (context) {
-  //       return FractionallySizedBox(
-  //         heightFactor: 0.75,
-  //         child: ExampleAlarmEditScreen(alarmSettings: settings),
-  //       );
-  //     },
-  //   );
-  //
-  //   if (res != null && res == true) loadAlarms();
-  // }
-  //
-  // Future<void> checkAndroidNotificationPermission() async {
-  //   final status = await Permission.notification.status;
-  //   if (status.isDenied) {
-  //     alarmPrint('Requesting notification permission...');
-  //     final res = await Permission.notification.request();
-  //     alarmPrint(
-  //       'Notification permission ${res.isGranted ? '' : 'not '}granted',
-  //     );
-  //   }
-  // }
-  //
-  // Future<void> checkAndroidExternalStoragePermission() async {
-  //   final status = await Permission.storage.status;
-  //   if (status.isDenied) {
-  //     alarmPrint('Requesting external storage permission...');
-  //     final res = await Permission.storage.request();
-  //     alarmPrint(
-  //       'External storage permission ${res.isGranted ? '' : 'not'} granted',
-  //     );
-  //   }
-  // }
-  //
-  // Future<void> checkAndroidScheduleExactAlarmPermission() async {
-  //   final status = await Permission.scheduleExactAlarm.status;
-  //   alarmPrint('Schedule exact alarm permission: $status.');
-  //   if (status.isDenied) {
-  //     alarmPrint('Requesting schedule exact alarm permission...');
-  //     final res = await Permission.scheduleExactAlarm.request();
-  //     alarmPrint(
-  //       'Schedule exact alarm permission ${res.isGranted ? '' : 'not'} granted',
-  //     );
-  //   }
-  // }
-  //
-  // @override
-  // void dispose() {
-  //   subscription?.cancel();
-  //   super.dispose();
-  // }
+
 
 
 
@@ -203,7 +104,6 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
   Widget build(BuildContext context) {
     String formattedDate = DateFormat('dd MMMM').format(DateTime.now());
     return Scaffold(
-      backgroundColor: Colors.white,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Padding(
         padding: const EdgeInsets.all(8.0), // Add padding
@@ -244,8 +144,6 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
 
 
       appBar: AppBar(
-        backgroundColor: Colors.white,
-
         title: Text('Eye Health Track'),
         actions: <Widget>[
           // ExampleAlarmHomeShortcutButton(refreshAlarms: loadAlarms),
@@ -293,46 +191,8 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
             ),
             Padding(
               padding: EdgeInsets.all(16.0),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Image.asset(
-                    'assets/banner1.png',
-                    fit: BoxFit.cover, // Ensure the image covers the entire stack
-                  ),
-                  Positioned(
-                    right: 20,
-                    bottom: 120, // Adjust the position of the text as needed
-                    child: Text(
-                      'Your Eye Health Score',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                     Positioned(
-                      right: 50,
-                      bottom: 80, // Adjust the position of the text as needed
-                      child:  Text(
-                        eye_health_score, // Convert double to String
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 25.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.amber,
-                          decoration: TextDecoration.underline,
-                          decorationColor: Colors.amber, // Adjust size as needed
-                          // Add other styling properties as needed
-                        ),
-                      ),
-                    ),
-
-                ],
-              ),
-            )
-,
+              child: Image.asset('assets/banner1.png'),
+            ),
             const Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
               child: Text(
@@ -367,6 +227,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
                               ),
                             ],
                           ),
+                          SizedBox(width: 3,),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
@@ -420,79 +281,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
                   ),
                 ),
               ),
-            ),
-            // Padding(
-            //   padding: const EdgeInsets.all(8.0),
-            //   child: Card(
-            //     child: ListTile(
-            //       title: Column(
-            //         children: [
-            //           Row(
-            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //             children: [
-            //               Column(
-            //                 crossAxisAlignment: CrossAxisAlignment.start,
-            //                 children: [
-            //                   Text('No. of eye fatigue test',style: TextStyle(
-            //                     fontSize: 14,
-            //                     fontWeight: FontWeight.w400,)),
-            //                   Text('value',style: TextStyle(
-            //                     fontSize: 14,
-            //                     fontWeight: FontWeight.bold,
-            //                   ),),
-            //                 ],
-            //               ),
-            //               SizedBox(width: 3,),
-            //               Column(
-            //                 crossAxisAlignment: CrossAxisAlignment.end,
-            //                 children: [
-            //                   Text('No. of digital eye test',style: TextStyle(
-            //                     fontSize: 14,
-            //                     fontWeight: FontWeight.w400,)),
-            //                   Text('Value ',style: TextStyle(
-            //                     fontSize: 14,
-            //                     fontWeight: FontWeight.bold,
-            //                   ),),
-            //                 ],
-            //               ),
-            //             ],
-            //           ),
-            //           SizedBox(height: 16), // Add spacing between the row and the additional columns
-            //           Row(
-            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //             children: [
-            //               Column(
-            //                 crossAxisAlignment: CrossAxisAlignment.start,
-            //                 children: [
-            //                   Text('Prescription uploaded',style: TextStyle(
-            //             fontSize: 14,
-            //             fontWeight: FontWeight.w400,)),
-            //                   Text('value',style: TextStyle(
-            //                     fontSize: 14,
-            //                     fontWeight: FontWeight.bold,
-            //                   ),),
-            //                 ],
-            //               ),
-            //               Column(
-            //                 crossAxisAlignment: CrossAxisAlignment.end,
-            //                 children: [
-            //                   Text('visit to optemistist',style: TextStyle(
-            //                     fontSize: 14,
-            //                     fontWeight: FontWeight.w400,)),
-            //                   Text('Value',style: TextStyle(
-            //                     fontSize: 14,
-            //                     fontWeight: FontWeight.bold,
-            //                   ),),
-            //                 ],
-            //               ),
-            //             ],
-            //           ),
-            //         ],
-            //       ),
-            //     ),
-            //   ),
-            // ),
-            const Padding(
+            ),const Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
               child: Text(
                 'EYE HEALTH GRAPH OVERVIEW', // Display formatted current date
@@ -897,17 +686,17 @@ class RightEyeHealthWidget extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(padding: EdgeInsets.all(1),
-                    child :ListTile(
-                      title: Text(
-                        'Right Eye Health',
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      subtitle: Text('April 30-May 30'),
-                    ),),
+                  // Padding(padding: EdgeInsets.all(1),
+                    // child :ListTile(
+                    //   title: Text(
+                    //     'Right Eye Health',
+                    //     style: TextStyle(
+                    //       fontSize: 16.0,
+                    //       fontWeight: FontWeight.bold,
+                    //     ),
+                    //   ),
+                    //   subtitle: Text('April 30-May 30'),
+                    // ),),
 
                   // Container with fixed height to contain the LineChart
                   Container(
@@ -982,3 +771,4 @@ class RightEyeHealthWidget extends StatelessWidget {
     );
   }
 }
+

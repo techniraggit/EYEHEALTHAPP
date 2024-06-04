@@ -1,4 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'package:alarm/alarm.dart';
+import 'package:alarm/model/alarm_settings.dart';
+import 'package:draw_graph/draw_graph.dart';
+import 'package:draw_graph/models/feature.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -8,7 +14,10 @@ import 'package:flutter/services.dart';
 
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
-import 'package:package_rename/package_rename.dart';
+import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:project_new/alarm/demo_main.dart';
+import 'package:project_new/eyeFatigueTest.dart';
 import 'package:project_new/digitalEyeTest/testScreen.dart';
 import 'package:project_new/myPlanPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,7 +25,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'Custom_navbar/bottom_navbar.dart';
 import 'api/Api.dart';
 import 'api/config.dart';
-import 'eyeFatigueTest/eyeFatigueTest.dart';
+import 'eyeFatigueTest.dart';
 import 'models/fatigueGraphModel.dart';
 
 class EyeHealthData {
@@ -54,8 +63,16 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  List<double>? _data;
-  int i = 0;
+  List<double>? _data; List<String>? dates;
+  int i = 0; List<Feature>? features; List<String>? labelX ; List<String>? labelY;
+
+  String _status = '';
+  List<FlSpot> _value = [];
+  List<FlSpot> _spots = [FlSpot(0, 0)]; // Initialize _spots as needed
+  bool fatigue_left = false;
+  bool fatigue_right = false;
+  bool midtiredness_right = false;
+  bool midtiredness_left = false;
   bool isSelected = false;
   fatigueGraph? fatigueGraphData;
   bool isLeftEyeSelected = false;
@@ -67,22 +84,28 @@ class HomePageState extends State<HomePage> {
   String eye_health_score = "";
   String name = "";
   String no_of_fatigue_test = "0";
-  bool fatigue_left=false;
-  bool fatigue_right=false;
-  bool midtiredness_right= false;
-  bool midtiredness_left=false;
+
   // Define selectedDate within the _CalendarButtonState class
 
-  Future<void> _selectDate(BuildContext context) async {
+  late List<AlarmSettings> alarms;
+  List<Map<String, dynamic>>? _datagraph;
+  static StreamSubscription<AlarmSettings>? subscription;
+  late DateTime _fromDate;
+  late DateTime _toDate;
+  Future<void> _selectDate(BuildContext context, bool isFromDate) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2015, 8),
+      initialDate: isFromDate ? _fromDate : _toDate,
+      firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
-    if (picked != null && picked != selectedDate) {
+    if (picked != null && picked != (isFromDate ? _fromDate : _toDate)) {
       setState(() {
-        selectedDate = picked;
+        if (isFromDate) {
+          _fromDate = picked;
+        } else {
+          _toDate = picked;
+        }
       });
     }
   }
@@ -90,7 +113,14 @@ class HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // getGraph();
+
+    if (Alarm.android) {
+      checkAndroidNotificationPermission();
+      checkAndroidScheduleExactAlarmPermission();
+    }
+    // loadAlarms();
+
+    subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
     getGraph().then((data) {
       setState(() {
         _data = data;
@@ -98,6 +128,67 @@ class HomePageState extends State<HomePage> {
     }).catchError((error) {
       print(error);
     });
+  }
+
+  Future<void> checkAndroidNotificationPermission() async {
+    final status = await Permission.notification.status;
+    if (status.isDenied) {
+      final res = await Permission.notification.request();
+    }
+  }
+
+  void loadAlarms() {
+    setState(() {
+      alarms = Alarm.getAlarms();
+      alarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
+    });
+  }
+
+  Future<void> navigateToRingScreen(AlarmSettings alarmSettings) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        builder: (context) =>
+            ExampleAlarmRingScreen(alarmSettings: alarmSettings),
+      ),
+    );
+    loadAlarms();
+  }
+  @override
+  void dispose() {
+    subscription?.cancel();
+    super.dispose();
+  }
+  Future<void> checkAndroidExternalStoragePermission() async {
+    final status = await Permission.storage.status;
+    if (status.isDenied) {
+      final res = await Permission.storage.request();
+    }
+  }
+
+  Future<void> checkAndroidScheduleExactAlarmPermission() async {
+    final status = await Permission.scheduleExactAlarm.status;
+    if (status.isDenied) {
+      final res = await Permission.scheduleExactAlarm.request();
+    }
+  }
+
+  Future<void> navigateToAlarmScreen(AlarmSettings? settings) async {
+    final res = await showModalBottomSheet<bool?>(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      builder: (context) {
+        return FractionallySizedBox(
+          heightFactor: 0.75,
+          child: ExampleAlarmEditScreen(alarmSettings: settings),
+        );
+      },
+    );
+
+    if (res != null && res == true) loadAlarms();
   }
 
   @override
@@ -113,7 +204,6 @@ class HomePageState extends State<HomePage> {
       salutation = 'Good evening';
     }
     return Scaffold(
-      backgroundColor: Colors.white,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Padding(
         padding: const EdgeInsets.all(8.0), // Add padding
@@ -135,8 +225,8 @@ class HomePageState extends State<HomePage> {
                 height: 50.0, // Height of the FloatingActionButton
                 child: Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    // Add padding for the icon
+                    padding:
+                    const EdgeInsets.all(8.0), // Add padding for the icon
                     child: Image.asset(
                       "assets/home_icon.png",
                       width: 20,
@@ -165,7 +255,7 @@ class HomePageState extends State<HomePage> {
               padding: const EdgeInsets.all(16.0),
               child: SizedBox(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8.0, 20.0, 0, 4),
+                  padding: const EdgeInsets.fromLTRB(8.0, 10.0, 0, 4),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -186,7 +276,11 @@ class HomePageState extends State<HomePage> {
                                   color: Colors.white, fontSize: 16),
                             ),
                           ),
-                          Image.asset('assets/notification.png')
+                          GestureDetector(
+                              onTap: () {
+                                navigateToAlarmScreen(null);
+                              },
+                              child: Image.asset('assets/notification.png'))
                         ],
                       ),
                       Text(
@@ -245,7 +339,7 @@ class HomePageState extends State<HomePage> {
             ),
             Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
+              const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
               child: GestureDetector(
                 onTap: () {
                   // sendcustomerDetails(context);
@@ -265,46 +359,21 @@ class HomePageState extends State<HomePage> {
                   MaterialPageRoute(builder: (context) => MyPlan()),
                 );
               },
-              child: Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Image.asset('assets/near_by_store.png'),
-              ),
+              child: Image.asset('assets/find_near_by_store.png'),
             ),
-
             Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 10, 15, 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'EYE HEALTH STATUS',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.deepPurple,
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  TextButton(
-                    onPressed: () async {
-                      final DateTime? picked = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(2000),
-                        //_fromDates[index] != null ? _fromDates[index]! : DateTime(2000),
-                        // firstDate:_fromDates[index] != null?? DateTime(2000), // Set the first selectable date to the current date
-                        lastDate: DateTime(2101),
-                      );
-                      if (picked != null) {
-                        // _toDates[index] = picked;
-                        setState(() {});
-                      }
-                    },
-                    child: Image.asset('assets/calender.png'),
-                  ),
-                ],
+              padding:
+              const EdgeInsets.symmetric(horizontal: 17.0, vertical: 10),               child: Text(
+              'EYE HEALTH STATUS',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.deepPurple,
               ),
             ),
+            ),
+            SizedBox(width: 8),
+
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Card(
@@ -380,7 +449,7 @@ class HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
               child: Text(
                 'EYE HEALTH GRAPH OVERVIEW', // Display formatted current date
@@ -390,87 +459,134 @@ class HomePageState extends State<HomePage> {
                     color: Colors.deepPurple),
               ),
             ),
-
-
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          height: 200,
-                          width: MediaQuery.of(context).size.width, // Adjust the width as needed
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: AspectRatio(
-                              aspectRatio: 1.40,
-                              child: _data != null
-                                  ? Builder(
-                                  builder: (context) {
+              padding: EdgeInsets.fromLTRB(16.0, 10, 15, 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Row(
+                    children: [
+                      Text('From: '),//${DateFormat('yyyy-MM-dd').format(_fromDate)}
+                      SizedBox(width: 8),
 
-                                    if(_data!.length>10){
-                                      i=10;
-                                    }else{
-                                      i=_data!.length;
-                                    }
-                                    return LineChart(
-                                      LineChartData(
-                                        lineBarsData: [
-                                          LineChartBarData(
-                                            spots: _data!
-                                                .sublist(0, i)
-                                                .asMap()
-                                                .entries
-                                                .map((entry) {
-                                              return FlSpot(
-                                                  entry.key.toDouble(), entry.value);
-                                            }).toList(),
-                                            isCurved: true,
-                                            colors: [Colors.deepPurple],
-                                            barWidth: 4,
-                                            isStrokeCapRound: true,
-                                            belowBarData: BarAreaData(
-                                              show: true,
-                                              colors: [
-                                                Colors.deepPurple.withOpacity(0.1)
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                        gridData: FlGridData(
-                                          drawVerticalLine: true,
-                                          drawHorizontalLine: false,
-                                        ),
-                                        titlesData: FlTitlesData(
-                                          leftTitles: SideTitles(
-                                            showTitles: true,
-                                            interval: 10.0,
-                                          ),
-                                        ),
-                                        minX: 0,
-                                        maxX: 10, // Initially show only 10 values
-                                        minY: 10,
-                                        maxY: 100,
-                                      ),
-                                    );
-                                  }
-                              )
-                                  : CircularProgressIndicator(),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+
+                      TextButton(
+                        onPressed: () async {
+                          final DateTime? picked = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(2000),
+
+                            lastDate: DateTime(2101),
+                          );
+                          if (picked != null) {
+                            // _fr[index] = picked;
+
+                            setState(() {});
+                          }
+                        },
+                        child: Image.asset('assets/calender.png'),
+                      ),
+                    ],
                   ),
-                ),
+
+                  SizedBox(width: 20),
+                  Row(
+                    children: [
+                      Text('To: '),
+                      SizedBox(width: 8),
+                      TextButton(
+                        onPressed: () async {
+                          final DateTime? picked = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(2000),
+                            //_fromDates[index] != null ? _fromDates[index]! : DateTime(2000),
+
+                            // firstDate:_fromDates[index] != null?? DateTime(2000), // Set the first selectable date to the current date
+                            lastDate: DateTime(2101),
+                          );
+                          if (picked != null) {
+                            // _toDates[index] = picked;
+
+                            setState(() {});
+                          }
+                        },
+                        child: Image.asset('assets/calender.png'),
+                      ),
+                    ],
+                  ),//${DateFormat('yyyy-MM-dd').format(_toDate)}
+
+                ],
               ),
             ),
-            const Padding(
+
+            SizedBox(height: 20),
+            Builder(
+                builder: (context) {
+                  final List<Color> gradientColors = [
+                    Colors.background.withOpacity(0.6),Colors.white.withOpacity(0.8)
+
+                  ];
+                  return AspectRatio(
+                    aspectRatio: 1.5,
+                    child: LineChart(
+                      LineChartData(
+                        lineBarsData: [
+                          LineChartBarData(
+                            spots: _datagraph?.asMap().entries
+                                .map((entry) {
+                              final date = DateTime.parse(entry.value['date']);
+                              final value = entry.value['value'] as double;
+                              return FlSpot(entry.key.toDouble(), value);
+                            })
+                                .toList()
+                                .sublist(0,11), // Take the first 10 entries
+                            isCurved: true,
+                            colors: gradientColors,
+                            barWidth: 1.6,
+                            belowBarData: BarAreaData(
+                              show: true,
+                              colors: gradientColors
+                                  .map((color) => color.withOpacity(0.3))
+                                  .toList(),
+                            ),
+                            dotData: FlDotData(show: true),
+                            isStrokeCapRound: true,
+                            curveSmoothness: 0.3,
+                          ),
+                        ],
+                        gridData: FlGridData(show: false),
+                        titlesData: FlTitlesData(
+                          show: true,
+                          bottomTitles: SideTitles(
+                            showTitles: true,
+                            margin: 8,
+                            reservedSize: 3,
+                            interval: 1, // Interval is set to 1 to show all labels
+                            getTitles: (value) {
+                              final index = value.toInt();
+                              if (index >= 0 && index < 10) { // Show only the first 10 dates
+                                final date = DateTime.parse(_datagraph![index]['date']);
+                                return '${date.day}/${date.month}';
+                              }
+                              return '';
+                            },
+                          ),
+                        ),
+                        borderData: FlBorderData(show: true),
+                        minX: 0,
+                        maxX: 9, // Set to 9 because we are showing 10 values (0-indexed)
+                        minY: 0,
+                        maxY: 100,
+                      ),
+                    ),
+                  );
+
+
+                }
+            ),
+            Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
               child: Text(
                 'YOU HAVE TESTED SO FAR', // Display formatted current date
@@ -581,8 +697,8 @@ class HomePageState extends State<HomePage> {
   Future<void> sendcustomerDetails(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
 // Replace these headers with your required headers
     Map<String, String> headers = {
@@ -606,13 +722,6 @@ class HomePageState extends State<HomePage> {
           print('sddd ${response.body}');
         }
         Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-        String customerId = jsonResponse['customer_id'];
-
-        prefs.setString('customer_id', customerId);
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => GiveInfo()),
-        );
       } else {
         print('Failed with status code: ${response.statusCode}');
         print('Failed sddd ${response.body}');
@@ -623,7 +732,6 @@ class HomePageState extends State<HomePage> {
     }
   }
 
-  // Extract the customer ID
 
   Future<List<double>> getGraph() async {
     try {
@@ -634,51 +742,45 @@ class HomePageState extends State<HomePage> {
         headers: <String, String>{
           'Authorization': 'Bearer $authToken',
         },
+
       );
 
       if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
 
-        final fatigueGraphData = fatigueGraph.fromJson(responseData);
+        final responseData = json.decode(response.body);
+        fatigueGraphData = fatigueGraph.fromJson(responseData);
+
 
         print("graphdata===:${response.body}");
 
         Map<String, dynamic> jsonData = jsonDecode(response.body);
         List<dynamic> data = jsonData['data'];
-        name = jsonData['name'];
-        int no_of_fatigue = jsonData['no_of_fatigue_test'];
-        int no_of_eye_ = jsonData['no_of_eye_test'];
-        int eye_hscore = jsonData['eye_health_score'];
-        midtiredness_left = jsonData['data'][0]['is_mild_tiredness_left'];
-        midtiredness_right = jsonData['data'][0]['is_mild_tiredness_right'];
-        fatigue_left = jsonData['data'][0]['is_fatigue_left'];
-        fatigue_right = jsonData['data'][0]['is_fatigue_right'];
-
+        name=jsonData['name'];
+        int no_of_fatigue=jsonData['no_of_fatigue_test'];
+        int  no_of_eye_=jsonData['no_of_eye_test'];
+        int eye_hscore=jsonData['eye_health_score'];
         setState(() {
-          no_of_fatigue_test = no_of_fatigue.toString();
-          no_of_eye_test = no_of_eye_.toString();
-          eye_health_score = eye_hscore.toString();
-        });
-        setState(() {
-          midtiredness_left;
-          midtiredness_right;
-          fatigue_right;
-          fatigue_left;
+          _datagraph = List<Map<String, dynamic>>.from(jsonData['data']);
+          no_of_fatigue_test=no_of_fatigue.toString();
+          no_of_eye_test=no_of_eye_.toString();
+          eye_health_score=eye_hscore.toString();
         });
 
-        return data
-            .map((item) => double.parse(item['value'].toString()))
-            .toList();
-      } else {
+        return data.map((item) => double.parse(item['value'].toString())).toList();
+
+      }
+      else {
+
         print(response.body);
       }
-    } catch (e) {
-      // _progressDialog!.hide();
+    }
+    catch (e) {     // _progressDialog!.hide();
 
       print("exception:$e");
     }
     throw Exception('');
   }
+
 }
 
 class setReminder extends StatefulWidget {
@@ -742,7 +844,7 @@ class BottomDialog extends StatelessWidget {
           Card(
             child: GestureDetector(
               onTap: () {
-
+                Navigator.pop(context);
                 sendcustomerDetails(context, true);
               },
               child: Image.asset('assets/test_for_myself_img.png'),
@@ -804,7 +906,7 @@ class BottomDialog extends StatelessWidget {
 
           print('Customer ID: $customerId');
 
-// Check if the context is still mounted before navigating
+          // Check if the context is still mounted before navigating
           if (context.mounted) {
             Navigator.push(
               context,
@@ -830,6 +932,8 @@ class OtherDetailsBottomSheet extends StatefulWidget {
 }
 
 class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
+  final _nameController = TextEditingController();
+  final _ageController = TextEditingController();
 
   Future<void> sendcustomerDetails(BuildContext context, bool isSelf,
       {String? name, String? age}) async {
@@ -867,7 +971,7 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
 
           print('Customer ID: $customerId');
 
-// Navigate to GiveInfo screen
+          // Navigate to GiveInfo screen
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => GiveInfo()),
@@ -883,144 +987,188 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
     }
   }
 
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _ageController = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Test For Someone Else',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+          Divider(thickness: 1.5, color: Colors.grey.shade400),
+          SizedBox(height: 20),
+          SizedBox(
+            height: 55,
+            child: Padding(
+              padding:
+              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
+              child: TextField(
+                controller: _nameController,
+                textInputAction: TextInputAction.next,
+                decoration: InputDecoration(
+                  labelText: 'Full Name',
+                  labelStyle: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.background,
+                    fontWeight: FontWeight.w100,
+                  ),
+                  hintText: 'Enter Full Name',
+                  hintStyle: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.hinttext,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius:
+                    BorderRadius.circular(27.0), // Add circular border
+                  ),
+                  // Set floatingLabelBehavior to always display the label
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  // Add button to the end of the TextField
+                ),
+                style:
+                const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+              ),
+            ),
+          ),
+          SizedBox(height: 20),
+          SizedBox(
+            height: 55,
+            child: Padding(
+              padding:
+              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
+              child: TextFormField(
+                controller: _ageController,
+                textInputAction: TextInputAction.next,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(3),
+                ],
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter an age';
+                  }
+                  int? age = int.tryParse(value);
+                  if (age == null || age < 12 || age > 100) {
+                    return 'Age must be between 12 and 100';
+                  }
+                  return null;
+                },
+                decoration: InputDecoration(
+                  labelText: 'Age',
+                  labelStyle: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.background,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  hintText: 'Age',
+                  hintStyle: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.hinttext,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius:
+                    BorderRadius.circular(27.0), // Add circular border
+                  ),
+                  // Set floatingLabelBehavior to always display the label
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  // Add button to the end of the TextField
+                ),
+                style:
+                const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+              ),
+            ),
+          ),
+          SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+              onPressed: () {
+                sendcustomerDetails(context, false,
+                    name: _nameController.text, age: _ageController.text);
+              },
+              child: Text('Submit'),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(350, 50),
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.bluebutton,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ExampleAlarmRingScreen extends StatelessWidget {
+  const ExampleAlarmRingScreen({required this.alarmSettings, super.key});
+
+  final AlarmSettings alarmSettings;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Form(
-        key: _formKey,
+    return Scaffold(
+      body: SafeArea(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
+            Text(
+              'You alarm (${alarmSettings.id}) is ringing...',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const Text('🔔', style: TextStyle(fontSize: 50)),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Text(
-                  'Test For Someone Else',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                RawMaterialButton(
+                  onPressed: () {
+                    final now = DateTime.now();
+                    Alarm.set(
+                      alarmSettings: alarmSettings.copyWith(
+                        dateTime: DateTime(
+                          now.year,
+                          now.month,
+                          now.day,
+                          now.hour,
+                          now.minute,
+                        ).add(const Duration(minutes: 1)),
+                      ),
+                    ).then((_) => Navigator.pop(context));
+                  },
+                  child: Text(
+                    'Snooze',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.close),
-                  onPressed: () => Navigator.pop(context),
+                RawMaterialButton(
+                  onPressed: () {
+                    Alarm.stop(alarmSettings.id)
+                        .then((_) => Navigator.pop(context));
+                  },
+                  child: Text(
+                    'Stop',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                 ),
               ],
-            ),
-            Divider(thickness: 1.5, color: Colors.grey.shade400),
-            SizedBox(height: 20),
-            SizedBox(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
-                child: TextFormField(
-                  controller: _nameController,
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: 'Full Name',
-                    labelStyle: TextStyle(
-                      fontSize: 14,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w100,
-                    ),
-                    hintText: 'Enter Full Name',
-                    hintStyle: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius:
-                          BorderRadius.circular(27.0), // Add circular border
-                    ),
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                  ),
-                  inputFormatters: [
-                    LengthLimitingTextInputFormatter(30),
-// Limit to 30 characters
-                  ],
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a full name';
-                    }
-                    final nameRegExp = RegExp(r'^[a-zA-Z\s]+$');
-                    if (!nameRegExp.hasMatch(value)) {
-                      return 'Name must contain only alphabets';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            SizedBox(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
-                child: TextFormField(
-                  controller: _ageController,
-                  textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(3),
-                  ],
-                  decoration: InputDecoration(
-                    labelText: 'Age',
-                    labelStyle: TextStyle(
-                      fontSize: 14,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    hintText: 'Age',
-                    hintStyle: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius:
-                          BorderRadius.circular(27.0), // Add circular border
-                    ),
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                  ),
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter an age';
-                    }
-                    int? age = int.tryParse(value);
-                    if (age == null || age < 10 || age > 70) {
-                      return 'Age must be between 10 and 70';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-            ),
-            SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    sendcustomerDetails(context, false,
-                        name: _nameController.text, age: _ageController.text);
-                  }
-                },
-                child: Text('Submit'),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: Size(350, 50),
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.bluebutton,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                ),
-              ),
             ),
           ],
         ),
@@ -1028,3 +1176,8 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
     );
   }
 }
+
+
+
+
+

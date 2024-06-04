@@ -386,7 +386,7 @@ class UserProfiledash extends State<UserDashboard> {
     String access_token = prefs.getString('access_token') ?? '';
     prefs.remove("isLoggedIn");
     prefs.remove("access_token");
-
+    await prefs.clear();
     Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => SignIn()),
             (Route<dynamic> route) => false);
@@ -419,9 +419,10 @@ class UserProfiledash extends State<UserDashboard> {
         final jsonResponse = jsonDecode(response.body);
         setState(() {
           points_.text=jsonResponse['data']['points'].toString();
-
-          imageUrl1="${ApiProvider.baseUrl}"+jsonResponse['data']['image'];//replace url
-
+if(jsonResponse['data']['image']!=null) {
+  imageUrl1 =
+      "${ApiProvider.baseUrl}" + jsonResponse['data']['image']; //replace url
+}
         });
 
         print("responseviewprofile:${response.body}");
