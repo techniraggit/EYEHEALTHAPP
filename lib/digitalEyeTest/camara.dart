@@ -426,6 +426,7 @@ class _CameraScreenState extends State<CameraS> {
         //   print('Request failed with status: ${response.body}');
         setState(() {
           alert = alertMessage;
+          print("alert$alertMessage");
         });
 
         // Handle error response

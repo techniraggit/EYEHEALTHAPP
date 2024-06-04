@@ -1,18 +1,19 @@
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:alarm/alarm.dart';
-import 'package:alarm/model/alarm_settings.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:permission_handler/permission_handler.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Custom_navbar/bottom_navbar.dart';
 import 'HomePage.dart';
-import 'alarm/edit_alarm.dart';
-import 'alarm/ring.dart';
-import 'alarm/shortcut_alarmButton.dart';
+import 'api/config.dart';
+import 'models/fatigueGraphModel.dart';
 
 class EyeHealthTrackDashboard extends StatefulWidget {
   @override
@@ -20,6 +21,79 @@ class EyeHealthTrackDashboard extends StatefulWidget {
 }
 
 class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
+  bool fatigue_left=false; List<double>? _data;int i=0;
+  bool fatigue_right=false;fatigueGraph? fatigueGraphData;
+  bool midtiredness_right= false;
+  bool midtiredness_left=false;
+  String no_of_eye_test="0";String eye_health_score="";String name="";String no_of_fatigue_test="0";
+
+
+  Future<List<double>> getGraph() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken = prefs.getString('access_token') ?? '';
+      final response = await http.get(
+        Uri.parse('${ApiProvider.baseUrl}/api/fatigue/fatigue-graph'),
+        headers: <String, String>{
+          'Authorization': 'Bearer $authToken',
+        },
+
+      );
+
+      if (response.statusCode == 200) {
+
+        final responseData = json.decode(response.body);
+        fatigueGraphData = fatigueGraph?.fromJson(responseData);
+
+
+        print("graphdata===:${response.body}");
+
+        Map<String, dynamic> jsonData = jsonDecode(response.body);
+        List<dynamic> data = jsonData['data'];
+        // name=jsonData['name'];
+
+        fatigue_left=data[0]['is_fatigue_left'];
+        fatigue_right=data[0]['is_fatigue_right'];
+        midtiredness_right=data[0]['is_mild_tiredness_right'];
+        midtiredness_left=data[0]['is_mild_tiredness_left'];
+        int no_of_fatigue=jsonData['no_of_fatigue_test'];
+        int  no_of_eye_=jsonData['no_of_eye_test'];
+        double eye_hscore=jsonData['eye_health_score'];
+
+        setState(() {
+          no_of_fatigue_test=no_of_fatigue.toString();
+          no_of_eye_test=no_of_eye_.toString();
+          eye_health_score=eye_hscore.toString();
+          print("gphdata===:${eye_health_score}");
+
+        });
+
+        return data.map((item) => double.parse(item['value'].toString())).toList();
+
+      }
+      else {
+
+        print(response.body);
+      }
+    }
+    catch (e) {     // _progressDialog!.hide();
+
+      print("exception:$e");
+    }
+    throw Exception('');
+  }
+  @override
+  void initState() {
+    super.initState();
+    // getGraph();
+    getGraph().then((data) {
+      setState(() {
+        _data = data;
+      });
+    }).catchError((error) {
+      print(error);
+    });
+  }
   //  List<AlarmSettings> alarms=[];
   //
   // static StreamSubscription<AlarmSettings>? subscription;
@@ -129,6 +203,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
   Widget build(BuildContext context) {
     String formattedDate = DateFormat('dd MMMM').format(DateTime.now());
     return Scaffold(
+      backgroundColor: Colors.white,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Padding(
         padding: const EdgeInsets.all(8.0), // Add padding
@@ -169,6 +244,8 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
 
 
       appBar: AppBar(
+        backgroundColor: Colors.white,
+
         title: Text('Eye Health Track'),
         actions: <Widget>[
           // ExampleAlarmHomeShortcutButton(refreshAlarms: loadAlarms),
@@ -216,8 +293,46 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
             ),
             Padding(
               padding: EdgeInsets.all(16.0),
-              child: Image.asset('assets/banner1.png'),
-            ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Image.asset(
+                    'assets/banner1.png',
+                    fit: BoxFit.cover, // Ensure the image covers the entire stack
+                  ),
+                  Positioned(
+                    right: 20,
+                    bottom: 120, // Adjust the position of the text as needed
+                    child: Text(
+                      'Your Eye Health Score',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                     Positioned(
+                      right: 50,
+                      bottom: 80, // Adjust the position of the text as needed
+                      child:  Text(
+                        eye_health_score, // Convert double to String
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 25.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.amber,
+                          decoration: TextDecoration.underline,
+                          decorationColor: Colors.amber, // Adjust size as needed
+                          // Add other styling properties as needed
+                        ),
+                      ),
+                    ),
+
+                ],
+              ),
+            )
+,
             const Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
               child: Text(
@@ -230,7 +345,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(8.0),
               child: Card(
                 child: ListTile(
                   title: Column(
@@ -241,56 +356,62 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('No. of eye fatigue test',style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,)),
-                              Text('value',style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                              ),),
+                              Text('Fatigue Right'),
+                              Text(
+                                fatigue_right ? 'Yes' : 'No',
+
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ],
                           ),
-                          SizedBox(width: 3,),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text('No. of digital eye test',style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,)),
-                              Text('Value ',style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                              ),),
+                              Text('Mild Tiredness Right'),
+                              Text(
+                                midtiredness_right ? 'Yes' : 'No',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ],
                           ),
                         ],
                       ),
-                      SizedBox(height: 16), // Add spacing between the row and the additional columns
+                      SizedBox(height: 16),
+                      // Add spacing between the row and the additional columns
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Prescription uploaded',style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,)),
-                              Text('value',style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                              ),),
+                              Text('Fatigue left'),
+                              Text(
+
+                                fatigue_left ? 'Yes' : 'No',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ],
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text('visit to optemistist',style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,)),
-                              Text('Value',style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                              ),),
+                              Text('Mild Tiredness Left'),
+                              Text(
+                                midtiredness_left ? 'Yes' : 'No',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ],
                           ),
                         ],
@@ -299,7 +420,79 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
                   ),
                 ),
               ),
-            ),const Padding(
+            ),
+            // Padding(
+            //   padding: const EdgeInsets.all(8.0),
+            //   child: Card(
+            //     child: ListTile(
+            //       title: Column(
+            //         children: [
+            //           Row(
+            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //             children: [
+            //               Column(
+            //                 crossAxisAlignment: CrossAxisAlignment.start,
+            //                 children: [
+            //                   Text('No. of eye fatigue test',style: TextStyle(
+            //                     fontSize: 14,
+            //                     fontWeight: FontWeight.w400,)),
+            //                   Text('value',style: TextStyle(
+            //                     fontSize: 14,
+            //                     fontWeight: FontWeight.bold,
+            //                   ),),
+            //                 ],
+            //               ),
+            //               SizedBox(width: 3,),
+            //               Column(
+            //                 crossAxisAlignment: CrossAxisAlignment.end,
+            //                 children: [
+            //                   Text('No. of digital eye test',style: TextStyle(
+            //                     fontSize: 14,
+            //                     fontWeight: FontWeight.w400,)),
+            //                   Text('Value ',style: TextStyle(
+            //                     fontSize: 14,
+            //                     fontWeight: FontWeight.bold,
+            //                   ),),
+            //                 ],
+            //               ),
+            //             ],
+            //           ),
+            //           SizedBox(height: 16), // Add spacing between the row and the additional columns
+            //           Row(
+            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //             children: [
+            //               Column(
+            //                 crossAxisAlignment: CrossAxisAlignment.start,
+            //                 children: [
+            //                   Text('Prescription uploaded',style: TextStyle(
+            //             fontSize: 14,
+            //             fontWeight: FontWeight.w400,)),
+            //                   Text('value',style: TextStyle(
+            //                     fontSize: 14,
+            //                     fontWeight: FontWeight.bold,
+            //                   ),),
+            //                 ],
+            //               ),
+            //               Column(
+            //                 crossAxisAlignment: CrossAxisAlignment.end,
+            //                 children: [
+            //                   Text('visit to optemistist',style: TextStyle(
+            //                     fontSize: 14,
+            //                     fontWeight: FontWeight.w400,)),
+            //                   Text('Value',style: TextStyle(
+            //                     fontSize: 14,
+            //                     fontWeight: FontWeight.bold,
+            //                   ),),
+            //                 ],
+            //               ),
+            //             ],
+            //           ),
+            //         ],
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            const Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
               child: Text(
                 'EYE HEALTH GRAPH OVERVIEW', // Display formatted current date
@@ -309,133 +502,168 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
                 ),
               ),
             ),
-            AspectRatio(
-              aspectRatio: 1.40,
-              child:Padding(padding: EdgeInsets.all(16.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
                 child: Card(
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(16,15,16,4),
-                    child: LineChart(
-                      LineChartData(
-                        lineBarsData: [
-                          LineChartBarData(
-                            spots: [
-                              for (int i = 0; i < data1.length; i++)
-                                FlSpot(i.toDouble(), data1[i]),
-                            ],
-                            isCurved: true,
-                            colors: [Colors.lightBlue],
-                            barWidth: 4,
-                            isStrokeCapRound: true,
-                            belowBarData: BarAreaData(
-                              show: true,
-                              colors: [Colors.lightBlue.withOpacity(0.2)],
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(1),
+                          child: ListTile(
+                            title: Text(
+                              'Right Eye Health',
+                              style: TextStyle(
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          LineChartBarData(
-                            spots: [
-                              for (int i = 0; i < data2.length; i++)
-                                FlSpot(i.toDouble(), data2[i]),
-                            ],
-                            isCurved: true,
-                            colors: [Colors.deepPurple],
-                            barWidth: 4,
-                            isStrokeCapRound: true,
-                            belowBarData: BarAreaData(
-                              show: true,
-                              colors: [Colors.deepPurple.withOpacity(0.2)],
-                            ),
-                          ),
-                        ],
-                        titlesData: FlTitlesData(
-                          leftTitles: SideTitles(
-                            showTitles: false,
-                          ),
-                          bottomTitles: SideTitles(
-                            showTitles: true,
+                            subtitle: Text('April 30-May 30'),
                           ),
                         ),
-                        gridData: FlGridData(
-                          show: true,
-                          drawVerticalLine: true,
-                          drawHorizontalLine: false,
-                          // Remove horizontal lines
+                        Container(
+                          height: 200,
+                          width: MediaQuery.of(context).size.width, // Adjust the width as needed
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: AspectRatio(
+                              aspectRatio: 1.40,
+                              child: _data != null
+                                  ? Builder(
+                                  builder: (context) {
+
+
+                                    if(_data!.length>10){
+                                      i=10;
+
+                                    }else{
+                                      i=_data!.length;
+                                    }
+                                    return LineChart(
+                                      LineChartData(
+                                        lineBarsData: [
+                                          LineChartBarData(
+                                            spots: _data!
+                                                .sublist(0, i)
+                                                .asMap()
+                                                .entries
+                                                .map((entry) {
+                                              return FlSpot(
+                                                  entry.key.toDouble(), entry.value);
+                                            }).toList(),
+                                            isCurved: true,
+                                            colors: [Colors.deepPurple],
+                                            barWidth: 4,
+                                            isStrokeCapRound: true,
+                                            belowBarData: BarAreaData(
+                                              show: true,
+                                              colors: [
+                                                Colors.deepPurple.withOpacity(0.1)
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                        gridData: FlGridData(
+                                          drawVerticalLine: true,
+                                          drawHorizontalLine: false,
+                                        ),
+                                        titlesData: FlTitlesData(
+                                          leftTitles: SideTitles(
+                                            showTitles: true,
+                                            interval: 10.0,
+                                          ),
+                                        ),
+                                        minX: 0,
+                                        maxX: 10, // Initially show only 10 values
+                                        minY: 10,
+                                        maxY: 100,
+                                      ),
+                                    );
+                                  }
+                              )
+                                  : CircularProgressIndicator(),
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 0,horizontal: 16),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.grey[200],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isLeftEyeSelected = true;
-                        });
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(23),
-                            color: isLeftEyeSelected ? Colors.white : Colors.transparent,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Left Eye Health',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isLeftEyeSelected = false;
-                        });
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(23),
-
-                            color: !isLeftEyeSelected ? Colors.white : Colors.transparent,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Right Eye Health',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            SizedBox(height: 20), // Add spacing between the row and the eye health widgets
-            isLeftEyeSelected ? LeftEyeHealthWidget() : RightEyeHealthWidget(),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(vertical: 0,horizontal: 16),
+            //   child: Container(
+            //     decoration: BoxDecoration(
+            //       borderRadius: BorderRadius.circular(20),
+            //       color: Colors.grey[200],
+            //     ),
+            //     child: Row(
+            //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            //
+            //       children: [
+            //         GestureDetector(
+            //           onTap: () {
+            //             setState(() {
+            //               isLeftEyeSelected = true;
+            //             });
+            //           },
+            //           child: Padding(
+            //             padding: const EdgeInsets.all(12.0),
+            //             child: Container(
+            //               decoration: BoxDecoration(
+            //                 borderRadius: BorderRadius.circular(23),
+            //                 color: isLeftEyeSelected ? Colors.white : Colors.transparent,
+            //               ),
+            //               child: Padding(
+            //                 padding: const EdgeInsets.all(8.0),
+            //                 child: Text(
+            //                   'Left Eye Health',
+            //                   style: TextStyle(
+            //                     fontWeight: FontWeight.bold,
+            //                   ),
+            //                 ),
+            //               ),
+            //             ),
+            //           ),
+            //         ),
+            //         GestureDetector(
+            //           onTap: () {
+            //             setState(() {
+            //               isLeftEyeSelected = false;
+            //             });
+            //           },
+            //           child: Padding(
+            //             padding: const EdgeInsets.all(12.0),
+            //             child: Container(
+            //               decoration: BoxDecoration(
+            //                 borderRadius: BorderRadius.circular(23),
+            //
+            //                 color: !isLeftEyeSelected ? Colors.white : Colors.transparent,
+            //               ),
+            //               child: Padding(
+            //                 padding: const EdgeInsets.all(8.0),
+            //                 child: Text(
+            //                   'Right Eye Health',
+            //                   style: TextStyle(
+            //                     fontWeight: FontWeight.bold,
+            //                   ),
+            //                 ),
+            //               ),
+            //             ),
+            //           ),
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // ),
+            //
+            // SizedBox(height: 20), // Add spacing between the row and the eye health widgets
+            // isLeftEyeSelected ? LeftEyeHealthWidget() : RightEyeHealthWidget(),
             // Text and toggle button below the graph
           ],
         ),
@@ -523,7 +751,7 @@ class LeftEyeHealthWidget extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      subtitle: Text('April 30-May 30'),
+                      // subtitle: Text('April 30-May 30'),
                     ),),
 
                   // Container with fixed height to contain the LineChart
@@ -754,4 +982,3 @@ class RightEyeHealthWidget extends StatelessWidget {
     );
   }
 }
-
