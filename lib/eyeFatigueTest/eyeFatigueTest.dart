@@ -257,11 +257,16 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
     super.initState();
     isclose=false; uploaded=false;
     isLoading = false;startgame=false;gamepermission=false;
+    Future.delayed(Duration(seconds: 1), () {
 
-    _initializeCamera();
+    _initializeCamera();});
 
     sendcustomerDetails();
-    startTimer();
+    Future.delayed(Duration(seconds: 1), () {
+
+      startTimer();
+    });
+
   isloading();
 
 

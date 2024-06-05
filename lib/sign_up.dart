@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ import 'package:http/http.dart';
 import 'package:location/location.dart'hide LocationAccuracy;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:platform_device_id_v2/platform_device_id_v2.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:project_new/HomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -56,11 +58,60 @@ class SignInScreen extends State<SignIn> {
     await prefs.setString('device_token', fcmToken!);
     print("FCM token $fcmToken");
   }
-
-
-
-
+  String deviceId = '';String deviceToken='';String deviceType='';
 String device_id="";String device_token="";String device_type="";
+
+
+  Future<void> initPlatformState() async {
+    String? deviceId_;    String? deviceName_;
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+
+
+      deviceId_ = await PlatformDeviceId.getDeviceId;
+      if (Platform.isAndroid){
+        deviceName_="android";
+      }
+      if (Platform.isIOS){
+        deviceName_="ios";
+      }
+    } on PlatformException {
+      deviceId_ = null;
+    }
+
+
+    if (!mounted) return;
+
+    setState(() async {
+      deviceId = deviceId_!;
+      deviceType = deviceName_!;
+      print("deviceId->$deviceId");
+      print("device_type->$deviceType");
+      print("device_type->${ prefs.getString('device_token')}");
+
+
+
+      await prefs.setString('device_id', deviceId);
+      await prefs.setString('device_type', deviceType);
+
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      print('Running on ${androidInfo.id}');  // e.g. "Moto G (4)"
+if(Platform.isIOS){
+      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+      print('Running on ${iosInfo.identifierForVendor}');}  // e.g. "iPod7,1"
+
+// WebBrowserInfo webBrowserInfo = await deviceInfo.webBrowserInfo;
+// print('Running on ${webBrowserInfo.userAgent}');  // e.g. "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0"
+    });
+  }
+
+
+
+// String device_id="";String device_token="";String device_type="";
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -228,7 +279,7 @@ if(_phoneController.text.length==10){
                                     // You can also customize other button properties here if needed
                                   ),
                                   onPressed: () {
-
+                                    initPlatformState();
 
                                     getVerifyLoginOtp();
 
@@ -276,6 +327,7 @@ if(_phoneController.text.length==10){
                           width: 300,
                           child: ElevatedButton(
                             onPressed: () {
+                              initPlatformState();
                               Navigator.push(
                                 context,
                                 CupertinoPageRoute(
@@ -380,7 +432,7 @@ if(isNumeric(_phoneController.text)){
           //
           // },
         );
-        print('Response Status Code: ${response.statusCode}');
+        print('Response Status Code1====: ${response.statusCode}');
         print('Response Body: ${response.body}');
         // Close the loading dialog
         EasyLoading.dismiss();
@@ -566,7 +618,11 @@ if(isNumeric(_phoneController.text)){
 
           print("Otp Sent$data");
 
-        } else {
+        }
+        if (response.statusCode == 400){
+          Fluttertoast.showToast(msg: "User does not exists");
+        }
+        else {
           Map<String, dynamic> data = json.decode(response.body);
 
           print("Otp Sent failed");
@@ -574,7 +630,7 @@ if(isNumeric(_phoneController.text)){
         }
       } catch (e) {
         EasyLoading.dismiss();
-        print('Error: $e');
+        print('Error1: $e');
         if (e is SocketException) {
           print('No Internet Connection');
 // Show error message as toast
@@ -628,8 +684,9 @@ if(isNumeric(_phoneController.text)){
           //
           // },
         );
-        print('Response Status Code: ${response.statusCode}');
+        print('Response Status Code2: ${response.statusCode}');
         print('Response Body: ${response.body}');
+
         // Close the loading dialog
         EasyLoading.dismiss();
         if (response.statusCode == 200) {
@@ -656,19 +713,21 @@ if(isNumeric(_phoneController.text)){
 
 
 
-        } else {
+        }
+        else {
           Map<String, dynamic> data = json.decode(response.body);
           if (data['status'] == false && data['status_code'] == 400) {
             // Display the error message to the user
             String errorMessage1 = data['data']['non_field_errors'][0];
-            print(errorMessage1); // Output the error message to the console
+            print(errorMessage1);
+            Fluttertoast.showToast(msg:errorMessage1 );
+// Output the error message to the console
             // You can show this message in a Snackbar, AlertDialog, or any other way you prefer
           }
-          Fluttertoast.showToast(msg:data['data']['non_field_errors'][0] );
         }
-      } catch (e) {
+      } catch (e,StackTrace) {
         EasyLoading.dismiss();
-        print('Error: $e');
+        print('Error2: $e========$StackTrace');
         if (e is SocketException) {
           print('No Internet Connection');
 // Show error message as toast
@@ -1188,7 +1247,7 @@ double Latitude=0.0;double Longitude=0.0;
                             width: 300,
                             child: ElevatedButton(
                               onPressed: () {
-
+                                initPlatformState();
                                 RegisterUser();
 
                               },
@@ -1441,7 +1500,7 @@ double Latitude=0.0;double Longitude=0.0;
           //
           // },
         );
-        print('Response Status Code: ${response.statusCode}');
+        print('Response Status Code3: ${response.statusCode}');
         print('Response Body: ${response.body}');
         // Close the loading dialog
         EasyLoading.dismiss();
@@ -1635,7 +1694,7 @@ double Latitude=0.0;double Longitude=0.0;
         }
       } catch (e) {
         EasyLoading.dismiss();
-        print('Error: $e');
+        print('Error3: $e');
         if (e is SocketException) {
           print('No Internet Connection');
 // Show error message as toast
@@ -1670,7 +1729,7 @@ double Latitude=0.0;double Longitude=0.0;
         //
         // },
       );
-      print('Response Status Code: ${response.statusCode}');
+      print('Response Status Code4: ${response.statusCode}');
       print('Response Body: ${response.body}');
       // Close the loading dialog
       EasyLoading.dismiss();
@@ -1864,7 +1923,7 @@ SizedBox(height: 20,),
       }
     } catch (e) {
       EasyLoading.dismiss();
-      print('Error: $e');
+      print('Error4: $e');
       if (e is SocketException) {
         print('No Internet Connection');
 // Show error message as toast
@@ -1905,7 +1964,7 @@ SizedBox(height: 20,),
         );
 
 
-        print('Response Status Code: ${response.statusCode}');
+        print('Response Status Code5: ${response.statusCode}');
         print('Response Body: ${response.body}');
         // Close the loading dialog
         EasyLoading.dismiss();
@@ -1924,7 +1983,7 @@ setState(() {
         }
       } catch (e) {
         EasyLoading.dismiss();
-        print('Error: $e');
+        print('Error5: $e');
         if (e is SocketException) {
           print('No Internet Connection');
 // Show error message as toast
@@ -1964,7 +2023,7 @@ setState(() {
         );
 
 
-        print('Response Status Code: ${response.statusCode}');
+        print('Response Status Code6: ${response.statusCode}');
         print('Response Body: ${response.body}');
         // Close the loading dialog
         EasyLoading.dismiss();
@@ -1989,7 +2048,7 @@ setState(() {
         }
       } catch (e) {
         EasyLoading.dismiss();
-        print('Error: $e');
+        print('Error6: $e');
         if (e is SocketException) {
           print('No Internet Connection');
 // Show error message as toast
@@ -2003,7 +2062,55 @@ setState(() {
       }
     }
   }
+  String deviceId = '';String deviceToken='';String deviceType='';
 
+
+  Future<void> initPlatformState() async {
+    String? deviceId_;    String? deviceName_;
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+
+
+      deviceId_ = await PlatformDeviceId.getDeviceId;
+      if (Platform.isAndroid){
+        deviceName_="android";
+      }
+      if (Platform.isIOS){
+        deviceName_="ios";
+      }
+    } on PlatformException {
+      deviceId_ = null;
+    }
+
+
+    if (!mounted) return;
+
+    setState(() async {
+      deviceId = deviceId_!;
+      deviceType = deviceName_!;
+      print("deviceId->$deviceId");
+      print("device_type->$deviceType");
+      print("device_type->${ prefs.getString('device_token')}");
+
+
+
+      await prefs.setString('device_id', deviceId);
+      await prefs.setString('device_type', deviceType);
+
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      print('Running on ${androidInfo.id}');  // e.g. "Moto G (4)"
+      if(Platform.isIOS){
+        IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+        print('Running on ${iosInfo.identifierForVendor}');}  // e.g. "iPod7,1"
+
+// WebBrowserInfo webBrowserInfo = await deviceInfo.webBrowserInfo;
+// print('Running on ${webBrowserInfo.userAgent}');  // e.g. "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0"
+    });
+  }
   void RegisterUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     device_type= prefs.getString('device_type')!;
@@ -2056,7 +2163,7 @@ else
           }
 
         );
-        print('Response Status Code: ${response.statusCode}');
+        print('Response Status Code7: ${response.statusCode}');
         print('Response Body: ${response.body}');
         print('requestBody e: ${requestBody}');
 
@@ -2102,7 +2209,7 @@ else
         }
       } catch (e) {
         EasyLoading.dismiss();
-        print('Error: $e');
+        print('Error7: $e');
         if (e is SocketException) {
           print('No Internet Connection');
 // Show error message as toast
@@ -2223,7 +2330,7 @@ else
           //
           // },
         );
-        print('Response Status Code: ${response.statusCode}');
+        print('Response Status Code8: ${response.statusCode}');
         print('Response Body: ${response.body}');
         // Close the loading dialog
         EasyLoading.dismiss();
@@ -2250,7 +2357,7 @@ referalController.text='';
         }
       } catch (e) {
         EasyLoading.dismiss();
-        print('Error: $e');
+        print('Error8: $e');
         if (e is SocketException) {
           print('No Internet Connection');
 // Show error message as toast

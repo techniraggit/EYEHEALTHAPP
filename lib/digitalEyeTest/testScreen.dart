@@ -5161,7 +5161,7 @@ class redgreen extends State<RedGreenTest> {
   CameraController? _controller;
   late Future<void> _initializeControllerFuture;
   late List<CameraDescription> _cameras;
-  bool _isCapturing = false;
+  // bool _isCapturing = false;
 
   @override
   void initState() {
@@ -5249,7 +5249,7 @@ class redgreen extends State<RedGreenTest> {
       await _initializeControllerFuture;
       if (mounted) {
         setState(() {
-          _isCapturing = true;
+          // _isCapturing = true;
           _captureProcess = _captureImagePerSecond();
         });
       }
@@ -5259,17 +5259,17 @@ class redgreen extends State<RedGreenTest> {
   }
 
   Future<void> _captureImagePerSecond() async {
-    while (_isCapturing) {
+    // while (_isCapturing) {
       try {
         XFile image = await _controller!.takePicture();
         print('Image captured: ${image.path}');
         capturePhoto(image);
         await Future.delayed(Duration(seconds: 1));
       } catch (e) {
-        if (_isCapturing) {
-          print('Error capturing image: $e');
-        }
-      }
+        // if (_isCapturing) {
+        //   print('Error capturing image: $e');
+        // }
+      // }
     }
   }
 
@@ -5362,7 +5362,7 @@ class redgreen extends State<RedGreenTest> {
 
   @override
   void dispose() {
-    _isCapturing = false;
+    // _isCapturing = false;
     _controller?.dispose();
     flutterTts.stop();
     super.dispose();

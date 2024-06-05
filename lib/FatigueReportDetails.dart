@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:external_path/external_path.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
@@ -36,8 +38,7 @@ class EyeFatiguereports extends State<ReportDetails> {
   bool is_mild_tiredness_left = false;
 
   bool isLoading = true;
-  List<double> data1 = [10, 30, 20, 40, 30]; // Sample data for line 1
-  List<double> data2 = [30, 50, 60, 50, 60];
+
   List<String> bulletPoints = [
     "The results displayed are for reference purposes only.",
     "If you feel the power displayed is different than your old power, then please speak with your eye doctor or call EyeMyEye and speak with the optometrist.",
@@ -47,9 +48,7 @@ class EyeFatiguereports extends State<ReportDetails> {
   @override
   void initState() {
     super.initState();
-    isclose = false;
-    uploaded = false;
-    isLoading = false;
+
     getReport(widget.reportId);
 
   }
@@ -69,7 +68,7 @@ class EyeFatiguereports extends State<ReportDetails> {
       child: isLoading
           ? const Center(
         child: CircularProgressIndicator(
-          color: Colors.black,
+          color: Colors.blue,
         ),
       )
           : Scaffold(
@@ -334,13 +333,28 @@ class EyeFatiguereports extends State<ReportDetails> {
                           const SizedBox(
                             height: 10,
                           ),
-                          Text(
-                            testresult!,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: testresult
+                            .split('\n')
+                            .map(
+                              (point) => Html(
+                            data: point.contains(':')
+                                ? "<div><b>${point.split(':')[0]}:</b></div><div>${point.split(':')[1]}</div>"
+                                : "<div>$point</div>",
+                            style: {
+                              "div": Style(
+                                fontSize: FontSize(14),
+                                fontWeight: FontWeight.w400,
+                                margin: Margins.only(bottom: 8),
+                              ),
+                            },
                           ),
+                        )
+                            .toList(),
+                      ),
+
+
                         ],
                       ),
                     ),
@@ -514,39 +528,57 @@ class EyeFatiguereports extends State<ReportDetails> {
       );
       print('PDFreport_id $report_id');
       if (response.statusCode == 200) {
-        Directory? downloadsDirectory = await getExternalStorageDirectory();
+        Fluttertoast.showToast(msg: "PDF downloaded successfully");
+        final directory = await getApplicationDocumentsDirectory();
+        List<String> paths = await ExternalPath.getExternalStorageDirectories();
+        String path;
 
-        if (downloadsDirectory != null) {
-          // Create a file in the Downloads directory
-          String pdfPath = '${downloadsDirectory.path}/report.pdf';
-          File pdfFile = File(pdfPath);
-          // Write the response content to the file
-          await pdfFile.writeAsBytes(response.bodyBytes);
+        path = await ExternalPath.getExternalStoragePublicDirectory(
+            ExternalPath.DIRECTORY_DOWNLOADS);
 
-          // Check if the file was successfully saved
-          if (await pdfFile.exists()) {
-            // Show a message or perform any further actions if needed
-            print('PDF downloaded successfully   $pdfFile.path');
-            Fluttertoast.showToast(msg: "PDF downloaded successfully");
-            return pdfFile.path;
-          } else {
-            Fluttertoast.showToast(msg: "Failed to save PDF");
-            return null;
-          }}
-        // Directory appDocDir = await getApplicationDocumentsDirectory();
-        //
-        // // Create a file in the application documents directory
-        // String pdfPath = '${appDocDir.path}/downloaded_file.pdf';
-        // File pdfFile = File(pdfPath);
-        // // Write the response content to the file
-        // await pdfFile.writeAsBytes(response.bodyBytes);
-        //
-        // // Show a message or perform any further actions if needed
-        // print('PDF downloaded successfully   $pdfFile.path');
-        // Fluttertoast.showToast(msg: "PDF downloaded successfully");
-        //
-        // return pdfFile.path;
-      } else if (response.statusCode == 401) {
+        setState(() {
+          print(path); // /storage/emulated/0/Download
+        });
+
+        String pdfPath = path + '/report.pdf';
+        File pdfFile = File(pdfPath);
+
+        await pdfFile.writeAsBytes(response.bodyBytes);
+
+        // Show a message or perform any further actions if needed
+        print('PDF downloaded successfully=====: $pdfFile.path');
+
+        // Return the path of the downloaded file
+        return pdfFile.path;
+      }
+
+      // if (response.statusCode == 200) {
+      //   Directory? downloadsDirectory = await getDownloadsDirectory();
+      //
+      //   if (downloadsDirectory != null) {
+      //     // Create a file in the Downloads directory
+      //     String pdfPath = '${downloadsDirectory.path}/report.pdf';
+      //     File pdfFile = File(pdfPath);
+      //     // Write the response content to the file
+      //     await pdfFile.writeAsBytes(response.bodyBytes);
+      //
+      //     // Check if the file was successfully saved
+      //     if (await pdfFile.exists()) {
+      //       // Show a message or perform any further actions if needed
+      //       print('PDF downloaded successfully: $pdfPath');
+      //       Fluttertoast.showToast(msg: "PDF downloaded successfully");
+      //       return pdfPath;
+      //     } else {
+      //       Fluttertoast.showToast(msg: "Failed to save PDF");
+      //       return null;
+      //     }
+      //   } else {
+      //     print('Downloads directory not found.');
+      //     Fluttertoast.showToast(msg: "Failed to save PDF");
+      //     return null;
+      //   }
+      // }
+      else if (response.statusCode == 401) {
         Fluttertoast.showToast(msg: "Session Expired");
         Navigator.pushReplacement(
           context,

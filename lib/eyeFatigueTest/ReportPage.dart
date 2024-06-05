@@ -24,7 +24,7 @@ class ReportPageState extends State<ReportPage> {
   List<dynamic> itemsdata = [];
 
 
-
+ bool isLoading=true;
   List<dynamic> percentage = [];
 
    List<dynamic> items = [];
@@ -41,37 +41,45 @@ void initState() {
   @override
   Widget build(BuildContext context) {
     String formattedDate = DateFormat('dd MMMM').format(DateTime.now());
-    return Scaffold(
+    return isLoading ?
+    Center(
+      child: CircularProgressIndicator(
+        color: Colors.black,
+      ),
+    )
+        :
+      Scaffold(
 
 
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.all(8.0), // Add padding
-        child: ClipOval(
-          child: Material(
-            color: Colors.white, // Background color
-            elevation: 4.0, // Shadow
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                  context, CupertinoPageRoute(
-                  builder: (context) => HomePage(
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.all(8.0), // Add padding
+          child: ClipOval(
+            child: Material(
+              color: Colors.white, // Background color
+              elevation: 4.0, // Shadow
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context, CupertinoPageRoute(
+                    builder: (context) => HomePage(
+                    ),
                   ),
-                ),
 
-                );
-              },
-              child: SizedBox(
-                width: 53.0, // Width of the FloatingActionButton
-                height: 50.0, // Height of the FloatingActionButton
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0), // Add padding for the icon
-                    child: Image.asset(
-                      "assets/home_icon.png",
-                      width: 20,
-                      // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
-                      // color: Colors.grey, // Uncomment if you want to apply a color to the image
+                  );
+                },
+                child: SizedBox(
+                  width: 53.0, // Width of the FloatingActionButton
+                  height: 50.0, // Height of the FloatingActionButton
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0), // Add padding for the icon
+                      child: Image.asset(
+                        "assets/home_icon.png",
+                        width: 20,
+                        // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
+                        // color: Colors.grey, // Uncomment if you want to apply a color to the image
+                      ),
                     ),
                   ),
                 ),
@@ -79,178 +87,178 @@ void initState() {
             ),
           ),
         ),
-      ),
 
 
 
 
-      appBar: AppBar(
-        title: const Text('Report and Statistics'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.notifications),
-            onPressed: () {
-              // Handle notification icon pressed
-            },
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Builder(
-              builder: (context) {
-
-                return Padding(
-                  padding: EdgeInsets.fromLTRB(16.0, 10, 0, 8),
-                  child: Text(
-                    'Today $formattedDate', // Display formatted current date
-                    style: TextStyle(
-                      fontStyle: FontStyle.normal,fontSize: 15,fontWeight: FontWeight.w700,
-                      color: Colors.grey,
-                    ),
-                  ),
-                );
-              }
-            ),
-
-            // SizedBox(height: 20),
-
-            Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 10, 15, 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Eye Fatigue Reports',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.deepPurple,
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  TextButton(
-                    onPressed: () async {
-                      final DateTime? picked = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime(2101),
-                      );
-                      if (picked != null) {
-                        setState(() {});
-                      }
-                    },
-                    child: Image.asset('assets/calender.png'),
-                  ),
-                ],
-              ),
-            ),
-            ListView.builder(
-              shrinkWrap: true,
-              // physics: NeverScrollableScrollPhysics(),
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  elevation: 1,
-                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 9),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(17.0), // Adjust the radius as needed
-                  ),
-                  child: Container(
-                    // color: Colors.white, // Background color of the box
-                    padding: EdgeInsets.symmetric(horizontal: 2,vertical: 11), // Padding around the content
-                    child: ListTile(
-                      title: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                        child: Text(
-                            'Date: '+ items[index].toString().substring(0,10) , style: TextStyle(fontStyle: FontStyle.normal),),//items[index].substring(items[index].indexOf('-') + 2
-
-
-                          ),
-                          SizedBox(height: 10,),
-                          Row(
-                            children: [
-                              Text(
-                                'Test Result : ',
-                                style: TextStyle(
-                                  color: Colors.black,fontWeight: FontWeight.w700,fontSize: 16
-                                )),
-                              Builder(
-                                builder: (context) {
-                                  print("percentage[index]====n ${percentage[index]}");
-                                  if(percentage[index]>50.0){
-                                    testResult="Good";
-                                  }else{
-                                    testResult="Bad";
-                                  }
-                                  return Text(
-                                       testResult,
-                                      style: TextStyle(fontWeight: FontWeight.w500,fontSize: 16,
-                                        color: testResult == 'Good' ? Colors.green : Colors.red,
-                                      ));
-                                }
-                              ),
-                              Expanded(
-
-                                // alignment: Alignment.centerRight,
-                                child: Align(
-                                  alignment: Alignment.centerRight,
-
-                                child: ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context, CupertinoPageRoute(
-                                        builder: (context) => ReportDetails(reportId: ReportIds[index]
-                                        ),
-                                      ),
-
-                                      );
-
-                                      // Add button onPressed logic here
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      foregroundColor: Colors.white, backgroundColor: Colors.background,
-                                      shape: CircleBorder(),
-                                      minimumSize: Size(30, 30), // Adjust the size as needed
-                                    ),
-                                    child: Transform.rotate(
-                                      angle: -pi / 1, // Angle in radians. Use negative angle for counter-clockwise rotation.
-                                      child: Transform.scale(
-                                        scale: 0.6, // Adjust the scale factor as needed
-                                        child: Icon(Icons.arrow_back_ios_new),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-
+        appBar: AppBar(
+          title: const Text('Report and Statistics'),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.notifications),
+              onPressed: () {
+                // Handle notification icon pressed
               },
             ),
           ],
         ),
-      ),
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Builder(
+                builder: (context) {
 
-      bottomNavigationBar:
-      CustomBottomAppBar(),
+                  return Padding(
+                    padding: EdgeInsets.fromLTRB(16.0, 10, 0, 8),
+                    child: Text(
+                      'Today $formattedDate', // Display formatted current date
+                      style: TextStyle(
+                        fontStyle: FontStyle.normal,fontSize: 15,fontWeight: FontWeight.w700,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  );
+                }
+              ),
+
+              // SizedBox(height: 20),
+
+              Padding(
+                padding: EdgeInsets.fromLTRB(16.0, 10, 15, 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Eye Fatigue Reports',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple,
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    // TextButton(
+                    //   onPressed: () async {
+                    //     final DateTime? picked = await showDatePicker(
+                    //       context: context,
+                    //       initialDate: DateTime.now(),
+                    //       firstDate: DateTime(2000),
+                    //       lastDate: DateTime(2101),
+                    //     );
+                    //     if (picked != null) {
+                    //       setState(() {});
+                    //     }
+                    //   },
+                    //   child: Image.asset('assets/calender.png'),
+                    // ),
+                  ],
+                ),
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                // physics: NeverScrollableScrollPhysics(),
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    elevation: 1,
+                    margin: EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(17.0), // Adjust the radius as needed
+                    ),
+                    child: Container(
+                      // color: Colors.white, // Background color of the box
+                      padding: EdgeInsets.symmetric(horizontal: 2,vertical: 11), // Padding around the content
+                      child: ListTile(
+                        title: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Align(
+                              alignment: Alignment.centerLeft,
+                          child: Text(
+                              'Date: '+ items[index].toString().substring(0,10) , style: TextStyle(fontStyle: FontStyle.normal),),//items[index].substring(items[index].indexOf('-') + 2
+
+
+                            ),
+                            SizedBox(height: 10,),
+                            Row(
+                              children: [
+                                Text(
+                                  'Test Result : ',
+                                  style: TextStyle(
+                                    color: Colors.black,fontWeight: FontWeight.w700,fontSize: 16
+                                  )),
+                                Builder(
+                                  builder: (context) {
+                                    print("percentage[index]====n ${percentage[index]}");
+                                    if(percentage[index]>50.0){
+                                      testResult="Good";
+                                    }else{
+                                      testResult="Bad";
+                                    }
+                                    return Text(
+                                         testResult,
+                                        style: TextStyle(fontWeight: FontWeight.w500,fontSize: 16,
+                                          color: testResult == 'Good' ? Colors.green : Colors.red,
+                                        ));
+                                  }
+                                ),
+                                Expanded(
+
+                                  // alignment: Alignment.centerRight,
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+
+                                  child: ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context, CupertinoPageRoute(
+                                          builder: (context) => ReportDetails(reportId: ReportIds[index]
+                                          ),
+                                        ),
+
+                                        );
+
+                                        // Add button onPressed logic here
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        foregroundColor: Colors.white, backgroundColor: Colors.background,
+                                        shape: CircleBorder(),
+                                        minimumSize: Size(30, 30), // Adjust the size as needed
+                                      ),
+                                      child: Transform.rotate(
+                                        angle: -pi / 1, // Angle in radians. Use negative angle for counter-clockwise rotation.
+                                        child: Transform.scale(
+                                          scale: 0.6, // Adjust the scale factor as needed
+                                          child: Icon(Icons.arrow_back_ios_new),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+
+                },
+              ),
+            ],
+          ),
+        ),
+
+        bottomNavigationBar:
+        CustomBottomAppBar(),
 
 
 
 
-    );
+      );
+
   }
   Future<void> getReports() async {
     // try {
@@ -271,6 +279,7 @@ void initState() {
         final responseData = json.decode(response.body);
 
         setState(() {
+          isLoading=false;
           // Update your state variable with the response data
           itemsdata = responseData['data'];
           for(int i=0;i<itemsdata.length;i++){
