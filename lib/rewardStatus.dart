@@ -105,7 +105,7 @@ class RewardsStatusScreenState extends State<RewardStatusScreen> {
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Padding(
-        padding: const EdgeInsets.all(8.0), // Add padding
+        padding:  EdgeInsets.all(8.0), // Add padding
         child: ClipOval(
           child: Material(
             color: Colors.white, // Background color
@@ -125,7 +125,7 @@ class RewardsStatusScreenState extends State<RewardStatusScreen> {
                 height: 50.0, // Height of the FloatingActionButton
                 child: Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0), // Add padding for the icon
+                    padding:  EdgeInsets.all(8.0), // Add padding for the icon
                     child: Image.asset(
                       "assets/home_icon.png",
                       width: 20,
@@ -157,120 +157,120 @@ class RewardsStatusScreenState extends State<RewardStatusScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-       child: Column(
-    children: <Widget>[
-    Padding(
-    padding: const EdgeInsets.only(bottom: 28.0),
-    child: FutureBuilder<List<OfferDetail>>(
-    future: futureOffers,
-    builder: (context, snapshot) {
-    if (snapshot.connectionState == ConnectionState.waiting) {
-    return Container(
-    alignment: Alignment.center,
-    child: CircularProgressIndicator(),
-    );
-    } else if (snapshot.hasError) {
-    return Center(child: Text('Error: ${snapshot.error}'));
-    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-    return Center(child: Text('No offers found'));
-    } else {
-    return Builder(
-      builder: (context) {
-        print("data=lenght=${snapshot.data!.length}");
-        return ListView.builder(
-        shrinkWrap: true, // Add this line to prevent the ListView from taking more space than necessary
-        itemCount: snapshot.data!.length,
-        itemBuilder: (context, index) {
-        final offerDetail = snapshot.data![index];
-        return Padding(
-        padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 18),
-        child: Card(
-        child: Row(
-        children: [
-        Expanded(
-        child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-        Padding(
-        padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-        child: Text(
-        offerDetail.title,
-        style: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.bold,
-        color: Colors.black,
-        ),
-        ),
-        ),
-        Padding(
-        padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-        child: Text(
-        offerDetail.description,
-        style: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w400,
-        color: Colors.grey,
-        ),
-        ),
-        ),
-        Row(
-        children: [
-        Padding(
-        padding: EdgeInsets.all(5.0),
-        child: ElevatedButton(
-        onPressed: () {
-        // Handle button press
-        },
-        child: Text('${offerDetail.status.capitalize()}', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
-        style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.deepPurple,
-        padding: EdgeInsets.all(10),
-        minimumSize: Size(80, 12),
-        shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(26),
-        ),
-        ),
-        ),
-        ),
-        SizedBox(width: 20,),
-        Padding(
-        padding: EdgeInsets.all(5.0),
-        child: SizedBox(
-        child: Text('Redeemed On : ${offerDetail.redeemedOn.substring(0,10)}', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
-        ),
-        ),
-        ],
-        ),
-        ],
-        ),
-        ),
-        // Image on the right side
-        if (offerDetail.image != null)
-        Padding(
-        padding: const EdgeInsets.all(3.0),
-        child: Image.network(
-        '${ApiProvider.baseUrl}${offerDetail.image}',
-        width: 30,
-        fit: BoxFit.cover,
-        ),
-        ),
-        ],
-        ),
-        ),
-        );
-        },
-        );
-      }
-    );
-    }
-    },
-    ),
-    ),
-    ],
-    ),
-    ),
+      body: Column(
+          children: <Widget>[
+          FutureBuilder<List<OfferDetail>>(
+          future: futureOffers,
+          builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+          return Container(
+          alignment: Alignment.center,
+          child: CircularProgressIndicator(),
+          );
+          }
+          else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(child: Text('No offers found'));
+          }
+          else {
+          return Builder(
+            builder: (context) {
+                 print("data=lenght=${snapshot.data!.length}");
+                 return Expanded(
+                   child: ListView.builder(
+                   shrinkWrap: true, // Add this line to prevent the ListView from taking more space than necessary
+                   itemCount: snapshot.data?.length,
+                   itemBuilder: (context, index) {
+                   final offerDetail = snapshot.data![index];
+                   return Padding(
+                   padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 18),
+                   child: Card(
+                   child: Row(
+                   children: [
+                   Expanded(
+                   child: Column(
+                   crossAxisAlignment: CrossAxisAlignment.start,
+                   children: [
+                   Padding(
+                   padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                   child: Text(
+                   offerDetail.title,
+                   style: TextStyle(
+                   fontSize: 12,
+                   fontWeight: FontWeight.bold,
+                   color: Colors.black,
+                   ),
+                   ),
+                   ),
+                   Padding(
+                   padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                   child: Text(
+                   offerDetail.description,
+                   style: TextStyle(
+                   fontSize: 12,
+                   fontWeight: FontWeight.w400,
+                   color: Colors.grey,
+                   ),
+                   ),
+                   ),
+                   Row(
+                   children: [
+                   Padding(
+                   padding: EdgeInsets.all(5.0),
+                   child: ElevatedButton(
+                   onPressed: () {
+                   // Handle button press
+                   },
+                   child: Text('${offerDetail.status.capitalize()}', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
+                   style: ElevatedButton.styleFrom(
+                   foregroundColor: Colors.white,
+                   backgroundColor: Colors.deepPurple,
+                   padding: EdgeInsets.all(10),
+                   minimumSize: Size(80, 12),
+                   shape: RoundedRectangleBorder(
+                   borderRadius: BorderRadius.circular(26),
+                   ),
+                   ),
+                   ),
+                   ),
+                   SizedBox(width: 20,),
+                   Padding(
+                   padding: EdgeInsets.all(5.0),
+                   child: SizedBox(
+                   child: Text('Redeemed On : ${offerDetail.redeemedOn.substring(0,10)}', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
+                   ),
+                   ),
+                   ],
+                   ),
+                   ],
+                   ),
+                   ),
+                   // Image on the right side
+                   if (offerDetail.image != null)
+                   Padding(
+                   padding:  EdgeInsets.all(3.0),
+                   child: Image.network(
+                   '${ApiProvider.baseUrl}${offerDetail.image}',
+                   width: 30,
+                   fit: BoxFit.cover,
+                   ),
+                   ),
+                   ],
+                   ),
+                   ),
+                   );
+                   },
+                   ),
+                 );
+            }
+          );
+          }
+          },
+          ),
+          ],
+          ),
 
 
 

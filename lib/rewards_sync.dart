@@ -1281,10 +1281,10 @@ class RewardSpecsSync extends State<RewardSpecs> {
                                 height: 45,
                                 child: GestureDetector(
                                   onTap: () {
-                                    // isReedemButtonEnabled ? () {
-                                    //   RedeemaddressSheet(context);
-                                    // } : null;
-                                    RedeemaddressSheet(context);
+                                    isReedemButtonEnabled ? () {
+                                      RedeemaddressSheet(context);
+                                    } : null;
+                                    // RedeemaddressSheet(context);
                                   },
 
                                   child: Container(

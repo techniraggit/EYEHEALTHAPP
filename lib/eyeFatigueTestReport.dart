@@ -502,21 +502,37 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> {
       );
       print('PDFreport_id $report_id');
       if (response.statusCode == 200) {
-        Directory appDocDir = await getApplicationDocumentsDirectory();
-
-        // Create a file in the application documents directory
-        String pdfPath = '${appDocDir.path}/downloaded_file.pdf';
-        File pdfFile = File(pdfPath);
         Fluttertoast.showToast(msg: "PDF downloaded successfully");
+
+        // Directory appDocDir = await getApplicationDocumentsDirectory();
+        //
+        // // Create a file in the application documents directory
+        // String pdfPath = '${appDocDir.path}/downloaded_file.pdf';
+        // File pdfFile = File(pdfPath);
+        Directory? downloadsDir = Platform.isAndroid
+            ? await getExternalStorageDirectory() // For Android
+            : await getApplicationDocumentsDirectory(); // For iOS
+
+        // Create a file in the downloads directory
+        String pdfPath = '${downloadsDir?.path}/downloaded_file.pdf';
+        File pdfFile = File(pdfPath);
+
         // Write the response content to the file
         await pdfFile.writeAsBytes(response.bodyBytes);
 
         // Show a message or perform any further actions if needed
-        print('PDF downloaded successfully   $pdfFile.path');
+        print('PDF downloaded successfully: $pdfFile.path');
+
+        // Write the response content to the file
+        // await pdfFile.writeAsBytes(response.bodyBytes);
+        //
+        // // Show a message or perform any further actions if needed
+        // print('PDF downloaded successfully   $pdfFile.path');
 
         // Return the path of the downloaded file
         return pdfFile.path;
-      } else if (response.statusCode == 401) {
+      }
+      else if (response.statusCode == 401) {
         Fluttertoast.showToast(msg: "Session Expired");
         Navigator.pushReplacement(
           context,

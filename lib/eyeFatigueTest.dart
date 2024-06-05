@@ -293,7 +293,10 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
 
   @override
   void dispose() {
-    _controller?.dispose();
+    if (_controller != null) {
+      _controller!.dispose();
+    }
+    // _controller?.dispose();
     _animationController.dispose();
     gravityController.dispose();
     accelerationController.dispose();
@@ -586,11 +589,13 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
 
         print('Video recorded to: ${file.path}');
         // Verify file existence
-        if (await File(file.path).exists()) {
+        // if ( await File(file.path).exists()) {
+        if (File(file.path).existsSync()) {
           setState(() {
+            isLoading=true;
             gamepermission=true;
 
-            isLoading=true;
+
             print("isLoading========$isLoading");
             _compressAndUploadVideo(file.path);
 
@@ -676,9 +681,8 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
       },
       child: MaterialApp(
         home: Scaffold(
-          body:
-
-          Stack(
+          backgroundColor: Colors.white,
+          body: Stack(
             children: [
 
               Container(
@@ -1015,7 +1019,9 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
         return false; // Set to false to prevent back navigation
       },
       child: MaterialApp(
+
         home: Scaffold(
+          backgroundColor: Colors.white,
           appBar: AppBar(
             title: const Center(
               // Centering the title horizontally
@@ -1159,12 +1165,13 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
            isclose=false; uploaded=false;
            isLoading = false;startgame=false;gamepermission=false;
         });
-        Fluttertoast.showToast(msg: "Server error occurred, Please try again.");
+        Fluttertoast.showToast(msg: "Server error occurred, Please try again later.");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomePage()),
         );
-      }else{
+      }
+      else{
         setState(() {
           isclose=false; uploaded=false;
           isLoading = false;startgame=false;gamepermission=false;
@@ -1184,7 +1191,8 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
         }
         throw Exception('Failed to load data');
       }
-    } on DioError catch (e) {
+    }
+    on DioError catch (e) {
       setState(() {
         isclose=false; uploaded=false;
         isLoading = false;startgame=false;gamepermission=false;

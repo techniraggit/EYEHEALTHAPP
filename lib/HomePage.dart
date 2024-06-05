@@ -758,7 +758,7 @@ class HomePageState extends State<HomePage> {
         name=jsonData['name'];
         int no_of_fatigue=jsonData['no_of_fatigue_test'];
         int  no_of_eye_=jsonData['no_of_eye_test'];
-        int eye_hscore=jsonData['eye_health_score'];
+        dynamic eye_hscore=jsonData['eye_health_score'];
         setState(() {
           _datagraph = List<Map<String, dynamic>>.from(jsonData['data']);
           no_of_fatigue_test=no_of_fatigue.toString();

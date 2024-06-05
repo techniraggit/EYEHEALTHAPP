@@ -73,6 +73,7 @@ class EyeFatiguereports extends State<ReportDetails> {
         ),
       )
           : Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
           title: const Center(
               child: Text(
