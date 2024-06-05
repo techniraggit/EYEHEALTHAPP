@@ -13,7 +13,6 @@ import 'package:light_compressor/light_compressor.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:project_new/HomePage.dart';
-import 'package:project_new/eyeFatigueTestReport.dart';
 import 'package:project_new/sign_up.dart';
 // import 'package:video_compress/video_compress.dart';
 import 'package:camera/camera.dart';
@@ -21,14 +20,17 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'api/Api.dart';
-import 'api/config.dart';
-import 'dinogame/cactus.dart';
-import 'dinogame/cloud.dart';
-import 'dinogame/constants.dart';
-import 'dinogame/dino.dart';
-import 'dinogame/game_object.dart';
-import 'dinogame/ground.dart';
+import '../api/Api.dart';
+import '../api/config.dart';
+import '../dinogame/cactus.dart';
+import '../dinogame/cloud.dart';
+import '../dinogame/constants.dart';
+import '../dinogame/dino.dart';
+import '../dinogame/game_object.dart';
+import '../dinogame/ground.dart';
+import 'eyeFatigueTestReport.dart';
+
+
 bool isclose=false;bool uploaded=false;
 bool isLoading = false;bool startgame=false;bool gamepermission=false;
 class EyeFatigueStartScreen extends StatefulWidget {
@@ -255,11 +257,16 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
     super.initState();
     isclose=false; uploaded=false;
     isLoading = false;startgame=false;gamepermission=false;
+    Future.delayed(Duration(seconds: 1), () {
 
-    _initializeCamera();
+    _initializeCamera();});
 
     sendcustomerDetails();
-    startTimer();
+    Future.delayed(Duration(seconds: 1), () {
+
+      startTimer();
+    });
+
   isloading();
 
 
@@ -293,7 +300,10 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
 
   @override
   void dispose() {
-    _controller?.dispose();
+    if (_controller != null) {
+      _controller!.dispose();
+    }
+    // _controller?.dispose();
     _animationController.dispose();
     gravityController.dispose();
     accelerationController.dispose();
@@ -586,11 +596,13 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
 
         print('Video recorded to: ${file.path}');
         // Verify file existence
-        if (await File(file.path).exists()) {
+        // if ( await File(file.path).exists()) {
+        if (File(file.path).existsSync()) {
           setState(() {
+            isLoading=true;
             gamepermission=true;
 
-            isLoading=true;
+
             print("isLoading========$isLoading");
             _compressAndUploadVideo(file.path);
 
@@ -677,9 +689,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
       child: MaterialApp(
         home: Scaffold(
           backgroundColor: Colors.white,
-          body:
-
-          Stack(
+          body: Stack(
             children: [
 
               Container(
@@ -1162,12 +1172,13 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
            isclose=false; uploaded=false;
            isLoading = false;startgame=false;gamepermission=false;
         });
-        Fluttertoast.showToast(msg: "Server error occurred, Please try again.");
+        Fluttertoast.showToast(msg: "Server error occurred, Please try again later.");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomePage()),
         );
-      }else{
+      }
+      else{
         setState(() {
           isclose=false; uploaded=false;
           isLoading = false;startgame=false;gamepermission=false;
@@ -1187,7 +1198,8 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
         }
         throw Exception('Failed to load data');
       }
-    } on DioError catch (e) {
+    }
+    on DioError catch (e) {
       setState(() {
         isclose=false; uploaded=false;
         isLoading = false;startgame=false;gamepermission=false;

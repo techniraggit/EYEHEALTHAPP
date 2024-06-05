@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
@@ -322,13 +323,33 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> {
                                 const SizedBox(
                                   height: 10,
                                 ),
-                                Text(
-                                  testresult!,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                  ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: testresult
+                                      .split('\n')
+                                      .map(
+                                        (point) => Html(
+                                      data: point.contains(':')
+                                          ? "<div><b>${point.split(':')[0]}:</b></div><div>${point.split(':')[1]}</div>"
+                                          : "<div>$point</div>",
+                                      style: {
+                                        "div": Style(
+                                          fontSize: FontSize(14),
+                                          fontWeight: FontWeight.w400,
+                                          margin: Margins.only(bottom: 8),
+                                        ),
+                                      },
+                                    ),
+                                  )
+                                      .toList(),
                                 ),
+                                // Text(
+                                //   testresult!,
+                                //   style: const TextStyle(
+                                //     fontSize: 14,
+                                //     fontWeight: FontWeight.w400,
+                                //   ),
+                                // ),
                               ],
                             ),
                           ),
@@ -501,22 +522,29 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> {
         headers: headers,
       );
       print('PDFreport_id $report_id');
-      if (response.statusCode == 200) {
-        Directory appDocDir = await getApplicationDocumentsDirectory();
 
-        // Create a file in the application documents directory
-        String pdfPath = '${appDocDir.path}/downloaded_file.pdf';
-        File pdfFile = File(pdfPath);
+      if (response.statusCode == 200) {
         Fluttertoast.showToast(msg: "PDF downloaded successfully");
+
+        Directory? downloadsDir = Platform.isAndroid
+            ? await getExternalStorageDirectory() // For Android
+            : await getApplicationDocumentsDirectory(); // For iOS
+
+        // Create a file in the downloads directory
+        String pdfPath = '${downloadsDir?.path}/downloaded_file.pdf';
+        File pdfFile = File(pdfPath);
+
         // Write the response content to the file
         await pdfFile.writeAsBytes(response.bodyBytes);
 
         // Show a message or perform any further actions if needed
-        print('PDF downloaded successfully   $pdfFile.path');
+        print('PDF downloaded successfully: $pdfFile.path');
 
         // Return the path of the downloaded file
         return pdfFile.path;
-      } else if (response.statusCode == 401) {
+      }
+
+      else if (response.statusCode == 401) {
         Fluttertoast.showToast(msg: "Session Expired");
         Navigator.pushReplacement(
           context,

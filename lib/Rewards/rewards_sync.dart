@@ -19,18 +19,18 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:project_new/Rewards/redeem_sucess.dart';
 import 'package:project_new/models/OfferData.dart';
 import 'package:project_new/models/address_list.dart';
-import 'package:project_new/redeem_sucess.dart';
 import 'package:project_new/sign_up.dart';
 import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'Custom_navbar/bottom_navbar.dart';
-import 'HomePage.dart';
-import 'api/Api.dart';
-import 'api/config.dart';
-import 'eyeFatigueTest.dart';
+import '../Custom_navbar/bottom_navbar.dart';
+import '../HomePage.dart';
+import '../api/Api.dart';
+import '../api/config.dart';
+import '../eyeFatigueTest/eyeFatigueTest.dart';
 import 'new_address_screen.dart';
 
 class RewardContact extends StatefulWidget {
@@ -1017,11 +1017,8 @@ class RewardSpecsSync extends State<RewardSpecs> {
                           ),
                           iconSize: 28, // Back button icon
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              CupertinoPageRoute(
-                                  builder: (context) => PrescriptionUpload()),
-                            );
+                            Navigator.pop(context);
+
                             // Navigator.of(context).pop();
                           },
                         ),
@@ -1281,10 +1278,10 @@ class RewardSpecsSync extends State<RewardSpecs> {
                                 height: 45,
                                 child: GestureDetector(
                                   onTap: () {
-                                    // isReedemButtonEnabled ? () {
-                                    //   RedeemaddressSheet(context);
-                                    // } : null;
-                                    RedeemaddressSheet(context);
+                                    isReedemButtonEnabled ? () {
+                                      RedeemaddressSheet(context);
+                                    } : null;
+                                    // RedeemaddressSheet(context);
                                   },
 
                                   child: Container(
@@ -1853,7 +1850,7 @@ class PresUpload extends State<PrescriptionUpload> {
       isLoading
           ? const Center(
         child: CircularProgressIndicator(
-          color: Colors.black,
+          color: Colors.blue,
         ),
       )
           :
@@ -1933,11 +1930,7 @@ class PresUpload extends State<PrescriptionUpload> {
                           ),
                           iconSize: 28, // Back button icon
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              CupertinoPageRoute(
-                                  builder: (context) => const RewardContact()),
-                            );
+                            Navigator.pop(context);
                             // Navigator.of(context).pop();
                           },
                         ),
@@ -2221,9 +2214,9 @@ class PresUpload extends State<PrescriptionUpload> {
       type: FileType.custom,
       allowedExtensions: [
         'pdf',
-        // 'jpg',
-        // 'jpeg',
-        // 'png'
+        'jpg',
+        'jpeg',
+        'png'
       ], // Specify allowed file types
     );
 
@@ -2233,20 +2226,20 @@ class PresUpload extends State<PrescriptionUpload> {
       List<PlatformFile> pdfFiles =
       pickedFiles.files.where((file) => file.extension == 'pdf').toList();
       setState(() {});
-      if (pdfFiles.length < pickedFiles.files.length) {
-        Fluttertoast.showToast(
-          msg: "Only PDF files are allowed",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
-      } else {
+      // if (pdfFiles.length < pickedFiles.files.length) {
+      //   Fluttertoast.showToast(
+      //     msg: "Only PDF files are allowed",
+      //     toastLength: Toast.LENGTH_SHORT,
+      //     gravity: ToastGravity.BOTTOM,
+      //     timeInSecForIosWeb: 1,
+      //     backgroundColor: Colors.red,
+      //     textColor: Colors.white,
+      //     fontSize: 16.0,
+      //   );
+      // } else {
         _files1.addAll(files);
         uploadPrescription(pickedFiles.files);
-      }
+      // }
     }
   }
 
@@ -2295,9 +2288,10 @@ class PresUpload extends State<PrescriptionUpload> {
       } else {
         print("Error: ${response.reasonPhrase}");
       }
-    } catch (e) {
+    } catch (e,Stacktrace) {
+      Fluttertoast.showToast(msg: "please upload pdf upto 10 Mb");
       // Handle any errors that occur during the request
-      print("Error uploading file: $e");
+      print("Error uploading file: $e================$Stacktrace================");
     }
   }
 

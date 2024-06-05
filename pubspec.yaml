@@ -96,6 +96,7 @@ dependencies:
   flutter_ffmpeg: ^0.4.2
   light_compressor: ^2.2.0
   draw_graph: ^1.0.0
+  alarm: ^3.1.4
 
 dev_dependencies:
   flutter_test:

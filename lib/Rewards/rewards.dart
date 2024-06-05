@@ -357,7 +357,7 @@ class RewardsScreenState extends State<RewardsScreen> {
                                 horizontal: 8.0,
                               ),
                               child: Text(
-                                'Second Text',
+                                '',
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
@@ -449,7 +449,7 @@ class RewardsScreenState extends State<RewardsScreen> {
                                 horizontal: 8.0,
                               ),
                               child: Text(
-                                'Second Text',
+                                '',
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
