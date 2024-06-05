@@ -676,6 +676,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
       },
       child: MaterialApp(
         home: Scaffold(
+          backgroundColor: Colors.white,
           body:
 
           Stack(
@@ -1015,7 +1016,9 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
         return false; // Set to false to prevent back navigation
       },
       child: MaterialApp(
+
         home: Scaffold(
+          backgroundColor: Colors.white,
           appBar: AppBar(
             title: const Center(
               // Centering the title horizontally
