@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
@@ -220,15 +219,32 @@ class TestReportState extends State<TestReport> {
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () async {
-          Navigator.of(context).pushReplacement(
+          Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => HomePage()),
+                (Route<dynamic> route) => false,
           );
           return false;
         },
         child: MaterialApp(
             home: Scaffold(
                 appBar: AppBar(
-                  title: Text("REPORT"),
+                  title:  RichText(
+                      text: TextSpan(
+                        children: [
+                        TextSpan(
+                        text: 'Zukti',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.textblue,
+                        ),
+                      ),
+                      TextSpan(
+                        text: ' Eyetest Report',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.blue,
+                        ),
+                      ),],),),
                   centerTitle: true,
                   leading: IconButton(
                     icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
@@ -240,7 +256,6 @@ class TestReportState extends State<TestReport> {
                   ),
                 ),
                 body: Stack(
-
                   children: <Widget>[
                     // Background Image
                     isLoading
@@ -252,16 +267,16 @@ class TestReportState extends State<TestReport> {
                             child: Column(
                               children: <Widget>[
                                 Padding(
-                                  padding:  EdgeInsets.symmetric(horizontal: 8.0),
+                                  padding:
+                                      EdgeInsets.fromLTRB(0,0,0,10),
                                   child: Container(
                                     child: Text(
-                                      'Zukti Eye Test', // Text content
+                                      'Overall Ocular Wellnes', // Text content
                                       style: TextStyle(
-                                        fontSize: 22, // Font size
+                                        fontSize: 18, // Font size
                                         fontWeight:
                                             FontWeight.w500, // Font weight
-                                        color:
-                                            Colors.deepPurple, // Text color
+                                        color: Colors.black, // Text color
                                         fontStyle:
                                             FontStyle.normal, // Font style
                                       ),
@@ -272,10 +287,9 @@ class TestReportState extends State<TestReport> {
                                   padding: const EdgeInsets.all(8.0),
                                   child: Container(
                                     decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.grey),
+                                      border: Border.all(color: Colors.bordergrey),
                                       // Changed to Colors.grey
-                                      borderRadius:
-                                          BorderRadius.circular(8.0),
+                                      borderRadius: BorderRadius.circular(8.0),
                                     ),
                                     child: Column(
                                       mainAxisAlignment:
@@ -298,13 +312,13 @@ class TestReportState extends State<TestReport> {
                                           ),
                                         ),
                                         Container(
-                                          padding: EdgeInsets.symmetric(horizontal: 13.0,vertical: 2),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 13.0, vertical: 2),
                                           margin: EdgeInsets.all(8),
                                           // Adjust height as needed
                                           child: const Row(
                                             mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .spaceBetween,
+                                                MainAxisAlignment.spaceBetween,
                                             children: <Widget>[
                                               Text('Full name',
                                                   style: TextStyle(
@@ -337,6 +351,250 @@ class TestReportState extends State<TestReport> {
                                           ),
                                         ),
                                         Padding(
+                                          padding: EdgeInsets.all(12.0),
+                                          child: Column(
+                                            children: <Widget>[
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Table(
+                                                  columnWidths: {
+                                                    0: FlexColumnWidth(1),
+                                                    1: FlexColumnWidth(1),
+                                                    2: FlexColumnWidth(1),
+                                                    3: FlexColumnWidth(1),
+                                                    4: FlexColumnWidth(1),
+                                                  },
+                                                  children: [
+                                                    TableRow(
+                                                      children: [
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Text(
+                                                            'EYE',
+                                                            style: TextStyle(
+                                                                fontSize: 16,
+                                                                color: Colors
+                                                                    .black),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Text(
+                                                            'SPH',
+                                                            style: TextStyle(
+                                                                fontSize: 16,
+                                                                color: Colors
+                                                                    .black),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Text(
+                                                            'CYL',
+                                                            style: TextStyle(
+                                                                fontSize: 16,
+                                                                color: Colors
+                                                                    .black),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Text(
+                                                            'AXIS',
+                                                            style: TextStyle(
+                                                                fontSize: 16,
+                                                                color: Colors
+                                                                    .black),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Text(
+                                                            'ADD',
+                                                            style: TextStyle(
+                                                                fontSize: 16,
+                                                                color: Colors
+                                                                    .black),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    TableRow(
+                                                      children: [
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Text(
+                                                            left_eye,
+                                                            style: TextStyle(
+                                                                fontSize: 16,
+                                                                color: Colors
+                                                                    .deepPurple,fontWeight: FontWeight.bold),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Text(
+                                                            left_sph,
+                                                            style: TextStyle(
+                                                                fontSize: 16,
+                                                                color: Colors
+                                                                    .black,fontWeight: FontWeight.bold),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Text(
+                                                            left_cyl,
+                                                            style: TextStyle(
+                                                                fontSize: 16,
+                                                                color: Colors
+                                                                    .black,fontWeight: FontWeight.bold),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Text(
+                                                            left_axis,
+                                                            style: TextStyle(
+                                                                fontSize: 16,
+                                                                color: Colors
+                                                                    .black,fontWeight: FontWeight.bold),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Text(
+                                                            left_add,
+                                                            style: TextStyle(
+                                                                fontSize: 16,
+                                                                color: Colors
+                                                                    .black,fontWeight: FontWeight.bold),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    TableRow(
+                                                      children: [
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Text(
+                                                            right_eye,
+                                                            style: TextStyle(
+                                                                fontSize: 16,
+                                                                color: Colors
+                                                                    .deepPurple,fontWeight: FontWeight.bold),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Text(
+                                                            right_sph,
+                                                            style: TextStyle(
+                                                                fontSize: 16,
+                                                                color: Colors
+                                                                    .black,fontWeight: FontWeight.bold),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Text(
+                                                            right_cyl,
+                                                            style: TextStyle(
+                                                                fontSize: 16,
+                                                                color: Colors
+                                                                    .black,fontWeight: FontWeight.bold),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Text(
+                                                            right_axis,
+                                                            style: TextStyle(
+                                                                fontSize: 16,
+                                                                color: Colors
+                                                                    .black,fontWeight: FontWeight.bold),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Text(
+                                                            right_add,
+                                                            style: TextStyle(
+                                                                fontSize: 16,
+                                                                color: Colors
+                                                                    .black,fontWeight: FontWeight.bold),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        /*       Padding(
                                           padding: EdgeInsets.all(12.0),
                                           child: Column(
                                             children: <Widget>[
@@ -482,7 +740,7 @@ class TestReportState extends State<TestReport> {
                                               ),
                                             ],
                                           ),
-                                        ),
+                                        ),*/
                                       ],
                                     ),
                                   ),
@@ -496,17 +754,14 @@ class TestReportState extends State<TestReport> {
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500,
                                       color: Colors
-                                          .blue, // Changed to Colors.blue
+                                          .textblue, // Changed to Colors.blue
                                     ),
                                   ),
                                 ),
                                 Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: bulletPoints
-                                      .asMap()
-                                      .entries
-                                      .map((entry) {
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children:
+                                      bulletPoints.asMap().entries.map((entry) {
                                     int index = entry.key +
                                         1; // Serial number starting from 1
                                     String bullet = entry.value;
@@ -526,7 +781,7 @@ class TestReportState extends State<TestReport> {
                                                 fontSize: 14.0,
                                                 fontWeight: FontWeight.w500,
                                                 color: Colors
-                                                    .blue, // Changed to Colors.blue
+                                                    .textblue, // Changed to Colors.blue
                                               ),
                                             ),
                                           ),
@@ -538,7 +793,7 @@ class TestReportState extends State<TestReport> {
                                                 fontSize: 14.0,
                                                 fontWeight: FontWeight.w400,
                                                 color: Colors
-                                                    .blue, // Changed to Colors.blue
+                                                    .textblue, // Changed to Colors.blue
                                               ),
                                             ),
                                           ),
@@ -548,11 +803,11 @@ class TestReportState extends State<TestReport> {
                                   }).toList(),
                                 ),
 
-                                Image.asset(
+                                /*    Image.asset(
                                   width: MediaQuery.sizeOf(context).width,
                                   height: 30,
                                   'assets/report_banner.png',
-                                ),
+                                ),*/
 
                                 /*  Container(
                         width: 140,

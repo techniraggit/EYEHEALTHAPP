@@ -15,27 +15,7 @@ import 'package:image_picker/image_picker.dart';
 import '../Custom_navbar/customDialog.dart';
 import '../api/Api.dart';
 
-
-class Camara extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () async {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => GiveInfo()),
-            // (route) => route.isFirst, // Remove until the first route (Screen 1)
-          );
-          return false;
-        },
-        child: MaterialApp(
-          home: CameraS(),
-        ));
-  }
-}
-
 class CameraS extends StatefulWidget {
-  const CameraS({super.key});
-
   @override
   _CameraScreenState createState() => _CameraScreenState();
 }
@@ -48,7 +28,7 @@ class _CameraScreenState extends State<CameraS> {
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+      _initializeCamera();
     _configureTts();
     _onReplayPressed();
   }
@@ -65,7 +45,8 @@ class _CameraScreenState extends State<CameraS> {
     await flutterTts.speak(text);
   }
   void _onReplayPressed() {
-    const String replayText = "Maintain the screen brightness at 50% throughout the eye test. Keep the device on a stable surface at the eye level. Keep the device at the recommended distance, for this follow the onscreen instructions throughout the eye test. Only move your face Move forward or backward till the time you see good to go sign on screen. Do not disturb or move the device from its position during the eye test. Are you ready? Let’s start the test. Please click on Start Eye Test Now.";
+    print("fjjjjjjjjj");
+     String replayText = "Maintain the screen brightness at 50% throughout the eye test. Keep the device on a stable surface at the eye level. Keep the device at the recommended distance, for this follow the onscreen instructions throughout the eye test. Only move your face Move forward or backward till the time you see good to go sign on screen. Do not disturb or move the device from its position during the eye test. Are you ready? Let’s start the test. Please click on Start Eye Test Now.";
     _speak(replayText);
   }
 
@@ -109,113 +90,11 @@ class _CameraScreenState extends State<CameraS> {
   @override
   void dispose() {
     _controller.dispose();
+    flutterTts.stop();
     super.dispose();
   }
 
   String alert = '';
-/*
-  @override
-  Widget build(BuildContext context) {
-    if (!_isCameraInitialized) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => GiveInfo()),
-        );
-        return false;
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("EYE TEST"),
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-            onPressed: () {
-              // Add your back button functionality here
-            },
-          ),
-        ),
-
-        body:
-        Center(
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 50.0), // Adjust this value as needed
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(height: 1),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      SizedBox(height: 90),
-                      Container(
-                        width: 320,
-                        height: 40,
-                        padding: EdgeInsets.all(8),
-                        child: Text(
-                          alert,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: alert == 'Good to go' ? Colors.green : Colors.red,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        width: 180,
-                        height: 200,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: alert == 'Good to go' ? Colors.green : Colors.red,
-                            width: 2,
-                          ),
-                        ),
-                        child: ClipRect(
-                          child: FittedBox(
-                            fit: BoxFit.cover,
-                            child: SizedBox(
-                              width: _controller.value.previewSize?.height,
-                              height: _controller.value.previewSize?.width,
-                              child: CameraPreview(_controller),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.all(20),
-                        child: ElevatedButton(
-                          onPressed: () {
-                              Navigator.pushReplacement(
-                                context,
-                                CupertinoPageRoute(builder: (context) => LeftEyeTest()),
-                              );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: Colors.bluebutton,
-                            padding: EdgeInsets.all(16),
-                            minimumSize: Size(200, 30),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                          ),
-                          child: Text('Start Test Now'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-      ),
-    );
-  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -247,7 +126,8 @@ class _CameraScreenState extends State<CameraS> {
             GestureDetector(
               onTap: _onReplayPressed,
               child: Container(
-                padding: EdgeInsets.only(bottom: 10),
+                padding: EdgeInsets.symmetric(
+                    vertical: 10, horizontal: 10),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(25),
                 ),
@@ -275,6 +155,7 @@ class _CameraScreenState extends State<CameraS> {
                 ),
               ),
             ),
+
             Expanded(
               child: Center(
                 child: Padding(

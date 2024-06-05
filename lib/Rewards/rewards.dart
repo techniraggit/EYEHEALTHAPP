@@ -324,17 +324,7 @@ class RewardsScreenState extends State<RewardsScreen> {
               child: Card(
                 child: Row(
                   children: [
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(16.0, 0, 0, 10),
-                      child: Text(
-                        'Upload Prescription', // Display formatted current date
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.deepPurple,
-                        ),
-                      ),
-                    ),
+
                     // Image on the left side
                     Image.asset(
                       'assets/refer_earn.png',
