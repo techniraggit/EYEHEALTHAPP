@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -73,8 +74,9 @@ class TestReportState extends State<TestReport> {
             parsedJson['data']['right_eye'],
             parsedJson['data']['left_eye']
           ];
-        //  name = parsedJson['data']['right_eye']['full_name'];
-          // age = parsedJson['data']['age']; // Assuming you get age data from somewhere else
+          name = parsedJson['data']['user_profile']['full_name'];
+          age = parsedJson['data']['user_profile']
+              ['age']; // Assuming you get age data from somewhere else
 
           for (var test in tests) {
             String eyeStatus = test['eye_status'];
@@ -106,7 +108,7 @@ class TestReportState extends State<TestReport> {
               }
             } else {
               if (eyeStatus == 'left') {
-                left_sph = test['myopia_sph_power'] ?? '';
+                left_sph = test['hyperopia_sph_power'] ?? '';
                 left_eye = test['eye_status'] ?? '';
                 left_cyl = test['cyl_power'] ?? '';
                 left_axis = test['degree'] ?? '';
@@ -133,6 +135,18 @@ class TestReportState extends State<TestReport> {
           }
           setState(() {
             isLoading = false;
+            left_cyl;
+            left_eye;
+            left_sph;
+            left_axis;
+            left_add;
+            name;
+            age;
+            right_eye;
+            right_add;
+            right_axis;
+            right_cyl;
+            right_sph;
           });
         } else {
           print('Failed with status: ${parsedJson['status']}');
@@ -140,130 +154,6 @@ class TestReportState extends State<TestReport> {
           print('Failed with message: ${parsedJson['message']}');
         }
       }
-
-      /* if (response.statusCode == 200) {
-        print('generate_report: ${response.body}');
-// If the call to the server was successful, parse the JSON
-        Map<String, dynamic> parsedJson = jsonDecode(response.body);
-        List<dynamic> tests = parsedJson['data']['test'];
-        name = parsedJson['data']['right_eye']['full_name'];
-        //age = parsedJson['data']['age'];
-        for (var test in tests) {
-          String eyeStatus = test['eye_status'];
-          String Test =test['test'];
-          if(Test=='myopia'){
-            if (eyeStatus == 'left') {
-              left_sph = test['myopia_sph_power'] ?? '';
-              left_eye = test['eye_status'] ?? '';
-              left_cyl = test['cyl_power'] ?? '';
-              left_axis = test['degree'] ?? '';
-              left_add = test['age_power'] ?? '';
-              if(left_add.isEmpty){
-                left_add='-';
-              }
-              if(left_axis.isEmpty){
-                left_axis='-';
-              }
-              if(left_cyl.isEmpty){
-                left_cyl='-';
-              }
-              if(left_sph.isEmpty){
-                left_sph='-';
-              }
-              if(left_eye.isEmpty){
-                left_eye='-';
-              }
-            }
-            if (eyeStatus == 'right') {
-              right_sph = test['myopia_sph_power'] ?? '';
-              right_eye = test['eye_status'] ?? '';
-              right_cyl = test['cyl_power'] ?? '';
-              right_axis = test['degree'] ?? '';
-              right_add = test['age_power'] ?? '';
-              if(right_add.isEmpty){
-                right_add='-';
-              }
-              if(right_axis.isEmpty){
-                right_axis='-';
-              }
-              if(right_cyl.isEmpty){
-                right_cyl='-';
-              }
-              if(right_sph.isEmpty){
-                right_sph='-';
-              }
-              if(right_eye.isEmpty){
-                right_eye='-';
-              }
-            }
-          }else{
-            if (eyeStatus == 'left') {
-              left_sph = test['myopia_sph_power'] ?? '';
-              left_eye = test['eye_status'] ?? '';
-              left_cyl = test['cyl_power'] ?? '';
-              left_axis = test['degree'] ?? '';
-              left_add = test['age_power'] ?? '';
-              if(left_add.isEmpty){
-                left_add='-';
-              }
-              if(left_axis.isEmpty){
-                left_axis='-';
-              }
-              if(left_cyl.isEmpty){
-                left_cyl='-';
-              }
-              if(left_sph.isEmpty){
-                left_sph='-';
-              }
-              if(left_eye.isEmpty){
-                left_eye='-';
-              }
-            }
-            if (eyeStatus == 'right') {
-              right_sph = test['hypermyopia_sph_power'] ?? '';
-              right_eye = test['eye_status'] ?? '';
-              right_cyl = test['cyl_power'] ?? '';
-              right_axis = test['degree'] ?? '';
-              right_add = test['age_power'] ?? '';
-              if(right_add.isEmpty){
-                left_add='-';
-              }
-              if(right_axis.isEmpty){
-                right_axis='-';
-              }
-              if(right_sph.isEmpty){
-                right_axis='-';
-              }
-              if(right_sph.isEmpty){
-                right_axis='-';
-              }
-              if(right_eye.isEmpty){
-                right_axis='-';
-              }
-            }
-          }
-        }
-        setState(() {
-          isLoading = false;
-          left_cyl;
-          left_eye;
-          left_sph;
-          left_axis;
-          left_add;
-          name;
-          age;
-          right_eye;
-          right_add;
-          right_axis;
-          right_cyl;
-          right_sph;
-        });
-      } else {
-// If the server did not return a 200 OK response,
-// handle the error here (display error message or take appropriate action)
-        print('Failed with status code: ${response.statusCode}');
-        print('Failed with : ${response.body}');
-      }*/
     } catch (e) {
       if (e is SocketException) {
         CustomAlertDialog.eyetstcomplete(
@@ -274,6 +164,13 @@ class TestReportState extends State<TestReport> {
       throw Exception('Failed to send data');
     }
   }
+
+  final List<String> bulletPoints = [
+    // existing bullet points
+    'The results displayed are for reference purposes only.',
+    'If you feel the power displayed is different than your old power, then please speak with your eye doctor or call EyeMyEye and speak with the optometrist.',
+    'Without confirmation from your eye doctor or EyeMyEye optometrist, do not use this power to make glasses.'
+  ];
 
   Future<void> SubmitFeedback() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -321,260 +218,380 @@ class TestReportState extends State<TestReport> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("EYE TEST"),
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-            onPressed: () {
-              // Add your back button functionality here
-            },
-          ),
-        ),
-        body: Stack(fit: StackFit.expand, children: <Widget>[
-          // Background Image
-          Center(
-            child: isLoading
-                ? Center(
-// Show loader when isLoading is true
-                    child: CircularProgressIndicator(),
-                  )
-                : Column(
-
-                    children: <Widget>[
-                      SizedBox(height: 80.0),
-                      Container(
-                        child:  Text(
-                          'Patient Report', // Text content
-                          style: TextStyle(
-                            fontSize: 20, // Font size
-                            fontWeight: FontWeight.bold, // Font weight
-                            color: Colors.deepPurple, // Text color
-                            fontStyle: FontStyle.normal, // Font style
-
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        child:  Text(
-                          'Patient Details', // Text content
-                          style: TextStyle(
-                            fontSize: 12, // Font size
-                            fontWeight: FontWeight.bold, // Font weight
-                            color: Colors.black, // Text color
-                            fontStyle: FontStyle.normal, // Font style
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(10.0),
-                        margin: EdgeInsets.all(8), // Adjust height as needed
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text('Full name',
-                                style: TextStyle(
-                                    fontSize: 16, color: Colors.black)),
-                            Text(
-                              'Age',
-                              style: TextStyle(
-                                  fontSize: 16, color: Colors.black),
-                            ),
-                          ],
-                        ),
-                      ),
-                      VerticalBox(name: name, age: age),
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        child: const Text(
-                          'Patient Prescription', // Text content
-                          style: TextStyle(
-                            fontSize: 12, // Font size
-                            fontWeight: FontWeight.bold, // Font weight
-                            color: Color(0xFF1E3777), // Text color
-                            fontStyle: FontStyle.normal, // Font style
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(12.0),
-                        margin: EdgeInsets.all(8), // Adjust height as needed
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            Text(
-                              'EYE',
-                              style: TextStyle(
-                                  fontSize: 16, color: Colors.black),
-                            ),
-                            Text(
-                              'SPH',
-                              style: TextStyle(
-                                  fontSize: 16, color: Colors.black),
-                            ),
-                            Text(
-                              'CYL',
-                              style: TextStyle(
-                                  fontSize: 16, color: Colors.black),
-                            ),
-                            Text(
-                              'AXIS',
-                              style: TextStyle(
-                                  fontSize: 16, color: Colors.black),
-                            ),
-                            Text(
-                              'ADD',
-                              style: TextStyle(
-                                  fontSize: 16, color: Colors.black
-
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(12.0),
-                        margin: EdgeInsets.all(8),
-// Adjust height as needed
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-// Change background color here
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            Text(
-                              left_eye,
-                              style: TextStyle(
-                                  fontSize: 16, color: Color(0xFF1E3777)),
-                            ),
-                            Text(
-                              left_sph,
-                              style: TextStyle(
-                                  fontSize: 16, color: Color(0xFF1E3777)),
-                            ),
-                            Text(
-                              left_cyl,
-                              style: TextStyle(
-                                  fontSize: 16, color: Color(0xFF1E3777)),
-                            ),
-                            Text(
-                              left_axis,
-                              style: TextStyle(
-                                  fontSize: 16, color: Color(0xFF1E3777)),
-                            ),
-                            Text(
-                              left_add,
-                              style: TextStyle(
-                                  fontSize: 16, color: Color(0xFF1E3777)),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(12.0),
-                        margin: EdgeInsets.all(8), // Adjust height as needed
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            Text(
-                              right_eye,
-                              style: TextStyle(
-                                  fontSize: 16, color: Color(0xFF1E3777)),
-                            ),
-                            Text(
-                              right_sph,
-                              style: TextStyle(
-                                  fontSize: 16, color: Color(0xFF1E3777)),
-                            ),
-                            Text(
-                              right_cyl,
-                              style: TextStyle(
-                                  fontSize: 16, color: Color(0xFF1E3777)),
-                            ),
-                            Text(
-                              right_axis,
-                              style: TextStyle(
-                                  fontSize: 16, color: Color(0xFF1E3777)),
-                            ),
-                            Text(
-                              right_add,
-                              style: TextStyle(
-                                  fontSize: 16, color: Color(0xFF1E3777)),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      Container(
-                        width: 250,
-                        child: Center(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                context,
-                                CupertinoPageRoute(
-                                    builder: (context) => HomePage()),
-                              );
-                              // Perform exit action here
-                              // For demonstration, it closes the app
-                              // Navigator.of(context).pop();
-                            },
-                            child: Text(
-                              'Exit',
-                              style: TextStyle(
-                                  fontSize: 16), // Adjust text size here
-                            ),
-                          ),
-                        ),
-                      )
-                      /**  Container(
-                    width: 300.0, // Set the desired width
-                    height: 100.0, // Set the desired height
-                    padding: EdgeInsets.all(8.0),
-                    margin: EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                    borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: TextField(
-                    controller: textEditingController1, // Attach the controller
-                    decoration: InputDecoration(
-                    border: InputBorder.none, // Remove underline
-                    hintText: 'Write to Us Your Experience',
-                    ),),), Container(
-                    margin: EdgeInsets.all(16.0), // Set t
-                    child: ElevatedButton(
+    return WillPopScope(
+        onWillPop: () async {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => HomePage()),
+          );
+          return false;
+        },
+        child: MaterialApp(
+            home: Scaffold(
+                appBar: AppBar(
+                  title: Text("REPORT"),
+                  centerTitle: true,
+                  leading: IconButton(
+                    icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
                     onPressed: () {
-                    SubmitFeedback(); // Add your button functionality here
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (context) => HomePage()),
+                      );
                     },
-                    style: ElevatedButton.styleFrom(
-                    foregroundColor: Color(0xFF1E3777), backgroundColor: Color(0xFFCADAE1), // Text color
-                    padding: EdgeInsets.all(16),
-                    minimumSize: Size(200, 40),// Button padding
-                    shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8), // Button border radius
-                    ),
-                    ),
-                    child: Text('Submit'),
-                    ),
-                    ),**/
-                    ],
                   ),
-          ),
-          //),
-        ]));
+                ),
+                body: Stack(
+
+                  children: <Widget>[
+                    // Background Image
+                    isLoading
+                        ? Center(
+                            // Show loader when isLoading is true
+                            child: CircularProgressIndicator(),
+                          )
+                        : SingleChildScrollView(
+                            child: Column(
+                              children: <Widget>[
+                                Padding(
+                                  padding:  EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: Container(
+                                    child: Text(
+                                      'Zukti Eye Test', // Text content
+                                      style: TextStyle(
+                                        fontSize: 22, // Font size
+                                        fontWeight:
+                                            FontWeight.w500, // Font weight
+                                        color:
+                                            Colors.deepPurple, // Text color
+                                        fontStyle:
+                                            FontStyle.normal, // Font style
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.grey),
+                                      // Changed to Colors.grey
+                                      borderRadius:
+                                          BorderRadius.circular(8.0),
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.all(20),
+                                          child: Text(
+                                            'Patient Details', // Text content
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              // Font size
+                                              fontWeight: FontWeight.bold,
+                                              // Font weight
+                                              color: Colors.black,
+                                              // Text color
+                                              fontStyle: FontStyle
+                                                  .normal, // Font style
+                                            ),
+                                          ),
+                                        ),
+                                        Container(
+                                          padding: EdgeInsets.symmetric(horizontal: 13.0,vertical: 2),
+                                          margin: EdgeInsets.all(8),
+                                          // Adjust height as needed
+                                          child: const Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .spaceBetween,
+                                            children: <Widget>[
+                                              Text('Full name',
+                                                  style: TextStyle(
+                                                      fontSize: 15,
+                                                      color: Colors.black)),
+                                              Text(
+                                                'Age',
+                                                style: TextStyle(
+                                                    fontSize: 15,
+                                                    color: Colors.black),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        VerticalBox(name: name, age: age),
+                                        Padding(
+                                          padding: EdgeInsets.all(10),
+                                          child: const Text(
+                                            'Patient Prescription', // Text content
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              // Font size
+                                              fontWeight: FontWeight.bold,
+                                              // Font weight
+                                              color: Colors.black,
+                                              // Text color
+                                              fontStyle: FontStyle
+                                                  .normal, // Font style
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.all(12.0),
+                                          child: Column(
+                                            children: <Widget>[
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceAround,
+                                                  children: <Widget>[
+                                                    Text(
+                                                      'EYE',
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          color:
+                                                              Colors.black),
+                                                    ),
+                                                    Text(
+                                                      'SPH',
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          color:
+                                                              Colors.black),
+                                                    ),
+                                                    Text(
+                                                      'CYL',
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          color:
+                                                              Colors.black),
+                                                    ),
+                                                    Text(
+                                                      'AXIS',
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          color:
+                                                              Colors.black),
+                                                    ),
+                                                    Text(
+                                                      'ADD',
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          color:
+                                                              Colors.black),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              // Add a divider between sections
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceAround,
+                                                  children: <Widget>[
+                                                    Text(
+                                                      left_eye,
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          color: Colors
+                                                              .deepPurple),
+                                                    ),
+                                                    Text(
+                                                      left_sph,
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          color:
+                                                              Colors.black),
+                                                    ),
+                                                    Text(
+                                                      left_cyl,
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          color:
+                                                              Colors.black),
+                                                    ),
+                                                    Text(
+                                                      left_axis,
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          color:
+                                                              Colors.black),
+                                                    ),
+                                                    Text(
+                                                      left_add,
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          color:
+                                                              Colors.black),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              // Add a divider between sections
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceAround,
+                                                  children: <Widget>[
+                                                    Text(
+                                                      right_eye,
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          color: Colors
+                                                              .deepPurple),
+                                                    ),
+                                                    Text(
+                                                      right_sph,
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          color:
+                                                              Colors.black),
+                                                    ),
+                                                    Text(
+                                                      right_cyl,
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          color:
+                                                              Colors.black),
+                                                    ),
+                                                    Text(
+                                                      right_axis,
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          color:
+                                                              Colors.black),
+                                                    ),
+                                                    Text(
+                                                      right_add,
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          color:
+                                                              Colors.black),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 8.0, horizontal: 16),
+                                  child: Text(
+                                    'Disclaimer',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors
+                                          .blue, // Changed to Colors.blue
+                                    ),
+                                  ),
+                                ),
+                                Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: bulletPoints
+                                      .asMap()
+                                      .entries
+                                      .map((entry) {
+                                    int index = entry.key +
+                                        1; // Serial number starting from 1
+                                    String bullet = entry.value;
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8.0, horizontal: 16.0),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 4.0, left: 8),
+                                            child: Text(
+                                              '$index.',
+                                              style: const TextStyle(
+                                                fontSize: 14.0,
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors
+                                                    .blue, // Changed to Colors.blue
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8.0),
+                                          Expanded(
+                                            child: Text(
+                                              bullet,
+                                              style: const TextStyle(
+                                                fontSize: 14.0,
+                                                fontWeight: FontWeight.w400,
+                                                color: Colors
+                                                    .blue, // Changed to Colors.blue
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+
+                                Image.asset(
+                                  width: MediaQuery.sizeOf(context).width,
+                                  height: 30,
+                                  'assets/report_banner.png',
+                                ),
+
+                                /*  Container(
+                        width: 140,
+                        height: 50,
+                        child: Center(
+                        child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.deepPurple, // Background color
+                        padding: const EdgeInsets.all(10),
+                        minimumSize: const Size(300, 30), // Button padding
+                        shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(26), // Button border radius
+                        ),
+                        ),
+                        onPressed: () {
+                        Navigator.pushReplacement(
+                        context,
+                        CupertinoPageRoute(builder: (context) => HomePage()),
+                        );
+                        },
+                        child: Text(
+                        'Exit',
+                        style: TextStyle(fontSize: 16), // Adjust text size here
+                        ),
+                        ),
+                        ),
+                        ),*/
+
+                                // Space for the bottom banner
+                              ],
+                            ),
+                          ),
+
+                    // Bottom Banner
+
+                    SizedBox(height: 60),
+                  ],
+                ))));
   }
 }
 
@@ -590,21 +607,20 @@ class VerticalBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(13.0),
+      padding: EdgeInsets.symmetric(horizontal: 13.0),
       margin: EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade300,
-      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Text(
             '$name',
-            style: TextStyle(fontSize: 18, color: Color(0xFF1E3777)),
+            style: TextStyle(
+                fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
           ),
           Text(
             '$age',
-            style: TextStyle(fontSize: 18, color: Color(0xFF1E3777)),
+            style: TextStyle(
+                fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
           ),
         ],
       ),

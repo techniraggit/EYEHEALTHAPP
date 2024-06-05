@@ -254,9 +254,13 @@ class _CameraScreenState extends State<CameraS> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      Icons.play_circle_fill,
-                      color: Colors.bluebutton,
+                    Padding(
+                      padding: EdgeInsets.only(top: 4.0),
+                      child: Image.asset(
+                        'assets/play_circle_fill.png',
+                        width: 50,
+                        height: 40,
+                      ),
                     ),
                     SizedBox(width: 8),
                     // Adjust spacing between icon and text

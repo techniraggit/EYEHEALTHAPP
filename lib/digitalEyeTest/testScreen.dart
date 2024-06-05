@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'dart:io';
-
 import 'package:camera/camera.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/foundation.dart';
@@ -22,9 +20,6 @@ import '../Custom_navbar/customDialog.dart';
 import '../api/Api.dart';
 import 'camara.dart';
 import 'TestReport.dart';
-import '../../myPlanPage.dart';
-
-import 'package:flutter_svg/flutter_svg.dart';
 
 class GiveInfo extends StatefulWidget {
   @override
@@ -141,9 +136,13 @@ class SelectQuestion extends State<GiveInfo> {
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(
-                                        Icons.play_circle_fill,
-                                        color: Colors.bluebutton,
+                                      Padding(
+                                        padding: EdgeInsets.only(top: 4.0),
+                                        child: Image.asset(
+                                          'assets/play_circle_fill.png',
+                                          width: 50,
+                                          height: 40,
+                                        ),
                                       ),
                                       SizedBox(width: 8),
                                       // Adjust spacing between icon and text
@@ -188,38 +187,6 @@ class SelectQuestion extends State<GiveInfo> {
                                   },
                                 ),
                               ],
-                              // Your existing widgets
-                              /* Positioned(
-                                bottom: 20,
-                                right: 20,
-                                child: GestureDetector(
-                                  onTap: _onReplayPressed,
-                                  child: Container(
-                                    padding: EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-
-                                      borderRadius: BorderRadius.circular(25),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(
-                                          Icons.play_circle_fill,
-                                          color: Colors.bluebutton,
-                                        ),
-                                        SizedBox(width: 8), // Adjust spacing between icon and text
-                                        Text(
-                                          'Replay Audio',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),*/
                             ],
                           ),
                         ),
@@ -530,16 +497,21 @@ class LeftEyeTestState extends State<LeftEyeTest> {
                       GestureDetector(
                         onTap: _onReplayPressed,
                         child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 10),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(25),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(
-                                Icons.play_circle_fill,
-                                color: Colors.bluebutton,
+                              Padding(
+                                padding: EdgeInsets.only(top: 4.0),
+                                child: Image.asset(
+                                  'assets/play_circle_fill.png',
+                                  width: 50,
+                                  height: 40,
+                                ),
                               ),
                               SizedBox(width: 8),
                               // Adjust spacing between icon and text
@@ -554,9 +526,9 @@ class LeftEyeTestState extends State<LeftEyeTest> {
                           ),
                         ),
                       ),
-                       Center(
+                      Center(
                         child: Padding(
-                          padding: EdgeInsets.fromLTRB(10,10,10.0,0),
+                          padding: EdgeInsets.fromLTRB(10, 10, 10.0, 0),
                           child: Text(
                             'Eye Test Instructions for Optimal Results',
                             style: TextStyle(
@@ -767,67 +739,63 @@ class AlphabetTestState extends State<AlphabetTest> {
   }
 
   Future<void> sendDistanceRequest(String image) async {
-    var distanceType;
-
     var apiUrl =
         '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
-    /* String base64String = await xFileToBase64(image);*/
-
-    //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
-    String CustomerId = prefs.getString('customer_id') ?? '';
 
+    var distanceType;
     String text = prefs.getString('test') ?? '';
+    print("testTypecam:--" + text);
     if (text == 'myopia') {
       distanceType = 'fardistance';
     } else if (text == 'hyperopia') {
       distanceType = 'neardistance';
-    }
-    try {
-      var frameData = image;
+    } //print('image$image');
 
-      // Replace this with your frame data as a base64 string
-      // var distanceType = 'neardistance'; // Replace this with the distance type
+    try {
+      var frameData =
+          image; // Replace this with your frame data as a base64 string
+      // var distanceType = testname//'neardistance'; // Replace this with the distance type
 
       var requestBody = jsonEncode({
         'frameData': frameData,
         'test_distance': distanceType,
       });
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken =
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+          prefs.getString('access_token') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
 
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${authToken} ',
           'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
-
+      print("frameData: " + frameData);
+      // print("test_distance :" + distanceType);
+      print("response-camera${response.body}");
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
-
-        print("nnnnnnn$alertMessage");
-        // Handle the response data here
-        print('Request sucxsss with status: ${response.body}');
-        print("alert$alertMessage");
         setState(() {
-          //  alert = alertMessage;
+          alert = alertMessage;
         });
       } else {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
         alert = alertMessage;
-        print('Request failed with status: ${response.statusCode}');
-        print('Request failed with status: ${response.body}');
+        //   print('Request failed with status: ${response.statusCode}');
+        //   print('Request failed with status: ${response.body}');
         setState(() {
           alert = alertMessage;
+          print("alert$alertMessage");
         });
 
         // Handle error response
@@ -836,10 +804,13 @@ class AlphabetTestState extends State<AlphabetTest> {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
             context, 'poor internet connectivity , please try again later!');
+      } else {
+        /* CustomAlertDialog.attractivepopup(
+            context, 'make sure you have proper light on your face ');*/
       }
 
 // If the server returns an error response, throw an exception
-      throw Exception('Failed to send data');
+      //throw Exception('Failed to send data');
     }
   }
 
@@ -848,6 +819,7 @@ class AlphabetTestState extends State<AlphabetTest> {
   String randomText = 'W';
   var len;
   List<Map<String, dynamic>> snellenFractions = [];
+  List<Map<String, dynamic>> oldsnellenFractions = [];
 
   Future<void> getSnellFraction() async {
     try {
@@ -871,6 +843,24 @@ class AlphabetTestState extends State<AlphabetTest> {
         final parsedData = json.decode(response.body);
 // Process the parsed data here
         snellenFractions = List<Map<String, dynamic>>.from(parsedData['data']);
+        /*       snellenFractions = (parsedData['data'] as List).map((item) {
+          double fraction;
+          String fractionStr = item['snellen_fraction'];
+           if (fractionStr.contains('/')) {
+        //  if (fractionStr==) {
+             List<String> parts = fractionStr.split('/');
+             fraction = double.parse(parts[0]) / double.parse(parts[1]);
+            // Handle fractional string
+
+            fraction = 6/6;
+          } else {
+            // Handle decimal string
+            fraction = double.parse(fractionStr);
+          }
+          return {
+            "snellen_fraction": fraction,
+          };
+        }).toList();*/
         len = snellenFractions.length;
         print('Snellen Fractions: $snellenFractions' + "lenght: $len");
       } else {
@@ -936,9 +926,13 @@ class AlphabetTestState extends State<AlphabetTest> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            Icons.play_circle_fill,
-                            color: Colors.bluebutton,
+                          Padding(
+                            padding: EdgeInsets.only(top: 4.0),
+                            child: Image.asset(
+                              'assets/play_circle_fill.png',
+                              width: 50,
+                              height: 40,
+                            ),
                           ),
                           SizedBox(width: 8),
                           // Adjust spacing between icon and text
@@ -984,17 +978,16 @@ class AlphabetTestState extends State<AlphabetTest> {
                     children: [
                       Container(
                         width: 320,
-                        height: 70,
+                        height: 40,
                         padding: EdgeInsets.all(8),
                         child: Text(
                           alert,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 22,
+                            fontSize: 18,
                             color: alert == 'Good to go'
                                 ? Colors.green
                                 : Colors.red,
-                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
@@ -1112,22 +1105,37 @@ class AlphabetTestState extends State<AlphabetTest> {
   }
 
   String? nextFraction;
+
+  // double nextFraction_new=0.0;
   double currentTextSize = 28.0; // Initial text size
 
-  void increaseTextSize() {
+  Future<void> increaseTextSize() async {
     if (currentIndex == 0) {
       print("currentIndex pv inc$currentIndex");
       //currentIndex = snellenFractions.length-1 ;
 
       //currentIndex--;
       int len = snellenFractions.length - 1;
-      // Decrease index by 1 from its last index
+      print("currentIndex pv inc${snellenFractions.length}");
       nextFraction = snellenFractions[len]['snellen_fraction'];
-      print("nahi$nextFraction");
-      List<String>? parts = nextFraction?.split('/');
-      double numerator = double.parse(parts![0]);
-      double denominator = double.parse(parts[1]);
-      double calculatedSize = 20.0 * (numerator / denominator);
+      // Decrease index by 1 from its last index
+      /*    nextFraction_new = snellenFractions[len]['snellen_fraction'];
+      print("nahi$nextFraction_new");*/
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String text = prefs.getString('test') ?? '';
+      double value = 0.0;
+      if (text == 'myopia') {
+        List<String>? parts = nextFraction?.split('/');
+        double numerator = double.parse(parts![0]);
+        double denominator = double.parse(parts[1]);
+        value = (numerator / denominator);
+      } else {
+        value = double.parse(nextFraction!);
+      }
+
+      double calculatedSize = 20.0 * value;
+      //double calculatedSize = 20.0 * nextFraction_new;
+
       currentTextSize = calculatedSize;
     }
     if (currentIndex > 0 && currentIndex <= snellenFractions.length) {
@@ -1139,17 +1147,32 @@ class AlphabetTestState extends State<AlphabetTest> {
       print("currentIndex pv iii$currentIndex");
       // Decrease index by 1 from its last index
       nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
-      print("nahi$nextFraction");
-      List<String>? parts = nextFraction?.split('/');
+/*      print("nahi$nextFraction_new");
+ */
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String text = prefs.getString('test') ?? '';
+      double value = 0.0;
+      if (text == 'myopia') {
+        List<String>? parts = nextFraction?.split('/');
+        double numerator = double.parse(parts![0]);
+        double denominator = double.parse(parts[1]);
+        value = (numerator / denominator);
+      } else {
+        value = double.parse(nextFraction!);
+      }
+      /* List<String>? parts = nextFraction?.split('/');
       double numerator = double.parse(parts![0]);
       double denominator = double.parse(parts[1]);
-      double calculatedSize = 20.0 * (numerator / denominator);
+      double calculatedSize = 20.0 * (numerator / denominator);*/
+
+      double calculatedSize = 20.0 * value;
+
       currentTextSize = calculatedSize;
     }
   }
 
 // Initial index// Initial text size
-  void decreaseTextSize() {
+  Future<void> decreaseTextSize() async {
     if (currentIndex == 0) {
       print("currentIndex pv dec $currentIndex");
       currentIndex = snellenFractions.length - 1;
@@ -1158,10 +1181,26 @@ class AlphabetTestState extends State<AlphabetTest> {
       // Decrease index by 1 from its last index
       nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
       print("nahi$nextFraction");
-      List<String>? parts = nextFraction?.split('/');
+
+      /*     List<String>? parts = nextFraction?.split('/');
       double numerator = double.parse(parts![0]);
       double denominator = double.parse(parts[1]);
-      double calculatedSize = 20.0 * (numerator / denominator);
+      // double calculatedSize = 20.0 * nextFraction_new;
+
+      double calculatedSize = 20.0 * (numerator / denominator);*/
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String text = prefs.getString('test') ?? '';
+      double value = 0.0;
+      if (text == 'myopia') {
+        List<String>? parts = nextFraction?.split('/');
+        double numerator = double.parse(parts![0]);
+        double denominator = double.parse(parts[1]);
+        value = (numerator / denominator);
+      } else {
+        value = double.parse(nextFraction!);
+      }
+      double calculatedSize = 20.0 * value;
+
       currentTextSize = calculatedSize;
     }
     if (currentIndex > 0 && currentIndex <= snellenFractions.length) {
@@ -1174,10 +1213,23 @@ class AlphabetTestState extends State<AlphabetTest> {
 // Decrease index by 1 from its last index
       nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
       print("nahi$nextFraction");
-      List<String>? parts = nextFraction?.split('/');
+      /*  List<String>? parts = nextFraction?.split('/');
       double numerator = double.parse(parts![0]);
       double denominator = double.parse(parts[1]);
-      double calculatedSize = 20.0 * (numerator / denominator);
+      double calculatedSize = 20.0 * (numerator / denominator);*/
+      // double calculatedSize = 20.0 * nextFraction_new;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String text = prefs.getString('test') ?? '';
+      double value = 0.0;
+      if (text == 'myopia') {
+        List<String>? parts = nextFraction?.split('/');
+        double numerator = double.parse(parts![0]);
+        double denominator = double.parse(parts[1]);
+        value = (numerator / denominator);
+      } else {
+        value = double.parse(nextFraction!);
+      }
+      double calculatedSize = 20.0 * value;
       currentTextSize = calculatedSize;
     }
   }
@@ -1308,6 +1360,7 @@ class Reading extends State<ReadingTest> {
     _configureTts();
     _onReplayPressed();
   }
+
   final FlutterTts flutterTts = FlutterTts();
 
   void _configureTts() async {
@@ -1369,67 +1422,63 @@ class Reading extends State<ReadingTest> {
   }
 
   Future<void> sendDistanceRequest(String image) async {
-    var distanceType;
-
     var apiUrl =
         '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
-    /* String base64String = await xFileToBase64(image);*/
-
-    //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
-    String CustomerId = prefs.getString('customer_id') ?? '';
 
+    var distanceType;
     String text = prefs.getString('test') ?? '';
+    print("testTypecam:--" + text);
     if (text == 'myopia') {
       distanceType = 'fardistance';
     } else if (text == 'hyperopia') {
       distanceType = 'neardistance';
-    }
-    try {
-      var frameData = image;
+    } //print('image$image');
 
-      // Replace this with your frame data as a base64 string
-      // var distanceType = 'neardistance'; // Replace this with the distance type
+    try {
+      var frameData =
+          image; // Replace this with your frame data as a base64 string
+      // var distanceType = testname//'neardistance'; // Replace this with the distance type
 
       var requestBody = jsonEncode({
         'frameData': frameData,
         'test_distance': distanceType,
       });
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken =
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
 
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${authToken} ',
           'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
-
+      print("frameData: " + frameData);
+      // print("test_distance :" + distanceType);
+      print("response-camera${response.body}");
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
-
-        print("nnnnnnn$alertMessage");
-        // Handle the response data here
-        print('Request sucxsss with status: ${response.body}');
-        print("alert$alertMessage");
         setState(() {
-          //  alert = alertMessage;
+          alert = alertMessage;
         });
       } else {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
         alert = alertMessage;
-        print('Request failed with status: ${response.statusCode}');
-        print('Request failed with status: ${response.body}');
+        //   print('Request failed with status: ${response.statusCode}');
+        //   print('Request failed with status: ${response.body}');
         setState(() {
           alert = alertMessage;
+          print("alert$alertMessage");
         });
 
         // Handle error response
@@ -1438,18 +1487,23 @@ class Reading extends State<ReadingTest> {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
             context, 'poor internet connectivity , please try again later!');
+      } else {
+        /* CustomAlertDialog.attractivepopup(
+            context, 'make sure you have proper light on your face ');*/
       }
 
 // If the server returns an error response, throw an exception
-      throw Exception('Failed to send data');
+      //throw Exception('Failed to send data');
     }
   }
+
   @override
   void dispose() {
     _controller?.dispose();
     flutterTts.stop();
     super.dispose();
   }
+
   String alert = '';
   String randomText = 'Test';
   var len;
@@ -1502,8 +1556,6 @@ class Reading extends State<ReadingTest> {
       throw Exception('Failed to send data');
     }
   }
-
-
 
 /*  @override
   Widget build(BuildContext context) {
@@ -2158,6 +2210,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
     _configureTts();
     _onReplayPressed();
   }
+
   final FlutterTts flutterTts = FlutterTts();
 
   void _configureTts() async {
@@ -2172,10 +2225,9 @@ class AstigmationTest1 extends State<AstigmationTest> {
 
   void _onReplayPressed() {
     const String replayText =
-    "Focus on the black dot for 10 second. After 10 second look at the lines and click on the region which is more darker than others. Region A, Region B, Region C or Region D. If unable to see the lines clearly, click on Increase or click on decrease till you see any one region darker than others. If you are able to see all regions equally darker then click on option None. Once you select the region, click next";
+        "Focus on the black dot for 10 second. After 10 second look at the lines and click on the region which is more darker than others. Region A, Region B, Region C or Region D. If unable to see the lines clearly, click on Increase or click on decrease till you see any one region darker than others. If you are able to see all regions equally darker then click on option None. Once you select the region, click next";
     _speak(replayText);
   }
-
 
   void startTimer() {
     _timer?.cancel(); // Cancel the previous timer if it exists
@@ -2244,67 +2296,69 @@ class AstigmationTest1 extends State<AstigmationTest> {
   }
 
   Future<void> sendDistanceRequest(String image) async {
-    var distanceType;
-
     var apiUrl =
         '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
-    /* String base64String = await xFileToBase64(image);*/
-
-    //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
-    String CustomerId = prefs.getString('customer_id') ?? '';
 
+    var distanceType;
     String text = prefs.getString('test') ?? '';
+    print("testTypecam:--" + text);
     if (text == 'myopia') {
       distanceType = 'fardistance';
     } else if (text == 'hyperopia') {
       distanceType = 'neardistance';
-    }
-    try {
-      var frameData = image;
+    } //print('image$image');
 
-      // Replace this with your frame data as a base64 string
-      // var distanceType = 'neardistance'; // Replace this with the distance type
+    try {
+      var frameData =
+          image; // Replace this with your frame data as a base64 string
+      // var distanceType = testname//'neardistance'; // Replace this with the distance type
 
       var requestBody = jsonEncode({
         'frameData': frameData,
         'test_distance': distanceType,
       });
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken =
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+          prefs.getString('access_token') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
 
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${authToken} ',
           'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
-
+      print("frameData: " + frameData);
+      // print("test_distance :" + distanceType);
+      print("response-camera${response.body}");
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
 
-        print("nnnnnnn$alertMessage");
+        // print(alertMessage);
         // Handle the response data here
-        print('Request sucxsss with status: ${response.body}');
-        print("alert$alertMessage");
+        //   print('Request sucxsss with status: ${response.body}');
+
+        //  print("alert$alertMessage");
         setState(() {
-          //  alert = alertMessage;
+          alert = alertMessage;
         });
       } else {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
         alert = alertMessage;
-        print('Request failed with status: ${response.statusCode}');
-        print('Request failed with status: ${response.body}');
+        //   print('Request failed with status: ${response.statusCode}');
+        //   print('Request failed with status: ${response.body}');
         setState(() {
           alert = alertMessage;
+          print("alert$alertMessage");
         });
 
         // Handle error response
@@ -2313,10 +2367,13 @@ class AstigmationTest1 extends State<AstigmationTest> {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
             context, 'poor internet connectivity , please try again later!');
+      } else {
+        /* CustomAlertDialog.attractivepopup(
+            context, 'make sure you have proper light on your face ');*/
       }
 
 // If the server returns an error response, throw an exception
-      throw Exception('Failed to send data');
+      //throw Exception('Failed to send data');
     }
   }
 
@@ -2448,20 +2505,24 @@ class AstigmationTest1 extends State<AstigmationTest> {
                           color: Colors.black,
                           fontWeight: FontWeight.bold),
                     ),
-
-                  ),GestureDetector(
+                  ),
+                  GestureDetector(
                     onTap: _onReplayPressed,
                     child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 0,horizontal: 0),
+                      padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(25),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            Icons.play_circle_fill,
-                            color: Colors.bluebutton,
+                          Padding(
+                            padding: EdgeInsets.only(top: 4.0),
+                            child: Image.asset(
+                              'assets/play_circle_fill.png',
+                              width: 50,
+                              height: 40,
+                            ),
                           ),
                           SizedBox(width: 8),
                           // Adjust spacing between icon and text
@@ -2477,7 +2538,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.fromLTRB(10,0, 10,0 ),
+                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                     child: Text(
                       'Choose the part where you can see a more darker line',
                       style: TextStyle(
@@ -2655,7 +2716,11 @@ class Astigmationtest2 extends State<AstigmationTest2> {
   late List<CameraDescription> _cameras;
   String currentImage = ''; //assets/astigmationtest2.png
 
-  @override
+  String alert = '';
+  double imageSize1 = 180;
+  bool increasing = false;
+  Timer? _timer;
+
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
@@ -2699,67 +2764,69 @@ class Astigmationtest2 extends State<AstigmationTest2> {
   }
 
   Future<void> sendDistanceRequest(String image) async {
-    var distanceType;
-
     var apiUrl =
         '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
-    /* String base64String = await xFileToBase64(image);*/
-
-    //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
-    String CustomerId = prefs.getString('customer_id') ?? '';
 
+    var distanceType;
     String text = prefs.getString('test') ?? '';
+    print("testTypecam:--" + text);
     if (text == 'myopia') {
       distanceType = 'fardistance';
     } else if (text == 'hyperopia') {
       distanceType = 'neardistance';
-    }
-    try {
-      var frameData = image;
+    } //print('image$image');
 
-      // Replace this with your frame data as a base64 string
-      // var distanceType = 'neardistance'; // Replace this with the distance type
+    try {
+      var frameData =
+          image; // Replace this with your frame data as a base64 string
+      // var distanceType = testname//'neardistance'; // Replace this with the distance type
 
       var requestBody = jsonEncode({
         'frameData': frameData,
         'test_distance': distanceType,
       });
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken =
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+          prefs.getString('access_token') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
 
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${authToken} ',
           'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
-
+      print("frameData: " + frameData);
+      // print("test_distance :" + distanceType);
+      print("response-camera${response.body}");
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
 
-        print("nnnnnnn$alertMessage");
+        // print(alertMessage);
         // Handle the response data here
-        print('Request sucxsss with status: ${response.body}');
-        print("alert$alertMessage");
+        //   print('Request sucxsss with status: ${response.body}');
+
+        //  print("alert$alertMessage");
         setState(() {
-          //  alert = alertMessage;
+          alert = alertMessage;
         });
       } else {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
         alert = alertMessage;
-        print('Request failed with status: ${response.statusCode}');
-        print('Request failed with status: ${response.body}');
+        //   print('Request failed with status: ${response.statusCode}');
+        //   print('Request failed with status: ${response.body}');
         setState(() {
           alert = alertMessage;
+          print("alert$alertMessage");
         });
 
         // Handle error response
@@ -2768,17 +2835,15 @@ class Astigmationtest2 extends State<AstigmationTest2> {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
             context, 'poor internet connectivity , please try again later!');
+      } else {
+        /* CustomAlertDialog.attractivepopup(
+            context, 'make sure you have proper light on your face ');*/
       }
 
 // If the server returns an error response, throw an exception
-      throw Exception('Failed to send data');
+      //throw Exception('Failed to send data');
     }
   }
-
-  String alert = '';
-  double imageSize1 = 180;
-  bool increasing = false;
-  Timer? _timer;
 
 // Replace this with your PUT request body
   @override
@@ -2794,6 +2859,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
     _configureTts();
     _onReplayPressed();
   }
+
   final FlutterTts flutterTts = FlutterTts();
 
   void _configureTts() async {
@@ -2808,7 +2874,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
 
   void _onReplayPressed() {
     const String replayText =
-    "Focus on the black dot for 10 second. After 10 second look at the lines and click on the region which is more darker than others. Region A, Region B, Region C or Region D. If unable to see the lines clearly, click on Increase or click on decrease till you see any one region darker than others. If you are able to see all regions equally darker then click on option None. Once you select the region, click next";
+        "Focus on the black dot for 10 second. After 10 second look at the lines and click on the region which is more darker than others. Region A, Region B, Region C or Region D. If unable to see the lines clearly, click on Increase or click on decrease till you see any one region darker than others. If you are able to see all regions equally darker then click on option None. Once you select the region, click next";
     _speak(replayText);
   }
 
@@ -2918,12 +2984,12 @@ class Astigmationtest2 extends State<AstigmationTest2> {
           prefs.getString('access_token') ?? '';
       String test_id = prefs.getString('test_id') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
-      String apiUrl = '${Api.baseurl}/api/eye/choose-degree-api/';
+      String apiUrl = '${Api.baseurl}/api/eye/choose-degree-api';
       Map<String, dynamic> body1 = {
         'test_id': test_id,
         "degree": value,
       };
-
+      print("degree_choosen$body1");
       final response = await http.put(
         Uri.parse(apiUrl),
         headers: {
@@ -2933,6 +2999,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
         },
         body: jsonEncode(body1),
       );
+      print("degree_choosssssssssen$response");
       print("choseastigmation_response" + response.body);
       if (response.statusCode == 200) {
         /**Navigator.push(
@@ -3246,19 +3313,25 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                               color: Colors.black,
                               fontWeight: FontWeight.bold),
                         ),
-                      ),GestureDetector(
+                      ),
+                      GestureDetector(
                         onTap: _onReplayPressed,
                         child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 10),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(25),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(
-                                Icons.play_circle_fill,
-                                color: Colors.bluebutton,
+                              Padding(
+                                padding: EdgeInsets.only(top: 4.0),
+                                child: Image.asset(
+                                  'assets/play_circle_fill.png',
+                                  width: 50,
+                                  height: 40,
+                                ),
                               ),
                               SizedBox(width: 8),
                               // Adjust spacing between icon and text
@@ -3413,7 +3486,6 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: Container(
-
                         decoration: BoxDecoration(
                           // Adjust colors as needed
                           color: Colors.bluebutton,
@@ -3496,6 +3568,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
     _configureTts();
     _onReplayPressed();
   }
+
   final FlutterTts flutterTts = FlutterTts();
 
   void _configureTts() async {
@@ -3510,7 +3583,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
 
   void _onReplayPressed() {
     const String replayText =
-    "Focus on the black dot for 10 second. After 10 second look at the lines and click on the degree option which is more darker than others. If unable to see the lines clearly, click on Increase or click on decrease till you see any one line darker than others. Once you select the degree, click next" ;
+        "Focus on the black dot for 10 second. After 10 second look at the lines and click on the degree option which is more darker than others. If unable to see the lines clearly, click on Increase or click on decrease till you see any one line darker than others. Once you select the degree, click next";
     _speak(replayText);
   }
 
@@ -3581,67 +3654,69 @@ class AstigmationTestNone extends State<AstigmationTest3> {
   }
 
   Future<void> sendDistanceRequest(String image) async {
-    var distanceType;
-
     var apiUrl =
         '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
-    /* String base64String = await xFileToBase64(image);*/
-
-    //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
-    String CustomerId = prefs.getString('customer_id') ?? '';
 
+    var distanceType;
     String text = prefs.getString('test') ?? '';
+    print("testTypecam:--" + text);
     if (text == 'myopia') {
       distanceType = 'fardistance';
     } else if (text == 'hyperopia') {
       distanceType = 'neardistance';
-    }
-    try {
-      var frameData = image;
+    } //print('image$image');
 
-      // Replace this with your frame data as a base64 string
-      // var distanceType = 'neardistance'; // Replace this with the distance type
+    try {
+      var frameData =
+          image; // Replace this with your frame data as a base64 string
+      // var distanceType = testname//'neardistance'; // Replace this with the distance type
 
       var requestBody = jsonEncode({
         'frameData': frameData,
         'test_distance': distanceType,
       });
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken =
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+          prefs.getString('access_token') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
 
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${authToken} ',
           'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
-
+      print("frameData: " + frameData);
+      // print("test_distance :" + distanceType);
+      print("response-camera${response.body}");
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
 
-        print("nnnnnnn$alertMessage");
+        // print(alertMessage);
         // Handle the response data here
-        print('Request sucxsss with status: ${response.body}');
-        print("alert$alertMessage");
+        //   print('Request sucxsss with status: ${response.body}');
+
+        //  print("alert$alertMessage");
         setState(() {
-          //  alert = alertMessage;
+          alert = alertMessage;
         });
       } else {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
         alert = alertMessage;
-        print('Request failed with status: ${response.statusCode}');
-        print('Request failed with status: ${response.body}');
+        //   print('Request failed with status: ${response.statusCode}');
+        //   print('Request failed with status: ${response.body}');
         setState(() {
           alert = alertMessage;
+          print("alert$alertMessage");
         });
 
         // Handle error response
@@ -3650,10 +3725,13 @@ class AstigmationTestNone extends State<AstigmationTest3> {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
             context, 'poor internet connectivity , please try again later!');
+      } else {
+        /* CustomAlertDialog.attractivepopup(
+            context, 'make sure you have proper light on your face ');*/
       }
 
 // If the server returns an error response, throw an exception
-      throw Exception('Failed to send data');
+      //throw Exception('Failed to send data');
     }
   }
 
@@ -4273,16 +4351,21 @@ class AstigmationTestNone extends State<AstigmationTest3> {
                               GestureDetector(
                                 onTap: _onReplayPressed,
                                 child: Container(
-                                  padding: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 10),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(25),
                                   ),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(
-                                        Icons.play_circle_fill,
-                                        color: Colors.bluebutton,
+                                      Padding(
+                                        padding: EdgeInsets.only(top: 4.0),
+                                        child: Image.asset(
+                                          'assets/play_circle_fill.png',
+                                          width: 50,
+                                          height: 40,
+                                        ),
                                       ),
                                       SizedBox(width: 8),
                                       // Adjust spacing between icon and text
@@ -4505,6 +4588,7 @@ class _ShadowTestState extends State<ShadowTest> {
     _configureTts();
     _onReplayPressed();
   }
+
   final FlutterTts flutterTts = FlutterTts();
 
   void _configureTts() async {
@@ -4519,10 +4603,9 @@ class _ShadowTestState extends State<ShadowTest> {
 
   void _onReplayPressed() {
     const String replayText =
-    "you are doing well. Now we are at a crucial part of the eye test. In this test you will observe a small letter with a shadow and with increase in size of the letter the shadow will starts to decrease. You will encounter a point where the letter will appear better than the first time you saw the letter. Please select that state and then press Next. For clear instruction and visual example click on ‘?’ icon at the top of the screen. Start by clicking on increase or decrease. When done click on next.";
+        "you are doing well. Now we are at a crucial part of the eye test. In this test you will observe a small letter with a shadow and with increase in size of the letter the shadow will starts to decrease. You will encounter a point where the letter will appear better than the first time you saw the letter. Please select that state and then press Next. For clear instruction and visual example click on ‘?’ icon at the top of the screen. Start by clicking on increase or decrease. When done click on next.";
     _speak(replayText);
   }
-
 
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
@@ -4567,67 +4650,69 @@ class _ShadowTestState extends State<ShadowTest> {
   }
 
   Future<void> sendDistanceRequest(String image) async {
-    var distanceType;
-
     var apiUrl =
         '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
-    /* String base64String = await xFileToBase64(image);*/
-
-    //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
-    String CustomerId = prefs.getString('customer_id') ?? '';
 
+    var distanceType;
     String text = prefs.getString('test') ?? '';
+    print("testTypecam:--" + text);
     if (text == 'myopia') {
       distanceType = 'fardistance';
     } else if (text == 'hyperopia') {
       distanceType = 'neardistance';
-    }
-    try {
-      var frameData = image;
+    } //print('image$image');
 
-      // Replace this with your frame data as a base64 string
-      // var distanceType = 'neardistance'; // Replace this with the distance type
+    try {
+      var frameData =
+          image; // Replace this with your frame data as a base64 string
+      // var distanceType = testname//'neardistance'; // Replace this with the distance type
 
       var requestBody = jsonEncode({
         'frameData': frameData,
         'test_distance': distanceType,
       });
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken =
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+          prefs.getString('access_token') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
 
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${authToken} ',
           'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
-
+      print("frameData: " + frameData);
+      // print("test_distance :" + distanceType);
+      print("response-camera${response.body}");
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
 
-        print("nnnnnnn$alertMessage");
+        // print(alertMessage);
         // Handle the response data here
-        print('Request sucxsss with status: ${response.body}');
-        print("alert$alertMessage");
+        //   print('Request sucxsss with status: ${response.body}');
+
+        //  print("alert$alertMessage");
         setState(() {
-          //  alert = alertMessage;
+          alert = alertMessage;
         });
       } else {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
         alert = alertMessage;
-        print('Request failed with status: ${response.statusCode}');
-        print('Request failed with status: ${response.body}');
+        //   print('Request failed with status: ${response.statusCode}');
+        //   print('Request failed with status: ${response.body}');
         setState(() {
           alert = alertMessage;
+          print("alert$alertMessage");
         });
 
         // Handle error response
@@ -4636,18 +4721,23 @@ class _ShadowTestState extends State<ShadowTest> {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
             context, 'poor internet connectivity , please try again later!');
+      } else {
+        /* CustomAlertDialog.attractivepopup(
+            context, 'make sure you have proper light on your face ');*/
       }
 
 // If the server returns an error response, throw an exception
-      throw Exception('Failed to send data');
+      //throw Exception('Failed to send data');
     }
   }
+
   @override
   void dispose() {
     _controller?.dispose();
     flutterTts.stop();
     super.dispose();
   }
+
   String alert = '';
   String dynamicText = 'A';
   double currentTextSize = 15.118110236220474; //4-29
@@ -4671,8 +4761,6 @@ class _ShadowTestState extends State<ShadowTest> {
   }
 
   bool isCameraInitialized = false;
-
-
 
 /*
   @override
@@ -4870,16 +4958,21 @@ class _ShadowTestState extends State<ShadowTest> {
                     GestureDetector(
                       onTap: _onReplayPressed,
                       child: Container(
-                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(25),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              Icons.play_circle_fill,
-                              color: Colors.bluebutton,
+                            Padding(
+                              padding: EdgeInsets.only(top: 4.0),
+                              child: Image.asset(
+                                'assets/play_circle_fill.png',
+                                width: 50,
+                                height: 40,
+                              ),
                             ),
                             SizedBox(width: 8),
                             Text(
@@ -4895,7 +4988,7 @@ class _ShadowTestState extends State<ShadowTest> {
                     ),
                     SizedBox(height: 20), // Add some space after the button
                     Padding(
-                      padding: const EdgeInsets.only(top:90.0),
+                      padding: const EdgeInsets.only(top: 90.0),
                       child: Container(
                         width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.height * 0.4,
@@ -4963,7 +5056,8 @@ class _ShadowTestState extends State<ShadowTest> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 20,
-                          color: alert == 'Good to go' ? Colors.green : Colors.red,
+                          color:
+                              alert == 'Good to go' ? Colors.green : Colors.red,
                           fontWeight: FontWeight.normal,
                         ),
                       ),
@@ -4978,8 +5072,8 @@ class _ShadowTestState extends State<ShadowTest> {
                 child: _controller != null
                     ? CameraPreview(_controller!)
                     : Container(
-                  color: Colors.black,
-                ),
+                        color: Colors.black,
+                      ),
               ),
             ],
           ),
@@ -5011,8 +5105,6 @@ class _ShadowTestState extends State<ShadowTest> {
       ),
     );
   }
-
-
 
   Future<void> CylTestApi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -5067,7 +5159,9 @@ class RedGreenTest extends StatefulWidget {
 
 class redgreen extends State<RedGreenTest> {
   CameraController? _controller;
+  late Future<void> _initializeControllerFuture;
   late List<CameraDescription> _cameras;
+  bool _isCapturing = false;
 
   @override
   void initState() {
@@ -5077,7 +5171,9 @@ class redgreen extends State<RedGreenTest> {
     _configureTts();
     _onReplayPressed();
   }
+
   final FlutterTts flutterTts = FlutterTts();
+  late Future<void> _captureProcess;
 
   void _configureTts() async {
     await flutterTts.setLanguage("en-US");
@@ -5091,10 +5187,11 @@ class redgreen extends State<RedGreenTest> {
 
   void _onReplayPressed() {
     const String replayText =
-    "Thanks for going through the test. We are now going to show you random letters basis your test results on a red and green background. You have to observe and tell in which colour do you see letters more better.You only need to identify and tell which colour background is better than the other. Lets start the test. if more than 2 times same colour chosen We recommend you to redo the test and follow all instructions correctly";
-        _speak(replayText);
+        "Thanks for going through the test. We are now going to show you random letters basis your test results on a red and green background. You have to observe and tell in which colour do you see letters more better.You only need to identify and tell which colour background is better than the other. Lets start the test. if more than 2 times same colour chosen We recommend you to redo the test and follow all instructions correctly";
+    _speak(replayText);
   }
 
+/*
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
@@ -5112,10 +5209,10 @@ class redgreen extends State<RedGreenTest> {
       setState(() {});
     }
     // Start capturing images per second
-    _captureImagePerSecond();
+    _captureProcess = _captureImagePerSecond();
   }
 
-  void _captureImagePerSecond() async {
+  _captureImagePerSecond() async {
     // Capture an image every second
     while (true) {
       XFile? image = await _controller
@@ -5136,69 +5233,115 @@ class redgreen extends State<RedGreenTest> {
     String photoAsBase64 = convert.base64Encode(photoAsBytes);
     sendDistanceRequest(photoAsBase64);
   }
+*/
+  Future<void> _initializeCamera() async {
+    _cameras = await availableCameras();
+    CameraDescription? frontCamera = _cameras!.firstWhere(
+          (camera) => camera.lensDirection == CameraLensDirection.front,
+      orElse: () => _cameras!.isEmpty ? throw 'No camera available' : _cameras![0],
+    );
 
+    _controller = CameraController(frontCamera, ResolutionPreset.medium);
+
+    _initializeControllerFuture = _controller!.initialize();
+
+    try {
+      await _initializeControllerFuture;
+      if (mounted) {
+        setState(() {
+          _isCapturing = true;
+          _captureProcess = _captureImagePerSecond();
+        });
+      }
+    } catch (e) {
+      print('Error initializing camera: $e');
+    }
+  }
+
+  Future<void> _captureImagePerSecond() async {
+    while (_isCapturing) {
+      try {
+        XFile image = await _controller!.takePicture();
+        print('Image captured: ${image.path}');
+        capturePhoto(image);
+        await Future.delayed(Duration(seconds: 1));
+      } catch (e) {
+        if (_isCapturing) {
+          print('Error capturing image: $e');
+        }
+      }
+    }
+  }
+
+  void capturePhoto(XFile photo) async {
+    List<int> photoAsBytes = await photo.readAsBytes();
+    String photoAsBase64 = base64Encode(photoAsBytes);
+    sendDistanceRequest(photoAsBase64);
+  }
   Future<void> sendDistanceRequest(String image) async {
-    var distanceType;
-
     var apiUrl =
         '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
-    /* String base64String = await xFileToBase64(image);*/
-
-    //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
-    String CustomerId = prefs.getString('customer_id') ?? '';
 
+    var distanceType;
     String text = prefs.getString('test') ?? '';
+    print("testTypecam:--" + text);
     if (text == 'myopia') {
       distanceType = 'fardistance';
     } else if (text == 'hyperopia') {
       distanceType = 'neardistance';
-    }
-    try {
-      var frameData = image;
+    } //print('image$image');
 
-      // Replace this with your frame data as a base64 string
-      // var distanceType = 'neardistance'; // Replace this with the distance type
+    try {
+      var frameData =
+          image; // Replace this with your frame data as a base64 string
+      // var distanceType = testname//'neardistance'; // Replace this with the distance type
 
       var requestBody = jsonEncode({
         'frameData': frameData,
         'test_distance': distanceType,
       });
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken =
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+          prefs.getString('access_token') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
 
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${authToken} ',
           'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
-
+      print("frameData: " + frameData);
+      // print("test_distance :" + distanceType);
+      print("response-camera${response.body}");
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
 
-        print("nnnnnnn$alertMessage");
+        // print(alertMessage);
         // Handle the response data here
-        print('Request sucxsss with status: ${response.body}');
-        print("alert$alertMessage");
+        //   print('Request sucxsss with status: ${response.body}');
+
+        //  print("alert$alertMessage");
         setState(() {
-          //  alert = alertMessage;
+          alert = alertMessage;
         });
       } else {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
         alert = alertMessage;
-        print('Request failed with status: ${response.statusCode}');
-        print('Request failed with status: ${response.body}');
+        //   print('Request failed with status: ${response.statusCode}');
+        //   print('Request failed with status: ${response.body}');
         setState(() {
           alert = alertMessage;
+          print("alert$alertMessage");
         });
 
         // Handle error response
@@ -5207,18 +5350,24 @@ class redgreen extends State<RedGreenTest> {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
             context, 'poor internet connectivity , please try again later!');
+      } else {
+        /* CustomAlertDialog.attractivepopup(
+            context, 'make sure you have proper light on your face ');*/
       }
 
 // If the server returns an error response, throw an exception
-      throw Exception('Failed to send data');
+      //throw Exception('Failed to send data');
     }
   }
+
   @override
   void dispose() {
+    _isCapturing = false;
     _controller?.dispose();
     flutterTts.stop();
     super.dispose();
   }
+
   String alert = '';
   Map<String, dynamic> _data = {};
   static String action = "";
@@ -5423,13 +5572,13 @@ class redgreen extends State<RedGreenTest> {
                 await prefs.setString('page', "redgreen");
                 Navigator.push(
                     context,
-                    CupertinoPageRoute(
+                    MaterialPageRoute(
                         builder: (context) => const TestReport()));
               } else {
                 // Otherwise, navigate to the next appropriate screen
                 Navigator.push(
                   context,
-                  CupertinoPageRoute(builder: (context) => ReadingTest()),
+                  MaterialPageRoute(builder: (context) => ReadingTest()),
                 );
               }
             }
@@ -5437,64 +5586,18 @@ class redgreen extends State<RedGreenTest> {
             if (age >= 40) {
               Navigator.push(
                 context,
-                CupertinoPageRoute(builder: (context) => ReadingTest()),
+                MaterialPageRoute(builder: (context) => ReadingTest()),
               );
             } else {
               Navigator.push(
                 context,
-                CupertinoPageRoute(builder: (context) => RightEye()),
+                MaterialPageRoute(builder: (context) => RightEye()),
               );
             }
           }
         } else {
           print("Invalid response format or missing 'eye_status' field.");
         }
-
-        /*Map<String, dynamic> jsonResponseMap = json.decode(response.body);
-
-        // Extracting age
-
-        if (jsonResponseMap.containsKey("data") &&
-            jsonResponseMap["data"].containsKey("data") &&
-            jsonResponseMap["data"]["data"].containsKey("eye_status")) {
-          String eyeStatus = jsonResponseMap["data"]["data"]["eye_status"];
-          String patientName = jsonResponseMap["data"]["data"]["full_name"];
-          String patientAge = jsonResponseMap["data"]["user_age"];
-          int age = int.parse(patientAge);
-          print("123123age$age");
-          if (eyeStatus == "right") {
-            if (age >= 40) {
-              Navigator.push(
-                context,
-                CupertinoPageRoute(builder: (context) => ReadingTest()),
-              );
-            } else {
-              Future.delayed(Duration(seconds: 1), () {
-                CustomAlertDialog.attractivepopup(
-                    context, 'You Have Successfully Completed Eyetest.....');
-              });
-              SharedPreferences prefs = await SharedPreferences.getInstance();
-              await prefs.setString('page', "redgreen");
-              // getActivePlan();
-              Navigator.push(context,
-                  CupertinoPageRoute(builder: (context) => const TestReport()));
-            }
-          } else {
-            if (age > 40) {
-              Navigator.push(
-                context,
-                CupertinoPageRoute(builder: (context) => ReadingTest()),
-              );
-            } else {
-              Navigator.push(
-                context,
-                CupertinoPageRoute(builder: (context) => RightEye()),
-              );
-            }
-          }
-        } else {
-          print("Invalid response format or missing 'eye_status' field.");
-        }*/
       }
     } catch (e) {
       if (e is SocketException) {
@@ -5507,9 +5610,7 @@ class redgreen extends State<RedGreenTest> {
     }
   }
 
-
-
-  bool _isCameraVisible = true;
+  final bool _isCameraVisible = true;
 
   @override
   Widget build(BuildContext context) {
@@ -5549,16 +5650,21 @@ class redgreen extends State<RedGreenTest> {
                     child: GestureDetector(
                       onTap: _onReplayPressed,
                       child: Container(
-                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(25),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              Icons.play_circle_fill,
-                              color: Colors.bluebutton,
+                            Padding(
+                              padding: EdgeInsets.only(top: 4.0),
+                              child: Image.asset(
+                                'assets/play_circle_fill.png',
+                                width: 50,
+                                height: 40,
+                              ),
                             ),
                             SizedBox(width: 8),
                             Text(
@@ -5699,14 +5805,15 @@ class RightEye extends StatefulWidget {
   @override
   RightEyeState createState() => RightEyeState();
 }
-class RightEyeState extends State<RightEye> {
 
+class RightEyeState extends State<RightEye> {
   @override
   void initState() {
     super.initState();
     _configureTts();
     _onReplayPressed();
   }
+
   final FlutterTts flutterTts = FlutterTts();
 
   void _configureTts() async {
@@ -5721,7 +5828,7 @@ class RightEyeState extends State<RightEye> {
 
   void _onReplayPressed() {
     const String replayText =
-    "We will start by testing your right eye. Please place your right hand palm on your right eye gently covering the eye. At any time do not put pressure on the eye or squint to see. Start by clicking on button right Eye";
+        "We will start by testing your right eye. Please place your right hand palm on your right eye gently covering the eye. At any time do not put pressure on the eye or squint to see. Start by clicking on button right Eye";
     _speak(replayText);
   }
 
@@ -5757,9 +5864,13 @@ class RightEyeState extends State<RightEye> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(
-                                Icons.play_circle_fill,
-                                color: Colors.bluebutton,
+                              Padding(
+                                padding: EdgeInsets.only(top: 4.0),
+                                child: Image.asset(
+                                  'assets/play_circle_fill.png',
+                                  width: 50,
+                                  height: 40,
+                                ),
                               ),
                               SizedBox(width: 8),
                               // Adjust spacing between icon and text
@@ -5774,9 +5885,8 @@ class RightEyeState extends State<RightEye> {
                           ),
                         ),
                       ),
-                       Center(
-                        child:
-                        Padding(
+                      Center(
+                        child: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 10.0),
                           child: Text(
                             'Eye Test Instructions for Optimal Results',
@@ -5819,7 +5929,7 @@ class RightEyeState extends State<RightEye> {
                 padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
                 child: ElevatedButton(
                   onPressed: () {
-                    select_eye_for_test('right',context);
+                    select_eye_for_test('right', context);
                   },
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
@@ -6022,7 +6132,7 @@ void showCustomToast(BuildContext context, String message) {
       ),
     ),
   );
-  Overlay.of(context)?.insert(overlayEntry);
+  Overlay.of(context).insert(overlayEntry);
 // Remove the toast after 2 seconds
   Future.delayed(Duration(seconds: 2), () {
     overlayEntry.remove();
