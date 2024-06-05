@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:http/http.dart' as http;
 import 'package:project_new/digitalEyeTest/testScreen.dart';
 import 'dart:convert';
@@ -11,8 +12,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert' as convert;
 import 'package:image_picker/image_picker.dart';
 
-import 'Custom_navbar/customDialog.dart';
-import 'api/Api.dart';
+import '../Custom_navbar/customDialog.dart';
+import '../api/Api.dart';
 
 
 class Camara extends StatelessWidget {
@@ -48,6 +49,24 @@ class _CameraScreenState extends State<CameraS> {
   void initState() {
     super.initState();
     _initializeCamera();
+    _configureTts();
+    _onReplayPressed();
+  }
+  final FlutterTts flutterTts = FlutterTts();
+
+
+  void _configureTts() async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.speak(text);
+  }
+  void _onReplayPressed() {
+    const String replayText = "Maintain the screen brightness at 50% throughout the eye test. Keep the device on a stable surface at the eye level. Keep the device at the recommended distance, for this follow the onscreen instructions throughout the eye test. Only move your face Move forward or backward till the time you see good to go sign on screen. Do not disturb or move the device from its position during the eye test. Are you ready? Let’s start the test. Please click on Start Eye Test Now.";
+    _speak(replayText);
   }
 
   Future<void> _initializeCamera() async {
@@ -94,7 +113,7 @@ class _CameraScreenState extends State<CameraS> {
   }
 
   String alert = '';
-
+/*
   @override
   Widget build(BuildContext context) {
     if (!_isCameraInitialized) {
@@ -120,8 +139,9 @@ class _CameraScreenState extends State<CameraS> {
             },
           ),
         ),
-        body: Container(
-          child: Center(
+
+        body:
+        Center(
             child: Padding(
               padding: const EdgeInsets.only(bottom: 50.0), // Adjust this value as needed
               child: Column(
@@ -193,8 +213,147 @@ class _CameraScreenState extends State<CameraS> {
               ),
             ),
           ),
-        ),
+      ),
+    );
+  }*/
 
+  @override
+  Widget build(BuildContext context) {
+    if (!_isCameraInitialized) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => GiveInfo()),
+        );
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("EYE TEST"),
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+            onPressed: () {
+              // Add your back button functionality here
+            },
+          ),
+        ),
+        body: Column(
+          children: [
+            GestureDetector(
+              onTap: _onReplayPressed,
+              child: Container(
+                padding: EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 4.0),
+                      child: Image.asset(
+                        'assets/play_circle_fill.png',
+                        width: 50,
+                        height: 40,
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    // Adjust spacing between icon and text
+                    Text(
+                      'Replay Audio',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 50.0), // Adjust this value as needed
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 1),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          SizedBox(height: 90),
+                          Container(
+                            width: 320,
+                            height: 40,
+                            padding: EdgeInsets.all(8),
+                            child: Text(
+                              alert,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: alert == 'Good to go' ? Colors.green : Colors.red,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: 180,
+                            height: 200,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: alert == 'Good to go' ? Colors.green : Colors.red,
+                                width: 2,
+                              ),
+                            ),
+                            child: ClipRect(
+                              child: FittedBox(
+                                fit: BoxFit.cover,
+                                child: SizedBox(
+                                  width: _controller.value.previewSize?.height,
+                                  height: _controller.value.previewSize?.width,
+                                  child: CameraPreview(_controller),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.all(20),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  CupertinoPageRoute(builder: (context) => LeftEyeTest()),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor: Colors.bluebutton,
+                                padding: EdgeInsets.all(16),
+                                minimumSize: Size(200, 30),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                              ),
+                              child: Text('Start Test Now'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            // Replay audio button below app bar
+
+          ],
+        ),
       ),
     );
   }
@@ -271,6 +430,7 @@ class _CameraScreenState extends State<CameraS> {
         //   print('Request failed with status: ${response.body}');
         setState(() {
           alert = alertMessage;
+          print("alert$alertMessage");
         });
 
         // Handle error response

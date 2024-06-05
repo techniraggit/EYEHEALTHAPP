@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'dart:io';
-
 import 'package:camera/camera.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
@@ -19,11 +18,8 @@ import 'dart:convert' as convert;
 
 import '../Custom_navbar/customDialog.dart';
 import '../api/Api.dart';
-import '../camara.dart';
+import 'camara.dart';
 import 'TestReport.dart';
-import '../../myPlanPage.dart';
-
-import 'package:flutter_svg/flutter_svg.dart';
 
 class GiveInfo extends StatefulWidget {
   @override
@@ -57,16 +53,177 @@ class SelectQuestion extends State<GiveInfo> {
   void initState() {
     super.initState();
     _questionsFuture = getQuestionApi();
+    _configureTts();
+    _onReplayPressed();
   }
 
   @override
   void dispose() {
     // Dispose of the progress dialog when the state is disposed
     _progressDialog?.hide();
+    flutterTts.stop();
     super.dispose();
   }
 
+  final FlutterTts flutterTts = FlutterTts();
+
+  void _configureTts() async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.speak(text);
+  }
+
+  void _onReplayPressed() {
+    const String replayText =
+        "Please read and answer the below questions to the best of your understanding. Your response will help us conduct the eye test effectively. All questions are mandatory.";
+    _speak(replayText);
+  }
+
   @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("EYE TEST"),
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+            onPressed: () {
+              // Add your back button functionality here
+            },
+          ),
+        ),
+        body: Stack(
+          children: [
+            FutureBuilder<List<Question>>(
+              future: _questionsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No questions available'));
+                } else {
+                  return SingleChildScrollView(
+                    padding: EdgeInsets.only(bottom: 50),
+                    // Add padding to avoid button overlap
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              GestureDetector(
+                                onTap: _onReplayPressed,
+                                child: Container(
+                                  padding: EdgeInsets.only(bottom: 10),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(top: 4.0),
+                                        child: Image.asset(
+                                          'assets/play_circle_fill.png',
+                                          width: 50,
+                                          height: 40,
+                                        ),
+                                      ),
+                                      SizedBox(width: 8),
+                                      // Adjust spacing between icon and text
+                                      Text(
+                                        'Replay Audio',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                'Welcome to Eye Health',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.bluebutton,
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 40),
+                                child: Text(
+                                  'Are you wearing Eyeglasses or Contact Lenses for Vision Correction Faces, or Sightseeing?',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.black,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              // Dynamically create QuestionCheckbox widgets based on fetched questions
+                              for (var question in snapshot.data!) ...[
+                                QuestionCheckbox(
+                                  questionId: question.id,
+                                  questionText: question.questionText,
+                                  onChanged: (bool? value) {
+                                    _onCheckboxChanged(value, question.id);
+                                  },
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              },
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(10, 10, 0, 10),
+                child: ElevatedButton(
+                  onPressed: () {
+                    submitApi();
+                  },
+                  child: Text('Next'),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Color(0xFF5900D9),
+                    padding: EdgeInsets.all(6),
+                    minimumSize: Size(MediaQuery.of(context).size.width, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(26),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+/*  @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
@@ -174,67 +331,8 @@ class SelectQuestion extends State<GiveInfo> {
         ),
       ),
     );
-  }
-
-/*  Future<void> getQuestionApi() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-    prefs.getString('access_token') ?? '';
-    String customer=
-        prefs.getString('customer_id') ?? '';
-
-    var headers = {
-      'Authorization': 'Bearer $authToken',
-      'Customer-Id' : customer,
-      // Remove or modify Content-Type header here
-      'Content-Type': 'application/json',
-    };
-    try {
-      // Update message while API call is in progress
-      //  _progressDialog!.update(message: 'please wait...');
-
-      http.Response response = await http.get(
-        Uri.parse('${Api.baseurl}/api/eye/get-question-details'),
-        headers: headers,
-      );
-      print(headers);
-
-      if (response.statusCode == 200) {
-        // _progressDialog!.hide();
-        print(response.body);
-
-        List<Question> parseQuestions(String responseBody) {
-          final parsed = jsonDecode(responseBody);
-          final List<dynamic> data = parsed['data'];
-
-          return data.map<Question>((json) {
-            // Assign custom names like "qst1", "qst2", etc., to the questions
-            final customName = 'qst${json['id']}';
-            return Question(id: json['id'], questionText: json['question_text']);
-          }).toList();
-      }} else {
-        // _progressDialog!.hide();
-
-        CustomAlertDialog.attractivepopupnodelay(
-            context, 'Please answer the questions carefully');
-// Map<String, dynamic> parsedJson = json.decode(response.body);
-        print(response.reasonPhrase);
-      }
-    } catch (e) {
-      // _progressDialog!.hide();
-
-      if (e is SocketException) {
-        CustomAlertDialog.attractivepopupnodelay(
-            context, 'poor internet connectivity , please try again later!');
-      }
-
-// If the server returns an error response, throw an exception
-      //  throw Exception('Failed to send data');
-    } finally {
-      //  _progressDialog!.hide();
-    }
-    // _progressDialog!.hide();
   }*/
+
   Future<List<Question>> getQuestionApi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken = prefs.getString('access_token') ?? '';
@@ -351,6 +449,31 @@ class LeftEyeTest extends StatefulWidget {
 
 class LeftEyeTestState extends State<LeftEyeTest> {
   @override
+  void initState() {
+    super.initState();
+    _configureTts();
+    _onReplayPressed();
+  }
+
+  final FlutterTts flutterTts = FlutterTts();
+
+  void _configureTts() async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.speak(text);
+  }
+
+  void _onReplayPressed() {
+    const String replayText =
+        "We will start by testing your left eye. Please place your left hand palm on your left eye gently covering the eye. At any time do not put pressure on the eye or squint to see. Start by clicking on button Left Eye.";
+    _speak(replayText);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -365,24 +488,47 @@ class LeftEyeTestState extends State<LeftEyeTest> {
       ),
       body: Stack(
         children: [
-          Container(
-            decoration: BoxDecoration(
-                /*    image: DecorationImage(
-                    image: AssetImage('assets/test.png'),
-                    // Replace with your image
-                    fit: BoxFit.cover,
-                  ),*/
-                ),
-          ),
           Column(
             children: [
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      const Center(
+                      GestureDetector(
+                        onTap: _onReplayPressed,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(top: 4.0),
+                                child: Image.asset(
+                                  'assets/play_circle_fill.png',
+                                  width: 50,
+                                  height: 40,
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              // Adjust spacing between icon and text
+                              Text(
+                                'Replay Audio',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Center(
                         child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10.0),
+                          padding: EdgeInsets.fromLTRB(10, 10, 10.0, 0),
                           child: Text(
                             'Eye Test Instructions for Optimal Results',
                             style: TextStyle(
@@ -528,6 +674,26 @@ class AlphabetTestState extends State<AlphabetTest> {
     super.initState();
     _initializeCamera();
     getSnellFraction();
+    _configureTts();
+    _onReplayPressed();
+  }
+
+  final FlutterTts flutterTts = FlutterTts();
+
+  void _configureTts() async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.speak(text);
+  }
+
+  void _onReplayPressed() {
+    const String replayText =
+        "Please read the letters on the screen. If you are able to read clearly click green button. Keep clicking on green button until you are unable to see or letters are blurred. If letters are blurred click on black button. If you are unable to read the letters click on red button.";
+    _speak(replayText);
   }
 
   Future<void> _initializeCamera() async {
@@ -573,67 +739,63 @@ class AlphabetTestState extends State<AlphabetTest> {
   }
 
   Future<void> sendDistanceRequest(String image) async {
-    var distanceType;
-
     var apiUrl =
         '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
-    /* String base64String = await xFileToBase64(image);*/
-
-    //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
-    String CustomerId = prefs.getString('customer_id') ?? '';
 
+    var distanceType;
     String text = prefs.getString('test') ?? '';
+    print("testTypecam:--" + text);
     if (text == 'myopia') {
       distanceType = 'fardistance';
     } else if (text == 'hyperopia') {
       distanceType = 'neardistance';
-    }
-    try {
-      var frameData = image;
+    } //print('image$image');
 
-      // Replace this with your frame data as a base64 string
-      // var distanceType = 'neardistance'; // Replace this with the distance type
+    try {
+      var frameData =
+          image; // Replace this with your frame data as a base64 string
+      // var distanceType = testname//'neardistance'; // Replace this with the distance type
 
       var requestBody = jsonEncode({
         'frameData': frameData,
         'test_distance': distanceType,
       });
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken =
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+          prefs.getString('access_token') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
 
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${authToken} ',
           'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
-
+      print("frameData: " + frameData);
+      // print("test_distance :" + distanceType);
+      print("response-camera${response.body}");
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
-
-        print("nnnnnnn$alertMessage");
-        // Handle the response data here
-        print('Request sucxsss with status: ${response.body}');
-        print("alert$alertMessage");
         setState(() {
-          //  alert = alertMessage;
+          alert = alertMessage;
         });
       } else {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
         alert = alertMessage;
-        print('Request failed with status: ${response.statusCode}');
-        print('Request failed with status: ${response.body}');
+        //   print('Request failed with status: ${response.statusCode}');
+        //   print('Request failed with status: ${response.body}');
         setState(() {
           alert = alertMessage;
+          print("alert$alertMessage");
         });
 
         // Handle error response
@@ -642,10 +804,13 @@ class AlphabetTestState extends State<AlphabetTest> {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
             context, 'poor internet connectivity , please try again later!');
+      } else {
+        /* CustomAlertDialog.attractivepopup(
+            context, 'make sure you have proper light on your face ');*/
       }
 
 // If the server returns an error response, throw an exception
-      throw Exception('Failed to send data');
+      //throw Exception('Failed to send data');
     }
   }
 
@@ -654,6 +819,7 @@ class AlphabetTestState extends State<AlphabetTest> {
   String randomText = 'W';
   var len;
   List<Map<String, dynamic>> snellenFractions = [];
+  List<Map<String, dynamic>> oldsnellenFractions = [];
 
   Future<void> getSnellFraction() async {
     try {
@@ -677,6 +843,24 @@ class AlphabetTestState extends State<AlphabetTest> {
         final parsedData = json.decode(response.body);
 // Process the parsed data here
         snellenFractions = List<Map<String, dynamic>>.from(parsedData['data']);
+        /*       snellenFractions = (parsedData['data'] as List).map((item) {
+          double fraction;
+          String fractionStr = item['snellen_fraction'];
+           if (fractionStr.contains('/')) {
+        //  if (fractionStr==) {
+             List<String> parts = fractionStr.split('/');
+             fraction = double.parse(parts[0]) / double.parse(parts[1]);
+            // Handle fractional string
+
+            fraction = 6/6;
+          } else {
+            // Handle decimal string
+            fraction = double.parse(fractionStr);
+          }
+          return {
+            "snellen_fraction": fraction,
+          };
+        }).toList();*/
         len = snellenFractions.length;
         print('Snellen Fractions: $snellenFractions' + "lenght: $len");
       } else {
@@ -699,6 +883,7 @@ class AlphabetTestState extends State<AlphabetTest> {
   @override
   void dispose() {
     _controller?.dispose();
+    flutterTts.stop();
     super.dispose();
   }
 
@@ -726,16 +911,42 @@ class AlphabetTestState extends State<AlphabetTest> {
           body: Stack(
             children: [
               Container(
-                decoration: BoxDecoration(
-                    /*   image: DecorationImage(
-                    image: AssetImage('assets/test.png'),
-                    fit: BoxFit.cover,
-                  ),*/
-                    ),
+                decoration: BoxDecoration(),
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  GestureDetector(
+                    onTap: _onReplayPressed,
+                    child: Container(
+                      padding: EdgeInsets.only(bottom: 10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(top: 4.0),
+                            child: Image.asset(
+                              'assets/play_circle_fill.png',
+                              width: 50,
+                              height: 40,
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          // Adjust spacing between icon and text
+                          Text(
+                            'Replay Audio',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                   SizedBox(height: 70),
                   Container(
                     width: 150,
@@ -767,17 +978,16 @@ class AlphabetTestState extends State<AlphabetTest> {
                     children: [
                       Container(
                         width: 320,
-                        height: 70,
+                        height: 40,
                         padding: EdgeInsets.all(8),
                         child: Text(
                           alert,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 22,
+                            fontSize: 18,
                             color: alert == 'Good to go'
                                 ? Colors.green
                                 : Colors.red,
-                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
@@ -895,22 +1105,37 @@ class AlphabetTestState extends State<AlphabetTest> {
   }
 
   String? nextFraction;
+
+  // double nextFraction_new=0.0;
   double currentTextSize = 28.0; // Initial text size
 
-  void increaseTextSize() {
+  Future<void> increaseTextSize() async {
     if (currentIndex == 0) {
       print("currentIndex pv inc$currentIndex");
       //currentIndex = snellenFractions.length-1 ;
 
       //currentIndex--;
       int len = snellenFractions.length - 1;
-      // Decrease index by 1 from its last index
+      print("currentIndex pv inc${snellenFractions.length}");
       nextFraction = snellenFractions[len]['snellen_fraction'];
-      print("nahi$nextFraction");
-      List<String>? parts = nextFraction?.split('/');
-      double numerator = double.parse(parts![0]);
-      double denominator = double.parse(parts[1]);
-      double calculatedSize = 20.0 * (numerator / denominator);
+      // Decrease index by 1 from its last index
+      /*    nextFraction_new = snellenFractions[len]['snellen_fraction'];
+      print("nahi$nextFraction_new");*/
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String text = prefs.getString('test') ?? '';
+      double value = 0.0;
+      if (text == 'myopia') {
+        List<String>? parts = nextFraction?.split('/');
+        double numerator = double.parse(parts![0]);
+        double denominator = double.parse(parts[1]);
+        value = (numerator / denominator);
+      } else {
+        value = double.parse(nextFraction!);
+      }
+
+      double calculatedSize = 20.0 * value;
+      //double calculatedSize = 20.0 * nextFraction_new;
+
       currentTextSize = calculatedSize;
     }
     if (currentIndex > 0 && currentIndex <= snellenFractions.length) {
@@ -922,17 +1147,32 @@ class AlphabetTestState extends State<AlphabetTest> {
       print("currentIndex pv iii$currentIndex");
       // Decrease index by 1 from its last index
       nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
-      print("nahi$nextFraction");
-      List<String>? parts = nextFraction?.split('/');
+/*      print("nahi$nextFraction_new");
+ */
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String text = prefs.getString('test') ?? '';
+      double value = 0.0;
+      if (text == 'myopia') {
+        List<String>? parts = nextFraction?.split('/');
+        double numerator = double.parse(parts![0]);
+        double denominator = double.parse(parts[1]);
+        value = (numerator / denominator);
+      } else {
+        value = double.parse(nextFraction!);
+      }
+      /* List<String>? parts = nextFraction?.split('/');
       double numerator = double.parse(parts![0]);
       double denominator = double.parse(parts[1]);
-      double calculatedSize = 20.0 * (numerator / denominator);
+      double calculatedSize = 20.0 * (numerator / denominator);*/
+
+      double calculatedSize = 20.0 * value;
+
       currentTextSize = calculatedSize;
     }
   }
 
 // Initial index// Initial text size
-  void decreaseTextSize() {
+  Future<void> decreaseTextSize() async {
     if (currentIndex == 0) {
       print("currentIndex pv dec $currentIndex");
       currentIndex = snellenFractions.length - 1;
@@ -941,10 +1181,26 @@ class AlphabetTestState extends State<AlphabetTest> {
       // Decrease index by 1 from its last index
       nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
       print("nahi$nextFraction");
-      List<String>? parts = nextFraction?.split('/');
+
+      /*     List<String>? parts = nextFraction?.split('/');
       double numerator = double.parse(parts![0]);
       double denominator = double.parse(parts[1]);
-      double calculatedSize = 20.0 * (numerator / denominator);
+      // double calculatedSize = 20.0 * nextFraction_new;
+
+      double calculatedSize = 20.0 * (numerator / denominator);*/
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String text = prefs.getString('test') ?? '';
+      double value = 0.0;
+      if (text == 'myopia') {
+        List<String>? parts = nextFraction?.split('/');
+        double numerator = double.parse(parts![0]);
+        double denominator = double.parse(parts[1]);
+        value = (numerator / denominator);
+      } else {
+        value = double.parse(nextFraction!);
+      }
+      double calculatedSize = 20.0 * value;
+
       currentTextSize = calculatedSize;
     }
     if (currentIndex > 0 && currentIndex <= snellenFractions.length) {
@@ -957,10 +1213,23 @@ class AlphabetTestState extends State<AlphabetTest> {
 // Decrease index by 1 from its last index
       nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
       print("nahi$nextFraction");
-      List<String>? parts = nextFraction?.split('/');
+      /*  List<String>? parts = nextFraction?.split('/');
       double numerator = double.parse(parts![0]);
       double denominator = double.parse(parts[1]);
-      double calculatedSize = 20.0 * (numerator / denominator);
+      double calculatedSize = 20.0 * (numerator / denominator);*/
+      // double calculatedSize = 20.0 * nextFraction_new;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String text = prefs.getString('test') ?? '';
+      double value = 0.0;
+      if (text == 'myopia') {
+        List<String>? parts = nextFraction?.split('/');
+        double numerator = double.parse(parts![0]);
+        double denominator = double.parse(parts[1]);
+        value = (numerator / denominator);
+      } else {
+        value = double.parse(nextFraction!);
+      }
+      double calculatedSize = 20.0 * value;
       currentTextSize = calculatedSize;
     }
   }
@@ -1088,6 +1357,26 @@ class Reading extends State<ReadingTest> {
     super.initState();
     _initializeCamera();
     getReadingSnellFraction();
+    _configureTts();
+    _onReplayPressed();
+  }
+
+  final FlutterTts flutterTts = FlutterTts();
+
+  void _configureTts() async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.speak(text);
+  }
+
+  void _onReplayPressed() {
+    const String replayText =
+        "We are now going to test your eyesight for near reading or reading small letters at one hand distance. The problem of near reading is age related. In this test, you will be shown a word at different sizes. You have to stop and move ahead when you are able to read the word clearly. The words will start from small to big.You need to stop the moment you are able to read clearly. Lets begin";
+    _speak(replayText);
   }
 
   Future<void> _initializeCamera() async {
@@ -1133,67 +1422,63 @@ class Reading extends State<ReadingTest> {
   }
 
   Future<void> sendDistanceRequest(String image) async {
-    var distanceType;
-
     var apiUrl =
         '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
-    /* String base64String = await xFileToBase64(image);*/
-
-    //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
-    String CustomerId = prefs.getString('customer_id') ?? '';
 
+    var distanceType;
     String text = prefs.getString('test') ?? '';
+    print("testTypecam:--" + text);
     if (text == 'myopia') {
       distanceType = 'fardistance';
     } else if (text == 'hyperopia') {
       distanceType = 'neardistance';
-    }
-    try {
-      var frameData = image;
+    } //print('image$image');
 
-      // Replace this with your frame data as a base64 string
-      // var distanceType = 'neardistance'; // Replace this with the distance type
+    try {
+      var frameData =
+          image; // Replace this with your frame data as a base64 string
+      // var distanceType = testname//'neardistance'; // Replace this with the distance type
 
       var requestBody = jsonEncode({
         'frameData': frameData,
         'test_distance': distanceType,
       });
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken =
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
 
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${authToken} ',
           'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
-
+      print("frameData: " + frameData);
+      // print("test_distance :" + distanceType);
+      print("response-camera${response.body}");
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
-
-        print("nnnnnnn$alertMessage");
-        // Handle the response data here
-        print('Request sucxsss with status: ${response.body}');
-        print("alert$alertMessage");
         setState(() {
-          //  alert = alertMessage;
+          alert = alertMessage;
         });
       } else {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
         alert = alertMessage;
-        print('Request failed with status: ${response.statusCode}');
-        print('Request failed with status: ${response.body}');
+        //   print('Request failed with status: ${response.statusCode}');
+        //   print('Request failed with status: ${response.body}');
         setState(() {
           alert = alertMessage;
+          print("alert$alertMessage");
         });
 
         // Handle error response
@@ -1202,11 +1487,21 @@ class Reading extends State<ReadingTest> {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
             context, 'poor internet connectivity , please try again later!');
+      } else {
+        /* CustomAlertDialog.attractivepopup(
+            context, 'make sure you have proper light on your face ');*/
       }
 
 // If the server returns an error response, throw an exception
-      throw Exception('Failed to send data');
+      //throw Exception('Failed to send data');
     }
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    flutterTts.stop();
+    super.dispose();
   }
 
   String alert = '';
@@ -1218,19 +1513,18 @@ class Reading extends State<ReadingTest> {
   Future<void> getReadingSnellFraction() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String authToken =
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-          prefs.getString('access_token') ?? '';
+      String authToken = prefs.getString('access_token') ?? '';
       String testname = "hyperopia";
       var headers = {
         'Authorization': 'Bearer $authToken',
       };
       var uri = Uri.parse(
-          '${Api.baseurl}/get-snellen-fraction-api/?test_name=$testname');
+          '${Api.baseurl}/api/eye/snellen-fraction/?test_name=$testname');
       var response = await http.get(
         uri,
         headers: headers,
       );
+      print("aaaaaaaaaa${response.body}");
       if (response.statusCode == 200) {
         getReadingRandomTest();
         final parsedData = json.decode(response.body);
@@ -1261,12 +1555,6 @@ class Reading extends State<ReadingTest> {
 // If the server returns an error response, throw an exception
       throw Exception('Failed to send data');
     }
-  }
-
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
   }
 
 /*  @override
@@ -1605,7 +1893,6 @@ class Reading extends State<ReadingTest> {
                           child: ElevatedButton(
                             onPressed: () {
                               Update_HyperMyopiaTest(context);
-                              _controller?.dispose().then((_) {});
                             },
                             child: Text(
                               'Not able to Read',
@@ -1738,9 +2025,7 @@ class Reading extends State<ReadingTest> {
         'Customer-Id': CustomerId,
       };
       var request = http.Request(
-          'POST',
-          Uri.parse(
-              'https://testing1.zuktiapp.zuktiinnovations.com/random-word-test-api/'));
+          'POST', Uri.parse('${Api.baseurl}/api/eye/random-word-test'));
       request.body =
           json.encode({"test_id": id, "snellen_fraction": nextFraction});
       request.headers.addAll(headers);
@@ -1922,6 +2207,26 @@ class AstigmationTest1 extends State<AstigmationTest> {
     super.initState();
     startTimer();
     _initializeCamera();
+    _configureTts();
+    _onReplayPressed();
+  }
+
+  final FlutterTts flutterTts = FlutterTts();
+
+  void _configureTts() async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.speak(text);
+  }
+
+  void _onReplayPressed() {
+    const String replayText =
+        "Focus on the black dot for 10 second. After 10 second look at the lines and click on the region which is more darker than others. Region A, Region B, Region C or Region D. If unable to see the lines clearly, click on Increase or click on decrease till you see any one region darker than others. If you are able to see all regions equally darker then click on option None. Once you select the region, click next";
+    _speak(replayText);
   }
 
   void startTimer() {
@@ -1991,67 +2296,69 @@ class AstigmationTest1 extends State<AstigmationTest> {
   }
 
   Future<void> sendDistanceRequest(String image) async {
-    var distanceType;
-
     var apiUrl =
         '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
-    /* String base64String = await xFileToBase64(image);*/
-
-    //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
-    String CustomerId = prefs.getString('customer_id') ?? '';
 
+    var distanceType;
     String text = prefs.getString('test') ?? '';
+    print("testTypecam:--" + text);
     if (text == 'myopia') {
       distanceType = 'fardistance';
     } else if (text == 'hyperopia') {
       distanceType = 'neardistance';
-    }
-    try {
-      var frameData = image;
+    } //print('image$image');
 
-      // Replace this with your frame data as a base64 string
-      // var distanceType = 'neardistance'; // Replace this with the distance type
+    try {
+      var frameData =
+          image; // Replace this with your frame data as a base64 string
+      // var distanceType = testname//'neardistance'; // Replace this with the distance type
 
       var requestBody = jsonEncode({
         'frameData': frameData,
         'test_distance': distanceType,
       });
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken =
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+          prefs.getString('access_token') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
 
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${authToken} ',
           'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
-
+      print("frameData: " + frameData);
+      // print("test_distance :" + distanceType);
+      print("response-camera${response.body}");
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
 
-        print("nnnnnnn$alertMessage");
+        // print(alertMessage);
         // Handle the response data here
-        print('Request sucxsss with status: ${response.body}');
-        print("alert$alertMessage");
+        //   print('Request sucxsss with status: ${response.body}');
+
+        //  print("alert$alertMessage");
         setState(() {
-          //  alert = alertMessage;
+          alert = alertMessage;
         });
       } else {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
         alert = alertMessage;
-        print('Request failed with status: ${response.statusCode}');
-        print('Request failed with status: ${response.body}');
+        //   print('Request failed with status: ${response.statusCode}');
+        //   print('Request failed with status: ${response.body}');
         setState(() {
           alert = alertMessage;
+          print("alert$alertMessage");
         });
 
         // Handle error response
@@ -2060,10 +2367,13 @@ class AstigmationTest1 extends State<AstigmationTest> {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
             context, 'poor internet connectivity , please try again later!');
+      } else {
+        /* CustomAlertDialog.attractivepopup(
+            context, 'make sure you have proper light on your face ');*/
       }
 
 // If the server returns an error response, throw an exception
-      throw Exception('Failed to send data');
+      //throw Exception('Failed to send data');
     }
   }
 
@@ -2155,6 +2465,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
   @override
   void dispose() {
     _controller?.dispose();
+    flutterTts.stop();
     super.dispose();
   }
 
@@ -2195,8 +2506,39 @@ class AstigmationTest1 extends State<AstigmationTest> {
                           fontWeight: FontWeight.bold),
                     ),
                   ),
+                  GestureDetector(
+                    onTap: _onReplayPressed,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(top: 4.0),
+                            child: Image.asset(
+                              'assets/play_circle_fill.png',
+                              width: 50,
+                              height: 40,
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          // Adjust spacing between icon and text
+                          Text(
+                            'Replay Audio',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                   Padding(
-                    padding: EdgeInsets.fromLTRB(5, 0, 5, 10),
+                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                     child: Text(
                       'Choose the part where you can see a more darker line',
                       style: TextStyle(
@@ -2374,7 +2716,11 @@ class Astigmationtest2 extends State<AstigmationTest2> {
   late List<CameraDescription> _cameras;
   String currentImage = ''; //assets/astigmationtest2.png
 
-  @override
+  String alert = '';
+  double imageSize1 = 180;
+  bool increasing = false;
+  Timer? _timer;
+
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
@@ -2418,67 +2764,69 @@ class Astigmationtest2 extends State<AstigmationTest2> {
   }
 
   Future<void> sendDistanceRequest(String image) async {
-    var distanceType;
-
     var apiUrl =
         '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
-    /* String base64String = await xFileToBase64(image);*/
-
-    //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
-    String CustomerId = prefs.getString('customer_id') ?? '';
 
+    var distanceType;
     String text = prefs.getString('test') ?? '';
+    print("testTypecam:--" + text);
     if (text == 'myopia') {
       distanceType = 'fardistance';
     } else if (text == 'hyperopia') {
       distanceType = 'neardistance';
-    }
-    try {
-      var frameData = image;
+    } //print('image$image');
 
-      // Replace this with your frame data as a base64 string
-      // var distanceType = 'neardistance'; // Replace this with the distance type
+    try {
+      var frameData =
+          image; // Replace this with your frame data as a base64 string
+      // var distanceType = testname//'neardistance'; // Replace this with the distance type
 
       var requestBody = jsonEncode({
         'frameData': frameData,
         'test_distance': distanceType,
       });
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken =
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+          prefs.getString('access_token') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
 
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${authToken} ',
           'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
-
+      print("frameData: " + frameData);
+      // print("test_distance :" + distanceType);
+      print("response-camera${response.body}");
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
 
-        print("nnnnnnn$alertMessage");
+        // print(alertMessage);
         // Handle the response data here
-        print('Request sucxsss with status: ${response.body}');
-        print("alert$alertMessage");
+        //   print('Request sucxsss with status: ${response.body}');
+
+        //  print("alert$alertMessage");
         setState(() {
-          //  alert = alertMessage;
+          alert = alertMessage;
         });
       } else {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
         alert = alertMessage;
-        print('Request failed with status: ${response.statusCode}');
-        print('Request failed with status: ${response.body}');
+        //   print('Request failed with status: ${response.statusCode}');
+        //   print('Request failed with status: ${response.body}');
         setState(() {
           alert = alertMessage;
+          print("alert$alertMessage");
         });
 
         // Handle error response
@@ -2487,17 +2835,15 @@ class Astigmationtest2 extends State<AstigmationTest2> {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
             context, 'poor internet connectivity , please try again later!');
+      } else {
+        /* CustomAlertDialog.attractivepopup(
+            context, 'make sure you have proper light on your face ');*/
       }
 
 // If the server returns an error response, throw an exception
-      throw Exception('Failed to send data');
+      //throw Exception('Failed to send data');
     }
   }
-
-  String alert = '';
-  double imageSize1 = 180;
-  bool increasing = false;
-  Timer? _timer;
 
 // Replace this with your PUT request body
   @override
@@ -2510,6 +2856,26 @@ class Astigmationtest2 extends State<AstigmationTest2> {
     });
     // delayedAPICall();
     _initializeCamera();
+    _configureTts();
+    _onReplayPressed();
+  }
+
+  final FlutterTts flutterTts = FlutterTts();
+
+  void _configureTts() async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.speak(text);
+  }
+
+  void _onReplayPressed() {
+    const String replayText =
+        "Focus on the black dot for 10 second. After 10 second look at the lines and click on the region which is more darker than others. Region A, Region B, Region C or Region D. If unable to see the lines clearly, click on Increase or click on decrease till you see any one region darker than others. If you are able to see all regions equally darker then click on option None. Once you select the region, click next";
+    _speak(replayText);
   }
 
   void startTimer() {
@@ -2618,12 +2984,12 @@ class Astigmationtest2 extends State<AstigmationTest2> {
           prefs.getString('access_token') ?? '';
       String test_id = prefs.getString('test_id') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
-      String apiUrl = '${Api.baseurl}/api/eye/choose-degree-api/';
+      String apiUrl = '${Api.baseurl}/api/eye/choose-degree-api';
       Map<String, dynamic> body1 = {
         'test_id': test_id,
         "degree": value,
       };
-
+      print("degree_choosen$body1");
       final response = await http.put(
         Uri.parse(apiUrl),
         headers: {
@@ -2633,6 +2999,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
         },
         body: jsonEncode(body1),
       );
+      print("degree_choosssssssssen$response");
       print("choseastigmation_response" + response.body);
       if (response.statusCode == 200) {
         /**Navigator.push(
@@ -2683,12 +3050,14 @@ class Astigmationtest2 extends State<AstigmationTest2> {
   void dispose() {
     _controller?.dispose();
     _timer?.cancel();
+    flutterTts.stop();
     super.dispose();
   }
 
   @override
   int selectedValue = 0;
 
+/*
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -2746,10 +3115,10 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                         child: currentImage.isEmpty
                             ? CircularProgressIndicator()
                             : Image.asset(
-                                currentImage,
-                                width: imageSize1,
-                                fit: BoxFit.fill,
-                              ),
+                          currentImage,
+                          width: imageSize1,
+                          fit: BoxFit.fill,
+                        ),
                       ),
                       SizedBox(height: 10.0),
                       Row(
@@ -2772,6 +3141,233 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                             ),
                           ),
                         ],
+                      ),
+                      SizedBox(height: 10.0),
+                      Center(
+                        child: dataList.isEmpty
+                            ? CircularProgressIndicator()
+                            : SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceEvenly,
+                            children: dataList.map((value) {
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: OutlinedButton(
+                                  onPressed: () {
+                                    print('Button $value pressed');
+                                    ChoseAstigmation(value);
+                                    Degree = value;
+                                    setState(() {
+                                      selectedValue = value;
+                                    });
+                                  },
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                      selectedValue == value
+                                          ? Colors.lightBlueAccent
+                                          : Colors.bluebutton,
+                                    ),
+                                    side: MaterialStateProperty.all<
+                                        BorderSide>(
+                                      BorderSide(
+                                        color: Colors
+                                            .white, // Blue border color
+                                        width: 2.0,
+                                      ),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    value.toString(),
+                                    style: TextStyle(
+                                      color: selectedValue == value
+                                          ? Colors.white
+                                          : Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                        width: 320,
+                        height: 40,
+                        padding: EdgeInsets.all(8),
+                        child: Text(
+                          alert,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 22,
+                              color: alert == 'Good to go'
+                                  ? Colors.green
+                                  : Colors.red,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 10,
+                width: 100,
+                height: 150,
+                child: _controller != null
+                    ? CameraPreview(_controller!)
+                    : Container(
+                  color: Colors.black,
+                  child: Center(
+                    child: Text(
+                      'Loading Camera...',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 10,
+                left: 0,
+                right: 0,
+                child: Column(
+                  children: [
+                    SizedBox(height: 10), // Adjust as needed
+                    Container(
+                      height: 40,
+                      decoration: BoxDecoration(
+                        // Adjust colors as needed
+                        color: Colors.bluebutton,
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      child: MaterialButton(
+                        onPressed: () {
+                          if (Degree == 500) {
+                            CustomAlertDialog.attractivepopup(
+                                context, 'please select the degree');
+                          } else {
+                            Navigator.push(
+                              context,
+                              CupertinoPageRoute(
+                                  builder: (context) => ShadowTest()),
+                            );
+                          }
+                        },
+                        child: Text(
+                          'Next',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }*/
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => GiveInfo()),
+        );
+        return false;
+      },
+      child: MaterialApp(
+        home: Scaffold(
+          appBar: AppBar(
+            title: Text("EYE TEST"),
+            centerTitle: true,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+              onPressed: () {
+                // Add your back button functionality here
+              },
+            ),
+          ),
+          body: Stack(
+            children: <Widget>[
+              // Background Image
+              Center(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(40, 10, 10, 2),
+                        child: Text(
+                          'Astigmatic Test',
+                          style: TextStyle(
+                              fontSize: 22.0,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: _onReplayPressed,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(top: 4.0),
+                                child: Image.asset(
+                                  'assets/play_circle_fill.png',
+                                  width: 50,
+                                  height: 40,
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              // Adjust spacing between icon and text
+                              Text(
+                                'Replay Audio',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
+                        child: Text(
+                          'Choose the part where you can see a more darker line',
+                          style: TextStyle(
+                            fontSize: 13.0,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 1.0),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(10, 8, 10, 8),
+                        child: currentImage.isEmpty
+                            ? CircularProgressIndicator()
+                            : Image.asset(
+                                currentImage,
+                                width: imageSize1,
+                                fit: BoxFit.fill,
+                              ),
                       ),
                       SizedBox(height: 10.0),
                       Center(
@@ -2824,47 +3420,30 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                                 ),
                               ),
                       ),
+                      SizedBox(height: 10.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Container(
+                            height: 35,
+                            width: 130,
+                            child: CustomElevatedButtonY(
+                              text: 'Decrease',
+                              onPressed: decreaseSize,
+                            ),
+                          ),
+                          Container(
+                            height: 35,
+                            width: 130,
+                            child: CustomElevatedButtonG(
+                              text: 'Increase ',
+                              onPressed: increaseSize,
+                            ),
+                          ),
+                        ],
+                      ),
                       SizedBox(height: 10),
                       Container(
-                        height: 40,
-                        decoration: BoxDecoration(
-                          // Adjust colors as needed
-                          color: Colors.bluebutton,
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        child: MaterialButton(
-                          onPressed: () {},
-                          child: TextButton(
-                            child: Text(
-                              'Next',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                              ),
-                            ),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                CupertinoPageRoute(
-                                    builder: (context) => ShadowTest()),
-                              );
-                              if (Degree == 500) {
-                                CustomAlertDialog.attractivepopup(
-                                    context, 'please select the degree');
-                              } else {
-                                Navigator.push(
-                                  context,
-                                  CupertinoPageRoute(
-                                      builder: (context) => ShadowTest()),
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                      Container(
-                        width: 320,
-                        height: 40,
                         padding: EdgeInsets.all(8),
                         child: Text(
                           alert,
@@ -2874,7 +3453,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                               color: alert == 'Good to go'
                                   ? Colors.green
                                   : Colors.red,
-                              fontWeight: FontWeight.bold),
+                              fontWeight: FontWeight.normal),
                         ),
                       ),
                     ],
@@ -2884,9 +3463,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
               Positioned(
                 right: 10,
                 width: 100,
-                // Adjust the width as needed
                 height: 150,
-                // Adjust the height as needed
                 child: _controller != null
                     ? CameraPreview(_controller!)
                     : Container(
@@ -2898,6 +3475,48 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                           ),
                         ),
                       ),
+              ),
+              Positioned(
+                bottom: 10,
+                left: 0,
+                right: 0,
+                child: Column(
+                  children: [
+                    SizedBox(height: 10), // Adjust as needed
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          // Adjust colors as needed
+                          color: Colors.bluebutton,
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: MaterialButton(
+                          minWidth: double.infinity,
+                          onPressed: () {
+                            if (Degree == 500) {
+                              CustomAlertDialog.attractivepopup(
+                                  context, 'please select the degree');
+                            } else {
+                              Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                    builder: (context) => ShadowTest()),
+                              );
+                            }
+                          },
+                          child: Text(
+                            'Next',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -2946,6 +3565,26 @@ class AstigmationTestNone extends State<AstigmationTest3> {
     super.initState();
     startTimer();
     _initializeCamera();
+    _configureTts();
+    _onReplayPressed();
+  }
+
+  final FlutterTts flutterTts = FlutterTts();
+
+  void _configureTts() async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.speak(text);
+  }
+
+  void _onReplayPressed() {
+    const String replayText =
+        "Focus on the black dot for 10 second. After 10 second look at the lines and click on the degree option which is more darker than others. If unable to see the lines clearly, click on Increase or click on decrease till you see any one line darker than others. Once you select the degree, click next";
+    _speak(replayText);
   }
 
   void startTimer() {
@@ -3015,67 +3654,69 @@ class AstigmationTestNone extends State<AstigmationTest3> {
   }
 
   Future<void> sendDistanceRequest(String image) async {
-    var distanceType;
-
     var apiUrl =
         '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
-    /* String base64String = await xFileToBase64(image);*/
-
-    //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
-    String CustomerId = prefs.getString('customer_id') ?? '';
 
+    var distanceType;
     String text = prefs.getString('test') ?? '';
+    print("testTypecam:--" + text);
     if (text == 'myopia') {
       distanceType = 'fardistance';
     } else if (text == 'hyperopia') {
       distanceType = 'neardistance';
-    }
-    try {
-      var frameData = image;
+    } //print('image$image');
 
-      // Replace this with your frame data as a base64 string
-      // var distanceType = 'neardistance'; // Replace this with the distance type
+    try {
+      var frameData =
+          image; // Replace this with your frame data as a base64 string
+      // var distanceType = testname//'neardistance'; // Replace this with the distance type
 
       var requestBody = jsonEncode({
         'frameData': frameData,
         'test_distance': distanceType,
       });
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken =
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+          prefs.getString('access_token') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
 
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${authToken} ',
           'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
-
+      print("frameData: " + frameData);
+      // print("test_distance :" + distanceType);
+      print("response-camera${response.body}");
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
 
-        print("nnnnnnn$alertMessage");
+        // print(alertMessage);
         // Handle the response data here
-        print('Request sucxsss with status: ${response.body}');
-        print("alert$alertMessage");
+        //   print('Request sucxsss with status: ${response.body}');
+
+        //  print("alert$alertMessage");
         setState(() {
-          //  alert = alertMessage;
+          alert = alertMessage;
         });
       } else {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
         alert = alertMessage;
-        print('Request failed with status: ${response.statusCode}');
-        print('Request failed with status: ${response.body}');
+        //   print('Request failed with status: ${response.statusCode}');
+        //   print('Request failed with status: ${response.body}');
         setState(() {
           alert = alertMessage;
+          print("alert$alertMessage");
         });
 
         // Handle error response
@@ -3084,10 +3725,13 @@ class AstigmationTestNone extends State<AstigmationTest3> {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
             context, 'poor internet connectivity , please try again later!');
+      } else {
+        /* CustomAlertDialog.attractivepopup(
+            context, 'make sure you have proper light on your face ');*/
       }
 
 // If the server returns an error response, throw an exception
-      throw Exception('Failed to send data');
+      //throw Exception('Failed to send data');
     }
   }
 
@@ -3250,6 +3894,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
   @override
   void dispose() {
     _controller?.dispose();
+    flutterTts.stop();
     super.dispose();
   }
 
@@ -3703,6 +4348,38 @@ class AstigmationTestNone extends State<AstigmationTest3> {
                                   ),
                                 ),
                               ),
+                              GestureDetector(
+                                onTap: _onReplayPressed,
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 10),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(top: 4.0),
+                                        child: Image.asset(
+                                          'assets/play_circle_fill.png',
+                                          width: 50,
+                                          height: 40,
+                                        ),
+                                      ),
+                                      SizedBox(width: 8),
+                                      // Adjust spacing between icon and text
+                                      Text(
+                                        'Replay Audio',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                               SizedBox(height: 1.0),
                               Padding(
                                 padding:
@@ -3895,12 +4572,12 @@ class AstigmationTestNone extends State<AstigmationTest3> {
   }
 }
 
-class CylTest extends StatefulWidget {
+class ShadowTest extends StatefulWidget {
   @override
-  Cyl createState() => Cyl();
+  _ShadowTestState createState() => _ShadowTestState();
 }
 
-class Cyl extends State<CylTest> {
+class _ShadowTestState extends State<ShadowTest> {
   CameraController? _controller;
   late List<CameraDescription> _cameras;
 
@@ -3908,6 +4585,26 @@ class Cyl extends State<CylTest> {
   void initState() {
     super.initState();
     _initializeCamera();
+    _configureTts();
+    _onReplayPressed();
+  }
+
+  final FlutterTts flutterTts = FlutterTts();
+
+  void _configureTts() async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.speak(text);
+  }
+
+  void _onReplayPressed() {
+    const String replayText =
+        "you are doing well. Now we are at a crucial part of the eye test. In this test you will observe a small letter with a shadow and with increase in size of the letter the shadow will starts to decrease. You will encounter a point where the letter will appear better than the first time you saw the letter. Please select that state and then press Next. For clear instruction and visual example click on ‘?’ icon at the top of the screen. Start by clicking on increase or decrease. When done click on next.";
+    _speak(replayText);
   }
 
   Future<void> _initializeCamera() async {
@@ -3921,7 +4618,7 @@ class Cyl extends State<CylTest> {
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
 
     await _controller?.initialize();
-    //_controller?.setZoomLevel(-2.5);
+    // _controller?.setZoomLevel(-2.5);
 
     if (mounted) {
       setState(() {});
@@ -3953,67 +4650,69 @@ class Cyl extends State<CylTest> {
   }
 
   Future<void> sendDistanceRequest(String image) async {
-    var distanceType;
-
     var apiUrl =
         '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
-    /* String base64String = await xFileToBase64(image);*/
-
-    //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
-    String CustomerId = prefs.getString('customer_id') ?? '';
 
+    var distanceType;
     String text = prefs.getString('test') ?? '';
+    print("testTypecam:--" + text);
     if (text == 'myopia') {
       distanceType = 'fardistance';
     } else if (text == 'hyperopia') {
       distanceType = 'neardistance';
-    }
-    try {
-      var frameData = image;
+    } //print('image$image');
 
-      // Replace this with your frame data as a base64 string
-      // var distanceType = 'neardistance'; // Replace this with the distance type
+    try {
+      var frameData =
+          image; // Replace this with your frame data as a base64 string
+      // var distanceType = testname//'neardistance'; // Replace this with the distance type
 
       var requestBody = jsonEncode({
         'frameData': frameData,
         'test_distance': distanceType,
       });
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken =
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+          prefs.getString('access_token') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
 
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${authToken} ',
           'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
-
+      print("frameData: " + frameData);
+      // print("test_distance :" + distanceType);
+      print("response-camera${response.body}");
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
 
-        print("nnnnnnn$alertMessage");
+        // print(alertMessage);
         // Handle the response data here
-        print('Request sucxsss with status: ${response.body}');
-        print("alert$alertMessage");
+        //   print('Request sucxsss with status: ${response.body}');
+
+        //  print("alert$alertMessage");
         setState(() {
-          //  alert = alertMessage;
+          alert = alertMessage;
         });
       } else {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
         alert = alertMessage;
-        print('Request failed with status: ${response.statusCode}');
-        print('Request failed with status: ${response.body}');
+        //   print('Request failed with status: ${response.statusCode}');
+        //   print('Request failed with status: ${response.body}');
         setState(() {
           alert = alertMessage;
+          print("alert$alertMessage");
         });
 
         // Handle error response
@@ -4022,303 +4721,21 @@ class Cyl extends State<CylTest> {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
             context, 'poor internet connectivity , please try again later!');
+      } else {
+        /* CustomAlertDialog.attractivepopup(
+            context, 'make sure you have proper light on your face ');*/
       }
 
 // If the server returns an error response, throw an exception
-      throw Exception('Failed to send data');
+      //throw Exception('Failed to send data');
     }
   }
 
   @override
   void dispose() {
     _controller?.dispose();
+    flutterTts.stop();
     super.dispose();
-  }
-
-  String alert = '';
-
-  @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () async {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => GiveInfo()),
-            //(route) => route.isFirst, // Remove until the first route (Screen 1)
-          );
-          return false;
-        },
-        child: Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/test.png'),
-                  // Replace with your image
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(130, 3, 70, 2),
-              child: Text(
-                '  SHADOW TEST',
-                style: TextStyle(
-                    fontSize: 24.0,
-                    color: Color(0xFF1E3777),
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(height: 10),
-                  Container(),
-                  SizedBox(height: 10),
-                  Text(
-                    'Y',
-                    style: TextStyle(
-                      fontSize: 100,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(width: 20),
-                      SizedBox(
-                        height: 70,
-                        width: 120,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // Action for Button 1
-                          },
-                          child: Text('Back'),
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 12),
-                            backgroundColor: Colors.yellow,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 20),
-                      SizedBox(
-                        height: 70,
-                        width: 120,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // Action for Button 2
-                          },
-                          child: Text('Perfectly '
-                              'Visible'),
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 12),
-                            backgroundColor: Colors.green,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  SizedBox(
-                    height: 50,
-                    width: 160,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                              builder: (context) => ShadowTest()),
-                        );
-                      },
-                      child: Text('Not able to Read'),
-                      style: ElevatedButton.styleFrom(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        backgroundColor: Colors.red,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 320,
-                    height: 40,
-                    padding: EdgeInsets.all(8),
-                    child: Text(
-                      alert,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 22,
-                          color:
-                              alert == 'Good to go' ? Colors.green : Colors.red,
-                          fontWeight: FontWeight.bold
-                          // Change text color here
-                          // You can also set other properties like fontWeight, fontStyle, etc.
-                          ),
-                    ),
-                  ),
-                  Container(
-                    child: InteractiveViewer(
-                      // boundaryMargin: EdgeInsets.all(20.0),
-                      minScale: 0.1,
-                      maxScale: 1.5,
-                      child: _controller != null
-                          ? CameraPreview(_controller!)
-                          : Container(),
-                    ),
-                    width: 280.0,
-                    // Set the desired width
-                    height: 320.0,
-                    // Set the desired height
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ));
-  }
-}
-
-class ShadowTest extends StatefulWidget {
-  @override
-  _ShadowTestState createState() => _ShadowTestState();
-}
-
-class _ShadowTestState extends State<ShadowTest> {
-  CameraController? _controller;
-  late List<CameraDescription> _cameras;
-
-  @override
-  void initState() {
-    super.initState();
-    initializeCamera();
-  }
-
-  Future<void> initializeCamera() async {
-    _cameras = await availableCameras();
-    if (_cameras!.isNotEmpty) {
-      _controller = CameraController(_cameras![0], ResolutionPreset.medium);
-      await _controller!.initialize();
-      if (mounted) {
-        setState(() {
-          isCameraInitialized = true;
-        });
-        _captureImagePerSecond();
-      }
-    }
-  }
-
-  void _captureImagePerSecond() async {
-    // Capture an image every second
-    while (true) {
-      XFile? image = await _controller
-          ?.takePicture(); // Process the captured image as needed
-      print('Image captured: ${image?.path}');
-      // Delay to capture image per second
-      capturePhoto(image!);
-      await Future.delayed(Duration(seconds: 1));
-      // regpatient1(image);
-    }
-  }
-
-  void capturePhoto(XFile photo) async {
-    // Note: `controller` being initialized as shown in readme
-    // https://pub.dev/packages/camera#example
-
-    List<int> photoAsBytes = await photo.readAsBytes();
-    String photoAsBase64 = convert.base64Encode(photoAsBytes);
-    sendDistanceRequest(photoAsBase64);
-  }
-
-  Future<void> sendDistanceRequest(String image) async {
-    var distanceType;
-
-    var apiUrl =
-        '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
-    /* String base64String = await xFileToBase64(image);*/
-
-    //print('image$image');
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
-    String CustomerId = prefs.getString('customer_id') ?? '';
-
-    String text = prefs.getString('test') ?? '';
-    if (text == 'myopia') {
-      distanceType = 'fardistance';
-    } else if (text == 'hyperopia') {
-      distanceType = 'neardistance';
-    }
-    try {
-      var frameData = image;
-
-      // Replace this with your frame data as a base64 string
-      // var distanceType = 'neardistance'; // Replace this with the distance type
-
-      var requestBody = jsonEncode({
-        'frameData': frameData,
-        'test_distance': distanceType,
-      });
-
-      var response = await http.post(
-        Uri.parse(apiUrl),
-        headers: <String, String>{
-          'Authorization': 'Bearer $authToken',
-          'Content-Type': 'application/json',
-          'Customer-Id': CustomerId,
-        },
-        body: requestBody,
-      );
-
-      if (response.statusCode == 200) {
-        Map<String, dynamic> data = jsonDecode(response.body);
-
-        String alertMessage = data['alert'];
-
-        print("nnnnnnn$alertMessage");
-        // Handle the response data here
-        print('Request sucxsss with status: ${response.body}');
-        print("alert$alertMessage");
-        setState(() {
-          //  alert = alertMessage;
-        });
-      } else {
-        Map<String, dynamic> data = jsonDecode(response.body);
-
-        String alertMessage = data['alert'];
-        alert = alertMessage;
-        print('Request failed with status: ${response.statusCode}');
-        print('Request failed with status: ${response.body}');
-        setState(() {
-          alert = alertMessage;
-        });
-
-        // Handle error response
-      }
-    } catch (e) {
-      if (e is SocketException) {
-        CustomAlertDialog.attractivepopup(
-            context, 'poor internet connectivity , please try again later!');
-      }
-
-// If the server returns an error response, throw an exception
-      throw Exception('Failed to send data');
-    }
   }
 
   String alert = '';
@@ -4345,12 +4762,7 @@ class _ShadowTestState extends State<ShadowTest> {
 
   bool isCameraInitialized = false;
 
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
-  }
-
+/*
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -4382,41 +4794,46 @@ class _ShadowTestState extends State<ShadowTest> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height * 0.5,
-                        color: Colors.black,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 5, 4, 0),
-                              child: Text(
-                                'Shadow Test',
-                                style: TextStyle(
-                                  fontSize: 20.0,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20.0),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height * 0.4,
+                          color: Colors.black,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(0, 10, 4, 0),
+                                child: Text(
+                                  'Shadow Test',
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Spacer(),
-                            // This pushes the next widget to the center
-                            Center(
-                              child: Text(
-                                dynamicText,
-                                // Replace with your dynamic text variable
-                                style: TextStyle(
-                                  fontSize: currentTextSize,
-                                  // Replace with your text size variable
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+
+                              Spacer(),
+                              // This pushes the next widget to the center
+                              Center(
+                                child: Text(
+                                  dynamicText,
+                                  // Replace with your dynamic text variable
+                                  style: TextStyle(
+                                    fontSize: currentTextSize,
+                                    // Replace with your text size variable
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Spacer(),
-                            // This pushes the above widget to the center
-                          ],
+                              Spacer(),
+                              // This pushes the above widget to the center
+                            ],
+                          ),
                         ),
                       ),
 
@@ -4445,17 +4862,19 @@ class _ShadowTestState extends State<ShadowTest> {
                           ],
                         ),
                       ),
-                      Text(
-                        alert,
-                        // Replace with your alert text variable
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: 'Good to go' ==
-                                  'Good to go' // Replace with your condition
-                              ? Colors.green
-                              : Colors.red,
-                          fontWeight: FontWeight.bold,
+                      Padding(
+                        padding: const EdgeInsets.all(00.0),
+                        child: Text(
+                          alert,
+                          // Replace with your alert text variable
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: alert == 'Good to go'
+                                ? Colors.green
+                                : Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
 
@@ -4469,7 +4888,7 @@ class _ShadowTestState extends State<ShadowTest> {
                 right: 10,
                 width: 100,
                 // Adjust the width as needed
-                height: 100,
+                height: 150,
                 // Adjust the height as needed
                 child: _controller != null
                     ? CameraPreview(_controller!)
@@ -4486,6 +4905,185 @@ class _ShadowTestState extends State<ShadowTest> {
               width: double.infinity,
               decoration: BoxDecoration(
                 color: Colors.bluebutton, // Change to your desired color
+                borderRadius: BorderRadius.circular(25),
+              ),
+              child: MaterialButton(
+                onPressed: () {
+                  // Call your function here
+                  CylTestApi();
+                },
+                child: Text(
+                  'Next',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14.0,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+*/
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => GiveInfo()),
+        );
+        return false;
+      },
+      child: MaterialApp(
+        home: Scaffold(
+          appBar: AppBar(
+            title: Text("EYE TEST"),
+            centerTitle: true,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+              onPressed: () {
+                // Add your back button functionality here
+              },
+            ),
+          ),
+          body: Stack(
+            fit: StackFit.expand,
+            children: <Widget>[
+              SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    GestureDetector(
+                      onTap: _onReplayPressed,
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(top: 4.0),
+                              child: Image.asset(
+                                'assets/play_circle_fill.png',
+                                width: 50,
+                                height: 40,
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'Replay Audio',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20), // Add some space after the button
+                    Padding(
+                      padding: const EdgeInsets.only(top: 90.0),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height * 0.4,
+                        color: Colors.black,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 10, 4, 0),
+                              child: Text(
+                                'Shadow Test',
+                                style: TextStyle(
+                                  fontSize: 20.0,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            Spacer(),
+                            Center(
+                              child: Text(
+                                dynamicText,
+                                style: TextStyle(
+                                  fontSize: currentTextSize,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            Spacer(),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20), // Add some space after the container
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Container(
+                            height: 40,
+                            width: 150,
+                            margin: EdgeInsets.fromLTRB(10, 5, 20, 0),
+                            child: CustomElevatedButtonY(
+                              text: 'Decrease',
+                              onPressed: () => changeSize('down'),
+                            ),
+                          ),
+                          Container(
+                            height: 40,
+                            margin: EdgeInsets.fromLTRB(10, 5, 20, 0),
+                            child: CustomElevatedButtonG(
+                              text: 'Increase',
+                              onPressed: () => changeSize('up'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(
+                        alert,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 20,
+                          color:
+                              alert == 'Good to go' ? Colors.green : Colors.red,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                right: 10,
+                width: 100,
+                height: 150,
+                child: _controller != null
+                    ? CameraPreview(_controller!)
+                    : Container(
+                        color: Colors.black,
+                      ),
+              ),
+            ],
+          ),
+          bottomNavigationBar: Padding(
+            padding: const EdgeInsets.fromLTRB(15.0, 0, 15, 8),
+            child: Container(
+              height: 40,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.bluebutton,
                 borderRadius: BorderRadius.circular(25),
               ),
               child: MaterialButton(
@@ -4561,15 +5159,39 @@ class RedGreenTest extends StatefulWidget {
 
 class redgreen extends State<RedGreenTest> {
   CameraController? _controller;
+  late Future<void> _initializeControllerFuture;
   late List<CameraDescription> _cameras;
+  bool _isCapturing = false;
 
   @override
   void initState() {
     super.initState();
     fetchData();
     _initializeCamera();
+    _configureTts();
+    _onReplayPressed();
   }
 
+  final FlutterTts flutterTts = FlutterTts();
+  late Future<void> _captureProcess;
+
+  void _configureTts() async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.speak(text);
+  }
+
+  void _onReplayPressed() {
+    const String replayText =
+        "Thanks for going through the test. We are now going to show you random letters basis your test results on a red and green background. You have to observe and tell in which colour do you see letters more better.You only need to identify and tell which colour background is better than the other. Lets start the test. if more than 2 times same colour chosen We recommend you to redo the test and follow all instructions correctly";
+    _speak(replayText);
+  }
+
+/*
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
@@ -4587,10 +5209,10 @@ class redgreen extends State<RedGreenTest> {
       setState(() {});
     }
     // Start capturing images per second
-    _captureImagePerSecond();
+    _captureProcess = _captureImagePerSecond();
   }
 
-  void _captureImagePerSecond() async {
+  _captureImagePerSecond() async {
     // Capture an image every second
     while (true) {
       XFile? image = await _controller
@@ -4611,69 +5233,115 @@ class redgreen extends State<RedGreenTest> {
     String photoAsBase64 = convert.base64Encode(photoAsBytes);
     sendDistanceRequest(photoAsBase64);
   }
+*/
+  Future<void> _initializeCamera() async {
+    _cameras = await availableCameras();
+    CameraDescription? frontCamera = _cameras!.firstWhere(
+          (camera) => camera.lensDirection == CameraLensDirection.front,
+      orElse: () => _cameras!.isEmpty ? throw 'No camera available' : _cameras![0],
+    );
 
+    _controller = CameraController(frontCamera, ResolutionPreset.medium);
+
+    _initializeControllerFuture = _controller!.initialize();
+
+    try {
+      await _initializeControllerFuture;
+      if (mounted) {
+        setState(() {
+          _isCapturing = true;
+          _captureProcess = _captureImagePerSecond();
+        });
+      }
+    } catch (e) {
+      print('Error initializing camera: $e');
+    }
+  }
+
+  Future<void> _captureImagePerSecond() async {
+    while (_isCapturing) {
+      try {
+        XFile image = await _controller!.takePicture();
+        print('Image captured: ${image.path}');
+        capturePhoto(image);
+        await Future.delayed(Duration(seconds: 1));
+      } catch (e) {
+        if (_isCapturing) {
+          print('Error capturing image: $e');
+        }
+      }
+    }
+  }
+
+  void capturePhoto(XFile photo) async {
+    List<int> photoAsBytes = await photo.readAsBytes();
+    String photoAsBase64 = base64Encode(photoAsBytes);
+    sendDistanceRequest(photoAsBase64);
+  }
   Future<void> sendDistanceRequest(String image) async {
-    var distanceType;
-
     var apiUrl =
         '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
-    /* String base64String = await xFileToBase64(image);*/
-
-    //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
-    String CustomerId = prefs.getString('customer_id') ?? '';
 
+    var distanceType;
     String text = prefs.getString('test') ?? '';
+    print("testTypecam:--" + text);
     if (text == 'myopia') {
       distanceType = 'fardistance';
     } else if (text == 'hyperopia') {
       distanceType = 'neardistance';
-    }
-    try {
-      var frameData = image;
+    } //print('image$image');
 
-      // Replace this with your frame data as a base64 string
-      // var distanceType = 'neardistance'; // Replace this with the distance type
+    try {
+      var frameData =
+          image; // Replace this with your frame data as a base64 string
+      // var distanceType = testname//'neardistance'; // Replace this with the distance type
 
       var requestBody = jsonEncode({
         'frameData': frameData,
         'test_distance': distanceType,
       });
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken =
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+          prefs.getString('access_token') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
 
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${authToken} ',
           'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
-
+      print("frameData: " + frameData);
+      // print("test_distance :" + distanceType);
+      print("response-camera${response.body}");
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
 
-        print("nnnnnnn$alertMessage");
+        // print(alertMessage);
         // Handle the response data here
-        print('Request sucxsss with status: ${response.body}');
-        print("alert$alertMessage");
+        //   print('Request sucxsss with status: ${response.body}');
+
+        //  print("alert$alertMessage");
         setState(() {
-          //  alert = alertMessage;
+          alert = alertMessage;
         });
       } else {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
         alert = alertMessage;
-        print('Request failed with status: ${response.statusCode}');
-        print('Request failed with status: ${response.body}');
+        //   print('Request failed with status: ${response.statusCode}');
+        //   print('Request failed with status: ${response.body}');
         setState(() {
           alert = alertMessage;
+          print("alert$alertMessage");
         });
 
         // Handle error response
@@ -4682,11 +5350,22 @@ class redgreen extends State<RedGreenTest> {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
             context, 'poor internet connectivity , please try again later!');
+      } else {
+        /* CustomAlertDialog.attractivepopup(
+            context, 'make sure you have proper light on your face ');*/
       }
 
 // If the server returns an error response, throw an exception
-      throw Exception('Failed to send data');
+      //throw Exception('Failed to send data');
     }
+  }
+
+  @override
+  void dispose() {
+    _isCapturing = false;
+    _controller?.dispose();
+    flutterTts.stop();
+    super.dispose();
   }
 
   String alert = '';
@@ -4866,16 +5545,16 @@ class redgreen extends State<RedGreenTest> {
         _data = json.decode(response.body);
         Map<String, dynamic> jsonResponseMap = json.decode(response.body);
 
-        // Extracting age
-
+// Extracting age
         if (jsonResponseMap.containsKey("data") &&
             jsonResponseMap["data"].containsKey("data") &&
             jsonResponseMap["data"]["data"].containsKey("eye_status")) {
           String eyeStatus = jsonResponseMap["data"]["data"]["eye_status"];
-          String patientName = jsonResponseMap["data"]["data"]["full_name"];
+          //  String patientName = jsonResponseMap["data"]["data"]["full_name"];
           String patientAge = jsonResponseMap["data"]["user_age"];
-          int age = int.parse(patientAge);
-          print("123123age$age");
+          int age = int.tryParse(patientAge) ?? 0; // Safely parse age
+          print("Patient Age: $age");
+
           if (eyeStatus == "right") {
             if (age >= 40) {
               Navigator.push(
@@ -4883,26 +5562,36 @@ class redgreen extends State<RedGreenTest> {
                 CupertinoPageRoute(builder: (context) => ReadingTest()),
               );
             } else {
-              Future.delayed(Duration(seconds: 1), () {
+              // Navigate to appropriate screen based on age and eye status
+              if (age < 40 && jsonResponseMap["data"]['data']["is_completed"]) {
+                print("ssssssssss");
+                // If age < 40 and the test is completed, navigate to the TestReport
                 CustomAlertDialog.attractivepopup(
-                    context, 'You Have Successfully Completed Eyetest.....');
-              });
-              SharedPreferences prefs = await SharedPreferences.getInstance();
-              await prefs.setString('page', "redgreen");
-              // getActivePlan();
-              Navigator.push(context,
-                  CupertinoPageRoute(builder: (context) => const TestReport()));
+                    context, 'You Have Successfully Completed Eye Test.....');
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                await prefs.setString('page', "redgreen");
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const TestReport()));
+              } else {
+                // Otherwise, navigate to the next appropriate screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ReadingTest()),
+                );
+              }
             }
           } else {
-            if (age > 40) {
+            if (age >= 40) {
               Navigator.push(
                 context,
-                CupertinoPageRoute(builder: (context) => ReadingTest()),
+                MaterialPageRoute(builder: (context) => ReadingTest()),
               );
             } else {
               Navigator.push(
                 context,
-                CupertinoPageRoute(builder: (context) => RightEye()),
+                MaterialPageRoute(builder: (context) => RightEye()),
               );
             }
           }
@@ -4921,185 +5610,8 @@ class redgreen extends State<RedGreenTest> {
     }
   }
 
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
-  }
+  final bool _isCameraVisible = true;
 
-  bool _isCameraVisible = true;
-
-  /*@override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("EYE TEST"),
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-          onPressed: () {
-            // Add your back button functionality here
-          },
-        ),
-      ),
-      body: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          Positioned(
-            top: 16,
-            right: 16,
-            child: Visibility(
-              visible: _isCameraVisible,
-              child: Stack(
-                children: [
-                  Container(
-                    width: 130.0,
-                    height: 150.0,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                    ),
-                    child: InteractiveViewer(
-                      // boundaryMargin: EdgeInsets.all(20.0),
-                      minScale: 0.1,
-                      maxScale: 1.5,
-                      child: _controller != null
-                          ? CameraPreview(_controller!)
-                          : Container(),
-                    ),
-                  ),
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.close,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _isCameraVisible = false;
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          SingleChildScrollView(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 180.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Text(
-                        'Red/Green Test',
-                        style: TextStyle(
-                          fontSize: 24.0,
-                          color: Color(0xFF1E3777),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
-                      child: InkWell(
-                        onTap: () {
-                          action = "red";
-                          _callAPI();
-                        },
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: 150,
-                          color: Colors.red.shade700,
-                          child: Center(
-                            child: Text(
-                              randomText,
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: textSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 10.0),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
-                      child: InkWell(
-                        onTap: () {
-                          action = "green";
-                          _callAPI();
-                        },
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: 150,
-                          color: Colors.green.shade700,
-                          child: Center(
-                            child: Text(
-                              randomText,
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: textSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: 320,
-                      height: 40,
-                      padding: EdgeInsets.all(8),
-                      child: Text(
-                        alert,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 22,
-                          color:
-                              alert == 'Good to go' ? Colors.green : Colors.red,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      height: 50.0,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.bluebutton,
-                        // Change to your desired color
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                      child: MaterialButton(
-                        onPressed: () {
-                          // Call your function here
-                          UpdateRedGreenTest();
-                        },
-                        child: Text(
-                          'Next',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }*/
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -5114,259 +5626,328 @@ class redgreen extends State<RedGreenTest> {
         ),
       ),
       body: Stack(
-        fit: StackFit.expand,
         children: <Widget>[
-          Positioned(
-            top: 16,
-            right: 16,
-            child: Visibility(
-              visible: _isCameraVisible,
-              child: Stack(
-                children: [
-                  Container(
-                    width: 130.0,
-                    height: 150.0,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                    ),
-                    child: InteractiveViewer(
-                      minScale: 0.1,
-                      maxScale: 1.5,
-                      child: _controller != null
-                          ? CameraPreview(_controller!)
-                          : Container(),
-                    ),
-                  ),
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.close,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _isCameraVisible = false;
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
           SingleChildScrollView(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 180.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Text(
-                        'Red/Green Test',
-                        style: TextStyle(
-                          fontSize: 24.0,
-                          color: Color(0xFF1E3777),
-                          fontWeight: FontWeight.bold,
-                        ),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 100.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: Text(
+                      'Red/Green Test',
+                      style: TextStyle(
+                        fontSize: 24.0,
+                        color: Color(0xFF1E3777),
+                        fontWeight: FontWeight.normal,
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
-                      child: InkWell(
-                        onTap: () {
-                          action = "red";
-                          _callAPI();
-                        },
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: 150,
-                          color: Colors.red.shade700,
-                          child: Center(
-                            child: Text(
-                              randomText,
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: textSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 10.0),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
-                      child: InkWell(
-                        onTap: () {
-                          action = "green";
-                          _callAPI();
-                        },
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: 150,
-                          color: Colors.green.shade700,
-                          child: Center(
-                            child: Text(
-                              randomText,
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: textSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: 320,
-                      height: 40,
-                      padding: EdgeInsets.all(8),
-                      child: Text(
-                        alert,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 22,
-                          color: alert == 'Good to go' ? Colors.green : Colors.red,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Spacer(),
-                    Container(
-                      height: 50.0,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.bluebutton, // Change to your desired color
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                      child: MaterialButton(
-                        onPressed: () {
-                          // Call your function here
-                          UpdateRedGreenTest();
-                        },
-                        child: Text(
-                          'Next',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-}
-
-class RightEye extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text("EYE TEST"),
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-            onPressed: () {
-              // Add your back button functionality here
-            },
-          ),
-          // Set AppBar background color
-        ),
-        body: Righteye(),
-      ),
-    );
-  }
-}
-
-// Add your desired functionality here
-
-class Righteye extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () async {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => GiveInfo()),
-            // (route) => route.isFirst, // Remove until the first route (Screen 1)
-          );
-          return false;
-        },
-        child: MaterialApp(
-            home: Scaffold(
-                appBar: AppBar(
-                  title: Text("EYE TEST"),
-                  centerTitle: true,
-                  leading: IconButton(
-                    icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-                    onPressed: () {
-                      // Add your back button functionality here
-                    },
                   ),
-                ),
-                body: Stack(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('assets/test.png'),
-                          // Replace with your image
-                          fit: BoxFit.cover,
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: GestureDetector(
+                      onTap: _onReplayPressed,
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(25),
                         ),
-                      ),
-                    ),
-                    Center(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Padding(
-                              padding: EdgeInsets.only(top: 50.0),
-                              // GestureDetector(
-                              // onTap: () => onImageClicked, // Assign the method to be called on tap
-                              // child: Image.asset(
+                              padding: EdgeInsets.only(top: 4.0),
                               child: Image.asset(
-                                'assets/close_right_eye.png',
-                                // Replace with your centered image
-                                width: 300, // Adjust the width as needed
-                                height: 300, // Adjust the height as needed
+                                'assets/play_circle_fill.png',
+                                width: 50,
+                                height: 40,
                               ),
                             ),
-                            // ),
-                            SizedBox(height: 30),
-                            // Add spacing between the image and the button
-                            SizedBox(
-                              width: 200, // Set the desired width here
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  select_eye_for_test('right', context);
-                                  // onImageClicked();
-                                },
-                                child: Text('Next'),
-                                // Replace with button text
+                            SizedBox(width: 8),
+                            Text(
+                              'Replay Audio',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
                               ),
-                            )
+                            ),
                           ],
                         ),
                       ),
                     ),
-                  ],
-                ))));
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
+                    child: InkWell(
+                      onTap: () {
+                        action = "red";
+                        _callAPI();
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 150,
+                        color: Colors.red.shade700,
+                        child: Center(
+                          child: Text(
+                            randomText,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: textSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10.0),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
+                    child: InkWell(
+                      onTap: () {
+                        action = "green";
+                        _callAPI();
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 150,
+                        color: Colors.green.shade700,
+                        child: Center(
+                          child: Text(
+                            randomText,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: textSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 10, height: 10),
+                  Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text(
+                      alert,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        color:
+                            alert == 'Good to go' ? Colors.green : Colors.red,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 60),
+                  // Add some space to avoid overlap with the button
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            right: 10,
+            child: Visibility(
+              visible: _isCameraVisible,
+              child: Container(
+                width: 100.0,
+                height: 150.0,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                ),
+                child: InteractiveViewer(
+                  minScale: 0.1,
+                  maxScale: 1.5,
+                  child: _controller != null
+                      ? CameraPreview(_controller!)
+                      : Container(),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 10,
+            right: 10,
+            child: Container(
+              height: 50.0,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.bluebutton, // Change to your desired color
+                borderRadius: BorderRadius.circular(25),
+              ),
+              child: MaterialButton(
+                onPressed: () {
+                  // Call your function here
+                  UpdateRedGreenTest();
+                },
+                child: Text(
+                  'Next',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14.0,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class RightEye extends StatefulWidget {
+//for Red Green Test Screen
+  @override
+  RightEyeState createState() => RightEyeState();
+}
+
+class RightEyeState extends State<RightEye> {
+  @override
+  void initState() {
+    super.initState();
+    _configureTts();
+    _onReplayPressed();
+  }
+
+  final FlutterTts flutterTts = FlutterTts();
+
+  void _configureTts() async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.speak(text);
+  }
+
+  void _onReplayPressed() {
+    const String replayText =
+        "We will start by testing your right eye. Please place your right hand palm on your right eye gently covering the eye. At any time do not put pressure on the eye or squint to see. Start by clicking on button right Eye";
+    _speak(replayText);
+  }
+
+// Add your desired functionality here
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("EYE TEST"),
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+          onPressed: () {
+            // Add your back button functionality here
+          },
+        ),
+      ),
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      GestureDetector(
+                        onTap: _onReplayPressed,
+                        child: Container(
+                          padding: EdgeInsets.only(bottom: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(top: 4.0),
+                                child: Image.asset(
+                                  'assets/play_circle_fill.png',
+                                  width: 50,
+                                  height: 40,
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              // Adjust spacing between icon and text
+                              Text(
+                                'Replay Audio',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10.0),
+                          child: Text(
+                            'Eye Test Instructions for Optimal Results',
+                            style: TextStyle(
+                              color: Colors.bluebutton,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 4.0),
+                        child: Image.asset(
+                          'assets/right_eye_image.png',
+                          width: 300,
+                          height: 220,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            bulletText(
+                                'Please place one hand over one eye while testing the other eye. This will help ensure accurate results during the test.'),
+                            bulletText(
+                                'For the virtual eye test, it\'s recommended to maintain a distance of approximately 50 cm from the screen. This distance is optimal for obtaining accurate results and facilitating thorough analysis of your vision.'),
+                            bulletText(
+                                'To facilitate the best possible testing conditions, we advise conducting the eye test in a well-lit room. Adequate lighting enhances the accuracy of the test results and ensures a comfortable testing experience for users.'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    select_eye_for_test('right', context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Color(0xFF4600A9),
+                    // Set button background color
+                    padding: EdgeInsets.all(16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  child: Text('Next'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> select_eye_for_test(String eye, BuildContext context) async {
@@ -5551,7 +6132,7 @@ void showCustomToast(BuildContext context, String message) {
       ),
     ),
   );
-  Overlay.of(context)?.insert(overlayEntry);
+  Overlay.of(context).insert(overlayEntry);
 // Remove the toast after 2 seconds
   Future.delayed(Duration(seconds: 2), () {
     overlayEntry.remove();

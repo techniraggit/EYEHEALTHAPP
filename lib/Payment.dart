@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
-import 'package:project_new/ReportPage.dart';
+import 'package:project_new/eyeFatigueTest/ReportPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'Counter.dart';
+import 'digitalEyeTest/Counter.dart';
 import 'myPlanPage.dart';
 
 class ViewPlan extends StatefulWidget {

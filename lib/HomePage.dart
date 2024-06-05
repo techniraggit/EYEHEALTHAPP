@@ -17,7 +17,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:project_new/alarm/demo_main.dart';
-import 'package:project_new/eyeFatigueTest.dart';
+
 import 'package:project_new/digitalEyeTest/testScreen.dart';
 import 'package:project_new/myPlanPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,7 +25,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'Custom_navbar/bottom_navbar.dart';
 import 'api/Api.dart';
 import 'api/config.dart';
-import 'eyeFatigueTest.dart';
+
+import 'eyeFatigueTest/eyeFatigueTest.dart';
 import 'models/fatigueGraphModel.dart';
 
 class EyeHealthData {
@@ -82,7 +83,7 @@ class HomePageState extends State<HomePage> {
   late DateTime selectedDate;
   String no_of_eye_test = "0";
   String eye_health_score = "";
-  String name = "";
+  String fullname = "";
   String no_of_fatigue_test = "0";
 
   // Define selectedDate within the _CalendarButtonState class
@@ -119,8 +120,6 @@ class HomePageState extends State<HomePage> {
       checkAndroidScheduleExactAlarmPermission();
     }
     // loadAlarms();
-
-    subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
     getGraph().then((data) {
       setState(() {
         _data = data;
@@ -128,6 +127,8 @@ class HomePageState extends State<HomePage> {
     }).catchError((error) {
       print(error);
     });
+    subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
+
   }
 
   Future<void> checkAndroidNotificationPermission() async {
@@ -284,7 +285,7 @@ class HomePageState extends State<HomePage> {
                         ],
                       ),
                       Text(
-                        name,
+                        fullname,
                         style: TextStyle(
                             color: Colors.lightBlueAccent, fontSize: 18),
                       ),
@@ -755,7 +756,7 @@ class HomePageState extends State<HomePage> {
 
         Map<String, dynamic> jsonData = jsonDecode(response.body);
         List<dynamic> data = jsonData['data'];
-        name=jsonData['name'];
+        fullname=jsonData['name'];
         int no_of_fatigue=jsonData['no_of_fatigue_test'];
         int  no_of_eye_=jsonData['no_of_eye_test'];
         dynamic eye_hscore=jsonData['eye_health_score'];
@@ -844,7 +845,6 @@ class BottomDialog extends StatelessWidget {
           Card(
             child: GestureDetector(
               onTap: () {
-                Navigator.pop(context);
                 sendcustomerDetails(context, true);
               },
               child: Image.asset('assets/test_for_myself_img.png'),
@@ -932,8 +932,6 @@ class OtherDetailsBottomSheet extends StatefulWidget {
 }
 
 class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
-  final _nameController = TextEditingController();
-  final _ageController = TextEditingController();
 
   Future<void> sendcustomerDetails(BuildContext context, bool isSelf,
       {String? name, String? age}) async {
@@ -987,132 +985,155 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
     }
   }
 
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _ageController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Test For Someone Else',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              IconButton(
-                icon: Icon(Icons.close),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          ),
-          Divider(thickness: 1.5, color: Colors.grey.shade400),
-          SizedBox(height: 20),
-          SizedBox(
-            height: 55,
-            child: Padding(
-              padding:
-              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
-              child: TextField(
-                controller: _nameController,
-                textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  labelText: 'Full Name',
-                  labelStyle: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.background,
-                    fontWeight: FontWeight.w100,
-                  ),
-                  hintText: 'Enter Full Name',
-                  hintStyle: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.hinttext,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius:
-                    BorderRadius.circular(27.0), // Add circular border
-                  ),
-                  // Set floatingLabelBehavior to always display the label
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                  // Add button to the end of the TextField
+    return Scaffold(
+      resizeToAvoidBottomInset: true, // Adjusts layout when keyboard appears
+
+      body: Padding(
+
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          physics: ScrollPhysics(),
+
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Test For Someone Else',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
                 ),
-                style:
-                const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
-              ),
+                Divider(thickness: 1.5, color: Colors.grey.shade400),
+                SizedBox(height: 20),
+                SizedBox(
+                  child: Padding(
+                    padding:
+                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
+                    child: TextFormField(
+                      controller: _nameController,
+                      textInputAction: TextInputAction.next,
+                      decoration: InputDecoration(
+                        labelText: 'Full Name',
+                        labelStyle: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w100,
+                        ),
+                        hintText: 'Enter Full Name',
+                        hintStyle: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius:
+                          BorderRadius.circular(27.0), // Add circular border
+                        ),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(30),
+                      ],
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a full name';
+                        }
+                        final nameRegExp = RegExp(r'^[a-zA-Z\s]+$');
+                        if (!nameRegExp.hasMatch(value)) {
+                          return 'Name must contain only alphabets';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                SizedBox(
+                  child: Padding(
+                    padding:
+                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
+                    child: TextFormField(
+                      controller: _ageController,
+                      textInputAction: TextInputAction.next,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(3),
+                      ],
+                      decoration: InputDecoration(
+                        labelText: 'Age',
+                        labelStyle: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        hintText: 'Age',
+                        hintStyle: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius:
+                          BorderRadius.circular(27.0), // Add circular border
+                        ),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter an age';
+                        }
+                        int? age = int.tryParse(value);
+                        if (age == null || age < 10 || age > 70) {
+                          return 'Age must be between 10 and 70';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        sendcustomerDetails(context, false,
+                            name: _nameController.text, age: _ageController.text);
+                      }
+                    },
+                    child: Text('Submit'),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size(350, 50),
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.bluebutton,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          SizedBox(height: 20),
-          SizedBox(
-            height: 55,
-            child: Padding(
-              padding:
-              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
-              child: TextFormField(
-                controller: _ageController,
-                textInputAction: TextInputAction.next,
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(3),
-                ],
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter an age';
-                  }
-                  int? age = int.tryParse(value);
-                  if (age == null || age < 12 || age > 100) {
-                    return 'Age must be between 12 and 100';
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Age',
-                  labelStyle: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.background,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  hintText: 'Age',
-                  hintStyle: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.hinttext,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius:
-                    BorderRadius.circular(27.0), // Add circular border
-                  ),
-                  // Set floatingLabelBehavior to always display the label
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                  // Add button to the end of the TextField
-                ),
-                style:
-                const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
-              ),
-            ),
-          ),
-          SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
-              onPressed: () {
-                sendcustomerDetails(context, false,
-                    name: _nameController.text, age: _ageController.text);
-              },
-              child: Text('Submit'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(350, 50),
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.bluebutton,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25),
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
