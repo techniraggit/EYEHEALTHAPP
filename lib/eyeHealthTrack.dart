@@ -281,109 +281,110 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
                   ),
                 ),
               ),
-            ),const Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
-              child: Text(
-                'EYE HEALTH GRAPH OVERVIEW', // Display formatted current date
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(1),
-                          child: ListTile(
-                            title: Text(
-                              'Right Eye Health',
-                              style: TextStyle(
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            subtitle: Text('April 30-May 30'),
-                          ),
-                        ),
-                        Container(
-                          height: 200,
-                          width: MediaQuery.of(context).size.width, // Adjust the width as needed
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: AspectRatio(
-                              aspectRatio: 1.40,
-                              child: _data != null
-                                  ? Builder(
-                                  builder: (context) {
-
-
-                                    if(_data!.length>10){
-                                      i=10;
-
-                                    }else{
-                                      i=_data!.length;
-                                    }
-                                    return LineChart(
-                                      LineChartData(
-                                        lineBarsData: [
-                                          LineChartBarData(
-                                            spots: _data!
-                                                .sublist(0, i)
-                                                .asMap()
-                                                .entries
-                                                .map((entry) {
-                                              return FlSpot(
-                                                  entry.key.toDouble(), entry.value);
-                                            }).toList(),
-                                            isCurved: true,
-                                            colors: [Colors.deepPurple],
-                                            barWidth: 4,
-                                            isStrokeCapRound: true,
-                                            belowBarData: BarAreaData(
-                                              show: true,
-                                              colors: [
-                                                Colors.deepPurple.withOpacity(0.1)
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                        gridData: FlGridData(
-                                          drawVerticalLine: true,
-                                          drawHorizontalLine: false,
-                                        ),
-                                        titlesData: FlTitlesData(
-                                          leftTitles: SideTitles(
-                                            showTitles: true,
-                                            interval: 10.0,
-                                          ),
-                                        ),
-                                        minX: 0,
-                                        maxX: 10, // Initially show only 10 values
-                                        minY: 10,
-                                        maxY: 100,
-                                      ),
-                                    );
-                                  }
-                              )
-                                  : CircularProgressIndicator(),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            // const Padding(
+            //   padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
+            //   child: Text(
+            //     'EYE HEALTH GRAPH OVERVIEW', // Display formatted current date
+            //     style: TextStyle(
+            //       fontSize: 18,
+            //       fontWeight: FontWeight.bold,
+            //     ),
+            //   ),
+            // ),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
+            //   child: SizedBox(
+            //     width: MediaQuery.of(context).size.width,
+            //     child: Card(
+            //       child: Padding(
+            //         padding: const EdgeInsets.all(16.0),
+            //         child: Column(
+            //           crossAxisAlignment: CrossAxisAlignment.start,
+            //           children: [
+            //             Padding(
+            //               padding: EdgeInsets.all(1),
+            //               child: ListTile(
+            //                 title: Text(
+            //                   'Right Eye Health',
+            //                   style: TextStyle(
+            //                     fontSize: 16.0,
+            //                     fontWeight: FontWeight.bold,
+            //                   ),
+            //                 ),
+            //                 subtitle: Text('April 30-May 30'),
+            //               ),
+            //             ),
+            //             Container(
+            //               height: 200,
+            //               width: MediaQuery.of(context).size.width, // Adjust the width as needed
+            //               child: SingleChildScrollView(
+            //                 scrollDirection: Axis.horizontal,
+            //                 child: AspectRatio(
+            //                   aspectRatio: 1.40,
+            //                   child: _data != null
+            //                       ? Builder(
+            //                       builder: (context) {
+            //
+            //
+            //                         if(_data!.length>10){
+            //                           i=10;
+            //
+            //                         }else{
+            //                           i=_data!.length;
+            //                         }
+            //                         return LineChart(
+            //                           LineChartData(
+            //                             lineBarsData: [
+            //                               LineChartBarData(
+            //                                 spots: _data!
+            //                                     .sublist(0, i)
+            //                                     .asMap()
+            //                                     .entries
+            //                                     .map((entry) {
+            //                                   return FlSpot(
+            //                                       entry.key.toDouble(), entry.value);
+            //                                 }).toList(),
+            //                                 isCurved: true,
+            //                                 colors: [Colors.deepPurple],
+            //                                 barWidth: 4,
+            //                                 isStrokeCapRound: true,
+            //                                 belowBarData: BarAreaData(
+            //                                   show: true,
+            //                                   colors: [
+            //                                     Colors.deepPurple.withOpacity(0.1)
+            //                                   ],
+            //                                 ),
+            //                               ),
+            //                             ],
+            //                             gridData: FlGridData(
+            //                               drawVerticalLine: true,
+            //                               drawHorizontalLine: false,
+            //                             ),
+            //                             titlesData: FlTitlesData(
+            //                               leftTitles: SideTitles(
+            //                                 showTitles: true,
+            //                                 interval: 10.0,
+            //                               ),
+            //                             ),
+            //                             minX: 0,
+            //                             maxX: 10, // Initially show only 10 values
+            //                             minY: 10,
+            //                             maxY: 100,
+            //                           ),
+            //                         );
+            //                       }
+            //                   )
+            //                       : CircularProgressIndicator(),
+            //                 ),
+            //               ),
+            //             ),
+            //           ],
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
             // Padding(
             //   padding: const EdgeInsets.symmetric(vertical: 0,horizontal: 16),
             //   child: Container(
