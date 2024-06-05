@@ -352,15 +352,15 @@ class HomePageState extends State<HomePage> {
                 child: Image.asset('assets/eyeFatigueTest.png'),
               ),
             ),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => MyPlan()),
-                );
-              },
-              child: Image.asset('assets/find_near_by_store.png'),
-            ),
+            // GestureDetector(
+            //   onTap: () {
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(builder: (context) => MyPlan()),
+            //     );
+            //   },
+            //   child: Image.asset('assets/find_near_by_store.png'),
+            // ),
             Padding(
               padding:
               const EdgeInsets.symmetric(horizontal: 17.0, vertical: 10),               child: Text(
@@ -449,143 +449,143 @@ class HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
-              child: Text(
-                'EYE HEALTH GRAPH OVERVIEW', // Display formatted current date
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 10, 15, 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Row(
-                    children: [
-                      Text('From: '),//${DateFormat('yyyy-MM-dd').format(_fromDate)}
-                      SizedBox(width: 8),
-
-
-                      TextButton(
-                        onPressed: () async {
-                          final DateTime? picked = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(2000),
-
-                            lastDate: DateTime(2101),
-                          );
-                          if (picked != null) {
-                            // _fr[index] = picked;
-
-                            setState(() {});
-                          }
-                        },
-                        child: Image.asset('assets/calender.png'),
-                      ),
-                    ],
-                  ),
-
-                  SizedBox(width: 20),
-                  Row(
-                    children: [
-                      Text('To: '),
-                      SizedBox(width: 8),
-                      TextButton(
-                        onPressed: () async {
-                          final DateTime? picked = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(2000),
-                            //_fromDates[index] != null ? _fromDates[index]! : DateTime(2000),
-
-                            // firstDate:_fromDates[index] != null?? DateTime(2000), // Set the first selectable date to the current date
-                            lastDate: DateTime(2101),
-                          );
-                          if (picked != null) {
-                            // _toDates[index] = picked;
-
-                            setState(() {});
-                          }
-                        },
-                        child: Image.asset('assets/calender.png'),
-                      ),
-                    ],
-                  ),//${DateFormat('yyyy-MM-dd').format(_toDate)}
-
-                ],
-              ),
-            ),
-
-            SizedBox(height: 20),
-            Builder(
-                builder: (context) {
-                  final List<Color> gradientColors = [
-                    Colors.background.withOpacity(0.6),Colors.white.withOpacity(0.8)
-
-                  ];
-                  return AspectRatio(
-                    aspectRatio: 1.5,
-                    child: LineChart(
-                      LineChartData(
-                        lineBarsData: [
-                          LineChartBarData(
-                            spots: _datagraph?.asMap().entries
-                                .map((entry) {
-                              final date = DateTime.parse(entry.value['date']);
-                              final value = entry.value['value'] as double;
-                              return FlSpot(entry.key.toDouble(), value);
-                            })
-                                .toList()
-                                .sublist(0,11), // Take the first 10 entries
-                            isCurved: true,
-                            colors: gradientColors,
-                            barWidth: 1.6,
-                            belowBarData: BarAreaData(
-                              show: true,
-                              colors: gradientColors
-                                  .map((color) => color.withOpacity(0.3))
-                                  .toList(),
-                            ),
-                            dotData: FlDotData(show: true),
-                            isStrokeCapRound: true,
-                            curveSmoothness: 0.3,
-                          ),
-                        ],
-                        gridData: FlGridData(show: false),
-                        titlesData: FlTitlesData(
-                          show: true,
-                          bottomTitles: SideTitles(
-                            showTitles: true,
-                            margin: 8,
-                            reservedSize: 3,
-                            interval: 1, // Interval is set to 1 to show all labels
-                            getTitles: (value) {
-                              final index = value.toInt();
-                              if (index >= 0 && index < 10) { // Show only the first 10 dates
-                                final date = DateTime.parse(_datagraph?[index]['date']);
-                                return '${date.day}/${date.month}';
-                              }
-                              return '';
-                            },
-                          ),
-                        ),
-                        borderData: FlBorderData(show: true),
-                        minX: 0,
-                        maxX: 9, // Set to 9 because we are showing 10 values (0-indexed)
-                        minY: 0,
-                        maxY: 100,
-                      ),
-                    ),
-                  );
-
-
-                }
-            ),
+            // Padding(
+            //   padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
+            //   child: Text(
+            //     'EYE HEALTH GRAPH OVERVIEW', // Display formatted current date
+            //     style: TextStyle(
+            //         fontSize: 18,
+            //         fontWeight: FontWeight.bold,
+            //         color: Colors.deepPurple),
+            //   ),
+            // ),
+            // Padding(
+            //   padding: EdgeInsets.fromLTRB(16.0, 10, 15, 10),
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.center,
+            //     children: <Widget>[
+            //       Row(
+            //         children: [
+            //           Text('From: '),//${DateFormat('yyyy-MM-dd').format(_fromDate)}
+            //           SizedBox(width: 8),
+            //
+            //
+            //           TextButton(
+            //             onPressed: () async {
+            //               final DateTime? picked = await showDatePicker(
+            //                 context: context,
+            //                 initialDate: DateTime.now(),
+            //                 firstDate: DateTime(2000),
+            //
+            //                 lastDate: DateTime(2101),
+            //               );
+            //               if (picked != null) {
+            //                 // _fr[index] = picked;
+            //
+            //                 setState(() {});
+            //               }
+            //             },
+            //             child: Image.asset('assets/calender.png'),
+            //           ),
+            //         ],
+            //       ),
+            //
+            //       SizedBox(width: 20),
+            //       Row(
+            //         children: [
+            //           Text('To: '),
+            //           SizedBox(width: 8),
+            //           TextButton(
+            //             onPressed: () async {
+            //               final DateTime? picked = await showDatePicker(
+            //                 context: context,
+            //                 initialDate: DateTime.now(),
+            //                 firstDate: DateTime(2000),
+            //                 //_fromDates[index] != null ? _fromDates[index]! : DateTime(2000),
+            //
+            //                 // firstDate:_fromDates[index] != null?? DateTime(2000), // Set the first selectable date to the current date
+            //                 lastDate: DateTime(2101),
+            //               );
+            //               if (picked != null) {
+            //                 // _toDates[index] = picked;
+            //
+            //                 setState(() {});
+            //               }
+            //             },
+            //             child: Image.asset('assets/calender.png'),
+            //           ),
+            //         ],
+            //       ),//${DateFormat('yyyy-MM-dd').format(_toDate)}
+            //
+            //     ],
+            //   ),
+            // ),
+            //
+            // SizedBox(height: 20),
+            // Builder(
+            //     builder: (context) {
+            //       final List<Color> gradientColors = [
+            //         Colors.background.withOpacity(0.6),Colors.white.withOpacity(0.8)
+            //
+            //       ];
+            //       return AspectRatio(
+            //         aspectRatio: 1.5,
+            //         child: LineChart(
+            //           LineChartData(
+            //             lineBarsData: [
+            //               LineChartBarData(
+            //                 spots: _datagraph?.asMap().entries
+            //                     .map((entry) {
+            //                   final date = DateTime.parse(entry.value['date']);
+            //                   final value = entry.value['value'] as double;
+            //                   return FlSpot(entry.key.toDouble(), value);
+            //                 })
+            //                     .toList()
+            //                     .sublist(0,11), // Take the first 10 entries
+            //                 isCurved: true,
+            //                 colors: gradientColors,
+            //                 barWidth: 1.6,
+            //                 belowBarData: BarAreaData(
+            //                   show: true,
+            //                   colors: gradientColors
+            //                       .map((color) => color.withOpacity(0.3))
+            //                       .toList(),
+            //                 ),
+            //                 dotData: FlDotData(show: true),
+            //                 isStrokeCapRound: true,
+            //                 curveSmoothness: 0.3,
+            //               ),
+            //             ],
+            //             gridData: FlGridData(show: false),
+            //             titlesData: FlTitlesData(
+            //               show: true,
+            //               bottomTitles: SideTitles(
+            //                 showTitles: true,
+            //                 margin: 8,
+            //                 reservedSize: 3,
+            //                 interval: 1, // Interval is set to 1 to show all labels
+            //                 getTitles: (value) {
+            //                   final index = value.toInt();
+            //                   if (index >= 0 && index < 10) { // Show only the first 10 dates
+            //                     final date = DateTime.parse(_datagraph?[index]['date']);
+            //                     return '${date.day}/${date.month}';
+            //                   }
+            //                   return '';
+            //                 },
+            //               ),
+            //             ),
+            //             borderData: FlBorderData(show: true),
+            //             minX: 0,
+            //             maxX: 9, // Set to 9 because we are showing 10 values (0-indexed)
+            //             minY: 0,
+            //             maxY: 100,
+            //           ),
+            //         ),
+            //       );
+            //
+            //
+            //     }
+            // ),
             Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
               child: Text(
