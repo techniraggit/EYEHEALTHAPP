@@ -20,7 +20,6 @@ import 'package:platform_device_id_v2/platform_device_id_v2.dart';
 import 'package:project_new/HomePage.dart';
 import 'package:project_new/digitalEyeTest/TestReport.dart';
 import 'package:project_new/eyeHealthTrack.dart';
-import 'package:project_new/rewards_sync.dart';
 import 'package:project_new/sign_up.dart';
 import 'package:project_new/user_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,7 +27,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'Custom_navbar/bottom_navbar.dart';
 import 'FirebaseOptions/FirebaseApi.dart';
 import 'alarm/demo_main.dart';
-import 'eyeFatigueTestReport.dart';
 import 'firebase_options.dart';
 
 final navigatorKey=GlobalKey<NavigatorState>();

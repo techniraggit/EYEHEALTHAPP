@@ -13,7 +13,6 @@ import 'package:light_compressor/light_compressor.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:project_new/HomePage.dart';
-import 'package:project_new/eyeFatigueTestReport.dart';
 import 'package:project_new/sign_up.dart';
 // import 'package:video_compress/video_compress.dart';
 import 'package:camera/camera.dart';
@@ -21,14 +20,17 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'api/Api.dart';
-import 'api/config.dart';
-import 'dinogame/cactus.dart';
-import 'dinogame/cloud.dart';
-import 'dinogame/constants.dart';
-import 'dinogame/dino.dart';
-import 'dinogame/game_object.dart';
-import 'dinogame/ground.dart';
+import '../api/Api.dart';
+import '../api/config.dart';
+import '../dinogame/cactus.dart';
+import '../dinogame/cloud.dart';
+import '../dinogame/constants.dart';
+import '../dinogame/dino.dart';
+import '../dinogame/game_object.dart';
+import '../dinogame/ground.dart';
+import 'eyeFatigueTestReport.dart';
+
+
 bool isclose=false;bool uploaded=false;
 bool isLoading = false;bool startgame=false;bool gamepermission=false;
 class EyeFatigueStartScreen extends StatefulWidget {
