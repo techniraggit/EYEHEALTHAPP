@@ -18,6 +18,7 @@ import 'dart:convert' as convert;
 
 import '../Custom_navbar/customDialog.dart';
 import '../api/Api.dart';
+import 'camara.dart';
 import 'TestReport.dart';
 
 class GiveInfo extends StatefulWidget {
@@ -411,10 +412,10 @@ class SelectQuestion extends State<GiveInfo> {
         print("id $test");
         print(response.body);
         //   _progressDialog!.hide();
-       // _stopSpeaking();
+
         Navigator.pushReplacement(
           context,
-          CupertinoPageRoute(builder: (context) => CameraS()),
+          CupertinoPageRoute(builder: (context) => Camara()),
         );
       } else {
         // _progressDialog!.hide();
@@ -478,12 +479,12 @@ class LeftEyeTestState extends State<LeftEyeTest> {
       appBar: AppBar(
         title: Text("EYE TEST"),
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-          onPressed: () {
-            // Add your back button functionality here
-          },
-        ),
+        // leading: IconButton(
+        //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+        //   onPressed: () {
+        //     // Add your back button functionality here
+        //   },
+        // ),
       ),
       body: Stack(
         children: [
@@ -900,12 +901,12 @@ class AlphabetTestState extends State<AlphabetTest> {
           appBar: AppBar(
             title: Text("EYE TEST"),
             centerTitle: true,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-              onPressed: () {
-                // Add your back button functionality here
-              },
-            ),
+            // leading: IconButton(
+            //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+            //   onPressed: () {
+            //     // Add your back button functionality here
+            //   },
+            // ),
           ),
           body: Stack(
             children: [
@@ -1377,15 +1378,7 @@ class Reading extends State<ReadingTest> {
         "We are now going to test your eyesight for near reading or reading small letters at one hand distance. The problem of near reading is age related. In this test, you will be shown a word at different sizes. You have to stop and move ahead when you are able to read the word clearly. The words will start from small to big.You need to stop the moment you are able to read clearly. Lets begin";
     _speak(replayText);
   }
-  @override
-  void dispose() {
-    _controller?.dispose();
-    flutterTts.stop();
-    super.dispose();
-  }
-  void _stopSpeaking() async {
-    await flutterTts.stop();
-  }
+
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
@@ -1429,67 +1422,63 @@ class Reading extends State<ReadingTest> {
   }
 
   Future<void> sendDistanceRequest(String image) async {
-    var distanceType;
-
     var apiUrl =
         '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
-    /* String base64String = await xFileToBase64(image);*/
-
-    //print('image$image');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
-    String CustomerId = prefs.getString('customer_id') ?? '';
 
+    var distanceType;
     String text = prefs.getString('test') ?? '';
+    print("testTypecam:--" + text);
     if (text == 'myopia') {
       distanceType = 'fardistance';
     } else if (text == 'hyperopia') {
       distanceType = 'neardistance';
-    }
-    try {
-      var frameData = image;
+    } //print('image$image');
 
-      // Replace this with your frame data as a base64 string
-      // var distanceType = 'neardistance'; // Replace this with the distance type
+    try {
+      var frameData =
+          image; // Replace this with your frame data as a base64 string
+      // var distanceType = testname//'neardistance'; // Replace this with the distance type
 
       var requestBody = jsonEncode({
         'frameData': frameData,
         'test_distance': distanceType,
       });
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken =
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
 
       var response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${authToken} ',
           'Customer-Id': CustomerId,
         },
         body: requestBody,
       );
-
+      print("frameData: " + frameData);
+      // print("test_distance :" + distanceType);
+      print("response-camera${response.body}");
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
-
-        print("nnnnnnn$alertMessage");
-        // Handle the response data here
-        print('Request sucxsss with status: ${response.body}');
-        print("alert$alertMessage");
         setState(() {
-          //  alert = alertMessage;
+          alert = alertMessage;
         });
       } else {
         Map<String, dynamic> data = jsonDecode(response.body);
 
         String alertMessage = data['alert'];
         alert = alertMessage;
-        print('Request failed with status: ${response.statusCode}');
-        print('Request failed with status: ${response.body}');
+        //   print('Request failed with status: ${response.statusCode}');
+        //   print('Request failed with status: ${response.body}');
         setState(() {
           alert = alertMessage;
+          print("alert$alertMessage");
         });
 
         // Handle error response
@@ -1498,14 +1487,23 @@ class Reading extends State<ReadingTest> {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
             context, 'poor internet connectivity , please try again later!');
+      } else {
+        /* CustomAlertDialog.attractivepopup(
+            context, 'make sure you have proper light on your face ');*/
       }
 
 // If the server returns an error response, throw an exception
-      throw Exception('Failed to send data');
+      //throw Exception('Failed to send data');
     }
   }
 
-
+  @override
+  void dispose() {
+    if (_controller != null) {
+      _controller!.dispose();
+    }    flutterTts.stop();
+    super.dispose();
+  }
 
   String alert = '';
   String randomText = 'Test';
@@ -1560,197 +1558,6 @@ class Reading extends State<ReadingTest> {
     }
   }
 
-/*  @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => GiveInfo()),
-          // (route) => route.isFirst, // Remove until the first route (Screen 1)
-        );
-        return false;
-      },
-      child: MaterialApp(
-          home: Scaffold(
-              appBar: AppBar(
-                title: Text("EYE TEST"),
-                centerTitle: true,
-                leading: IconButton(
-                  icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-                  onPressed: () {
-                    // Add your back button functionality here
-                  },
-                ),
-              ),
-              body: Stack(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage('assets/test.png'),
-// Replace with your image
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  Center(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        //  mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(height: 10),
-                          Container(
-                            width: 150,
-                            height: 80,
-                            child: Center(
-                              child: Text(
-                                randomText,
-                                style: TextStyle(
-                                  fontSize: currentTextSize,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 30),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(width: 20),
-                              SizedBox(
-                                height: 45,
-                                width: 130,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    getReadingSnellFraction();
-                                    increaseReadingTextSize();
-                                  },
-                                  child: Text(
-                                    'Back',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight
-                                            .bold // Set the text color here
-                                        // You can also set other properties like fontSize, fontWeight, etc.
-                                        ),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 5, vertical: 1),
-                                    backgroundColor: Colors.yellow,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 20),
-                              SizedBox(
-                                height: 45,
-                                width: 140,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    getReadingSnellFraction();
-
-                                    decreaseReadingTextSize();
-                                  },
-                                  child: Text(
-                                    'Perfectly '
-                                    'Visible',
-                                    style: TextStyle(
-                                      color: Colors
-                                          .white, // Set the text color here
-                                      // You can also set other properties like fontSize, fontWeight, etc.
-                                    ),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 5, vertical: 1),
-                                    backgroundColor: Colors.lightGreen,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                          SizedBox(height: 10),
-                          SizedBox(
-                            height: 40,
-                            width: 150,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Update_HyperMyopiaTest(context);
-                              },
-                              child: Text(
-                                'Not able to Read',
-                                style: TextStyle(
-                                  color:
-                                      Colors.white, // Set the text color here
-                                  // You can also set other properties like fontSize, fontWeight, etc.
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 5, vertical: 3),
-                                backgroundColor: Colors.red,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Container(
-                            width: 320,
-                            height: 40,
-                            padding: EdgeInsets.all(8),
-                            child: Text(
-                              alert,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: 22,
-                                  color: alert == 'Good to go'
-                                      ? Colors.green
-                                      : Colors.red,
-                                  fontWeight: FontWeight.bold
-                                  // Change text color here
-                                  // You can also set other properties like fontWeight, fontStyle, etc.
-                                  ),
-                            ),
-                          ),
-                          Container(
-                            child: InteractiveViewer(
-                             // boundaryMargin: EdgeInsets.all(20.0),
-                              minScale: 0.1,
-                              maxScale: 1.5,
-                              child: _controller != null
-                                  ? CameraPreview(_controller!)
-                                  : Container(),
-                            ),
-
-                            width: 280.0,
-                            // Set the desired width
-                            height: 320.0,
-                            // Set the desired height
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey),
-                            ),
-                          )
-
-                          ,
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ))),
-    );
-  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -2115,7 +1922,6 @@ class Reading extends State<ReadingTest> {
             CupertinoPageRoute(builder: (context) => const TestReport()));
         // getActivePlan();
       } else {
-        _stopSpeaking();
         Navigator.push(
           context,
           CupertinoPageRoute(builder: (context) => RightEye()),
@@ -2488,12 +2294,12 @@ class AstigmationTest1 extends State<AstigmationTest> {
           appBar: AppBar(
             title: Text("EYE TEST"),
             centerTitle: true,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-              onPressed: () {
-                // Add your back button functionality here
-              },
-            ),
+            // leading: IconButton(
+            //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+            //   onPressed: () {
+            //     // Add your back button functionality here
+            //   },
+            // ),
           ),
           body: Stack(
             fit: StackFit.expand,
@@ -3294,12 +3100,12 @@ class Astigmationtest2 extends State<AstigmationTest2> {
           appBar: AppBar(
             title: Text("EYE TEST"),
             centerTitle: true,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-              onPressed: () {
-                // Add your back button functionality here
-              },
-            ),
+            // leading: IconButton(
+            //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+            //   onPressed: () {
+            //     // Add your back button functionality here
+            //   },
+            // ),
           ),
           body: Stack(
             children: <Widget>[
@@ -3588,7 +3394,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
 
   void _onReplayPressed() {
     const String replayText =
-        "Focus on the black dot for 10 second. After 10 second look at the lines and click on the region  which is more darker than others. If unable to see the lines clearly, click on Increase or click on decrease till you see any one line darker than others. Once you select the region, click next";
+        "Focus on the black dot for 10 second. After 10 second look at the lines and click on the degree option which is more darker than others. If unable to see the lines clearly, click on Increase or click on decrease till you see any one line darker than others. Once you select the degree, click next";
     _speak(replayText);
   }
 
@@ -4321,12 +4127,12 @@ class AstigmationTestNone extends State<AstigmationTest3> {
           appBar: AppBar(
             title: Text("EYE TEST"),
             centerTitle: true,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-              onPressed: () {
-                // Add your back button functionality here
-              },
-            ),
+            // leading: IconButton(
+            //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+            //   onPressed: () {
+            //     // Add your back button functionality here
+            //   },
+            // ),
           ),
           body: Stack(
             children: <Widget>[
@@ -4745,19 +4551,24 @@ class _ShadowTestState extends State<ShadowTest> {
 
   String alert = '';
   String dynamicText = 'A';
-  double currentTextSize = 15.118110236220474; //4-29
+  double currentTextSize = 15.118110236220474;
+  double curentSizemm=0.50;//4-29
   void changeSize(String direction) {
     if (direction == 'up') {
       if (currentTextSize < 109.60629921259843 &&
           currentTextSize >= 15.118110236220474) {
         currentTextSize += 1.8897637795275593;
-        print("currentTextSize" + currentTextSize.toString());
+        curentSizemm+=0.50;
+        print("currentTextSize" + currentTextSize.toString() +  "----------------${
+            curentSizemm}");
       }
     } else if (direction == 'down') {
       if (currentTextSize > 15.118110236220474 &&
           currentTextSize <= 109.60629921259843) {
         currentTextSize -= 1.8897637795275593;
-        print("currentTextSize" + currentTextSize.toString());
+        curentSizemm-=0.50;
+        print("currentTextSize" + currentTextSize.toString() +       "----------------${
+            curentSizemm}");
       }
     }
     setState(() {
@@ -4946,12 +4757,12 @@ class _ShadowTestState extends State<ShadowTest> {
           appBar: AppBar(
             title: Text("EYE TEST"),
             centerTitle: true,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-              onPressed: () {
-                // Add your back button functionality here
-              },
-            ),
+            // leading: IconButton(
+            //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+            //   onPressed: () {
+            //     // Add your back button functionality here
+            //   },
+            // ),
           ),
           body: Stack(
             fit: StackFit.expand,
@@ -5129,7 +4940,7 @@ class _ShadowTestState extends State<ShadowTest> {
 // Replace this with your PUT request body
     Map<String, dynamic> body = {
       'test_id': test_id,
-      'cyl_text_size': currentTextSize,
+      'cyl_text_size': curentSizemm,//currentTextSize
     };
     try {
       final response = await http.put(
@@ -5164,13 +4975,15 @@ class RedGreenTest extends StatefulWidget {
 
 class redgreen extends State<RedGreenTest> {
   CameraController? _controller;
+  late Future<void> _initializeControllerFuture;
   late List<CameraDescription> _cameras;
+  // bool _isCapturing = false;
 
   @override
   void initState() {
     super.initState();
     fetchData();
-   _initializeCamera();
+    _initializeCamera();
     _configureTts();
     _onReplayPressed();
   }
@@ -5323,11 +5136,10 @@ class redgreen extends State<RedGreenTest> {
 
   @override
   void dispose() {
-    // Cancel the capture process
-    _captureProcess.then((_) {
-      _controller?.dispose();
-    });
-    flutterTts.stop();
+    // _isCapturing = false;
+    if (_controller != null) {
+      _controller!.dispose();
+    }    flutterTts.stop();
     super.dispose();
   }
 
@@ -5584,12 +5396,12 @@ class redgreen extends State<RedGreenTest> {
       appBar: AppBar(
         title: Text("EYE TEST"),
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-          onPressed: () {
-            // Add your back button functionality here
-          },
-        ),
+        // leading: IconButton(
+        //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+        //   onPressed: () {
+        //     // Add your back button functionality here
+        //   },
+        // ),
       ),
       body: Stack(
         children: <Widget>[
@@ -5805,12 +5617,12 @@ class RightEyeState extends State<RightEye> {
       appBar: AppBar(
         title: Text("EYE TEST"),
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-          onPressed: () {
-            // Add your back button functionality here
-          },
-        ),
+        // leading: IconButton(
+        //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+        //   onPressed: () {
+        //     // Add your back button functionality here
+        //   },
+        // ),
       ),
       body: Stack(
         children: [

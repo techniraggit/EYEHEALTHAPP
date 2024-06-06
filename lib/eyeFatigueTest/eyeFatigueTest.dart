@@ -28,6 +28,7 @@ import '../dinogame/constants.dart';
 import '../dinogame/dino.dart';
 import '../dinogame/game_object.dart';
 import '../dinogame/ground.dart';
+import 'EyeFatigueSelfieScreen.dart';
 import 'eyeFatigueTestReport.dart';
 
 
@@ -65,6 +66,7 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
+              Navigator.pop(context);
               // Add your back button functionality here
             },
           ),
@@ -151,11 +153,15 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
+
+
+
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => EyeFatigueSecondScreen()),
+                          builder: (context) => EyeFatigueSelfieScreen()),
                     );
+
                   },
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
@@ -261,11 +267,10 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
 
     _initializeCamera();});
 
-    sendcustomerDetails();
-    Future.delayed(Duration(seconds: 1), () {
+    // Future.delayed(Duration(seconds: 1), () {
 
       startTimer();
-    });
+    // });
 
   isloading();
 
@@ -452,47 +457,6 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
   }
 
 
-  Future<void> sendcustomerDetails() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
-    final String apiUrl = '${Api.baseurl}/api/fatigue/add-customer';
-// Replace these headers with your required headers
-    Map<String, String> headers = {
-      'Authorization': 'Bearer $authToken',
-      'Content-Type': 'application/json',
-
-    };
-
-
-
-    try {
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        headers: headers,
-      );
-      print('response === ' + response.body);
-      if (response.statusCode == 200) {
-        if (kDebugMode) {
-          print('sddd ${response.body}');
-        }
-        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-
-        // Extract the customer ID
-        String customerAccessToken = jsonResponse['data']['token']['access'];
-        prefs.setString('customer_token', customerAccessToken);
-        print('customer_acess_token === ' + customerAccessToken);
-
-      } else {
-        print('Failed with status code: ${response.statusCode}');
-        print('Failed sddd ${response.body}');
-      }
-    } catch (e) {
-// Handle exceptions here (e.g., network errors)
-      print('Exception: $e');
-    }
-  }
 
   Future<void> _initializeCamera() async {
     cameras = await availableCameras();
@@ -527,7 +491,8 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
 
 
       print('Video upload=response=${response.body}');
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200)
+      {
 
         print('Video uploaded successfully');
 
@@ -545,9 +510,10 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
 
         // MyProgressDialog.dismissProgressDialog(progressDialog!);
 
-      } else {
+      }
+      else {
         // MyProgressDialog.dismissProgressDialog(progressDialog!);
-        Fluttertoast.showToast(msg: "face is not captured properly, please test again");
+        Fluttertoast.showToast(msg: "Something went wrong !!, please test again");
         setState(() {
           isclose=false; uploaded=false;
           isLoading = false;startgame=false;gamepermission=false;
@@ -643,15 +609,20 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
 
         print('Compressed video path: ${response.destinationPath}');
       // });
-    } else if (response is OnFailure) {
-      setState(() {
-        Fluttertoast.showToast(msg: "${response.message}");
-
-      });
-    } else if (response is OnCancelled) {
-      Fluttertoast.showToast(msg: "${response.isCancelled}");
-      print(response.isCancelled);
+    }else {
+      Fluttertoast.showToast(msg: "you phone may have insufficient storage");
     }
+    // else if (response is OnFailure) {
+    //
+    //   setState(() {
+    //     Fluttertoast.showToast(msg: "${response.message}");
+    //
+    //   });
+    // }
+    // else if (response is OnCancelled) {
+    //   Fluttertoast.showToast(msg: "${response.isCancelled}");
+    //   print(response.isCancelled);
+    // }
   }
 
 
@@ -682,6 +653,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
     }
     return WillPopScope(
       onWillPop: () async {
+
         // Handle back button press here
         // Return true to allow back navigation, false to prevent it
         return false; // Set to false to prevent back navigation
@@ -712,24 +684,28 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
 
                     },
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                      child: RichText(
-                        text: TextSpan(
-                          text: 'Want to play a game while you wait? ',
-                          style: TextStyle(color: Colors.black, fontSize: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 25),
+                      child: Container(
+                        height: 8,
+                        width: MediaQuery.of(context).size.width,
+                        color: Colors.grey[300],
+                        child: Stack(
                           children: [
-                            TextSpan(
-                              text: 'Launch Game',
-                              style: TextStyle(
-                                color: Colors.blue,
-                                decoration: TextDecoration.none, // Remove underline
+                            AnimatedPositioned(
+                              duration: Duration(seconds: 1),
+                              curve: Curves.linear,
+                              left: 0, // Start from the left edge
+                              right: MediaQuery.of(context).size.width * (1 - _position), // Calculate the right edge position
+                              child: Container(
+                                height: 40,
+                                color: Colors.blue, // Adjust color as needed
                               ),
                             ),
-                            TextSpan(text: ''),
                           ],
                         ),
                       ),
                     ),
+
                   ),
                 ),
               ),
@@ -866,9 +842,9 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
                   ),
 
                     Spacer(),
-                    SizedBox(height: 10,),
+                    SizedBox(height: 50,),
                     Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 25),
                       child: Container(
                         height: 8,
                         width: MediaQuery.of(context).size.width,
@@ -878,10 +854,10 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
                             AnimatedPositioned(
                               duration: Duration(seconds: 1),
                               curve: Curves.linear,
-                              right: MediaQuery.of(context).size.width * (1 - _position),
+                              left: MediaQuery.of(context).size.width * (1 +_position),
                               child: Container(
-                                height: 10,
-                                width: MediaQuery.of(context).size.width * _position,
+                                height: 40,
+                                width:  _position,//MediaQuery.of(context).size.width *
                                 color: Colors.background,
                               ),
                             ),
@@ -1006,16 +982,7 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
     super.initState();
     sendReportDb();
   }
-  /*Future<Map<String, dynamic>> fetchData() async {
-    final response = await http.get(Uri.parse('https://api.example.com/data'));
-    if (response.statusCode == 200) {
-      // If the server returns a 200 OK response, parse the JSON
-      return json.decode(response.body);
-    } else {
-      // If the server did not return a 200 OK response, throw an exception
-      throw Exception('Failed to load data from API');
-    }
-  }*/
+
 
   @override
   Widget build(BuildContext context) {
@@ -1036,21 +1003,11 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
             ),
           ),
           body:
-      //      uploaded
-      //   ? const Center(
-      //   child: Padding(
-      //   padding: EdgeInsets.all(8.0),
-      //   child: Text(
-      //     "Please wait, we are fetching your report...",
-      //     style: TextStyle(
-      //       color: Colors.black,
-      //       fontSize: 16,
-      //     ),
-      //     textAlign: TextAlign.center,
-      //   ),
-      // ),
-      // )
-      //     :
+           uploaded
+        ? const Center(
+
+      )
+          :
            Column(
              // mainAxisAlignment: MainAxisAlignment.center,
              children: [
@@ -1115,7 +1072,7 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
   }
 
   // Function to build UI after data is loaded
-  Future<void> sendReportDb() async {
+  Future<void> sendReportDb()  async {
     try {
       var sharedPref = await SharedPreferences.getInstance();
       String userToken =
@@ -1139,6 +1096,7 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
 
       final responseData = json.decode(response.body);
 
+
       if (response.statusCode == 200) {
 
         setState(()  {
@@ -1155,8 +1113,7 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
 
 
       }
-      else if (response.statusCode == 401)
-      {
+      else if (response.statusCode == 401) {
         setState(() {
           isclose=false; uploaded=false;
           isLoading = false;startgame=false;gamepermission=false;
@@ -1169,14 +1126,18 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
       }
       else if(response.statusCode == 500) {
         setState(() {
-           isclose=false; uploaded=false;
-           isLoading = false;startgame=false;gamepermission=false;
+          isclose=false; uploaded=false;
+          isLoading = false;startgame=false;gamepermission=false;
         });
         Fluttertoast.showToast(msg: "Server error occurred, Please try again later.");
+print("50000");
+
+//TODO remove
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomePage()),
         );
+
       }
       else{
         setState(() {
@@ -1187,9 +1148,10 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
 
           // Handle the case when no data is found
           String errorMessage = responseData['error'];
+          if(responseData['msg']!=null){
           String message = responseData['msg'];
           print('$errorMessage: $message');
-          Fluttertoast.showToast(msg:message );
+          Fluttertoast.showToast(msg:message );}
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => HomePage()),
@@ -1216,9 +1178,9 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
         // Handle other Dio errors
         print("DioError: ${e.error}");
       }
-    } catch (e) {
+    } catch (e,Stacktrace) {
       // Handle other exceptions
-      print("Exception---: $e");
+      print("Exception---: $e======$Stacktrace");
     }
   }
 
