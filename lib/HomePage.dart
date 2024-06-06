@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:alarm/alarm.dart';
 import 'package:alarm/model/alarm_settings.dart';
-import 'package:draw_graph/draw_graph.dart';
 import 'package:draw_graph/models/feature.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -12,15 +10,13 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:project_new/alarm/demo_main.dart';
 
 import 'package:project_new/digitalEyeTest/testScreen.dart';
-import 'package:project_new/myPlanPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Custom_navbar/bottom_navbar.dart';
@@ -65,8 +61,13 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  List<double>? _data; List<String>? dates;
-  int i = 0; List<Feature>? features; List<String>? labelX ; List<String>? labelY;
+  List<double>? _data;
+  List<String>? dates;
+  int i = 0;
+  List<Feature>? features;
+  List<String>? labelX;
+
+  List<String>? labelY;
 
   String _status = '';
   List<FlSpot> _value = [];
@@ -86,6 +87,8 @@ class HomePageState extends State<HomePage> {
   String eye_health_score = "";
   String fullname = "";
   String no_of_fatigue_test = "0";
+  dynamic selectedPlanId = '';
+  bool isActivePlan = false;
 
   // Define selectedDate within the _CalendarButtonState class
 
@@ -94,6 +97,7 @@ class HomePageState extends State<HomePage> {
   static StreamSubscription<AlarmSettings>? subscription;
   late DateTime _fromDate;
   late DateTime _toDate;
+
   Future<void> _selectDate(BuildContext context, bool isFromDate) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -129,7 +133,6 @@ class HomePageState extends State<HomePage> {
       print(error);
     });
     subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
-
   }
 
   Future<void> checkAndroidNotificationPermission() async {
@@ -156,11 +159,13 @@ class HomePageState extends State<HomePage> {
     );
     loadAlarms();
   }
+
   @override
   void dispose() {
     subscription?.cancel();
     super.dispose();
   }
+
   Future<void> checkAndroidExternalStoragePermission() async {
     final status = await Permission.storage.status;
     if (status.isDenied) {
@@ -228,7 +233,7 @@ class HomePageState extends State<HomePage> {
                 child: Center(
                   child: Padding(
                     padding:
-                    const EdgeInsets.all(8.0), // Add padding for the icon
+                        const EdgeInsets.all(8.0), // Add padding for the icon
                     child: Image.asset(
                       "assets/home_icon.png",
                       width: 20,
@@ -327,10 +332,7 @@ class HomePageState extends State<HomePage> {
               padding: const EdgeInsets.all(15.0),
               child: GestureDetector(
                 onTap: () {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (context) => BottomDialog(),
-                  );
+                  checkActivePlan('eyeTest');
                   /*   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => AddCustomerPage()),
@@ -341,15 +343,11 @@ class HomePageState extends State<HomePage> {
             ),
             Padding(
               padding:
-              const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
+                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
               child: GestureDetector(
                 onTap: () {
                   // sendcustomerDetails(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => EyeFatigueStartScreen()),
-                  );
+                  checkActivePlan('fatigue');
                 },
                 child: Image.asset('assets/eyeFatigueTest.png'),
               ),
@@ -365,14 +363,15 @@ class HomePageState extends State<HomePage> {
             // ),
             Padding(
               padding:
-              const EdgeInsets.symmetric(horizontal: 17.0, vertical: 10),               child: Text(
-              'EYE HEALTH STATUS',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.deepPurple,
+                  const EdgeInsets.symmetric(horizontal: 17.0, vertical: 10),
+              child: Text(
+                'EYE HEALTH STATUS',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepPurple,
+                ),
               ),
-            ),
             ),
             SizedBox(width: 8),
 
@@ -696,11 +695,78 @@ class HomePageState extends State<HomePage> {
     );
   }
 
+  void checkActivePlan(String testType) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('access_token') ?? '';
+
+    try {
+      final response = await http.get(
+        Uri.parse('${ApiProvider.baseUrl + ApiProvider.isActivePlan}'),
+        headers: <String, String>{
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // _progressDialog!.hide();
+
+        final jsonResponse = jsonDecode(response.body);
+
+        // Access the value of is_verified
+        isActivePlan = jsonResponse['is_active_plan'];
+        selectedPlanId = jsonResponse['plan_id'];
+
+        setState(() {
+          if (isActivePlan == false) {
+
+              Fluttertoast.showToast(
+                msg: "Before Start the Test Please Purchase the Plan",
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.BOTTOM,
+                timeInSecForIosWeb: 1,
+                backgroundColor: Colors.bluebutton,
+
+                textColor: Colors.white,
+                fontSize: 16.0,
+              );
+
+          } else {
+            if (testType == 'fatigue') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => EyeFatigueStartScreen()),
+              );
+            } else {
+              showModalBottomSheet(
+                context: context,
+                builder: (context) => BottomDialog(),
+              );
+            }
+          }
+        });
+
+        print("responseviewprofile:${response.body}");
+
+        return json.decode(response.body);
+      } else {
+        // _progressDialog!.hide();
+
+        print(response.body);
+      }
+    } catch (e) {
+      // _progressDialog!.hide();
+
+      print("exception:$e");
+    }
+    throw Exception('');
+  }
+
   Future<void> sendcustomerDetails(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
     final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
 // Replace these headers with your required headers
     Map<String, String> headers = {
@@ -734,7 +800,6 @@ class HomePageState extends State<HomePage> {
     }
   }
 
-
   Future<List<double>> getGraph() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -744,45 +809,40 @@ class HomePageState extends State<HomePage> {
         headers: <String, String>{
           'Authorization': 'Bearer $authToken',
         },
-
       );
 
       if (response.statusCode == 200) {
-
         final responseData = json.decode(response.body);
         fatigueGraphData = fatigueGraph.fromJson(responseData);
-
 
         print("graphdata===:${response.body}");
 
         Map<String, dynamic> jsonData = jsonDecode(response.body);
         List<dynamic> data = jsonData['data'];
-        fullname=jsonData['name'];
-        int no_of_fatigue=jsonData['no_of_fatigue_test'];
-        int  no_of_eye_=jsonData['no_of_eye_test'];
-        dynamic eye_hscore=jsonData['eye_health_score'];
+        fullname = jsonData['name'];
+        int no_of_fatigue = jsonData['no_of_fatigue_test'];
+        int no_of_eye_ = jsonData['no_of_eye_test'];
+        dynamic eye_hscore = jsonData['eye_health_score'];
         setState(() {
           _datagraph = List<Map<String, dynamic>>.from(jsonData['data']);
-          no_of_fatigue_test=no_of_fatigue.toString();
-          no_of_eye_test=no_of_eye_.toString();
-          eye_health_score=eye_hscore.toString();
+          no_of_fatigue_test = no_of_fatigue.toString();
+          no_of_eye_test = no_of_eye_.toString();
+          eye_health_score = eye_hscore.toString();
         });
 
-        return data.map((item) => double.parse(item['value'].toString())).toList();
-
-      }
-      else {
-
+        return data
+            .map((item) => double.parse(item['value'].toString()))
+            .toList();
+      } else {
         print(response.body);
       }
-    }
-    catch (e) {     // _progressDialog!.hide();
+    } catch (e) {
+      // _progressDialog!.hide();
 
       print("exception:$e");
     }
     throw Exception('');
   }
-
 }
 
 class setReminder extends StatefulWidget {
@@ -933,7 +993,6 @@ class OtherDetailsBottomSheet extends StatefulWidget {
 }
 
 class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
-
   Future<void> sendcustomerDetails(BuildContext context, bool isSelf,
       {String? name, String? age}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -996,11 +1055,9 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
       resizeToAvoidBottomInset: true, // Adjusts layout when keyboard appears
 
       body: Padding(
-
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           physics: ScrollPhysics(),
-
           child: Form(
             key: _formKey,
             child: Column(
@@ -1011,7 +1068,8 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                   children: [
                     Text(
                       'Test For Someone Else',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     IconButton(
                       icon: Icon(Icons.close),
@@ -1023,8 +1081,8 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                 SizedBox(height: 20),
                 SizedBox(
                   child: Padding(
-                    padding:
-                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10.0, vertical: 1),
                     child: TextFormField(
                       controller: _nameController,
                       textInputAction: TextInputAction.next,
@@ -1042,15 +1100,16 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                           fontWeight: FontWeight.w400,
                         ),
                         border: OutlineInputBorder(
-                          borderRadius:
-                          BorderRadius.circular(27.0), // Add circular border
+                          borderRadius: BorderRadius.circular(
+                              27.0), // Add circular border
                         ),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       inputFormatters: [
                         LengthLimitingTextInputFormatter(30),
                       ],
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+                      style:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter a full name';
@@ -1067,8 +1126,8 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                 SizedBox(height: 20),
                 SizedBox(
                   child: Padding(
-                    padding:
-                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10.0, vertical: 1),
                     child: TextFormField(
                       controller: _ageController,
                       textInputAction: TextInputAction.next,
@@ -1091,12 +1150,13 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                           fontWeight: FontWeight.w400,
                         ),
                         border: OutlineInputBorder(
-                          borderRadius:
-                          BorderRadius.circular(27.0), // Add circular border
+                          borderRadius: BorderRadius.circular(
+                              27.0), // Add circular border
                         ),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+                      style:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter an age';
@@ -1117,7 +1177,8 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         sendcustomerDetails(context, false,
-                            name: _nameController.text, age: _ageController.text);
+                            name: _nameController.text,
+                            age: _ageController.text);
                       }
                     },
                     child: Text('Submit'),
@@ -1198,8 +1259,3 @@ class ExampleAlarmRingScreen extends StatelessWidget {
     );
   }
 }
-
-
-
-
-

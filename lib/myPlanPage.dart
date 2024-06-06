@@ -22,7 +22,6 @@ class MyPlan extends StatefulWidget {
 
 class MyPlanState extends State<MyPlan> {
   late Future<List<Plan>> futurePlans;
-  bool isActivePlan = false;
 
   @override
   void initState() {
@@ -33,10 +32,12 @@ class MyPlanState extends State<MyPlan> {
 
   late String PlanId;
   dynamic selectedPlanId = '';
+  bool isActivePlan = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Eye Health Premium Plan'),
         centerTitle: true,
@@ -277,7 +278,7 @@ class MyPlanState extends State<MyPlan> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('access_token') ?? '';
 
-    // try {
+     try {
     final response = await http.get(
       Uri.parse('${ApiProvider.baseUrl + ApiProvider.isActivePlan}'),
       headers: <String, String>{
@@ -311,13 +312,13 @@ class MyPlanState extends State<MyPlan> {
       print(response.body);
     }
   }
-/*} catch (e) {
+ catch (e) {
       // _progressDialog!.hide();
 
       print("exception:$e");
     }
     throw Exception('');
-  }*/
+  }
 }
 
 late final jsonResponse;
