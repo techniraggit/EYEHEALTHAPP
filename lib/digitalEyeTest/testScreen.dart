@@ -5453,8 +5453,9 @@ class redgreen extends State<RedGreenTest> {
           UpdateRedGreenTest();
         }
         if (testcancel == true) {
-          CustomAlertDialog.attractivepopup(context,
-              'Please do the test again and follow the instructions carefully ... ');
+          Fluttertoast.showToast(msg:  'Please do the test again and follow the instructions carefully ... ');
+      /*    CustomAlertDialog.attractivepopup(context,
+              'Please do the test again and follow the instructions carefully ... ');*/
           Navigator.push(
             context,
             CupertinoPageRoute(builder: (context) => GiveInfo()),
