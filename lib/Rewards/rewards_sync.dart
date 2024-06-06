@@ -1742,7 +1742,8 @@ class PrescriptionUpload extends StatefulWidget {
 
 class PresUpload extends State<PrescriptionUpload> {
   int? EyeHealthPoints;
-  int? totalPoints;
+  int? totalPoints;  TextEditingController _commentController = TextEditingController();
+
   OfferData? offerData;
   double? userPercentage;
   bool isReedemButtonEnabled = false; // Set your condition here
@@ -1757,10 +1758,13 @@ class PresUpload extends State<PrescriptionUpload> {
   String userToken = '';
   List<String> dates = [];
   List<String> statuses = [];
+  List<String> image = [];
+
   bool isLoading = true;
 
   List<String> prescriptionid = [];
   Timer? _timer;
+
   String? image_url, title, description;
   Color buttonColor = Colors.disablebutton; // Default color
   int? hours, minutes, seconds;bool isEnabled=true;
@@ -1774,7 +1778,7 @@ class PresUpload extends State<PrescriptionUpload> {
 
   @override
   void dispose() {
-    _timer?.cancel();
+    _timer?.cancel();_commentController.dispose();
     super.dispose();
   }
   Future getPrescriptionFiles() async {
@@ -1807,6 +1811,11 @@ class PresUpload extends State<PrescriptionUpload> {
           String invoiceFile = fileEntry['file'];
           String date = fileEntry['created_on'];
           String status = fileEntry['status'];
+
+          String images = fileEntry['file'];
+          image.add(images);
+
+
           String prescription_id = fileEntry['prescription_id'];
 
           prescriptionNames.add(invoiceFile);
@@ -2097,7 +2106,7 @@ class PresUpload extends State<PrescriptionUpload> {
                                   child: Align(
                                     alignment: Alignment.center,
                                     child: Text(
-                                      isEnabled ? 'Supported formates: JPEG, PNG, Word, PPT': 'Your prescription has been uploaded and is currently being verified by our team. This process will take approximately 24 hours. ',
+                                      isEnabled ? 'Supported formates: JPG, JPEG, PNG, WEBP, SVG, BMP': 'Your prescription has been uploaded and is currently being verified by our team. This process will take approximately 24 hours. ',
 
 
                                       // 'Win a cool pair of sunglasses of worth rs 1000 free',
@@ -2152,34 +2161,69 @@ class PresUpload extends State<PrescriptionUpload> {
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                if (statuses[index].toLowerCase() == "approved")
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black),
-                                      borderRadius: BorderRadius.circular(5.0),
-                                    ),
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text(
-                                      '$points Points',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 12),
-                                    ),
+
+                                  Row(
+                                    children: [
+                                      if (statuses[index].toLowerCase() == "approved")
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(color: Colors.black),
+                                          borderRadius: BorderRadius.circular(5.0),
+                                        ),
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          '$points Points',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 12),
+                                        ),
+                                      ),
+                                      if (statuses[index].toLowerCase() == "pending")
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            border: Border.all(color: Colors.black),
+                                            borderRadius: BorderRadius.circular(5.0),
+                                          ),
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            '${statuses[index]}',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 12),
+                                          ),
+                                        ),
+                                      SizedBox(width: 20,),
+                                      // if (statuses[index].toLowerCase() == "pending")
+                                        GestureDetector(
+                                          onTap:(){
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                print("imageUrl----------${image[index]}");
+                                                return ImagePreviewDialog(imageUrl: "https://eyehealth.backend.zuktiinnovations.com"+image[index]);
+                                              },
+                                            );
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              border: Border.all(color: Colors.black),
+                                              borderRadius: BorderRadius.circular(5.0),
+                                            ),
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text(
+                                              'Preview',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 12),
+                                            ),
+                                          ),
+                                        ),
+
+
+
+                                    ],
                                   ),
-                                if (statuses[index].toLowerCase() == "pending")
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black),
-                                      borderRadius: BorderRadius.circular(5.0),
-                                    ),
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text(
-                                      '${statuses[index]}',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 12),
-                                    ),
-                                  ),
+
 
                                 // Add your text here
                                 // IconButton(
@@ -2213,10 +2257,13 @@ class PresUpload extends State<PrescriptionUpload> {
       allowMultiple: true,
       type: FileType.custom,
       allowedExtensions: [
-        'pdf',
+
         'jpg',
         'jpeg',
-        'png'
+        'png',
+        'bmp',
+        'svg',
+        'webp'
       ], // Specify allowed file types
     );
 
@@ -2238,12 +2285,74 @@ class PresUpload extends State<PrescriptionUpload> {
       //   );
       // } else {
         _files1.addAll(files);
-        uploadPrescription(pickedFiles.files);
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text(
+                    "Report an Issue",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text("What problem are you facing?"),
+                ),
+                SizedBox(height: 10),
+                Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: TextField(
+                    controller: _commentController,
+                    decoration: InputDecoration(
+                      hintText: "Type your problem here...",
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: 3,
+                  ),
+                ),
+                ButtonBar(
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                      child: Text("Cancel"),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Retrieve the user's comment
+                        String comment = _commentController.text;
+                        // You can do something with the comment here
+                        print("User comment: $comment");
+                        uploadPrescription(pickedFiles.files,comment);
+
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                      child: Text("Upload"),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      );
+
+      // uploadPrescription(pickedFiles.files);
       // }
     }
   }
 
-  Future<void> uploadPrescription(List<PlatformFile> _files) async {
+  Future<void> uploadPrescription(List<PlatformFile> _files,Comment) async {
     var sharedPref = await SharedPreferences.getInstance();
     String userToken = sharedPref.getString("access_token") ?? '';
 
@@ -2260,6 +2369,7 @@ class PresUpload extends State<PrescriptionUpload> {
       'file',
       _files[0].path!,
     ));
+    request.fields['problem_faced'] = Comment;
 
     print("Request==: ${request.toString()}");
 
@@ -2289,10 +2399,33 @@ class PresUpload extends State<PrescriptionUpload> {
         print("Error: ${response.reasonPhrase}");
       }
     } catch (e,Stacktrace) {
-      Fluttertoast.showToast(msg: "please upload pdf upto 10 Mb");
+      Fluttertoast.showToast(msg: "please upload image max upto 10 Mb");
       // Handle any errors that occur during the request
       print("Error uploading file: $e================$Stacktrace================");
     }
   }
 
 }
+class ImagePreviewDialog extends StatelessWidget {
+  final String imageUrl;
+
+  ImagePreviewDialog({required this.imageUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    return
+     Dialog(
+      child: Container(
+        width: 200,
+        height: 200,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: NetworkImage(imageUrl),
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+    );
+  }
+}
+

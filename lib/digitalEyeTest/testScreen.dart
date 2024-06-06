@@ -99,6 +99,7 @@ class SelectQuestion extends State<GiveInfo> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
             onPressed: () {
+              Navigator.pop(context);
               // Add your back button functionality here
             },
           ),
@@ -223,115 +224,6 @@ class SelectQuestion extends State<GiveInfo> {
     );
   }
 
-/*  @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
-        return false;
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("EYE TEST"),
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-            onPressed: () {
-              // Add your back button functionality here
-            },
-          ),
-        ),
-        body: Stack(
-          children: [
-            FutureBuilder<List<Question>>(
-              future: _questionsFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('No questions available'));
-                } else {
-                  return SingleChildScrollView(
-                    padding: EdgeInsets.only(bottom: 100),
-                    // Add padding to avoid button overlap
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Welcome to Eye Health',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.bluebutton,
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 40),
-                                child: Text(
-                                  'Are you wearing Eyeglasses or Contact Lenses for Vision Correction Faces, or Sightseeing?',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.black,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              SizedBox(height: 10),
-                              // Dynamically create QuestionCheckbox widgets based on fetched questions
-                              for (var question in snapshot.data!) ...[
-                                QuestionCheckbox(
-                                  questionId: question.id,
-                                  questionText: question.questionText,
-                                  onChanged: (bool? value) {
-                                    _onCheckboxChanged(value, question.id);
-                                  },
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-              },
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
-                child: ElevatedButton(
-                  onPressed: () {
-                    submitApi();
-                  },
-                  child: Text('Next'),
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Color(0xFF5900D9),
-                    padding: EdgeInsets.all(6),
-                    minimumSize: Size(MediaQuery.of(context).size.width, 50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(26),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }*/
 
   Future<List<Question>> getQuestionApi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -479,12 +371,12 @@ class LeftEyeTestState extends State<LeftEyeTest> {
       appBar: AppBar(
         title: Text("EYE TEST"),
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-          onPressed: () {
-            // Add your back button functionality here
-          },
-        ),
+        // leading: IconButton(
+        //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+        //   onPressed: () {
+        //     // Add your back button functionality here
+        //   },
+        // ),
       ),
       body: Stack(
         children: [
@@ -901,12 +793,12 @@ class AlphabetTestState extends State<AlphabetTest> {
           appBar: AppBar(
             title: Text("EYE TEST"),
             centerTitle: true,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-              onPressed: () {
-                // Add your back button functionality here
-              },
-            ),
+            // leading: IconButton(
+            //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+            //   onPressed: () {
+            //     // Add your back button functionality here
+            //   },
+            // ),
           ),
           body: Stack(
             children: [
@@ -1499,8 +1391,9 @@ class Reading extends State<ReadingTest> {
 
   @override
   void dispose() {
-    _controller?.dispose();
-    flutterTts.stop();
+    if (_controller != null) {
+      _controller!.dispose();
+    }    flutterTts.stop();
     super.dispose();
   }
 
@@ -1557,197 +1450,6 @@ class Reading extends State<ReadingTest> {
     }
   }
 
-/*  @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => GiveInfo()),
-          // (route) => route.isFirst, // Remove until the first route (Screen 1)
-        );
-        return false;
-      },
-      child: MaterialApp(
-          home: Scaffold(
-              appBar: AppBar(
-                title: Text("EYE TEST"),
-                centerTitle: true,
-                leading: IconButton(
-                  icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-                  onPressed: () {
-                    // Add your back button functionality here
-                  },
-                ),
-              ),
-              body: Stack(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage('assets/test.png'),
-// Replace with your image
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  Center(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        //  mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(height: 10),
-                          Container(
-                            width: 150,
-                            height: 80,
-                            child: Center(
-                              child: Text(
-                                randomText,
-                                style: TextStyle(
-                                  fontSize: currentTextSize,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 30),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(width: 20),
-                              SizedBox(
-                                height: 45,
-                                width: 130,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    getReadingSnellFraction();
-                                    increaseReadingTextSize();
-                                  },
-                                  child: Text(
-                                    'Back',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight
-                                            .bold // Set the text color here
-                                        // You can also set other properties like fontSize, fontWeight, etc.
-                                        ),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 5, vertical: 1),
-                                    backgroundColor: Colors.yellow,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 20),
-                              SizedBox(
-                                height: 45,
-                                width: 140,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    getReadingSnellFraction();
-
-                                    decreaseReadingTextSize();
-                                  },
-                                  child: Text(
-                                    'Perfectly '
-                                    'Visible',
-                                    style: TextStyle(
-                                      color: Colors
-                                          .white, // Set the text color here
-                                      // You can also set other properties like fontSize, fontWeight, etc.
-                                    ),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 5, vertical: 1),
-                                    backgroundColor: Colors.lightGreen,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                          SizedBox(height: 10),
-                          SizedBox(
-                            height: 40,
-                            width: 150,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Update_HyperMyopiaTest(context);
-                              },
-                              child: Text(
-                                'Not able to Read',
-                                style: TextStyle(
-                                  color:
-                                      Colors.white, // Set the text color here
-                                  // You can also set other properties like fontSize, fontWeight, etc.
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 5, vertical: 3),
-                                backgroundColor: Colors.red,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Container(
-                            width: 320,
-                            height: 40,
-                            padding: EdgeInsets.all(8),
-                            child: Text(
-                              alert,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: 22,
-                                  color: alert == 'Good to go'
-                                      ? Colors.green
-                                      : Colors.red,
-                                  fontWeight: FontWeight.bold
-                                  // Change text color here
-                                  // You can also set other properties like fontWeight, fontStyle, etc.
-                                  ),
-                            ),
-                          ),
-                          Container(
-                            child: InteractiveViewer(
-                             // boundaryMargin: EdgeInsets.all(20.0),
-                              minScale: 0.1,
-                              maxScale: 1.5,
-                              child: _controller != null
-                                  ? CameraPreview(_controller!)
-                                  : Container(),
-                            ),
-
-                            width: 280.0,
-                            // Set the desired width
-                            height: 320.0,
-                            // Set the desired height
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey),
-                            ),
-                          )
-
-                          ,
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ))),
-    );
-  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -1763,12 +1465,11 @@ class Reading extends State<ReadingTest> {
           appBar: AppBar(
             title: Text("EYE TEST"),
             centerTitle: true,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-              onPressed: () {
-                // Add your back button functionality here
-              },
-            ),
+            // leading: IconButton(
+            //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+            //   onPressed: () {
+            //   },
+            // ),
           ),
           body: Stack(
             children: [
@@ -2483,12 +2184,12 @@ class AstigmationTest1 extends State<AstigmationTest> {
           appBar: AppBar(
             title: Text("EYE TEST"),
             centerTitle: true,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-              onPressed: () {
-                // Add your back button functionality here
-              },
-            ),
+            // leading: IconButton(
+            //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+            //   onPressed: () {
+            //     // Add your back button functionality here
+            //   },
+            // ),
           ),
           body: Stack(
             fit: StackFit.expand,
@@ -3057,223 +2758,6 @@ class Astigmationtest2 extends State<AstigmationTest2> {
   @override
   int selectedValue = 0;
 
-/*
-  @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => GiveInfo()),
-        );
-        return false;
-      },
-      child: MaterialApp(
-        home: Scaffold(
-          appBar: AppBar(
-            title: Text("EYE TEST"),
-            centerTitle: true,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-              onPressed: () {
-                // Add your back button functionality here
-              },
-            ),
-          ),
-          body: Stack(
-            children: <Widget>[
-              // Background Image
-              Center(
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      SizedBox(height: 5),
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(40, 10, 10, 2),
-                        child: Text(
-                          'Astigmatic Test',
-                          style: TextStyle(
-                              fontSize: 22.0,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
-                        child: Text(
-                          'Choose the part where you can see a more darker line',
-                          style: TextStyle(
-                            fontSize: 13.0,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 1.0),
-                      Container(
-                        margin: EdgeInsets.fromLTRB(10, 8, 10, 8),
-                        child: currentImage.isEmpty
-                            ? CircularProgressIndicator()
-                            : Image.asset(
-                          currentImage,
-                          width: imageSize1,
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                      SizedBox(height: 10.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Container(
-                            height: 35,
-                            width: 130,
-                            child: CustomElevatedButtonY(
-                              text: 'Decrease',
-                              onPressed: decreaseSize,
-                            ),
-                          ),
-                          Container(
-                            height: 35,
-                            width: 130,
-                            child: CustomElevatedButtonG(
-                              text: 'Increase ',
-                              onPressed: increaseSize,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 10.0),
-                      Center(
-                        child: dataList.isEmpty
-                            ? CircularProgressIndicator()
-                            : SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceEvenly,
-                            children: dataList.map((value) {
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: OutlinedButton(
-                                  onPressed: () {
-                                    print('Button $value pressed');
-                                    ChoseAstigmation(value);
-                                    Degree = value;
-                                    setState(() {
-                                      selectedValue = value;
-                                    });
-                                  },
-                                  style: ButtonStyle(
-                                    backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                      selectedValue == value
-                                          ? Colors.lightBlueAccent
-                                          : Colors.bluebutton,
-                                    ),
-                                    side: MaterialStateProperty.all<
-                                        BorderSide>(
-                                      BorderSide(
-                                        color: Colors
-                                            .white, // Blue border color
-                                        width: 2.0,
-                                      ),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    value.toString(),
-                                    style: TextStyle(
-                                      color: selectedValue == value
-                                          ? Colors.white
-                                          : Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Container(
-                        width: 320,
-                        height: 40,
-                        padding: EdgeInsets.all(8),
-                        child: Text(
-                          alert,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 22,
-                              color: alert == 'Good to go'
-                                  ? Colors.green
-                                  : Colors.red,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                right: 10,
-                width: 100,
-                height: 150,
-                child: _controller != null
-                    ? CameraPreview(_controller!)
-                    : Container(
-                  color: Colors.black,
-                  child: Center(
-                    child: Text(
-                      'Loading Camera...',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 10,
-                left: 0,
-                right: 0,
-                child: Column(
-                  children: [
-                    SizedBox(height: 10), // Adjust as needed
-                    Container(
-                      height: 40,
-                      decoration: BoxDecoration(
-                        // Adjust colors as needed
-                        color: Colors.bluebutton,
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: MaterialButton(
-                        onPressed: () {
-                          if (Degree == 500) {
-                            CustomAlertDialog.attractivepopup(
-                                context, 'please select the degree');
-                          } else {
-                            Navigator.push(
-                              context,
-                              CupertinoPageRoute(
-                                  builder: (context) => ShadowTest()),
-                            );
-                          }
-                        },
-                        child: Text(
-                          'Next',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -3289,12 +2773,12 @@ class Astigmationtest2 extends State<AstigmationTest2> {
           appBar: AppBar(
             title: Text("EYE TEST"),
             centerTitle: true,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-              onPressed: () {
-                // Add your back button functionality here
-              },
-            ),
+            // leading: IconButton(
+            //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+            //   onPressed: () {
+            //     // Add your back button functionality here
+            //   },
+            // ),
           ),
           body: Stack(
             children: <Widget>[
@@ -3898,409 +3382,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
     super.dispose();
   }
 
-/*
-  @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () async {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => GiveInfo()),
-            // (route) => route.isFirst, // Remove until the first route (Screen 1)
-          );
-          return false;
-        },
-        child: MaterialApp(
-          home: Scaffold(
-            appBar: AppBar(
-              title: Text("EYE TEST"),
-              centerTitle: true,
-              leading: IconButton(
-                icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-                onPressed: () {
-                  // Add your back button functionality here
-                },
-              ),
-            ),
-            body: Stack(
-              children: <Widget>[
-                // Background Image
-                Center(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        // Background Image
-                        Container(
-                          margin: EdgeInsets.fromLTRB(0, 55, 0, 2),
-                          child: SingleChildScrollView(
-                            child: Column(
-                              //mainAxisAlignment: MainAxisAlignment.center,
-                              //  crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Padding(
-                                  padding: EdgeInsets.fromLTRB(40, 15, 40, 2),
-                                  child: Text(
-                                    '  Astigmatic Test',
-                                    style: TextStyle(
-                                        fontSize: 24.0,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                SizedBox(height: 1.0),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(20, 5, 0, 20),
-                                  child: Text(
-                                    'Choose the part where you can see a more darker line',
-                                    style: TextStyle(
-                                        fontSize: 15.0,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                ),
-                                // Text in the Middle
-                                SizedBox(height: 2.0),
-                                Image.asset(
-                                  'assets/astigmation3.png',
-                                  // height: imageSize,
-                                  width: imageSize,
-                                ),
-                                */ /*   Image.asset(
-                    'assets/d/s1.svg',
-                    // Replace with your image path
-                    width: imageSize,
-                    height: imageSize,
-                  ),*/ /*
-                                SizedBox(height: 23.0),
 
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Container(
-                                      height: 35,
-                                      width: 150,
-                                      //padding: const EdgeInsets.fromLTRB(3, 1, 3, 1),
-                                      margin: EdgeInsets.fromLTRB(10, 5, 20, 0),
-                                      // padding: const EdgeInsets.fromLTRB(30, 14, 30, 10),
-                                      // margin: EdgeInsets.fromLTRB(10, 10, 20, 0),
-
-                                      child: CustomElevatedButtonY(
-                                        text: 'Decrease ',
-                                        onPressed: decreaseSize,
-                                      ),
-                                    ),
-                                    Container(
-                                      height: 35,
-                                      width: 150,
-                                      //padding: const EdgeInsets.fromLTRB(3, 1, 3, 1),
-                                      margin: EdgeInsets.fromLTRB(10, 5, 20, 0),
-
-                                      child: CustomElevatedButtonG(
-                                        text: 'Increase ',
-                                        onPressed: increaseSize,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-
-                                // Two Horizontal Aligned Buttons
-
-                                SizedBox(height: 5.0),
-
-                                // Four Buttons Aligned Horizontally
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: <Widget>[
-                                      Container(
-                                        height: 35,
-                                        width: 60,
-                                        margin: const EdgeInsets.all(3),
-                                        decoration: BoxDecoration(
-                                          color: Colors.bluebutton,
-                                          borderRadius:
-                                              BorderRadius.circular(18),
-                                        ),
-                                        child: MaterialButton(
-                                          onPressed: () {},
-                                          child: TextButton(
-                                            child: Text(
-                                              'A',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                            onPressed: () {
-                                              setState(() {
-                                                // Change container color to white
-                                                containerColor =
-                                                    Colors.lightBlueAccent;
-                                                containerColor5 =
-                                                    Colors.bluebutton;
-                                                containerColor3 =
-                                                    Colors.bluebutton;
-                                                containerColor4 =
-                                                    Colors.bluebutton;
-                                                containerColor2 =
-                                                    Colors.bluebutton;
-                                              });
-                                              selectedPart = 'a';
-                                              ChoseAstigmation();
-                                              fetchData();
-                                              Navigator.push(
-                                                context,
-                                                CupertinoPageRoute(
-                                                    builder: (context) =>
-                                                        AstigmationTest2()),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        height: 35,
-                                        width: 60,
-                                        margin: const EdgeInsets.all(3),
-                                        decoration: BoxDecoration(
-                                          color: Colors.bluebutton,
-                                          borderRadius:
-                                              BorderRadius.circular(18),
-                                        ),
-                                        child: MaterialButton(
-                                          onPressed: () {},
-                                          child: TextButton(
-                                            child: Text(
-                                              'B',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                            onPressed: () {
-                                              setState(() {
-                                                // Change container color to white
-                                                containerColor2 =
-                                                    Colors.lightBlueAccent;
-                                                containerColor5 =
-                                                    Colors.bluebutton;
-                                                containerColor3 =
-                                                    Colors.bluebutton;
-                                                containerColor4 =
-                                                    Colors.bluebutton;
-                                                containerColor =
-                                                    Colors.bluebutton;
-                                              });
-                                              selectedPart = 'b';
-                                              ChoseAstigmation();
-                                              fetchData();
-                                              Navigator.push(
-                                                context,
-                                                CupertinoPageRoute(
-                                                    builder: (context) =>
-                                                        AstigmationTest2()),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        height: 35,
-                                        width: 60,
-                                        margin: const EdgeInsets.all(3),
-                                        decoration: BoxDecoration(
-                                          color: Colors.bluebutton,
-                                          borderRadius:
-                                              BorderRadius.circular(18),
-                                        ),
-                                        child: MaterialButton(
-                                          onPressed: () {},
-                                          child: TextButton(
-                                            child: Text(
-                                              'C',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                            onPressed: () {
-                                              setState(() {
-                                                // Change container color to white
-                                                containerColor3 =
-                                                    Colors.lightBlueAccent;
-                                                containerColor2 =
-                                                    Colors.bluebutton;
-                                                containerColor =
-                                                    Colors.bluebutton;
-                                                containerColor4 =
-                                                    Colors.bluebutton;
-                                                containerColor5 =
-                                                    Colors.bluebutton;
-                                              });
-                                              selectedPart = 'c';
-                                              ChoseAstigmation();
-                                              fetchData();
-                                              Navigator.push(
-                                                context,
-                                                CupertinoPageRoute(
-                                                    builder: (context) =>
-                                                        AstigmationTest2()),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        height: 35,
-                                        width: 60,
-                                        margin: const EdgeInsets.all(3),
-                                        decoration: BoxDecoration(
-                                          color: Colors.bluebutton,
-                                          borderRadius:
-                                              BorderRadius.circular(18),
-                                        ),
-                                        child: MaterialButton(
-                                          onPressed: () {},
-                                          child: TextButton(
-                                            child: Text(
-                                              'D',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                            onPressed: () {
-                                              setState(() {
-                                                // Change container color to white
-                                                containerColor4 =
-                                                    Colors.lightBlueAccent;
-                                                containerColor2 =
-                                                    Colors.bluebutton;
-                                                containerColor3 =
-                                                    Colors.bluebutton;
-                                                containerColor5 =
-                                                    Colors.bluebutton;
-                                                containerColor =
-                                                    Colors.bluebutton;
-                                              });
-                                              selectedPart = 'd';
-                                              ChoseAstigmation();
-                                              fetchData();
-                                              Navigator.push(
-                                                context,
-                                                CupertinoPageRoute(
-                                                    builder: (context) =>
-                                                        AstigmationTest2()),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        height: 35,
-                                        width: 85,
-                                        margin:
-                                            EdgeInsets.fromLTRB(3, 3, 10, 0),
-
-                                        //margin: const EdgeInsets.all(3),
-                                        decoration: BoxDecoration(
-                                          color: Colors.bluebutton,
-                                          borderRadius:
-                                              BorderRadius.circular(18),
-                                        ),
-                                        child: MaterialButton(
-                                          onPressed: () {},
-                                          child: TextButton(
-                                            child: Text(
-                                              'None',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 10,
-                                              ),
-                                            ),
-                                            onPressed: () {
-                                              setState(() {
-                                                // Change container color to white
-                                                containerColor5 =
-                                                    Colors.lightBlueAccent;
-                                                containerColor2 =
-                                                    Colors.bluebutton;
-                                                containerColor3 =
-                                                    Colors.bluebutton;
-                                                containerColor4 =
-                                                    Colors.bluebutton;
-                                                containerColor =
-                                                    Colors.bluebutton;
-                                              });
-                                              CounterApi();
-                                              showCustomToast(context,
-                                                  'Operation Successfully ');
-                                              Navigator.push(
-                                                context,
-                                                CupertinoPageRoute(
-                                                    builder: (context) =>
-                                                        RedGreenTest()),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(height: 10),
-
-                                Container(
-                                  width: 320,
-                                  height: 40,
-                                  padding: EdgeInsets.all(8),
-                                  child: Text(
-                                    alert,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 22,
-                                        color: alert == 'Good to go'
-                                            ? Colors.green
-                                            : Colors.red,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Positioned(
-                                  right: 10,
-                                  width: 100,
-                                  // Adjust the width as needed
-                                  height: 150,
-                                  // Adjust the height as needed
-                                  child: _controller != null
-                                      ? CameraPreview(_controller!)
-                                      : Container(
-                                          color: Colors.black,
-                                          child: Center(
-                                            child: Text(
-                                              'Loading Camera...',
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ));
-  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -4316,12 +3398,12 @@ class AstigmationTestNone extends State<AstigmationTest3> {
           appBar: AppBar(
             title: Text("EYE TEST"),
             centerTitle: true,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-              onPressed: () {
-                // Add your back button functionality here
-              },
-            ),
+            // leading: IconButton(
+            //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+            //   onPressed: () {
+            //     // Add your back button functionality here
+            //   },
+            // ),
           ),
           body: Stack(
             children: <Widget>[
@@ -4740,193 +3822,34 @@ class _ShadowTestState extends State<ShadowTest> {
 
   String alert = '';
   String dynamicText = 'A';
-  double currentTextSize = 15.118110236220474; //4-29
+  double currentTextSize = 15.118110236220474;
+  double curentSizemm=0.50;//4-29
   void changeSize(String direction) {
     if (direction == 'up') {
       if (currentTextSize < 109.60629921259843 &&
           currentTextSize >= 15.118110236220474) {
         currentTextSize += 1.8897637795275593;
-        print("currentTextSize" + currentTextSize.toString());
+        curentSizemm+=0.50;
+        print("currentTextSize" + currentTextSize.toString() +  "----------------${
+            curentSizemm}");
       }
     } else if (direction == 'down') {
       if (currentTextSize > 15.118110236220474 &&
           currentTextSize <= 109.60629921259843) {
         currentTextSize -= 1.8897637795275593;
-        print("currentTextSize" + currentTextSize.toString());
+        curentSizemm-=0.50;
+        print("currentTextSize" + currentTextSize.toString() +       "----------------${
+            curentSizemm}");
       }
     }
     setState(() {
       currentTextSize;
+      curentSizemm;
     });
   }
 
   bool isCameraInitialized = false;
 
-/*
-  @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-              builder: (context) =>
-                  GiveInfo()), // Replace 'test()' with the appropriate screen
-        );
-        return false;
-      },
-      child: MaterialApp(
-        home: Scaffold(
-          appBar: AppBar(
-            title: Text("EYE TEST"),
-            centerTitle: true,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-              onPressed: () {
-                // Add your back button functionality here
-              },
-            ),
-          ),
-          body: Stack(
-            fit: StackFit.expand,
-            children: <Widget>[
-              Center(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20.0),
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height * 0.4,
-                          color: Colors.black,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(0, 10, 4, 0),
-                                child: Text(
-                                  'Shadow Test',
-                                  style: TextStyle(
-                                    fontSize: 20.0,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-
-                              Spacer(),
-                              // This pushes the next widget to the center
-                              Center(
-                                child: Text(
-                                  dynamicText,
-                                  // Replace with your dynamic text variable
-                                  style: TextStyle(
-                                    fontSize: currentTextSize,
-                                    // Replace with your text size variable
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              Spacer(),
-                              // This pushes the above widget to the center
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Container(
-                              height: 40,
-                              width: 150,
-                              margin: EdgeInsets.fromLTRB(10, 5, 20, 0),
-                              child: CustomElevatedButtonY(
-                                text: 'Decrease',
-                                onPressed: () => changeSize('down'),
-                              ),
-                            ),
-                            Container(
-                              height: 40,
-                              margin: EdgeInsets.fromLTRB(10, 5, 20, 0),
-                              child: CustomElevatedButtonG(
-                                text: 'Increase',
-                                onPressed: () => changeSize('up'),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(00.0),
-                        child: Text(
-                          alert,
-                          // Replace with your alert text variable
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: alert == 'Good to go'
-                                ? Colors.green
-                                : Colors.red,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-
-                      // Two Horizontal Aligned Buttons
-                      // Four Buttons Aligned Horizontally
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                right: 10,
-                width: 100,
-                // Adjust the width as needed
-                height: 150,
-                // Adjust the height as needed
-                child: _controller != null
-                    ? CameraPreview(_controller!)
-                    : Container(
-                        color: Colors.black,
-                      ),
-              ),
-            ],
-          ),
-          bottomNavigationBar: Padding(
-            padding: const EdgeInsets.fromLTRB(15.0, 0, 15, 8),
-            child: Container(
-              height: 40,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.bluebutton, // Change to your desired color
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: MaterialButton(
-                onPressed: () {
-                  // Call your function here
-                  CylTestApi();
-                },
-                child: Text(
-                  'Next',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14.0,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-*/
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -4941,12 +3864,12 @@ class _ShadowTestState extends State<ShadowTest> {
           appBar: AppBar(
             title: Text("EYE TEST"),
             centerTitle: true,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-              onPressed: () {
-                // Add your back button functionality here
-              },
-            ),
+            // leading: IconButton(
+            //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+            //   onPressed: () {
+            //     // Add your back button functionality here
+            //   },
+            // ),
           ),
           body: Stack(
             fit: StackFit.expand,
@@ -5124,8 +4047,9 @@ class _ShadowTestState extends State<ShadowTest> {
 // Replace this with your PUT request body
     Map<String, dynamic> body = {
       'test_id': test_id,
-      'cyl_text_size': currentTextSize,
+      'cyl_text_size': curentSizemm,//currentTextSize
     };
+    print("abccccccccc$curentSizemm");
     try {
       final response = await http.put(
         Uri.parse(apiUrl),
@@ -5363,8 +4287,9 @@ class redgreen extends State<RedGreenTest> {
   @override
   void dispose() {
     // _isCapturing = false;
-    _controller?.dispose();
-    flutterTts.stop();
+    if (_controller != null) {
+      _controller!.dispose();
+    }    flutterTts.stop();
     super.dispose();
   }
 
@@ -5618,12 +4543,12 @@ class redgreen extends State<RedGreenTest> {
       appBar: AppBar(
         title: Text("EYE TEST"),
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-          onPressed: () {
-            // Add your back button functionality here
-          },
-        ),
+        // leading: IconButton(
+        //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+        //   onPressed: () {
+        //     // Add your back button functionality here
+        //   },
+        // ),
       ),
       body: Stack(
         children: <Widget>[
@@ -5839,12 +4764,12 @@ class RightEyeState extends State<RightEye> {
       appBar: AppBar(
         title: Text("EYE TEST"),
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-          onPressed: () {
-            // Add your back button functionality here
-          },
-        ),
+        // leading: IconButton(
+        //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+        //   onPressed: () {
+        //     // Add your back button functionality here
+        //   },
+        // ),
       ),
       body: Stack(
         children: [
