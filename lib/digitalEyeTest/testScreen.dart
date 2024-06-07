@@ -18,7 +18,6 @@ import 'dart:convert' as convert;
 
 import '../Custom_navbar/customDialog.dart';
 import '../api/Api.dart';
-import 'camara.dart';
 import 'TestReport.dart';
 
 class GiveInfo extends StatefulWidget {
@@ -371,8 +370,8 @@ class SelectQuestion extends State<GiveInfo> {
   Future<void> submitApi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     String CustomerId = prefs.getString('customer_id') ?? '';
     print("myselectedid${selectedIds}");
     var headers = {
@@ -415,7 +414,7 @@ class SelectQuestion extends State<GiveInfo> {
 
         Navigator.pushReplacement(
           context,
-          CupertinoPageRoute(builder: (context) => Camara()),
+          CupertinoPageRoute(builder: (context) => CameraS()),
         );
       } else {
         // _progressDialog!.hide();
@@ -604,7 +603,7 @@ class LeftEyeTestState extends State<LeftEyeTest> {
         'Customer-Id': CustomerId,
       };
       var request =
-          http.Request('POST', Uri.parse('${Api.baseurl}/api/eye/select-eye'));
+      http.Request('POST', Uri.parse('${Api.baseurl}/api/eye/select-eye'));
       request.body =
           json.encode({"test_id": id, "eye_status": eye, "test": test});
       print(request.body);
@@ -699,9 +698,9 @@ class AlphabetTestState extends State<AlphabetTest> {
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
+          (camera) => camera.lensDirection == CameraLensDirection.front,
       orElse: () =>
-          _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
+      _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
     );
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
@@ -763,8 +762,8 @@ class AlphabetTestState extends State<AlphabetTest> {
       });
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-          prefs.getString('access_token') ?? '';
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
 
       var response = await http.post(
@@ -825,8 +824,8 @@ class AlphabetTestState extends State<AlphabetTest> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-          prefs.getString('access_token') ?? '';
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String testname = prefs.getString('test') ?? '';
       var headers = {
         'Authorization': 'Bearer ${authToken}',
@@ -967,7 +966,7 @@ class AlphabetTestState extends State<AlphabetTest> {
                             visible: isLoadingRandomText,
                             child: CircularProgressIndicator(
                               valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.grey),
+                              AlwaysStoppedAnimation<Color>(Colors.grey),
                             ),
                           ),
                         ],
@@ -1242,8 +1241,8 @@ class AlphabetTestState extends State<AlphabetTest> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-          prefs.getString('access_token') ?? '';
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String id = prefs.getString('test_id') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
 
@@ -1256,7 +1255,7 @@ class AlphabetTestState extends State<AlphabetTest> {
         'Customer-Id': CustomerId,
       };
       var request =
-          http.Request('POST', Uri.parse('${Api.baseurl}/api/eye/random-text'));
+      http.Request('POST', Uri.parse('${Api.baseurl}/api/eye/random-text'));
       request.body =
           json.encode({"test_id": id, "snellen_fraction": nextFraction});
       request.headers.addAll(headers);
@@ -1270,7 +1269,7 @@ class AlphabetTestState extends State<AlphabetTest> {
 // Map<String, dynamic> parsedJson = json.decode(responseBody);
 // Extract data from the parsed JSON
         String choose_astigmatism =
-            parsedJson['data']['test_object']['choose_astigmatism'];
+        parsedJson['data']['test_object']['choose_astigmatism'];
         currentTextSize = parsedJson['data']['textSize'];
         randomText = parsedJson['data']['random_text'];
         setState(() {
@@ -1382,9 +1381,9 @@ class Reading extends State<ReadingTest> {
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
+          (camera) => camera.lensDirection == CameraLensDirection.front,
       orElse: () =>
-          _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
+      _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
     );
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
@@ -1538,7 +1537,7 @@ class Reading extends State<ReadingTest> {
         if (connectivityResult == ConnectivityResult.none) {
           Fluttertoast.showToast(
             msg:
-                'Poor internet connection , make sure you have a good internet',
+            'Poor internet connection , make sure you have a good internet',
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.BOTTOM,
             backgroundColor: Colors.black,
@@ -1584,11 +1583,11 @@ class Reading extends State<ReadingTest> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                    /*   image: DecorationImage(
+                  /*   image: DecorationImage(
                     image: AssetImage('assets/test.png'),
                     fit: BoxFit.cover,
                   ),*/
-                    ),
+                ),
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1613,7 +1612,7 @@ class Reading extends State<ReadingTest> {
                             visible: isLoadingRandomText,
                             child: CircularProgressIndicator(
                               valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.grey),
+                              AlwaysStoppedAnimation<Color>(Colors.grey),
                             ),
                           ),
                         ],
@@ -1822,8 +1821,8 @@ class Reading extends State<ReadingTest> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-          prefs.getString('access_token') ?? '';
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String id = prefs.getString('test_id') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
       print('beebeb$id');
@@ -1865,7 +1864,7 @@ class Reading extends State<ReadingTest> {
         if (connectivityResult == ConnectivityResult.none) {
           Fluttertoast.showToast(
             msg:
-                'Poor internet connection , make sure you have a good internet',
+            'Poor internet connection , make sure you have a good internet',
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.BOTTOM,
             backgroundColor: Colors.black,
@@ -1885,7 +1884,9 @@ class Reading extends State<ReadingTest> {
       throw Exception('Failed to send data');
     }
   }
-
+  void _stopSpeaking() async {
+    await flutterTts.stop();
+  }
   Future<void> Update_HyperMyopiaTest(BuildContext context) async {
     //  try {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -2067,9 +2068,9 @@ class AstigmationTest1 extends State<AstigmationTest> {
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
+          (camera) => camera.lensDirection == CameraLensDirection.front,
       orElse: () =>
-          _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
+      _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
     );
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
@@ -2131,8 +2132,8 @@ class AstigmationTest1 extends State<AstigmationTest> {
       });
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-          prefs.getString('access_token') ?? '';
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
 
       var response = await http.post(
@@ -2218,8 +2219,8 @@ class AstigmationTest1 extends State<AstigmationTest> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-          prefs.getString('access_token') ?? '';
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String test_id = prefs.getString('test_id') ?? '';
       await prefs.setString('region', region);
       print("choseastigmation_response${region}");
@@ -2445,7 +2446,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
                       style: TextStyle(
                           fontSize: 22,
                           color:
-                              alert == 'Good to go' ? Colors.green : Colors.red,
+                          alert == 'Good to go' ? Colors.green : Colors.red,
                           fontWeight: FontWeight.w400),
                     ),
                   ),
@@ -2535,9 +2536,9 @@ class Astigmationtest2 extends State<AstigmationTest2> {
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
+          (camera) => camera.lensDirection == CameraLensDirection.front,
       orElse: () =>
-          _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
+      _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
     );
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
@@ -2599,8 +2600,8 @@ class Astigmationtest2 extends State<AstigmationTest2> {
       });
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-          prefs.getString('access_token') ?? '';
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
 
       var response = await http.post(
@@ -2730,8 +2731,8 @@ class Astigmationtest2 extends State<AstigmationTest2> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-          prefs.getString('access_token') ?? '';
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String test_id = prefs.getString('test_id') ?? '';
       String selectedRegion = prefs.getString('region') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
@@ -2791,8 +2792,8 @@ class Astigmationtest2 extends State<AstigmationTest2> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-          prefs.getString('access_token') ?? '';
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String test_id = prefs.getString('test_id') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
       String apiUrl = '${Api.baseurl}/api/eye/choose-degree-api';
@@ -3175,61 +3176,61 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                         child: currentImage.isEmpty
                             ? CircularProgressIndicator()
                             : Image.asset(
-                                currentImage,
-                                width: imageSize1,
-                                fit: BoxFit.fill,
-                              ),
+                          currentImage,
+                          width: imageSize1,
+                          fit: BoxFit.fill,
+                        ),
                       ),
                       SizedBox(height: 10.0),
                       Center(
                         child: dataList.isEmpty
                             ? CircularProgressIndicator()
                             : SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: dataList.map((value) {
-                                    return Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: OutlinedButton(
-                                        onPressed: () {
-                                          print('Button $value pressed');
-                                          ChoseAstigmation(value);
-                                          Degree = value;
-                                          setState(() {
-                                            selectedValue = value;
-                                          });
-                                        },
-                                        style: ButtonStyle(
-                                          backgroundColor:
-                                              MaterialStateProperty.all<Color>(
-                                            selectedValue == value
-                                                ? Colors.lightBlueAccent
-                                                : Colors.bluebutton,
-                                          ),
-                                          side: MaterialStateProperty.all<
-                                              BorderSide>(
-                                            BorderSide(
-                                              color: Colors
-                                                  .white, // Blue border color
-                                              width: 2.0,
-                                            ),
-                                          ),
-                                        ),
-                                        child: Text(
-                                          value.toString(),
-                                          style: TextStyle(
-                                            color: selectedValue == value
-                                                ? Colors.white
-                                                : Colors.white,
-                                          ),
-                                        ),
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceEvenly,
+                            children: dataList.map((value) {
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: OutlinedButton(
+                                  onPressed: () {
+                                    print('Button $value pressed');
+                                    ChoseAstigmation(value);
+                                    Degree = value;
+                                    setState(() {
+                                      selectedValue = value;
+                                    });
+                                  },
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                      selectedValue == value
+                                          ? Colors.lightBlueAccent
+                                          : Colors.bluebutton,
+                                    ),
+                                    side: MaterialStateProperty.all<
+                                        BorderSide>(
+                                      BorderSide(
+                                        color: Colors
+                                            .white, // Blue border color
+                                        width: 2.0,
                                       ),
-                                    );
-                                  }).toList(),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    value.toString(),
+                                    style: TextStyle(
+                                      color: selectedValue == value
+                                          ? Colors.white
+                                          : Colors.white,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
                       ),
                       SizedBox(height: 10.0),
                       Row(
@@ -3278,14 +3279,14 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                 child: _controller != null
                     ? CameraPreview(_controller!)
                     : Container(
-                        color: Colors.black,
-                        child: Center(
-                          child: Text(
-                            'Loading Camera...',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
+                  color: Colors.black,
+                  child: Center(
+                    child: Text(
+                      'Loading Camera...',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
               ),
               Positioned(
                 bottom: 10,
@@ -3425,9 +3426,9 @@ class AstigmationTestNone extends State<AstigmationTest3> {
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
+          (camera) => camera.lensDirection == CameraLensDirection.front,
       orElse: () =>
-          _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
+      _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
     );
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
@@ -3489,8 +3490,8 @@ class AstigmationTestNone extends State<AstigmationTest3> {
       });
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-          prefs.getString('access_token') ?? '';
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
 
       var response = await http.post(
@@ -3583,7 +3584,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
     Map<String, String> headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $authToken',
-    //  'Customer-Id': CustomerId,
+      //  'Customer-Id': CustomerId,
     };
 // Replace this with your PUT request body
 
@@ -4194,7 +4195,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
                               SizedBox(height: 1.0),
                               Padding(
                                 padding:
-                                    const EdgeInsets.fromLTRB(20, 5, 0, 20),
+                                const EdgeInsets.fromLTRB(20, 5, 0, 20),
                                 child: Text(
                                   'Choose the part where you can see a more darker line',
                                   style: TextStyle(
@@ -4215,7 +4216,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
                                 scrollDirection: Axis.horizontal,
                                 child: Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
+                                  MainAxisAlignment.spaceEvenly,
                                   children: <Widget>[
                                     _buildOptionButton(
                                         'A', Colors.bluebutton, 0),
@@ -4263,14 +4264,14 @@ class AstigmationTestNone extends State<AstigmationTest3> {
                 child: _controller != null
                     ? CameraPreview(_controller!)
                     : Container(
-                        color: Colors.black,
-                        child: Center(
-                          child: Text(
-                            'Loading Camera...',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
+                  color: Colors.black,
+                  child: Center(
+                    child: Text(
+                      'Loading Camera...',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -4421,9 +4422,9 @@ class _ShadowTestState extends State<ShadowTest> {
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
+          (camera) => camera.lensDirection == CameraLensDirection.front,
       orElse: () =>
-          _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
+      _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
     );
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
@@ -4485,8 +4486,8 @@ class _ShadowTestState extends State<ShadowTest> {
       });
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-          prefs.getString('access_token') ?? '';
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
 
       var response = await http.post(
@@ -4775,7 +4776,7 @@ class _ShadowTestState extends State<ShadowTest> {
                       onTap: _onReplayPressed,
                       child: Container(
                         padding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                        EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(25),
                         ),
@@ -4873,7 +4874,7 @@ class _ShadowTestState extends State<ShadowTest> {
                         style: TextStyle(
                           fontSize: 20,
                           color:
-                              alert == 'Good to go' ? Colors.green : Colors.red,
+                          alert == 'Good to go' ? Colors.green : Colors.red,
                           fontWeight: FontWeight.normal,
                         ),
                       ),
@@ -4888,8 +4889,8 @@ class _ShadowTestState extends State<ShadowTest> {
                 child: _controller != null
                     ? CameraPreview(_controller!)
                     : Container(
-                        color: Colors.black,
-                      ),
+                  color: Colors.black,
+                ),
               ),
             ],
           ),
@@ -4925,8 +4926,8 @@ class _ShadowTestState extends State<ShadowTest> {
   Future<void> CylTestApi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     String test_id = prefs.getString('test_id') ?? '';
     String CustomerId = prefs.getString('customer_id') ?? '';
     print("snsjsjsj"); // Replace this URL with your PUT API endpoint
@@ -5013,9 +5014,9 @@ class redgreen extends State<RedGreenTest> {
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
+          (camera) => camera.lensDirection == CameraLensDirection.front,
       orElse: () =>
-          _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
+      _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
     );
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
@@ -5077,8 +5078,8 @@ class redgreen extends State<RedGreenTest> {
       });
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-          prefs.getString('access_token') ?? '';
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
 
       var response = await http.post(
@@ -5154,8 +5155,8 @@ class redgreen extends State<RedGreenTest> {
   Future<void> fetchData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     String CustomerId = prefs.getString('customer_id') ?? '';
 
     String test_id = prefs.getString('test_id') ?? '';
@@ -5212,8 +5213,8 @@ class redgreen extends State<RedGreenTest> {
   Future<void> _callAPI() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
 // Replace this URL with your PUT API endpoint
     String test_id = prefs.getString('test_id') ?? '';
     String CustomerId = prefs.getString('customer_id') ?? '';
@@ -5266,7 +5267,7 @@ class redgreen extends State<RedGreenTest> {
         }
         if (testcancel == true) {
           Fluttertoast.showToast(msg:  'Please do the test again and follow the instructions carefully ... ');
-      /*    CustomAlertDialog.attractivepopup(context,
+          /*    CustomAlertDialog.attractivepopup(context,
               'Please do the test again and follow the instructions carefully ... ');*/
           Navigator.push(
             context,
@@ -5290,8 +5291,8 @@ class redgreen extends State<RedGreenTest> {
   Future<void> UpdateRedGreenTest() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     String test_id = prefs.getString('test_id') ?? '';
     String CustomerId = prefs.getString('customer_id') ?? '';
 
@@ -5342,8 +5343,8 @@ class redgreen extends State<RedGreenTest> {
               if (age < 40 && jsonResponseMap["data"]['data']["is_completed"]) {
                 print("ssssssssss");
                 // If age < 40 and the test is completed, navigate to the TestReport
-             _stopSpeaking();
-            /*    CustomAlertDialog.attractivepopup(
+                _stopSpeaking();
+                /*    CustomAlertDialog.attractivepopup(
                     context, 'You Have Successfully Completed Eye Test.....');*/
                 SharedPreferences prefs = await SharedPreferences.getInstance();
                 await prefs.setString('page', "redgreen");
@@ -5429,7 +5430,7 @@ class redgreen extends State<RedGreenTest> {
                       onTap: _onReplayPressed,
                       child: Container(
                         padding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                        EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(25),
                         ),
@@ -5515,7 +5516,7 @@ class redgreen extends State<RedGreenTest> {
                       style: TextStyle(
                         fontSize: 20,
                         color:
-                            alert == 'Good to go' ? Colors.green : Colors.red,
+                        alert == 'Good to go' ? Colors.green : Colors.red,
                         fontWeight: FontWeight.normal,
                       ),
                     ),
@@ -5732,8 +5733,8 @@ class RightEyeState extends State<RightEye> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-          prefs.getString('access_token') ?? '';
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String test = prefs.getString('test') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
       int id = 0;
@@ -5745,11 +5746,11 @@ class RightEyeState extends State<RightEye> {
         'Customer-Id': CustomerId
       };
       var request =
-          http.Request('POST', Uri.parse('${Api.baseurl}/api/eye/select-eye'));
+      http.Request('POST', Uri.parse('${Api.baseurl}/api/eye/select-eye'));
       request.body =
           json.encode({"test_id": id, "eye_status": eye, "test": test});
       String request1 =
-          json.encode({"test_id": id, "eye_status": eye, "test": test});
+      json.encode({"test_id": id, "eye_status": eye, "test": test});
       request.headers.addAll(headers);
       print("rryryr$request1");
       http.StreamedResponse response = await request.send();
@@ -5951,7 +5952,7 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
             children: [
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
                 child: Row(
                   children: [
                     Transform.scale(
@@ -5963,13 +5964,13 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
                               borderRadius: BorderRadius.circular(4),
                             ),
                             side: MaterialStateBorderSide.resolveWith(
-                              (states) {
+                                  (states) {
                                 return BorderSide(
                                     color: Colors.bluebutton, width: 2);
                               },
                             ),
                             fillColor: MaterialStateProperty.resolveWith(
-                              (states) {
+                                  (states) {
                                 if (states.contains(MaterialState.selected)) {
                                   return Colors
                                       .bluebutton; // Fill color when checked
@@ -5979,7 +5980,7 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
                               },
                             ),
                             checkColor: MaterialStateProperty.resolveWith(
-                              (states) {
+                                  (states) {
                                 if (states.contains(MaterialState.selected)) {
                                   return Colors
                                       .white; // Check color when checked
@@ -6016,13 +6017,13 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
                             borderRadius: BorderRadius.circular(4),
                           ),
                           side: MaterialStateBorderSide.resolveWith(
-                            (states) {
+                                (states) {
                               return BorderSide(
                                   color: Colors.bluebutton, width: 2);
                             },
                           ),
                           fillColor: MaterialStateProperty.resolveWith(
-                            (states) {
+                                (states) {
                               if (states.contains(MaterialState.selected)) {
                                 return Colors
                                     .bluebutton; // Fill color when checked
@@ -6031,7 +6032,7 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
                             },
                           ),
                           checkColor: MaterialStateProperty.resolveWith(
-                            (states) {
+                                (states) {
                               if (states.contains(MaterialState.selected)) {
                                 return Colors.white; // Check color when checked
                               }

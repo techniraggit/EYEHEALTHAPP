@@ -746,7 +746,7 @@ class HomePageState extends State<HomePage> {
           }
         });
 
-        print("responseviewprofile:${response.body}");
+        print("responseviewprofile999:${response.body}");
 
         return json.decode(response.body);
       } else {

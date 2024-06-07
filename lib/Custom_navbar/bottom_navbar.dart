@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:project_new/eyeFatigueTest/ReportPage.dart';
 import 'package:project_new/eyeHealthTrack.dart';
 import 'package:project_new/Rewards/rewards.dart';
-import 'package:project_new/user_profile.dart';
+import 'package:project_new/profile/user_profile.dart';
 
 import '../notification/notification_dashboard.dart';
-import '../profileDashboard.dart';
+import '../profile/profileDashboard.dart';
 import '../Rewards/rewards_sync.dart';
 
 

@@ -11,9 +11,9 @@ import 'package:project_new/Rewards/rewards.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'api/Api.dart';
-import 'api/config.dart';
-import 'Custom_navbar/customDialog.dart';
+import '../api/Api.dart';
+import '../api/config.dart';
+import '../Custom_navbar/customDialog.dart';
 
 class MyPlan extends StatefulWidget {
   @override

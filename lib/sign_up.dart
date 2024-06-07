@@ -666,27 +666,30 @@ class SignInScreen extends State<SignIn> {
         // Close the loading dialog
         EasyLoading.dismiss();
         if (response.statusCode == 200) {
+          Fluttertoast.showToast(msg: "Login Successfully");
+
           pincode = '';
           Map<String, dynamic> data = json.decode(response.body);
-          Fluttertoast.showToast(msg: "Login Successfully");
           setLoggedIn(true);
           final SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString('access_token', data['tokens']['access_token']);
           prefs.setString('refresh_token', data['tokens']["refresh_token"]);
           prefs.setString('stripe_customer_id', data['data']['stripe_customer_id']);
           prefs.setString('user_id', data['data']['id']);
-
+          Navigator.of(context).pop();
           //  print("Otp Sent${ data['data']['id']}${data['data']['stripe_customer_id']}");
           Navigator.push(
             context,
             CupertinoPageRoute(builder: (context) => HomePage()),
           );
-        } else {
+        }
+        else {
           Map<String, dynamic> data = json.decode(response.body);
           if (data['status'] == false && data['status_code'] == 400) {
             // Display the error message to the user
             String errorMessage1 = data['data']['non_field_errors'][0];
-            print(errorMessage1);
+            print("-------------$errorMessage1");
+
             Fluttertoast.showToast(msg: errorMessage1);
 // Output the error message to the console
             // You can show this message in a Snackbar, AlertDialog, or any other way you prefer

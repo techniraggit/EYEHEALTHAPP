@@ -11,7 +11,7 @@ import 'package:project_new/HomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Custom_navbar/bottom_navbar.dart';
-import '../FatigueReportDetails.dart';
+import 'FatigueReportDetails.dart';
 import '../api/config.dart';
 
 class ReportPage extends StatefulWidget {
@@ -285,7 +285,7 @@ void initState() {
           for(int i=0;i<itemsdata.length;i++){
             int id=json.decode(response.body)['data'][i]['report_id'];
            String date=json.decode(response.body)['data'][i]['created_on'];
-           double percentage_=json.decode(response.body)['data'][i]['percentage'];
+           dynamic percentage_=json.decode(response.body)['data'][i]['percentage'];
            ReportIds.add(id);//.toString().substring(0,10);
             items.add(date);
             percentage.add(percentage_);

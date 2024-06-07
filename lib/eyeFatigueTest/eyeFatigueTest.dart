@@ -223,7 +223,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
   TextEditingController(text: initialVelocity.toString());
   TextEditingController dayNightOffestController =
   TextEditingController(text: dayNightOffest.toString());
-  double _position = 1.0;
+  double _position = 0.0;
   Timer? _timer;
   int _secondsLeft = 30;
   late AnimationController worldController;
@@ -255,7 +255,8 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
     "Within the depths of nature's eyes, discover the tranquil beauty of a forest glade, where sunlight dances through the leaves and birds sing melodies of peace.",
   ];
   int _startIndex = 0;
-  bool _firstTime = true;
+  bool _firstTime = true; AnimationController? _timercontroller;double? progress ;
+  Animation<Color?> ?_animation;
   @override
 
   void initState() {
@@ -265,11 +266,14 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
     isLoading = false;startgame=false;gamepermission=false;
     Future.delayed(Duration(seconds: 1), () {
 
-    _initializeCamera();});
+    _initializeCamera();
+
+    startTimer();
+    });
 
     // Future.delayed(Duration(seconds: 1), () {
 
-      startTimer();
+      // startTimer();
     // });
 
   isloading();
@@ -316,19 +320,33 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
     runVelocityController.dispose();
     dayNightOffestController.dispose();
     _timer?.cancel();
+    _timercontroller?.dispose();
 
     super.dispose();
   }
   void startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        _secondsLeft--;
-        _position = _secondsLeft / 30;
-      });
-      if (_secondsLeft <= 0) {
-        _timer?.cancel();
-      }
+    _timercontroller = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 30),
+    )..addListener(() {
+      setState(() {});
     });
+
+    _animation = ColorTween(
+      begin: Colors.grey,
+      end: Colors.purple,
+    ).animate(_timercontroller!);
+
+    _timercontroller?.forward();
+    // _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    //   setState(() {
+    //     _secondsLeft--;
+    //     _position = _secondsLeft / 30;
+    //   });
+    //   if (_secondsLeft <= 0) {
+    //     _timer?.cancel();
+    //   }
+    // });
   }
 
   void _die() {
@@ -489,10 +507,12 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
 
+      // Fluttertoast.showToast(msg: "99999999999999999999999");
 
       print('Video upload=response=${response.body}');
       if (response.statusCode == 200)
       {
+        // Fluttertoast.showToast(msg: "11111111111111111111");
 
         print('Video uploaded successfully');
 
@@ -512,6 +532,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
 
       }
       else {
+        // Fluttertoast.showToast(msg: "222222222222222222");
         // MyProgressDialog.dismissProgressDialog(progressDialog!);
         Fluttertoast.showToast(msg: "Something went wrong !!, please test again");
         setState(() {
@@ -526,6 +547,8 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
         print('Failed to upload video');
       }
     } catch (e) {
+      // Fluttertoast.showToast(msg: "3333333333333333333");
+
       isclose=false; uploaded=false;
       isLoading = false;startgame=false;gamepermission=false;
       print('Error uploading video: $e');
@@ -561,13 +584,16 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
 
 
         print('Video recorded to: ${file.path}');
+
         // Verify file existence
         // if ( await File(file.path).exists()) {
         if (File(file.path).existsSync()) {
           setState(() {
-            isLoading=true;
-            gamepermission=true;
 
+            gamepermission=true; isLoading=true;
+
+
+            // Fluttertoast.showToast(msg: "77777777777");
 
             print("isLoading========$isLoading");
             _compressAndUploadVideo(file.path);
@@ -581,6 +607,9 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
 
 
         } else {
+          // Fluttertoast.showToast(msg: "888888888888");
+
+          Fluttertoast.showToast(msg: "Your Phone doesnt have sufficient storage or you haven't given permission to media access");
           print('File does not exist.');
         }
       }
@@ -599,6 +628,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
       ios: IOSConfig(saveInGallery: false), video: Video(videoName: videoName),
     );
 
+    // Fluttertoast.showToast(msg: "6666666666666666");
 
     if (response is OnSuccess) {
       // setState(() async {
@@ -606,10 +636,13 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
         final videoSizeBytes = await videoFile.length();
         print('Compressed Video size: ${videoSizeBytes / (1024 * 1024)} MB');
         _uploadVideo(response.destinationPath);
+        // Fluttertoast.showToast(msg: "444444444444444");
 
         print('Compressed video path: ${response.destinationPath}');
       // });
     }else {
+      // Fluttertoast.showToast(msg: "555555555555555555555");
+
       Fluttertoast.showToast(msg: "you phone may have insufficient storage");
     }
     // else if (response is OnFailure) {
@@ -624,11 +657,6 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
     //   print(response.isCancelled);
     // }
   }
-
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -683,36 +711,29 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
                       });
 
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 25),
-                      child: Container(
-                        height: 8,
-                        width: MediaQuery.of(context).size.width,
-                        color: Colors.grey[300],
-                        child: Stack(
+                    child:
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                      child: RichText(
+                        text: TextSpan(
+                          text: 'Want to play a game while you wait? ',
+                          style: TextStyle(color: Colors.black, fontSize: 20),
                           children: [
-                            AnimatedPositioned(
-                              duration: Duration(seconds: 1),
-                              curve: Curves.linear,
-                              left: 0, // Start from the left edge
-                              right: MediaQuery.of(context).size.width * (1 - _position), // Calculate the right edge position
-                              child: Container(
-                                height: 40,
-                                color: Colors.blue, // Adjust color as needed
+                            TextSpan(
+                              text: 'Launch Game',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                decoration: TextDecoration.none, // Remove underline
                               ),
                             ),
+                            TextSpan(text: ''),
                           ],
                         ),
                       ),
                     ),
-
                   ),
                 ),
               ),
-
-
-
-
 
 
 
@@ -732,7 +753,8 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
                   ),
                 ),
                 child: isLoading
-                    ?Visibility(
+                    ?
+                Visibility(
                   visible: startgame,
                       child: AnimatedContainer(
                                         duration: const Duration(milliseconds: 5000),
@@ -794,16 +816,9 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
                                       ),
                     )
 
-
-                    :  Column(
+                    : Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-
-
-
-
-
-
                     const SizedBox(height: 10),
                   Column(
                     children: [
@@ -842,31 +857,55 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
                   ),
 
                     Spacer(),
-                    SizedBox(height: 50,),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 25),
+    if (_timercontroller != null && _timercontroller!.value != null)... {
+
+    Builder(
+                  builder: (context) {
+                    progress = _timercontroller?.value;
+
+                    return Padding(
+                      padding: const EdgeInsets.all(12.0),
                       child: Container(
-                        height: 8,
-                        width: MediaQuery.of(context).size.width,
-                        color: Colors.grey[300],
-                        child: Stack(
-                          children: [
-                            AnimatedPositioned(
-                              duration: Duration(seconds: 1),
-                              curve: Curves.linear,
-                              left: MediaQuery.of(context).size.width * (1 +_position),
-                              child: Container(
-                                height: 40,
-                                width:  _position,//MediaQuery.of(context).size.width *
-                                color: Colors.background,
-                              ),
-                            ),
-                          ],
+                        width: MediaQuery.of(context).size.width * progress!,
+                        height: 10.0,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5.0),
+                          color: _animation?.value,
                         ),
                       ),
-                    ),
-                    // SizedBox(height: 40),
+                    );
+                  }
+                ),},
 
+
+
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 25),
+                    //   child: Container(
+                    //     height: 13,color: Colors.background.withOpacity(0.8),
+                    //     width: MediaQuery.of(context).size.width,
+                    //
+                    //     child: Stack(
+                    //       children: [
+                    //         AnimatedPositioned(
+                    //           duration: Duration(seconds: 30),
+                    //           curve: Curves.linear,
+                    //           right: 0, // Start from the left
+                    //           left: MediaQuery.of(context).size.width * (1 - _position),
+                    //           child: Container(
+                    //             height: 13,
+                    //             color: Colors.grey.withOpacity(0.8),
+                    //
+                    //             width:  _position,//MediaQuery.of(context).size.width *
+                    //
+                    //           ),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
+                    // SizedBox(height: 40),
+                    SizedBox(height: 50,),
                   ],
                 ),
               ),
@@ -959,11 +998,17 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
       final file = File(videoPath);
       if (await file.exists()) {
         await file.delete();
+        // Fluttertoast.showToast(msg: "9999999999");
+
         print('Video deleted successfully');
       } else {
+        // Fluttertoast.showToast(msg: "10101010010");
+
         print('Video file does not exist at the specified path');
       }
     } catch (e) {
+      // Fluttertoast.showToast(msg: "2121212");
+
       print('Error deleting video: $e');
     }
   }}
@@ -1096,6 +1141,7 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
 
       final responseData = json.decode(response.body);
 
+      // Fluttertoast.showToast(msg: "3131313131");
 
       if (response.statusCode == 200) {
 
@@ -1107,6 +1153,7 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
           uploaded=false;
           enable=true;
         });
+        // Fluttertoast.showToast(msg: "414141441441411");
 
 
 
@@ -1114,6 +1161,8 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
 
       }
       else if (response.statusCode == 401) {
+        // Fluttertoast.showToast(msg: "5151515151");
+
         setState(() {
           isclose=false; uploaded=false;
           isLoading = false;startgame=false;gamepermission=false;
@@ -1125,6 +1174,8 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
         );
       }
       else if(response.statusCode == 500) {
+        // Fluttertoast.showToast(msg: "6161616161661616");
+
         setState(() {
           isclose=false; uploaded=false;
           isLoading = false;startgame=false;gamepermission=false;
@@ -1144,6 +1195,8 @@ print("50000");
           isclose=false; uploaded=false;
           isLoading = false;startgame=false;gamepermission=false;
         });
+        // Fluttertoast.showToast(msg: "71717711771717");
+
         if (responseData.containsKey('error')) {
 
           // Handle the case when no data is found
@@ -1162,6 +1215,8 @@ print("50000");
       }
     }
     on DioError catch (e) {
+      // Fluttertoast.showToast(msg: "8181818818181818");
+
       setState(() {
         isclose=false; uploaded=false;
         isLoading = false;startgame=false;gamepermission=false;
@@ -1175,6 +1230,8 @@ print("50000");
           MaterialPageRoute(builder: (context) => SignIn()),
         );
       } else {
+        // Fluttertoast.showToast(msg: "9191919199191919");
+
         // Handle other Dio errors
         print("DioError: ${e.error}");
       }

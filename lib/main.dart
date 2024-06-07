@@ -6,7 +6,9 @@ import 'dart:io';
 import 'package:alarm/alarm.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,13 +23,13 @@ import 'package:project_new/HomePage.dart';
 import 'package:project_new/digitalEyeTest/TestReport.dart';
 import 'package:project_new/eyeHealthTrack.dart';
 import 'package:project_new/sign_up.dart';
-import 'package:project_new/user_profile.dart';
+import 'package:project_new/profile/user_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Custom_navbar/bottom_navbar.dart';
 import 'FirebaseOptions/FirebaseApi.dart';
 import 'alarm/demo_main.dart';
-import 'firebase_options.dart';
+import 'api/firebase_options.dart';
 
 final navigatorKey=GlobalKey<NavigatorState>();
 extension StringExtension on String {
@@ -97,6 +99,11 @@ class MyApp extends StatelessWidget {
 
   }
 }
+
+
+
+
+
 
 class SplashScreen extends StatefulWidget {
 
@@ -637,84 +644,7 @@ class _OnBoardingScreen3State extends State<OnBoardingScreen3> {
 
 
 
-//
-//
-// import 'package:flutter/cupertino.dart';
-// import 'package:flutter/material.dart';
-// import 'package:syncfusion_flutter_charts/charts.dart';
-//
-// void main() {
-//   runApp(MyApp());
-// }
-//
-// class DayData {
-//   final String day;
-//   final List<double> values;
-//
-//   DayData(this.day, this.values);
-// }
-//
-//
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'Syncfusion Graph Example',
-//       theme: ThemeData(
-//         primarySwatch: Colors.blue,
-//       ),
-//       home: SyncfusionGraph(),
-//     );
-//   }
-// }
-//
-// List<DayData> chartData = [
-//   DayData('Mon', [0.5, 0.7, 0.4]),
-//   DayData('Tue', [0.6, 0.8, 0.3]),
-//   DayData('Wed', [0.6, 0.8, 0.3]),
-//   DayData('Thu', [0.6, 0.8, 0.3]),
-//   DayData('Fri', [0.6, 0.8, 0.3]),
-//   DayData('Sat', [0.6, 0.8, 0.3]),
-//   // Add data for other weekdays
-// ];
-//
-// class SyncfusionGraph extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Syncfusion Graph'),
-//       ),
-//       body: Container(
-//         width: MediaQuery.of(context).size.width / 0.3,
-//         height: 200,
-//         child: SfCartesianChart(
-//           primaryXAxis: CategoryAxis(
-//             majorGridLines: MajorGridLines(width: 0), // Hide vertical gridlines
-//           ),
-//           primaryYAxis: NumericAxis(
-//             majorGridLines: MajorGridLines(width: 0), // Hide horizontal gridlines
-//           ),
-//           series: <CartesianSeries>[
-//             for (var i = 0; i < 3; i++)
-//               SplineAreaSeries<DayData, String>(
-//                 dataSource: chartData,
-//                 xValueMapper: (DayData data, _) => data.day,
-//                 yValueMapper: (DayData data, _) => data.values[i],
-//                 name: 'Value ${i + 1}',
-//           isVisibleInLegend:true,// Name of the series
-//                 // isVisible: true, // Show the series
-//                 color: Colors.blue.withOpacity(0.2), // Change the color of the data area
-//                 markerSettings: MarkerSettings(
-//                   isVisible: true, // Show markers
-//                 ),
-//               ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
+
 
 
 

@@ -16,8 +16,8 @@ import 'package:project_new/sign_up.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-import 'api/config.dart';
-import 'eyeFatigueTest/eyeFatigueTest.dart';
+import '../api/config.dart';
+import 'eyeFatigueTest.dart';
 
 class ReportDetails extends StatefulWidget {
   final int reportId;

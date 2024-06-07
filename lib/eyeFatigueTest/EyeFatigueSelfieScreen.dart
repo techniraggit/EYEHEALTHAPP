@@ -269,10 +269,10 @@ print("access_token===="+userToken);
                builder: (context) => EyeFatigueSecondScreen()),
          );
 
-      } else {
-        Map<String, dynamic> data = jsonDecode(response.body);
-
-        String alertMessage = data['status'];
+      }
+      else {
+        final responseData = json.decode(response.body);
+        String alertMessage = responseData['error'];
 Fluttertoast.showToast(msg: alertMessage);
 
         // Handle error response
