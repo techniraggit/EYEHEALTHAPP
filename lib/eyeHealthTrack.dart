@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'package:http/http.dart' as http;
 
-import 'package:fl_chart/fl_chart.dart';
+import 'package:fl_chart/fl_chart.dart'hide AxisTitle;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -23,7 +24,8 @@ class EyeHealthTrackDashboard extends StatefulWidget {
 class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
   bool fatigue_left=false; List<double>? _data;int i=0;
   bool fatigue_right=false;fatigueGraph? fatigueGraphData;
-  bool midtiredness_right= false;
+  bool midtiredness_right= false;List<double> todaygraphData = [];
+  List<double> firstTestgraphData = [];
   bool midtiredness_left=false;
   String no_of_eye_test="0";String eye_health_score="";String name="";String no_of_fatigue_test="0";
 
@@ -91,8 +93,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      List<double> todaygraphData = [];
-      List<double> firstTestgraphData = [];
+
 
       if (responseData.containsKey('status') && responseData['status']) {
         if (responseData.containsKey('first_day_data') && responseData['first_day_data'].containsKey('value')) {
@@ -105,23 +106,30 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
         }
       }
 print("fffffffffffffff$todaygraphData");
+      setState(() {
+        chartData = <_ChartData>[
+          _ChartData('6 AM', firstTestgraphData[0], 9,7,todaygraphData[0]),
+          _ChartData('12 PM', firstTestgraphData[1], 8.5,10,todaygraphData[1]),
+          _ChartData('6 PM', firstTestgraphData[2], 6.5,5,todaygraphData[2]),
+          _ChartData('12 AM', firstTestgraphData[3],6, 2,todaygraphData[3]),
+
+        ];
+      });
+
       // return graphData;
     } else {
       throw Exception('Failed to load graph data');
     }
   }
+  List<_ChartData>? chartData;
 
   @override
   void initState() {
     super.initState();
+
     getGraph();
-    // getGraph().then((data) {
-    //   setState(() {
-    //     _data = data;
-    //   });
-    // }).catchError((error) {
-    //   print(error);
-    // });
+
+
   }
 
 
@@ -176,34 +184,18 @@ print("fffffffffffffff$todaygraphData");
 
 
       appBar: AppBar(
-        title: Text('Eye Health Track'),
+        title: const Text('Eye Health Track'),
         actions: <Widget>[
           // ExampleAlarmHomeShortcutButton(refreshAlarms: loadAlarms),
 
           IconButton(
-            icon: Icon(Icons.notifications),
+            icon: const Icon(Icons.notifications),
             onPressed: () async {
               print("asdklaskldjaskldasjkdjlkas");
               // navigateToAlarmScreen(null);
 
 
-              // checkAndroidScheduleExactAlarmPermission();
-              // await Alarm.init();
-              // final alarmSettings = AlarmSettings(
-              //   id: 42,
-              //   dateTime: DateTime.now().add(Duration(seconds: 15)),
-              //   assetAudioPath: 'assets/alarm.mp3',
-              //   loopAudio: false,
-              //   vibrate: true,
-              //   volume: 0.8,
-              //   androidFullScreenIntent: true,
-              //   fadeDuration: 1.0,
-              //   notificationTitle: 'This is the title',
-              //   notificationBody: 'This is the body',
-              //   enableNotificationOnKill: true,
-              // );
-              // // Handle notification icon pressed
-              // await Alarm.set(alarmSettings: alarmSettings);
+
             },
           ),
         ],
@@ -213,16 +205,16 @@ print("fffffffffffffff$todaygraphData");
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 6, 0, 8),
+              padding: const EdgeInsets.fromLTRB(16.0, 6, 0, 8),
               child: Text(
                 'Today $formattedDate', // Display formatted current date
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Image.asset('assets/banner1.png'),
             ),
             const Padding(
@@ -237,8 +229,9 @@ print("fffffffffffffff$todaygraphData");
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Card(
+                color: Colors.white,
                 child: ListTile(
                   title: Column(
                     children: [
@@ -248,25 +241,25 @@ print("fffffffffffffff$todaygraphData");
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Fatigue Right'),
+                              const Text('Fatigue Right'),
                               Text(
                                 fatigue_right ? 'Yes' : 'No',
 
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ],
                           ),
-                          SizedBox(width: 3,),
+                          const SizedBox(width: 3,),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text('Mild Tiredness Right'),
+                              const Text('Mild Tiredness Right'),
                               Text(
                                 midtiredness_right ? 'Yes' : 'No',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -275,7 +268,7 @@ print("fffffffffffffff$todaygraphData");
                           ),
                         ],
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       // Add spacing between the row and the additional columns
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -283,11 +276,11 @@ print("fffffffffffffff$todaygraphData");
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Fatigue left'),
+                              const Text('Fatigue left'),
                               Text(
 
                                 fatigue_left ? 'Yes' : 'No',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -297,10 +290,10 @@ print("fffffffffffffff$todaygraphData");
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text('Mild Tiredness Left'),
+                              const Text('Mild Tiredness Left'),
                               Text(
                                 midtiredness_left ? 'Yes' : 'No',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -324,16 +317,22 @@ print("fffffffffffffff$todaygraphData");
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+            Container(
+              color: Colors.white,
+
+              child: Padding(
+                padding:  EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
+                child: Container(
+                  color: Colors.white,
+
+                  width: MediaQuery.of(context).size.width,
+                  child: Card(
+                    color: Colors.white,
                     child: Column(
+
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+
                         // Padding(
                         //   padding: EdgeInsets.all(1),
                         //   child: ListTile(
@@ -347,252 +346,136 @@ print("fffffffffffffff$todaygraphData");
                         //     subtitle: Text('April 30-May 30'),
                         //   ),
                         // ),
-                  Center(
-                    child: SizedBox(
-                      width: 300,
-                      height: 300,
-                      child: LineChart(
-                        LineChartData(
-                          gridData: FlGridData(
-                            show: false, // Hide grid lines
-                          ),
-                          borderData: FlBorderData(
-                            show: true, // Show boundary
-                            border: Border(
-                              bottom: BorderSide(color: Colors.black, width: 1),
-                              left: BorderSide(color: Colors.black, width: 1),
-                            ),
-                          ),
-                          lineBarsData: [
-                            LineChartBarData(
-                              spots: [
-                                FlSpot(0, 2),
-                                FlSpot(1, 4),
-                                FlSpot(2, 6),
-                                FlSpot(3, 8),
-                              ],
-                              isCurved: true,
-                              colors: [Colors.background],
-                              barWidth: 4,
-                              belowBarData: BarAreaData(show: true, colors: [Colors.orange.withOpacity(0.3)]),
-                              isStrokeCapRound: true,
-                              dotData: FlDotData(show: false),
-                            ),
-                            LineChartBarData(
-                              spots: [
-                                FlSpot(0, 2),
-                                FlSpot(1, 3),
-                                FlSpot(2, 8),
-                                FlSpot(3, 7),
-                              ],
-                              isCurved: true,
-                              colors: [Colors.orange],
-                              barWidth: 4,
-                              belowBarData: BarAreaData(show: true, colors: [Colors.blue.withOpacity(0.3)]),
-                              isStrokeCapRound: true,
-                              dotData: FlDotData(show: false),
-                            ),
-                            LineChartBarData(
-                              spots: [
-                                FlSpot(0, 3),
-                                FlSpot(1, 6),
-                                FlSpot(2, 8),
-                                FlSpot(3, 4),
-                              ],
-                              isCurved: true,
-                              colors: [Colors.green], // changed from 'background' to 'grey'
-                              barWidth: 4,
-                              belowBarData: BarAreaData(show: true, colors: [Colors.grey.withOpacity(0.3)]), // changed from 'background' to 'grey'
-                              isStrokeCapRound: true,
-                              dotData: FlDotData(show: false),
-                            ),
-                            LineChartBarData(
-                              spots: [
-                                FlSpot(0, 5),
-                                FlSpot(1, 6),
-                                FlSpot(2, 3),
-                                FlSpot(3, 7),
-                              ],
-                              isCurved: true,
-                              colors: [Colors.yellow], // changed from 'background' to 'green'
-                              barWidth: 4,
-                              belowBarData: BarAreaData(show: true, colors: [Colors.green.withOpacity(0.3)]), // changed from 'background' to 'green'
-                              isStrokeCapRound: true,
-                              dotData: FlDotData(show: false),
-                            ),
-                          ],
-                          lineTouchData: LineTouchData(
-                            touchTooltipData: LineTouchTooltipData(
-                              tooltipBgColor: Colors.blueGrey.withOpacity(0.8),
-                              getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
-                                return lineBarsSpot.map((lineBarSpot) {
-                                  final flSpot = lineBarSpot;
-                                  if (flSpot.bar.colors.contains(Colors.background)) {
-                                    return LineTooltipItem('Orange Line: ${flSpot.y}', TextStyle(color: Colors.white));
-                                  } else if (flSpot.bar.colors.contains(Colors.orange)) {
-                                    return LineTooltipItem('Blue Line: ${flSpot.y}', TextStyle(color: Colors.white));
-                                  } else if (flSpot.bar.colors.contains(Colors.green)) {
-                                    return LineTooltipItem('Grey Line: ${flSpot.y}', TextStyle(color: Colors.white));
-                                  } else if (flSpot.bar.colors.contains(Colors.yellow)) {
-                                    return LineTooltipItem('Green Line: ${flSpot.y}', TextStyle(color: Colors.white));
-                                  }
-                                  return null;
-                                }).toList();
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                                  if(chartData!=null)...{
+                                      Center(
 
-                        // Container(
-                        //   height: 200,
-                        //   width: MediaQuery.of(context).size.width, // Adjust the width as needed
-                        //   child: SingleChildScrollView(
-                        //     scrollDirection: Axis.horizontal,
-                        //     child: AspectRatio(
-                        //       aspectRatio: 1.40,
-                        //       child: _data != null
-                        //           ? Builder(
-                        //           builder: (context) {
-                        //
-                        //
-                        //             if(_data!.length>10){
-                        //               i=10;
-                        //
-                        //             }else{
-                        //               i=_data!.length;
-                        //             }
-                        //             return LineChart(
-                        //               LineChartData(
-                        //                 lineBarsData: [
-                        //                   LineChartBarData(
-                        //                     spots: _data!
-                        //                         .sublist(0, i)
-                        //                         .asMap()
-                        //                         .entries
-                        //                         .map((entry) {
-                        //                       return FlSpot(
-                        //                           entry.key.toDouble(), entry.value);
-                        //                     }).toList(),
-                        //                     isCurved: true,
-                        //                     colors: [Colors.deepPurple],
-                        //                     barWidth: 4,
-                        //                     isStrokeCapRound: true,
-                        //                     belowBarData: BarAreaData(
-                        //                       show: true,
-                        //                       colors: [
-                        //                         Colors.deepPurple.withOpacity(0.1)
-                        //                       ],
-                        //                     ),
-                        //                   ),
-                        //                 ],
-                        //                 gridData: FlGridData(
-                        //                   drawVerticalLine: true,
-                        //                   drawHorizontalLine: false,
-                        //                 ),
-                        //                 titlesData: FlTitlesData(
-                        //                   leftTitles: SideTitles(
-                        //                     showTitles: true,
-                        //                     interval: 10.0,
-                        //                   ),
-                        //                 ),
-                        //                 minX: 0,
-                        //                 maxX: 10, // Initially show only 10 values
-                        //                 minY: 10,
-                        //                 maxY: 100,
-                        //               ),
-                        //             );
-                        //           }
-                        //       )
-                        //           : CircularProgressIndicator(),
-                        //     ),
-                        //   ),
-                        // ),
+                    child: Container(
+                    color: Colors.white,
+
+                        child: _buildVerticalSplineChart(),
+
+
+                    ),
+                                      ),
+                        SizedBox(height: 10), // Adjust spacing between chart and color descriptions
+
+                        // Color descriptions
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _buildColorDescription(Colors.black, 'First Test'),
+                            _buildColorDescription(Colors.green, 'Ideal'),
+                            _buildColorDescription(Colors.orange, 'Percentile'),
+                            _buildColorDescription(Colors.blue, 'User avg'),
+                          ],
+                        ),},
+                        SizedBox(height: 29),
                       ],
                     ),
                   ),
                 ),
               ),
             ),
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(vertical: 0,horizontal: 16),
-            //   child: Container(
-            //     decoration: BoxDecoration(
-            //       borderRadius: BorderRadius.circular(20),
-            //       color: Colors.grey[200],
-            //     ),
-            //     child: Row(
-            //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            //
-            //       children: [
-            //         GestureDetector(
-            //           onTap: () {
-            //             setState(() {
-            //               isLeftEyeSelected = true;
-            //             });
-            //           },
-            //           child: Padding(
-            //             padding: const EdgeInsets.all(12.0),
-            //             child: Container(
-            //               decoration: BoxDecoration(
-            //                 borderRadius: BorderRadius.circular(23),
-            //                 color: isLeftEyeSelected ? Colors.white : Colors.transparent,
-            //               ),
-            //               child: Padding(
-            //                 padding: const EdgeInsets.all(8.0),
-            //                 child: Text(
-            //                   'Left Eye Health',
-            //                   style: TextStyle(
-            //                     fontWeight: FontWeight.bold,
-            //                   ),
-            //                 ),
-            //               ),
-            //             ),
-            //           ),
-            //         ),
-            //         GestureDetector(
-            //           onTap: () {
-            //             setState(() {
-            //               isLeftEyeSelected = false;
-            //             });
-            //           },
-            //           child: Padding(
-            //             padding: const EdgeInsets.all(12.0),
-            //             child: Container(
-            //               decoration: BoxDecoration(
-            //                 borderRadius: BorderRadius.circular(23),
-            //
-            //                 color: !isLeftEyeSelected ? Colors.white : Colors.transparent,
-            //               ),
-            //               child: Padding(
-            //                 padding: const EdgeInsets.all(8.0),
-            //                 child: Text(
-            //                   'Right Eye Health',
-            //                   style: TextStyle(
-            //                     fontWeight: FontWeight.bold,
-            //                   ),
-            //                 ),
-            //               ),
-            //             ),
-            //           ),
-            //         ),
-            //       ],
-            //     ),
-            //   ),
-            // ),
-            //
-            // SizedBox(height: 20), // Add spacing between the row and the eye health widgets
-            // isLeftEyeSelected ? LeftEyeHealthWidget() : RightEyeHealthWidget(),
-            // Text and toggle button below the graph
+
           ],
         ),
       ),
       bottomNavigationBar:
-      CustomBottomAppBar(),  );
+      CustomBottomAppBar(),
+    );
+  }
+  Widget _buildColorDescription(Color color, String text) {
+    return Row(
+      children: [
+        Container(
+          width: 10,
+          height: 10,
+          color: color,
+          margin: EdgeInsets.only(right: 5),
+        ),
+        Text(text),
+      ],
+    );
+  }
+
+
+  SfCartesianChart _buildVerticalSplineChart() {
+    return SfCartesianChart(
+      isTransposed: false,
+      // title: ChartTitle(text:  'EYE Health Graph - 2024'),
+      plotAreaBorderWidth: 0,
+      legend: Legend(isVisible:true),
+      primaryXAxis: const CategoryAxis(
+        majorTickLines: MajorTickLines(size: 0),
+        axisLine: AxisLine(width: 1),
+        majorGridLines: MajorGridLines(width: 0),
+        title:  AxisTitle(text: 'time slots'), // Description for X axis
+      ),// Disable vertical inner gridlines
+
+      primaryYAxis: const NumericAxis(
+          minimum: 0,
+          maximum: 11,
+          interval: 1,
+          labelFormat: '{value}',      title: AxisTitle(text: 'eye score'), // Description for X axis
+
+          majorGridLines: MajorGridLines(width: 1)),
+      series: _getVerticalSplineSeries(),
+      tooltipBehavior: TooltipBehavior(enable: true),
+    );
+  }
+
+
+  List<SplineSeries<_ChartData, String>> _getVerticalSplineSeries() {
+    return <SplineSeries<_ChartData, String>>[
+      SplineSeries<_ChartData, String>(
+          markerSettings: const MarkerSettings(isVisible: true),
+          dataSource: chartData,color: Colors.black,
+          xValueMapper: (_ChartData sales, _) => sales.x,
+          yValueMapper: (_ChartData sales, _) => sales.y,
+          name: 'First Test'),
+      SplineSeries<_ChartData, String>(
+        markerSettings: const MarkerSettings(isVisible: true),
+        dataSource: chartData,
+        name: 'Ideal',color: Colors.green,
+        xValueMapper: (_ChartData sales, _) => sales.x,
+        yValueMapper: (_ChartData sales, _) => sales.y2,
+      ),
+      SplineSeries<_ChartData, String>(
+        markerSettings: const MarkerSettings(isVisible: true),
+        dataSource: chartData,
+        name: 'over 3.5 lac users',color:Colors.orange ,
+        xValueMapper: (_ChartData sales, _) => sales.x,
+        yValueMapper: (_ChartData sales, _) => sales.y3,
+      ),
+      SplineSeries<_ChartData, String>(
+        markerSettings: const MarkerSettings(isVisible: true),
+        dataSource: chartData,color: Colors.blue,
+        name: 'User avg',
+        xValueMapper: (_ChartData sales, _) => sales.x,
+        yValueMapper: (_ChartData sales, _) => sales.y4,
+      )
+    ];
+  }
+
+  @override
+  void dispose() {
+    chartData!.clear();
+    super.dispose();
   }
 }
+/// Private class for storing the spline series data points.
+class _ChartData {
+  _ChartData(this.x, this.y, this.y2, this.y3, this.y4);
+  final String x;
+  final double y;
+  final double y2;
+  final double y3;
+  final double y4;
+
+}
+
+
+
 
 class LeftEyeHealthWidget extends StatelessWidget {
   @override
@@ -607,7 +490,7 @@ class LeftEyeHealthWidget extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: ListTile(
                 leading: Image.asset('assets/lefteye.png'),
-                title: Column(
+                title: const Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -663,7 +546,7 @@ class LeftEyeHealthWidget extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(padding: EdgeInsets.all(1),
+                  const Padding(padding: EdgeInsets.all(1),
                     child :ListTile(
                       title: Text(
                         'Left Eye Health',
@@ -762,7 +645,7 @@ class RightEyeHealthWidget extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: ListTile(
                 leading: Image.asset('assets/righteye.png'),
-                title: Column(
+                title: const Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
