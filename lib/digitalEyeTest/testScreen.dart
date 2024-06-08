@@ -881,8 +881,9 @@ class AlphabetTestState extends State<AlphabetTest> {
 
   @override
   void dispose() {
-    _controller?.dispose();
-    flutterTts.stop();
+    if (_controller != null) {
+      _controller!.dispose();
+    }    flutterTts.stop();
     super.dispose();
   }
 
@@ -2276,8 +2277,9 @@ class AstigmationTest1 extends State<AstigmationTest> {
 
   @override
   void dispose() {
-    _controller?.dispose();
-    flutterTts.stop();
+    if (_controller != null) {
+      _controller!.dispose();
+    }    flutterTts.stop();
     super.dispose();
   }
 
@@ -2860,8 +2862,9 @@ class Astigmationtest2 extends State<AstigmationTest2> {
 
   @override
   void dispose() {
-    _controller?.dispose();
-    _timer?.cancel();
+    if (_controller != null) {
+      _controller!.dispose();
+    }    _timer?.cancel();
     flutterTts.stop();
     super.dispose();
   }
@@ -3705,8 +3708,9 @@ class AstigmationTestNone extends State<AstigmationTest3> {
 
   @override
   void dispose() {
-    _controller?.dispose();
-    flutterTts.stop();
+    if (_controller != null) {
+      _controller!.dispose();
+    }    flutterTts.stop();
     super.dispose();
   }
 
@@ -4545,8 +4549,9 @@ class _ShadowTestState extends State<ShadowTest> {
 
   @override
   void dispose() {
-    _controller?.dispose();
-    flutterTts.stop();
+    if (_controller != null) {
+      _controller!.dispose();
+    }    flutterTts.stop();
     super.dispose();
   }
 
@@ -5140,7 +5145,8 @@ class redgreen extends State<RedGreenTest> {
     // _isCapturing = false;
     if (_controller != null) {
       _controller!.dispose();
-    }    flutterTts.stop();
+    }
+    flutterTts.stop();
     super.dispose();
   }
 
@@ -6152,8 +6158,9 @@ class _CameraScreenState extends State<CameraS> {
 
   @override
   void dispose() {
-    _controller.dispose();
-    flutterTts.stop();
+    if (_controller != null) {
+      _controller!.dispose();
+    }    flutterTts.stop();
     super.dispose();
   }
 

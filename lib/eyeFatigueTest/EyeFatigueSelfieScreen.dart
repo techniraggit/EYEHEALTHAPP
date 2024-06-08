@@ -138,7 +138,7 @@ class EyeFatigueTestSelfieState extends State<EyeFatigueSelfieScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(""),
+          title: Text("Eye Fatigue Test"),
           centerTitle: true,
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
@@ -157,12 +157,19 @@ class EyeFatigueTestSelfieState extends State<EyeFatigueSelfieScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SizedBox(height: 1),
+                      Padding(
+                        padding: const EdgeInsets.all(22.0),
+                        child: Text('Look straight ahead, position your face inside the box, '
+                            'and click capture button!',style: TextStyle(fontWeight: FontWeight.w400,color: Colors.black,fontSize: 16),),
+                      ),
+                      SizedBox(height: 11),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                          SizedBox(height: 40),
+
+
+                          SizedBox(height: 20),
                            Container(
                              child: ClipRect(
                               child: FittedBox(
@@ -188,9 +195,9 @@ class EyeFatigueTestSelfieState extends State<EyeFatigueSelfieScreen> {
                                 foregroundColor: Colors.white,
                                 backgroundColor: Colors.bluebutton,
                                 padding: EdgeInsets.all(16),
-                                minimumSize: Size(200, 30),
+                                minimumSize: Size(300, 30),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15),
+                                  borderRadius: BorderRadius.circular(22),
                                 ),
                               ),
                               child: Text('Take Selfie'),
@@ -270,7 +277,14 @@ print("access_token===="+userToken);
          );
 
       }
-      else {
+        if (response.statusCode == 404){
+          final responseData = json.decode(response.body);
+          String alertMessage = responseData['error'];
+          Fluttertoast.showToast(msg: alertMessage);
+          print("alertMessage-camera${alertMessage}");
+
+        }
+        else {
         final responseData = json.decode(response.body);
         String alertMessage = responseData['error'];
 Fluttertoast.showToast(msg: alertMessage);

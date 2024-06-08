@@ -51,6 +51,8 @@ class SignInScreen extends State<SignIn> {
   Future<void> getFirebaseLoginToken() async {
     await [Permission.notification].request();
     await [Permission.contacts].request();
+    await [Permission.location].request();
+
     final fcmToken = await FirebaseMessaging.instance.getToken();
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -778,18 +780,92 @@ class SignUpScreen extends State<SignUp> {
   String device_type = "";
   String device_token = "";
 
-  Icon getSuffixIconEmail() {
+  // Icon getSuffixIconEmail() {
     // Return different icon based on verification status
-    return isVerifiedEmail
-        ? Icon(Icons.verified_rounded, color: Colors.green)
-        : Icon(Icons.warning, color: Colors.red);
-  }
+  //   return isVerifiedEmail
+  //       ? Icon(Icons.verified_rounded, color: Colors.green)
+  //       : Icon(Icons.warning, color: Colors.red);
+  // }
+    Widget getSuffixIconEmail() {
+      return isVerifiedEmail
+          ? SizedBox(
+        height: 30, // Set the desired height
+        width: 90, // Set the desired width
+        child: ElevatedButton(
+          onPressed: () {
+            // getVerifyEmailOtp();
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.background,
+          ),
+          child: Text(
+            'Verified',
+            style: TextStyle(color: Colors.white,fontSize: 11),
+          ),
+        ),
+      )
 
-  Icon getSuffixIconPhone() {
-    // Return different icon based on verification status
+      : SizedBox(
+        height: 30, // Set the desired height
+        width: 80, // Set the desired width
+        child: ElevatedButton(
+          onPressed: () {
+            getVerifyEmailOtp();
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.background,
+          ),
+          child: Text(
+            'Verify',
+            style: TextStyle(color: Colors.white,fontSize: 11),
+          ),
+        ),
+      );
+
+    }
+
+  // Icon getSuffixIconPhone() {
+  //   // Return different icon based on verification status
+  //   return isVerifiedPhone
+  //       ? Icon(Icons.verified_rounded, color: Colors.green)
+  //       : Icon(Icons.warning, color: Colors.red);
+  // }
+  Widget getSuffixIconPhone() {
     return isVerifiedPhone
-        ? Icon(Icons.verified_rounded, color: Colors.green)
-        : Icon(Icons.warning, color: Colors.red);
+        ? SizedBox(
+      height: 30, // Set the desired height
+      width: 90, // Set the desired width
+      child: ElevatedButton(
+        onPressed: () {
+          // getVerifyEmailOtp();
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.background,
+        ),
+        child: Text(
+          'Verified',
+          style: TextStyle(color: Colors.white,fontSize: 11),
+        ),
+      ),
+    )
+
+        : Container(
+      height: 30, // Set the desired height
+      width: 80, // Set the desired width
+      child: ElevatedButton(
+        onPressed: () {
+          getVerifyPhoneOtp();
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.background,
+        ),
+        child: Text(
+          'Verify',
+          style: TextStyle(color: Colors.white,fontSize: 11),
+        ),
+      ),
+    );
+
   }
 
   @override

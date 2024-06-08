@@ -161,15 +161,15 @@ class _RewardsContactsSync extends State<RewardContact> {
               ),
             ),
           ),
-          appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(10),
-            child: AppBar(
-              backgroundColor:
-              Colors.white, // Set app bar background color to white
-              elevation: 0, // Remove app bar shadow
-              // Add any other app bar properties as needed
-            ),
-          ),
+          // appBar: PreferredSize(
+          //   preferredSize: const Size.fromHeight(10),
+          //   child: AppBar(
+          //     backgroundColor:
+          //     Colors.white, // Set app bar background color to white
+          //     elevation: 0, // Remove app bar shadow
+          //     // Add any other app bar properties as needed
+          //   ),
+          // ),
 
           body: Column(
             children: [
@@ -977,15 +977,15 @@ class RewardSpecsSync extends State<RewardSpecs> {
           ),
         ),
 
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(10),
-          child: AppBar(
-            backgroundColor:
-            Colors.white70, // Set app bar background color to white
-            elevation: 0, // Remove app bar shadow
-            // Add any other app bar properties as needed
-          ),
-        ),
+        // appBar: PreferredSize(
+        //   preferredSize: const Size.fromHeight(10),
+        //   child: AppBar(
+        //     backgroundColor:
+        //     Colors.white70, // Set app bar background color to white
+        //     elevation: 0, // Remove app bar shadow
+        //     // Add any other app bar properties as needed
+        //   ),
+        // ),
         body: Column(
           children: [
             Stack(
@@ -1277,12 +1277,10 @@ class RewardSpecsSync extends State<RewardSpecs> {
                                 width: 250, // Set the desired width here
                                 height: 45,
                                 child: GestureDetector(
-                                  onTap: () {
-                                    isReedemButtonEnabled ? () {
-                                      RedeemaddressSheet(context);
-                                    } : null;
-                                    // RedeemaddressSheet(context);
-                                  },
+                                  onTap: isReedemButtonEnabled ? () {
+                                    RedeemaddressSheet(context);
+                                  } : null,
+
 
                                   child: Container(
                                     alignment: Alignment.center,
@@ -1807,36 +1805,39 @@ class PresUpload extends State<PrescriptionUpload> {
         List<dynamic> prescriptionFiles = data['data']; // Specify the file name
         List<String> prescriptionNames = [];
         isLoading = false;
-        for (var fileEntry in prescriptionFiles) {
-          String invoiceFile = fileEntry['file'];
-          String date = fileEntry['created_on'];
-          String status = fileEntry['status'];
+        if(prescriptionFiles.isNotEmpty ||prescriptionFiles!=null) {
+          for (var fileEntry in prescriptionFiles) {
+            String invoiceFile = fileEntry['uploaded_file'];
+            String date = fileEntry['created_on'];
+            String status = fileEntry['status'];
 
-          String images = fileEntry['file'];
-          image.add(images);
+            String images = fileEntry['uploaded_file'];
+            image.add(images);
 
 
-          String prescription_id = fileEntry['prescription_id'];
+            String prescription_id = fileEntry['prescription_id'];
 
-          prescriptionNames.add(invoiceFile);
-          dates.add(date);
-          statuses.add(status);
-          prescriptionid.add(prescription_id);
+            prescriptionNames.add(invoiceFile);
+            dates.add(date);
+            statuses.add(status);
+            prescriptionid.add(prescription_id);
+          }
+          print('Purchase Orderdd: $prescriptionNames');
+          // Extract the invoice_file values and create PlatformFile objects
+          List<PlatformFile> platformFiles = [];
+          for (var fileEntry in prescriptionFiles) {
+            String invoiceFilePath = fileEntry['uploaded_file'];
+            PlatformFile platformFile = PlatformFile(
+              name: invoiceFilePath
+                  .split('/')
+                  .last,
+              size: 0, // Set appropriate file size
+              bytes: null, // Set appropriate file bytes
+            );
+            platformFiles.add(platformFile);
+          }
+          _files.addAll(platformFiles);
         }
-        print('Purchase Orderdd: $prescriptionNames');
-        // Extract the invoice_file values and create PlatformFile objects
-        List<PlatformFile> platformFiles = [];
-        for (var fileEntry in prescriptionFiles) {
-          String invoiceFilePath = fileEntry['file'];
-          PlatformFile platformFile = PlatformFile(
-            name: invoiceFilePath.split('/').last,
-            size: 0, // Set appropriate file size
-            bytes: null, // Set appropriate file bytes
-          );
-          platformFiles.add(platformFile);
-        }
-        _files.addAll(platformFiles);
-
         setState(() {});
       } else {
         // If the request was not successful, throw an error
@@ -1900,15 +1901,15 @@ class PresUpload extends State<PrescriptionUpload> {
             ),
           ),
         ),
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(10),
-          child: AppBar(
-            backgroundColor:
-            Colors.white, // Set app bar background color to white
-            elevation: 0, // Remove app bar shadow
-            // Add any other app bar properties as needed
-          ),
-        ),
+        // appBar: PreferredSize(
+        //   preferredSize: const Size.fromHeight(10),
+        //   child: AppBar(
+        //     backgroundColor:
+        //     Colors.white, // Set app bar background color to white
+        //     elevation: 0, // Remove app bar shadow
+        //     // Add any other app bar properties as needed
+        //   ),
+        // ),
         body: Column(
           children: [
             Stack(
@@ -2364,11 +2365,12 @@ class PresUpload extends State<PrescriptionUpload> {
     };
     request.headers.addAll(headers);
 
-    // for (var i = 0; i <1; i++) {
+    for (var i = 0; i <_files.length; i++) {
     request.files.add(await http.MultipartFile.fromPath(
-      'file',
-      _files[0].path!,
+      'uploaded_file',
+      _files[i].path!,
     ));
+  }
     request.fields['problem_faced'] = Comment;
 
     print("Request==: ${request.toString()}");
@@ -2389,6 +2391,7 @@ class PresUpload extends State<PrescriptionUpload> {
 
       // Handle the status code
       print("Status Code: $statusCode");
+      print("Status Code: $_files");
 
       if (statusCode == 201) {
         Fluttertoast.showToast(msg: "File uploaded Successfully");

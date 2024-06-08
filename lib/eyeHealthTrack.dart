@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:project_new/sign_up.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'package:http/http.dart' as http;
@@ -14,6 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'Custom_navbar/bottom_navbar.dart';
 import 'HomePage.dart';
 import 'api/config.dart';
+import 'eyeFatigueTest/eyeFatigueTest.dart';
 import 'models/fatigueGraphModel.dart';
 
 class EyeHealthTrackDashboard extends StatefulWidget {
@@ -23,104 +26,104 @@ class EyeHealthTrackDashboard extends StatefulWidget {
 
 class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
   bool fatigue_left=false; List<double>? _data;int i=0;
-  bool fatigue_right=false;fatigueGraph? fatigueGraphData;
+  bool fatigue_right=false;fatigueGraph? fatigueGraphData;int count=0;
   bool midtiredness_right= false;List<double> todaygraphData = [];
   List<double> firstTestgraphData = [];
   bool midtiredness_left=false;
   String no_of_eye_test="0";String eye_health_score="";String name="";String no_of_fatigue_test="0";
 
-
-  // Future<List<double>> getGraph() async {
-  //   // try {
-  //     SharedPreferences prefs = await SharedPreferences.getInstance();
-  //     String authToken = prefs.getString('access_token') ?? '';
-  //     final response = await http.get(
-  //       Uri.parse('${ApiProvider.baseUrl}/api/fatigue/fatigue-graph?user_timezone=Asia/Kolkata'),
-  //       headers: <String, String>{
-  //         'Authorization': 'Bearer $authToken',
-  //       },
-  //
-  //     );
-  //
-  //     if (response.statusCode == 200) {
-  //
-  //       final responseData = json.decode(response.body);
-  //       fatigueGraphData = fatigueGraph.fromJson(responseData);
-  //
-  //
-  //       print("graphdata===:${response.body}");
-  //
-  //       Map<String, dynamic> jsonData = jsonDecode(response.body);
-  //       List<dynamic> data = jsonData['data'];
-  //       // name=jsonData['name'];
-  //
-  //       // fatigue_left=data[0]['is_fatigue_left'];
-  //       // fatigue_right=data[0]['is_fatigue_right'];
-  //       // midtiredness_right=data[0]['is_mild_tiredness_right'];
-  //       // midtiredness_left=data[0]['is_mild_tiredness_left'];
-  //       int no_of_fatigue=jsonData['no_of_fatigue_test'];
-  //       int  no_of_eye_=jsonData['no_of_eye_test'];
-  //       double eye_hscore=jsonData['eye_health_score'];
-  //       setState(() {
-  //         no_of_fatigue_test=no_of_fatigue.toString();
-  //         no_of_eye_test=no_of_eye_.toString();
-  //         eye_health_score=eye_hscore.toString();
-  //       });
-  //
-  //       return data.map((item) => double.parse(item['value'].toString())).toList();
-  //
-  //     }
-  //     else {
-  //
-  //       print(response.body);
-  //     }
-  //   // }
-  //   // catch (e) {     // _progressDialog!.hide();
-  //
-  //     // print("exception:$e");
-  //   // }
-  //   throw Exception('');
-  // }
-  Future<void> getGraph() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken = prefs.getString('access_token') ?? '';
-    final response = await http.get(
-      Uri.parse('${ApiProvider.baseUrl}/api/fatigue/fatigue-graph?user_timezone=Asia/Kolkata'),
-      headers: <String, String>{
-        'Authorization': 'Bearer $authToken',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final responseData = json.decode(response.body);
+  List<double> idealTestgraphData = [];
+  List<double> populationTestgraphData = [];
 
 
-      if (responseData.containsKey('status') && responseData['status']) {
-        if (responseData.containsKey('first_day_data') && responseData['first_day_data'].containsKey('value')) {
-          List<dynamic> firstDayValue = responseData['first_day_data']['value'];
-          firstTestgraphData.addAll(firstDayValue.map((value) => value.toDouble()));
+
+
+  Future<List<double>> getGraph() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken = prefs.getString('access_token') ?? '';
+      final response = await http.get(
+        Uri.parse('${ApiProvider.baseUrl}/api/fatigue/fatigue-graph?user_timezone=Asia/Kolkata'),
+        headers: <String, String>{
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        fatigueGraphData = fatigueGraph.fromJson(responseData);
+
+        print("graphdata===:${response.body}");
+
+        Map<String, dynamic> jsonData = jsonDecode(response.body);
+        // List<dynamic> data = jsonData['data'];
+        int no_of_fatigue = jsonData['no_of_fatigue_test'];
+        int no_of_eye_ = jsonData['no_of_eye_test'];
+        dynamic eye_hscore = jsonData['eye_health_score'];
+        setState(() {
+          // _datagraph = List<Map<String, dynamic>>.from(jsonData['data']);
+          no_of_fatigue_test = no_of_fatigue.toString();
+          no_of_eye_test = no_of_eye_.toString();
+          eye_health_score = eye_hscore.toString();
+        });
+        if (responseData.containsKey('status') && responseData['status']) {
+          if (responseData.containsKey('first_day_data') && responseData['first_day_data'].containsKey('value')) {
+            List<dynamic> firstDayValue = responseData['first_day_data']['value'];
+            firstTestgraphData.addAll(firstDayValue.map((value) => value.toDouble()));
+          }
+          if (responseData.containsKey('current_day_data') && responseData['current_day_data'].containsKey('value')) {
+            List<dynamic> currentDayValue = responseData['current_day_data']['value'];
+            todaygraphData.addAll(currentDayValue.map((value) => value.toDouble()));
+          }
+          if (responseData.containsKey('current_day_data') ) {
+            List<dynamic> population = List<double>.from(jsonData['get_percentile_graph']);
+
+            populationTestgraphData.addAll(population.map((value) => value.toDouble()));
+          }
+          if (responseData.containsKey('get_ideal_graph') ) {
+            List<dynamic> ideal =  List<double>.from(jsonData['get_ideal_graph']);
+
+            idealTestgraphData.addAll(ideal.map((value) => value.toDouble()));
+          }
         }
-        if (responseData.containsKey('current_day_data') && responseData['current_day_data'].containsKey('value')) {
-          List<dynamic> currentDayValue = responseData['current_day_data']['value'];
-          todaygraphData.addAll(currentDayValue.map((value) => value.toDouble()));
-        }
+        print("fffffffffffffff$todaygraphData");
+        setState(() {
+          chartData = <_ChartData>[
+            _ChartData('6 AM', firstTestgraphData[0], idealTestgraphData[0] ,populationTestgraphData[0],todaygraphData[0]),
+            _ChartData('9 AM', firstTestgraphData[1], idealTestgraphData[1], populationTestgraphData[1],todaygraphData[1]),
+            _ChartData('12 PM', firstTestgraphData[2],  idealTestgraphData[2],populationTestgraphData[2],todaygraphData[2]),
+            _ChartData('3 PM', firstTestgraphData[3], idealTestgraphData[3],populationTestgraphData[3], todaygraphData[3]),
+            _ChartData('6 PM', firstTestgraphData[4], idealTestgraphData[4], populationTestgraphData[4],todaygraphData[4]),
+            _ChartData('9 PM', firstTestgraphData[5],  idealTestgraphData[5],populationTestgraphData[5],todaygraphData[5]),
+            _ChartData('12 AM', firstTestgraphData[6],  idealTestgraphData[6],populationTestgraphData[6],todaygraphData[6]),
+
+
+
+          ];
+        });
+        count = jsonData['no_of_eye_test'];
+
+        // return data
+        //     .map((item) => double.parse(item['value'].toString()))
+        //     .toList();
       }
-print("fffffffffffffff$todaygraphData");
-      setState(() {
-        chartData = <_ChartData>[
-          _ChartData('6 AM', firstTestgraphData[0], 9,7,todaygraphData[0]),
-          _ChartData('12 PM', firstTestgraphData[1], 8.5,10,todaygraphData[1]),
-          _ChartData('6 PM', firstTestgraphData[2], 6.5,5,todaygraphData[2]),
-          _ChartData('12 AM', firstTestgraphData[3],6, 2,todaygraphData[3]),
+      else if (response.statusCode == 401) {
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      }      else {
+        print(response.body);
+      }
+    } catch (e) {
+      // _progressDialog!.hide();
 
-        ];
-      });
-
-      // return graphData;
-    } else {
-      throw Exception('Failed to load graph data');
+      print("exception:$e");
     }
+    throw Exception('');
   }
+
   List<_ChartData>? chartData;
 
   @override
@@ -217,96 +220,97 @@ print("fffffffffffffff$todaygraphData");
               padding: const EdgeInsets.all(16.0),
               child: Image.asset('assets/banner1.png'),
             ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
-              child: Text(
-                'EYE HEALTH STATUS', // Display formatted current date
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Card(
-                color: Colors.white,
-                child: ListTile(
-                  title: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Fatigue Right'),
-                              Text(
-                                fatigue_right ? 'Yes' : 'No',
-
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(width: 3,),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              const Text('Mild Tiredness Right'),
-                              Text(
-                                midtiredness_right ? 'Yes' : 'No',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      // Add spacing between the row and the additional columns
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Fatigue left'),
-                              Text(
-
-                                fatigue_left ? 'Yes' : 'No',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              const Text('Mild Tiredness Left'),
-                              Text(
-                                midtiredness_left ? 'Yes' : 'No',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            // const Padding(
+            //   padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
+            //   child: Text(
+            //     'EYE HEALTH STATUS', // Display formatted current date
+            //     style: TextStyle(
+            //       fontSize: 18,
+            //       fontWeight: FontWeight.bold,
+            //       color: Colors.deepPurple,
+            //     ),
+            //   ),
+            // ),
+            // Padding(
+            //   padding: const EdgeInsets.all(8.0),
+            //   child: Card(
+            //     elevation: 0.1,
+            //     color: Colors.white,
+            //     child: ListTile(
+            //       title: Column(
+            //         children: [
+            //           Row(
+            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //             children: [
+            //               Column(
+            //                 crossAxisAlignment: CrossAxisAlignment.start,
+            //                 children: [
+            //                   const Text('Fatigue Right'),
+            //                   Text(
+            //                     fatigue_right ? 'Yes' : 'No',
+            //
+            //                     style: const TextStyle(
+            //                       fontSize: 16,
+            //                       fontWeight: FontWeight.bold,
+            //                     ),
+            //                   ),
+            //                 ],
+            //               ),
+            //               const SizedBox(width: 3,),
+            //               Column(
+            //                 crossAxisAlignment: CrossAxisAlignment.end,
+            //                 children: [
+            //                   const Text('Mild Tiredness Right'),
+            //                   Text(
+            //                     midtiredness_right ? 'Yes' : 'No',
+            //                     style: const TextStyle(
+            //                       fontSize: 16,
+            //                       fontWeight: FontWeight.bold,
+            //                     ),
+            //                   ),
+            //                 ],
+            //               ),
+            //             ],
+            //           ),
+            //           const SizedBox(height: 16),
+            //           // Add spacing between the row and the additional columns
+            //           Row(
+            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //             children: [
+            //               Column(
+            //                 crossAxisAlignment: CrossAxisAlignment.start,
+            //                 children: [
+            //                   const Text('Fatigue left'),
+            //                   Text(
+            //
+            //                     fatigue_left ? 'Yes' : 'No',
+            //                     style: const TextStyle(
+            //                       fontSize: 16,
+            //                       fontWeight: FontWeight.bold,
+            //                     ),
+            //                   ),
+            //                 ],
+            //               ),
+            //               Column(
+            //                 crossAxisAlignment: CrossAxisAlignment.end,
+            //                 children: [
+            //                   const Text('Mild Tiredness Left'),
+            //                   Text(
+            //                     midtiredness_left ? 'Yes' : 'No',
+            //                     style: const TextStyle(
+            //                       fontSize: 16,
+            //                       fontWeight: FontWeight.bold,
+            //                     ),
+            //                   ),
+            //                 ],
+            //               ),
+            //             ],
+            //           ),
+            //         ],
+            //       ),
+            //     ),
+            //   ),
+            // ),
             const Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
               child: Text(
@@ -321,12 +325,13 @@ print("fffffffffffffff$todaygraphData");
               color: Colors.white,
 
               child: Padding(
-                padding:  EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
+                padding:  EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
                 child: Container(
                   color: Colors.white,
 
                   width: MediaQuery.of(context).size.width,
                   child: Card(
+                    elevation: 0.1,
                     color: Colors.white,
                     child: Column(
 
@@ -363,12 +368,52 @@ print("fffffffffffffff$todaygraphData");
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            _buildColorDescription(Colors.black, 'First Test'),
+                            // _buildColorDescription(Colors.black, 'First Test'),
                             _buildColorDescription(Colors.green, 'Ideal'),
-                            _buildColorDescription(Colors.orange, 'Percentile'),
+                            // _buildColorDescription(Colors.orange, 'Percentile'),
                             _buildColorDescription(Colors.blue, 'User avg'),
                           ],
                         ),},
+
+
+
+if(count==0)...{
+                        SizedBox(height: 10),
+
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
+                          child: Text(
+                            'Get your first test done now and start tracking your eye health.', // Display formatted current date
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.black),
+                          ),
+                        ),
+                        SizedBox(height: 9),
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => EyeFatigueStartScreen()),
+                                );
+                              },
+                              child: Text('Start Test Now'),
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: Size(200, 45),
+                                foregroundColor: Colors.white,
+                                backgroundColor: Colors.bluebutton,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),},
+
                         SizedBox(height: 29),
                       ],
                     ),
@@ -399,26 +444,27 @@ print("fffffffffffffff$todaygraphData");
   }
 
 
+
   SfCartesianChart _buildVerticalSplineChart() {
     return SfCartesianChart(
       isTransposed: false,
-      // title: ChartTitle(text:  'EYE Health Graph - 2024'),
       plotAreaBorderWidth: 0,
       legend: Legend(isVisible:true),
       primaryXAxis: const CategoryAxis(
         majorTickLines: MajorTickLines(size: 0),
         axisLine: AxisLine(width: 1),
         majorGridLines: MajorGridLines(width: 0),
-        title:  AxisTitle(text: 'time slots'), // Description for X axis
+        title:  AxisTitle(text: 'time slots  (x-axis) --->'),
       ),// Disable vertical inner gridlines
 
       primaryYAxis: const NumericAxis(
-          minimum: 0,
-          maximum: 11,
-          interval: 1,
-          labelFormat: '{value}',      title: AxisTitle(text: 'eye score'), // Description for X axis
-
-          majorGridLines: MajorGridLines(width: 1)),
+        minimum: 0,
+        maximum: 11,
+        interval: 1,
+        labelFormat: '{value}',
+        title: AxisTitle(text: 'eye score  (y-axis)  --->'), // Description for X axis
+        majorGridLines: MajorGridLines(width: 0), // Hide horizontal grid lines
+      ),
       series: _getVerticalSplineSeries(),
       tooltipBehavior: TooltipBehavior(enable: true),
     );
@@ -427,30 +473,34 @@ print("fffffffffffffff$todaygraphData");
 
   List<SplineSeries<_ChartData, String>> _getVerticalSplineSeries() {
     return <SplineSeries<_ChartData, String>>[
-      SplineSeries<_ChartData, String>(
-          markerSettings: const MarkerSettings(isVisible: true),
-          dataSource: chartData,color: Colors.black,
-          xValueMapper: (_ChartData sales, _) => sales.x,
-          yValueMapper: (_ChartData sales, _) => sales.y,
-          name: 'First Test'),
+      // SplineSeries<_ChartData, String>(
+      //     markerSettings: const MarkerSettings(isVisible: true),
+      //     dataSource: chartData,color: Colors.black,
+      //     xValueMapper: (_ChartData sales, _) => sales.x,
+      //     yValueMapper: (_ChartData sales, _) => sales.y,
+      //     name: 'Initial User Score'),
       SplineSeries<_ChartData, String>(
         markerSettings: const MarkerSettings(isVisible: true),
         dataSource: chartData,
-        name: 'Ideal',color: Colors.green,
+        name: 'Ideal Score',color: Colors.green,
         xValueMapper: (_ChartData sales, _) => sales.x,
         yValueMapper: (_ChartData sales, _) => sales.y2,
+        emptyPointSettings: EmptyPointSettings(
+          mode: EmptyPointMode.zero, // Connect null points to zero
+          color: Colors.blue, // Optional: Set color of the line connecting null points
+        ),
       ),
-      SplineSeries<_ChartData, String>(
-        markerSettings: const MarkerSettings(isVisible: true),
-        dataSource: chartData,
-        name: 'over 3.5 lac users',color:Colors.orange ,
-        xValueMapper: (_ChartData sales, _) => sales.x,
-        yValueMapper: (_ChartData sales, _) => sales.y3,
-      ),
+      // SplineSeries<_ChartData, String>(
+      //   markerSettings: const MarkerSettings(isVisible: true),
+      //   dataSource: chartData,
+      //   name: 'over 3.5 lac users',color:Colors.orange ,
+      //   xValueMapper: (_ChartData sales, _) => sales.x,
+      //   yValueMapper: (_ChartData sales, _) => sales.y3,
+      // ),
       SplineSeries<_ChartData, String>(
         markerSettings: const MarkerSettings(isVisible: true),
         dataSource: chartData,color: Colors.blue,
-        name: 'User avg',
+        name: 'User Average Score',
         xValueMapper: (_ChartData sales, _) => sales.x,
         yValueMapper: (_ChartData sales, _) => sales.y4,
       )
