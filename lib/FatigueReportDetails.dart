@@ -74,6 +74,12 @@ class EyeFatiguereports extends State<ReportDetails> {
           : Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
           title: const Center(
               child: Text(
                 'Eye Fatigue Test Report',
