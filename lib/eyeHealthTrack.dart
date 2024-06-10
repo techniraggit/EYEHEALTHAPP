@@ -147,6 +147,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
   Widget build(BuildContext context) {
     String formattedDate = DateFormat('dd MMMM').format(DateTime.now());
     return Scaffold(
+      backgroundColor: Colors.white,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Padding(
         padding: const EdgeInsets.all(8.0), // Add padding
@@ -187,6 +188,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
 
 
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: const Text('Eye Health Track'),
         actions: <Widget>[
           // ExampleAlarmHomeShortcutButton(refreshAlarms: loadAlarms),

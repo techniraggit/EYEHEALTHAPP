@@ -101,7 +101,7 @@ class MyPlanState extends State<MyPlan> {
                             child: Text(
                               plan.name,
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 14,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black,
                               ),
@@ -130,9 +130,9 @@ class MyPlanState extends State<MyPlan> {
                                   SizedBox(width: 5),
                                   Expanded(
                                     child: Text(
-                                      feature,
+                                      feature,maxLines: null,overflow:null,
                                       style: TextStyle(
-                                        fontSize: 16,
+                                        fontSize: 13,
                                         color: Colors.grey.shade700,
                                         fontStyle: FontStyle.normal,
                                       ),

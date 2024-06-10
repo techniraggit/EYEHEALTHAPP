@@ -671,7 +671,9 @@ class ReportPageState extends State<ReportPage> {
         : DefaultTabController(
       length: 3,
       child: Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
+          backgroundColor: Colors.white,
           title: const Text('Report and Statistics'),
           bottom: TabBar(
             tabs: [
@@ -1220,7 +1222,7 @@ class ReportPageState extends State<ReportPage> {
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 12,
-                            color: Colors.blue,
+                            color: Colors.bluebutton,
                           ),
                         ),
                         SizedBox(height: 10),
@@ -1261,7 +1263,7 @@ class ReportPageState extends State<ReportPage> {
                                   },
                                   style: ElevatedButton.styleFrom(
                                     foregroundColor: Colors.white,
-                                    backgroundColor: Colors.blue,
+                                    backgroundColor: Colors.bluebutton,
                                     shape: CircleBorder(),
                                     minimumSize: Size(30, 30),
                                   ),
@@ -1473,7 +1475,8 @@ class PrescriptionDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Prescription Details')),
+      backgroundColor: Colors.white,
+      appBar: AppBar(title: Text('Prescription Details'),backgroundColor: Colors.white,),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -1524,12 +1527,20 @@ class PrescriptionDetailPage extends StatelessWidget {
               ),
               SizedBox(height: 20),
               ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.bluebutton,
+                  foregroundColor: Colors.white,// Background color of the button
+                  textStyle: TextStyle(fontSize: 16), // Text style of the button label
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20), // Padding around the button's content
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)), // Border radius of the button
+                ),
                 onPressed: () {
                   _launchURL('${ApiProvider.baseUrl}${prescription.uploadedFile}');
                 },
                 icon: Icon(Icons.download),
                 label: Text('Download File'),
               ),
+
             ],
           ),
         ),

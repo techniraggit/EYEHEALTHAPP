@@ -219,7 +219,9 @@ class TestReportState extends State<EyeTestReport> {
         },
         child: MaterialApp(
             home: Scaffold(
+              backgroundColor: Colors.white,
                 appBar: AppBar(
+                  backgroundColor: Colors.white,
                   title: RichText(
                     text: TextSpan(
                       children: [
