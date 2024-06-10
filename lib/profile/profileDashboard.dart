@@ -16,13 +16,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart'hide LocationAccuracy;
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:project_new/HomePage.dart';
-import 'package:project_new/myPlanPage.dart';
+import 'package:project_new/profile/myPlanPage.dart';
 import 'package:project_new/Rewards/rewardStatus.dart';
 import 'package:project_new/Rewards/rewards_sync.dart';
 import 'package:project_new/sign_up.dart';
-import 'package:project_new/user_profile.dart';
+import 'package:project_new/profile/user_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'api/config.dart';
+import '../api/config.dart';
 
 class UserDashboard extends StatefulWidget {
   @override

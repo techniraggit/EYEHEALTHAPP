@@ -7,7 +7,7 @@ import 'package:draw_graph/models/feature.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'package:fl_chart/fl_chart.dart';
+import 'package:fl_chart/fl_chart.dart'hide AxisTitle;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -17,7 +17,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:project_new/alarm/demo_main.dart';
 
 import 'package:project_new/digitalEyeTest/testScreen.dart';
+import 'package:project_new/sign_up.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'Custom_navbar/bottom_navbar.dart';
 import 'api/Api.dart';
@@ -66,11 +68,15 @@ class HomePageState extends State<HomePage> {
   int i = 0;
   List<Feature>? features;
   List<String>? labelX;
-
+int count=0;
   List<String>? labelY;
+  List<double> todaygraphData = [];
+  List<double> firstTestgraphData = [];  List<double> idealTestgraphData = [];
+  List<dynamic> populationTestgraphData = [];
 
   String _status = '';
-  List<FlSpot> _value = [];
+  List<FlSpot> _value = [];  List<_ChartData>? chartData;
+
   List<FlSpot> _spots = [FlSpot(0, 0)]; // Initialize _spots as needed
   bool fatigue_left = false;
   bool fatigue_right = false;
@@ -79,8 +85,7 @@ class HomePageState extends State<HomePage> {
   bool isSelected = false;
   fatigueGraph? fatigueGraphData;
   bool isLeftEyeSelected = false;
-  List<double> data1 = [10, 30, 20, 40, 30]; // Sample data for line 1
-  List<double> data2 = [30, 50, 60, 50, 60];
+
   int currentHour = DateTime.now().hour;
   late DateTime selectedDate;
   String no_of_eye_test = "0";
@@ -125,13 +130,8 @@ class HomePageState extends State<HomePage> {
       checkAndroidScheduleExactAlarmPermission();
     }
     // loadAlarms();
-    getGraph().then((data) {
-      setState(() {
-        _data = data;
-      });
-    }).catchError((error) {
-      print(error);
-    });
+    getGraph();
+
     subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
   }
 
@@ -202,14 +202,14 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     int currentHour = DateTime.now().hour;
     // Determine the appropriate salutation based on the current hour
-    String salutation = '';
-    if (currentHour >= 0 && currentHour < 12) {
-      salutation = 'Good morning';
-    } else if (currentHour >= 12 && currentHour < 17) {
-      salutation = 'Good afternoon';
-    } else {
-      salutation = 'Good evening';
-    }
+    String salutation = 'Welcome';
+    // if (currentHour >= 0 && currentHour < 12) {
+    //   salutation = 'Good morning';
+    // } else if (currentHour >= 12 && currentHour < 17) {
+    //   salutation = 'Good afternoon';
+    // } else {
+    //   salutation = 'Good evening';
+    // }
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Padding(
@@ -220,12 +220,12 @@ class HomePageState extends State<HomePage> {
             elevation: 4.0, // Shadow
             child: InkWell(
               onTap: () {
-                Navigator.push(
-                  context,
-                  CupertinoPageRoute(
-                    builder: (context) => HomePage(),
-                  ),
-                );
+                // Navigator.push(
+                //   context,
+                //   CupertinoPageRoute(
+                //     builder: (context) => HomePage(),
+                //   ),
+                // );
               },
               child: SizedBox(
                 width: 53.0, // Width of the FloatingActionButton
@@ -280,7 +280,7 @@ class HomePageState extends State<HomePage> {
                             child: Text(
                               salutation,
                               style: const TextStyle(
-                                  color: Colors.white, fontSize: 16),
+                                  color: Colors.white, fontSize: 18,fontWeight: FontWeight.w500),
                             ),
                           ),
                           GestureDetector(
@@ -361,232 +361,211 @@ class HomePageState extends State<HomePage> {
             //   },
             //   child: Image.asset('assets/find_near_by_store.png'),
             // ),
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 17.0, vertical: 10),
+//             Padding(
+//               padding:
+//                   const EdgeInsets.symmetric(horizontal: 17.0, vertical: 10),
+//               child: Text(
+//                 'EYE HEALTH STATUS',
+//                 style: TextStyle(
+//                   fontSize: 18,
+//                   fontWeight: FontWeight.bold,
+//                   color: Colors.deepPurple,
+//                 ),
+//               ),
+//             ),
+//             SizedBox(width: 8),
+//
+//             Padding(
+//               padding: EdgeInsets.all(8.0),
+//               child: Card(
+//                 color: Colors.white,
+// elevation: 0.1,
+//                 child: ListTile(
+//
+//                   title: Column(
+//                     children: [
+//                       Row(
+//                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                         children: [
+//                           Column(
+//                             crossAxisAlignment: CrossAxisAlignment.start,
+//                             children: [
+//                               Text('Fatigue Right'),
+//                               Text(
+//                                 fatigue_right ? 'Yes' : 'No',
+//                                 style: TextStyle(
+//                                   fontSize: 16,
+//                                   fontWeight: FontWeight.bold,
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                           Column(
+//                             crossAxisAlignment: CrossAxisAlignment.end,
+//                             children: [
+//                               Text('Mild Tiredness Right'),
+//                               Text(
+//                                 midtiredness_right ? 'Yes' : 'No',
+//                                 style: TextStyle(
+//                                   fontSize: 16,
+//                                   fontWeight: FontWeight.bold,
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                       SizedBox(height: 16),
+//                       // Add spacing between the row and the additional columns
+//                       Row(
+//                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                         children: [
+//                           Column(
+//                             crossAxisAlignment: CrossAxisAlignment.start,
+//                             children: [
+//                               Text('Fatigue left'),
+//                               Text(
+//                                 fatigue_left ? 'Yes' : 'No',
+//                                 style: TextStyle(
+//                                   fontSize: 16,
+//                                   fontWeight: FontWeight.bold,
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                           Column(
+//                             crossAxisAlignment: CrossAxisAlignment.end,
+//                             children: [
+//                               Text('Mild Tiredness Left'),
+//                               Text(
+//                                 midtiredness_left ? 'Yes' : 'No',
+//                                 style: TextStyle(
+//                                   fontSize: 16,
+//                                   fontWeight: FontWeight.bold,
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               ),
+//             ),
+//
+
+
+
+            const Padding(
+              padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
               child: Text(
-                'EYE HEALTH STATUS',
+                'EYE HEALTH GRAPH OVERVIEW', // Display formatted current date
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
                 ),
               ),
             ),
-            SizedBox(width: 8),
+            Container(
+              color: Colors.white,
 
-            Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Card(
-                child: ListTile(
-                  title: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Fatigue Right'),
-                              Text(
-                                fatigue_right ? 'Yes' : 'No',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+              child: Padding(
+                padding:  EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
+                child: Container(
+                  color: Colors.white,
+
+                  width: MediaQuery.of(context).size.width,
+                  child: Card(
+                    elevation: 0.1,
+                    color: Colors.white,
+                    child: Column(
+
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+
+
+                        if(chartData!=null)...{
+                          Center(
+
+                            child: Container(
+                              color: Colors.white,
+
+                              child: _buildVerticalSplineChart(),
+
+
+                            ),
+                          ),
+                          SizedBox(height: 10), // Adjust spacing between chart and color descriptions
+
+                          // Color descriptions
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: [
+                                // SizedBox(width: 9),
+                                // _buildColorDescription(Colors.black, 'Initial User Score'),
+                                SizedBox(width: 9),
+
+                                _buildColorDescription(Colors.green, 'Ideal Score'),
+                                // SizedBox(width: 9),
+                                // _buildColorDescription(Colors.orange, 'Overall User Average'),
+                                SizedBox(width: 9),
+                                _buildColorDescription(Colors.blue, 'User Average Score'),
+                                SizedBox(width: 9),
+                              ],
+                            ),
+                          )
+
+                        },
+                        if(count==0)...{
+
+                          SizedBox(height: 10),
+
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
+                            child: Text(
+                              'Get your first test done now and start tracking your eye health.',
+                              // Display formatted current date
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black),
+                            ),
+                          ),
+                          SizedBox(height: 9),
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            EyeFatigueStartScreen()),
+                                  );
+                                },
+                                child: Text('Start Test Now'),
+                                style: ElevatedButton.styleFrom(
+                                  minimumSize: Size(200, 45),
+                                  foregroundColor: Colors.white,
+                                  backgroundColor: Colors.bluebutton,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
                                 ),
                               ),
-                            ],
+                            ),
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text('Mild Tiredness Right'),
-                              Text(
-                                midtiredness_right ? 'Yes' : 'No',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 16),
-                      // Add spacing between the row and the additional columns
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Fatigue left'),
-                              Text(
-                                fatigue_left ? 'Yes' : 'No',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text('Mild Tiredness Left'),
-                              Text(
-                                midtiredness_left ? 'Yes' : 'No',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
+                        },
+                        SizedBox(height: 29),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-            // Padding(
-            //   padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
-            //   child: Text(
-            //     'EYE HEALTH GRAPH OVERVIEW', // Display formatted current date
-            //     style: TextStyle(
-            //         fontSize: 18,
-            //         fontWeight: FontWeight.bold,
-            //         color: Colors.deepPurple),
-            //   ),
-            // ),
-            // Padding(
-            //   padding: EdgeInsets.fromLTRB(16.0, 10, 15, 10),
-            //   child: Row(
-            //     mainAxisAlignment: MainAxisAlignment.center,
-            //     children: <Widget>[
-            //       Row(
-            //         children: [
-            //           Text('From: '),//${DateFormat('yyyy-MM-dd').format(_fromDate)}
-            //           SizedBox(width: 8),
-            //
-            //
-            //           TextButton(
-            //             onPressed: () async {
-            //               final DateTime? picked = await showDatePicker(
-            //                 context: context,
-            //                 initialDate: DateTime.now(),
-            //                 firstDate: DateTime(2000),
-            //
-            //                 lastDate: DateTime(2101),
-            //               );
-            //               if (picked != null) {
-            //                 // _fr[index] = picked;
-            //
-            //                 setState(() {});
-            //               }
-            //             },
-            //             child: Image.asset('assets/calender.png'),
-            //           ),
-            //         ],
-            //       ),
-            //
-            //       SizedBox(width: 20),
-            //       Row(
-            //         children: [
-            //           Text('To: '),
-            //           SizedBox(width: 8),
-            //           TextButton(
-            //             onPressed: () async {
-            //               final DateTime? picked = await showDatePicker(
-            //                 context: context,
-            //                 initialDate: DateTime.now(),
-            //                 firstDate: DateTime(2000),
-            //                 //_fromDates[index] != null ? _fromDates[index]! : DateTime(2000),
-            //
-            //                 // firstDate:_fromDates[index] != null?? DateTime(2000), // Set the first selectable date to the current date
-            //                 lastDate: DateTime(2101),
-            //               );
-            //               if (picked != null) {
-            //                 // _toDates[index] = picked;
-            //
-            //                 setState(() {});
-            //               }
-            //             },
-            //             child: Image.asset('assets/calender.png'),
-            //           ),
-            //         ],
-            //       ),//${DateFormat('yyyy-MM-dd').format(_toDate)}
-            //
-            //     ],
-            //   ),
-            // ),
-            //
-            // SizedBox(height: 20),
-            // Builder(
-            //     builder: (context) {
-            //       final List<Color> gradientColors = [
-            //         Colors.background.withOpacity(0.6),Colors.white.withOpacity(0.8)
-            //
-            //       ];
-            //       return AspectRatio(
-            //         aspectRatio: 1.5,
-            //         child: LineChart(
-            //           LineChartData(
-            //             lineBarsData: [
-            //               LineChartBarData(
-            //                 spots: _datagraph?.asMap().entries
-            //                     .map((entry) {
-            //                   final date = DateTime.parse(entry.value['date']);
-            //                   final value = entry.value['value'] as double;
-            //                   return FlSpot(entry.key.toDouble(), value);
-            //                 })
-            //                     .toList()
-            //                     .sublist(0,11), // Take the first 10 entries
-            //                 isCurved: true,
-            //                 colors: gradientColors,
-            //                 barWidth: 1.6,
-            //                 belowBarData: BarAreaData(
-            //                   show: true,
-            //                   colors: gradientColors
-            //                       .map((color) => color.withOpacity(0.3))
-            //                       .toList(),
-            //                 ),
-            //                 dotData: FlDotData(show: true),
-            //                 isStrokeCapRound: true,
-            //                 curveSmoothness: 0.3,
-            //               ),
-            //             ],
-            //             gridData: FlGridData(show: false),
-            //             titlesData: FlTitlesData(
-            //               show: true,
-            //               bottomTitles: SideTitles(
-            //                 showTitles: true,
-            //                 margin: 8,
-            //                 reservedSize: 3,
-            //                 interval: 1, // Interval is set to 1 to show all labels
-            //                 getTitles: (value) {
-            //                   final index = value.toInt();
-            //                   if (index >= 0 && index < 10) { // Show only the first 10 dates
-            //                     final date = DateTime.parse(_datagraph?[index]['date']);
-            //                     return '${date.day}/${date.month}';
-            //                   }
-            //                   return '';
-            //                 },
-            //               ),
-            //             ),
-            //             borderData: FlBorderData(show: true),
-            //             minX: 0,
-            //             maxX: 9, // Set to 9 because we are showing 10 values (0-indexed)
-            //             minY: 0,
-            //             maxY: 100,
-            //           ),
-            //         ),
-            //       );
-            //
-            //
-            //     }
-            // ),
+
             Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
               child: Text(
@@ -694,7 +673,88 @@ class HomePageState extends State<HomePage> {
       bottomNavigationBar: CustomBottomAppBar(),
     );
   }
+  Widget _buildColorDescription(Color color, String text) {
+    return Row(
+      children: [
+        Container(
+          width: 22,
+          height: 15,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(25), // Adjust the radius to make it rounded
+          ),
+          margin: EdgeInsets.only(right: 4),
+        ),
 
+        Text(text),
+
+
+      ],
+    );
+  }
+
+
+  SfCartesianChart _buildVerticalSplineChart() {
+    return SfCartesianChart(
+      isTransposed: false,
+      plotAreaBorderWidth: 0,
+      legend: Legend(isVisible:true),
+      primaryXAxis: const CategoryAxis(
+        majorTickLines: MajorTickLines(size: 0),
+        axisLine: AxisLine(width: 1),
+        majorGridLines: MajorGridLines(width: 0),
+        title:  AxisTitle(text: 'time slots  (x-axis) --->'),
+      ),// Disable vertical inner gridlines
+
+      primaryYAxis: const NumericAxis(
+        minimum: 0,
+        maximum: 11,
+        interval: 1,
+        labelFormat: '{value}',
+        title: AxisTitle(text: 'eye score  (y-axis)  --->'), // Description for X axis
+        majorGridLines: MajorGridLines(width: 0), // Hide horizontal grid lines
+      ),
+      series: _getVerticalSplineSeries(),
+      tooltipBehavior: TooltipBehavior(enable: true),
+    );
+  }
+
+
+  List<SplineSeries<_ChartData, String>> _getVerticalSplineSeries() {
+    return <SplineSeries<_ChartData, String>>[
+      // SplineSeries<_ChartData, String>(
+      //     markerSettings: const MarkerSettings(isVisible: true),
+      //     dataSource: chartData,color: Colors.black,
+      //     xValueMapper: (_ChartData sales, _) => sales.x,
+      //     yValueMapper: (_ChartData sales, _) => sales.y,
+      //     name: 'Initial User Score'),
+      SplineSeries<_ChartData, String>(
+        markerSettings: const MarkerSettings(isVisible: true),
+        dataSource: chartData,
+        name: 'Ideal Score',color: Colors.green,
+        xValueMapper: (_ChartData sales, _) => sales.x,
+        yValueMapper: (_ChartData sales, _) => sales.y2,
+        emptyPointSettings: EmptyPointSettings(
+          mode: EmptyPointMode.zero, // Connect null points to zero
+          color: Colors.blue, // Optional: Set color of the line connecting null points
+        ),
+      ),
+      // SplineSeries<_ChartData, String>(
+      //   markerSettings: const MarkerSettings(isVisible: true),
+      //   dataSource: chartData,
+      //   name: 'over 3.5 lac users',color:Colors.orange ,
+      //   xValueMapper: (_ChartData sales, _) => sales.x,
+      //   yValueMapper: (_ChartData sales, _) => sales.y3,
+      // ),
+      SplineSeries<_ChartData, String>(
+        markerSettings: const MarkerSettings(isVisible: true),
+        dataSource: chartData,color: Colors.blue,
+        name: 'User Average Score',
+        xValueMapper: (_ChartData sales, _) => sales.x,
+        yValueMapper: (_ChartData sales, _) => sales.y4,
+      )
+    ];
+  }
   void checkActivePlan(String testType) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('access_token') ?? '';
@@ -746,7 +806,7 @@ class HomePageState extends State<HomePage> {
           }
         });
 
-        print("responseviewprofile:${response.body}");
+        print("responseviewprofile999:${response.body}");
 
         return json.decode(response.body);
       } else {
@@ -805,7 +865,7 @@ class HomePageState extends State<HomePage> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken = prefs.getString('access_token') ?? '';
       final response = await http.get(
-        Uri.parse('${ApiProvider.baseUrl}/api/fatigue/fatigue-graph'),
+        Uri.parse('${ApiProvider.baseUrl}/api/fatigue/fatigue-graph?user_timezone=Asia/Kolkata'),
         headers: <String, String>{
           'Authorization': 'Bearer $authToken',
         },
@@ -818,22 +878,69 @@ class HomePageState extends State<HomePage> {
         print("graphdata===:${response.body}");
 
         Map<String, dynamic> jsonData = jsonDecode(response.body);
-        List<dynamic> data = jsonData['data'];
+        // List<dynamic> data = jsonData['data'];
         fullname = jsonData['name'];
+
         int no_of_fatigue = jsonData['no_of_fatigue_test'];
         int no_of_eye_ = jsonData['no_of_eye_test'];
         dynamic eye_hscore = jsonData['eye_health_score'];
         setState(() {
-          _datagraph = List<Map<String, dynamic>>.from(jsonData['data']);
+          // _datagraph = List<Map<String, dynamic>>.from(jsonData['data']);
           no_of_fatigue_test = no_of_fatigue.toString();
           no_of_eye_test = no_of_eye_.toString();
           eye_health_score = eye_hscore.toString();
         });
+        if (responseData.containsKey('status') && responseData['status']) {
+          if (responseData.containsKey('first_day_data') && responseData['first_day_data'].containsKey('value')) {
+            List<dynamic> firstDayValue = responseData['first_day_data']['value'];
+            firstTestgraphData.addAll(firstDayValue.map((value) => value.toDouble()));
+          }
+          if (responseData.containsKey('current_day_data') && responseData['current_day_data'].containsKey('value')) {
+            List<dynamic> currentDayValue = responseData['current_day_data']['value'];
+            todaygraphData.addAll(currentDayValue.map((value) => value.toDouble()));
+          }
+          if (responseData.containsKey('get_percentile_graph') ) {
+            List<dynamic> population = List<dynamic>.from(jsonData['get_percentile_graph']);
 
-        return data
-            .map((item) => double.parse(item['value'].toString()))
-            .toList();
-      } else {
+            populationTestgraphData.addAll(population.map((value) => value.toDouble()));
+          }
+          if (responseData.containsKey('get_ideal_graph') ) {
+            List<dynamic> ideal =  List<dynamic>.from(jsonData['get_ideal_graph']);
+
+    idealTestgraphData.addAll(ideal.map((value) => value.toDouble()));
+          }
+        }
+        print("fffffffffffffff$todaygraphData");
+        setState(() {
+          chartData = <_ChartData>[
+            _ChartData('6 AM', firstTestgraphData[0], idealTestgraphData[0] ,populationTestgraphData[0],todaygraphData[0]),
+            _ChartData('9 AM', firstTestgraphData[1], idealTestgraphData[1], populationTestgraphData[1],todaygraphData[1]),
+            _ChartData('12 PM', firstTestgraphData[2],  idealTestgraphData[2],populationTestgraphData[2],todaygraphData[2]),
+            _ChartData('3 PM', firstTestgraphData[3], idealTestgraphData[3],populationTestgraphData[3], todaygraphData[3]),
+            _ChartData('6 PM', firstTestgraphData[4], idealTestgraphData[4], populationTestgraphData[4],todaygraphData[4]),
+            _ChartData('9 PM', firstTestgraphData[5],  idealTestgraphData[5],populationTestgraphData[5],todaygraphData[5]),
+            _ChartData('12 AM', firstTestgraphData[6],  idealTestgraphData[6],populationTestgraphData[6],todaygraphData[6]),
+
+
+
+          ];
+        });
+
+
+
+        count = jsonData['no_of_eye_test'];
+
+        // return data
+        //     .map((item) => double.parse(item['value'].toString()))
+        //     .toList();
+      }
+      else if (response.statusCode == 401) {
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      }      else {
         print(response.body);
       }
     } catch (e) {
@@ -844,6 +951,17 @@ class HomePageState extends State<HomePage> {
     throw Exception('');
   }
 }
+
+class _ChartData {
+  _ChartData(this.x, this.y, this.y2, this.y3, this.y4);
+  final String x;
+  final double y;
+  final double y2;
+  final double y3;
+  final double y4;
+
+}
+
 
 class setReminder extends StatefulWidget {
   @override

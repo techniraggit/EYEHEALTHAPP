@@ -14,9 +14,9 @@ import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart' hide LocationAccuracy;
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:project_new/profileDashboard.dart';
+import 'package:project_new/profile/profileDashboard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'api/config.dart';
+import '../api/config.dart';
 
 class UserProfile extends StatefulWidget {
   @override

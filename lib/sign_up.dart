@@ -51,6 +51,8 @@ class SignInScreen extends State<SignIn> {
   Future<void> getFirebaseLoginToken() async {
     await [Permission.notification].request();
     await [Permission.contacts].request();
+    await [Permission.location].request();
+
     final fcmToken = await FirebaseMessaging.instance.getToken();
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -666,27 +668,30 @@ class SignInScreen extends State<SignIn> {
         // Close the loading dialog
         EasyLoading.dismiss();
         if (response.statusCode == 200) {
+          Fluttertoast.showToast(msg: "Login Successfully");
+
           pincode = '';
           Map<String, dynamic> data = json.decode(response.body);
-          Fluttertoast.showToast(msg: "Login Successfully");
           setLoggedIn(true);
           final SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString('access_token', data['tokens']['access_token']);
           prefs.setString('refresh_token', data['tokens']["refresh_token"]);
           prefs.setString('stripe_customer_id', data['data']['stripe_customer_id']);
           prefs.setString('user_id', data['data']['id']);
-
+          Navigator.of(context).pop();
           //  print("Otp Sent${ data['data']['id']}${data['data']['stripe_customer_id']}");
           Navigator.push(
             context,
             CupertinoPageRoute(builder: (context) => HomePage()),
           );
-        } else {
+        }
+        else {
           Map<String, dynamic> data = json.decode(response.body);
           if (data['status'] == false && data['status_code'] == 400) {
             // Display the error message to the user
             String errorMessage1 = data['data']['non_field_errors'][0];
-            print(errorMessage1);
+            print("-------------$errorMessage1");
+
             Fluttertoast.showToast(msg: errorMessage1);
 // Output the error message to the console
             // You can show this message in a Snackbar, AlertDialog, or any other way you prefer
@@ -775,18 +780,92 @@ class SignUpScreen extends State<SignUp> {
   String device_type = "";
   String device_token = "";
 
-  Icon getSuffixIconEmail() {
+  // Icon getSuffixIconEmail() {
     // Return different icon based on verification status
-    return isVerifiedEmail
-        ? Icon(Icons.verified_rounded, color: Colors.green)
-        : Icon(Icons.warning, color: Colors.red);
-  }
+  //   return isVerifiedEmail
+  //       ? Icon(Icons.verified_rounded, color: Colors.green)
+  //       : Icon(Icons.warning, color: Colors.red);
+  // }
+    Widget getSuffixIconEmail() {
+      return isVerifiedEmail
+          ? SizedBox(
+        height: 30, // Set the desired height
+        width: 90, // Set the desired width
+        child: ElevatedButton(
+          onPressed: () {
+            // getVerifyEmailOtp();
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.background,
+          ),
+          child: Text(
+            'Verified',
+            style: TextStyle(color: Colors.white,fontSize: 11),
+          ),
+        ),
+      )
 
-  Icon getSuffixIconPhone() {
-    // Return different icon based on verification status
+      : SizedBox(
+        height: 30, // Set the desired height
+        width: 80, // Set the desired width
+        child: ElevatedButton(
+          onPressed: () {
+            getVerifyEmailOtp();
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.background,
+          ),
+          child: Text(
+            'Verify',
+            style: TextStyle(color: Colors.white,fontSize: 11),
+          ),
+        ),
+      );
+
+    }
+
+  // Icon getSuffixIconPhone() {
+  //   // Return different icon based on verification status
+  //   return isVerifiedPhone
+  //       ? Icon(Icons.verified_rounded, color: Colors.green)
+  //       : Icon(Icons.warning, color: Colors.red);
+  // }
+  Widget getSuffixIconPhone() {
     return isVerifiedPhone
-        ? Icon(Icons.verified_rounded, color: Colors.green)
-        : Icon(Icons.warning, color: Colors.red);
+        ? SizedBox(
+      height: 30, // Set the desired height
+      width: 90, // Set the desired width
+      child: ElevatedButton(
+        onPressed: () {
+          // getVerifyEmailOtp();
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.background,
+        ),
+        child: Text(
+          'Verified',
+          style: TextStyle(color: Colors.white,fontSize: 11),
+        ),
+      ),
+    )
+
+        : Container(
+      height: 30, // Set the desired height
+      width: 80, // Set the desired width
+      child: ElevatedButton(
+        onPressed: () {
+          getVerifyPhoneOtp();
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.background,
+        ),
+        child: Text(
+          'Verify',
+          style: TextStyle(color: Colors.white,fontSize: 11),
+        ),
+      ),
+    );
+
   }
 
   @override
