@@ -121,7 +121,7 @@ class MyPlanState extends State<MyPlan> {
                               Row(
                                 children: [
                                   Icon(
-                                    Icons.check_circle,
+                                    Icons.check,
                                     color: isSelected
                                         ? Colors.bluebutton
                                         : Colors.bluebutton,

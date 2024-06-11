@@ -23,6 +23,7 @@ import 'package:project_new/Rewards/redeem_sucess.dart';
 import 'package:project_new/models/OfferData.dart';
 import 'package:project_new/models/address_list.dart';
 import 'package:project_new/sign_up.dart';
+import 'package:rename/platform_file_editors/abs_platform_file_editor.dart';
 import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -625,10 +626,25 @@ class _RewardsContactsSync extends State<RewardContact> {
 
     // final contacts = await FlutterContacts.getContacts();
     if (await Permission.contacts.isGranted) {
+
+
+
+
+
+
+
+
+
+
+
       List<Contact> contacts = await ContactsService.getContacts();
 
       setState(() => _contacts = contacts);
-      print("_permissionGranted${_contacts.length}");
+      sendContacts();
+      // for(int i=0;i<=_contacts.length;i++) {
+      //   print("_permissionGranted${_contacts[i].phones?.first
+      //       .value?.replaceAll(" ", '')}=========${_contacts[i].displayName}");
+      // }
     } else {}
 
     // }
@@ -711,6 +727,81 @@ class _RewardsContactsSync extends State<RewardContact> {
       print("exception:$e");
     }
     throw Exception('');
+  }
+  Future<void> sendContacts() async {
+    List<Map<String, dynamic>> dataList = [];
+
+    
+    for (var contact in _contacts) {
+      Map<String, dynamic> contactData = {}; // Create a map for each contact
+
+      if (contact.displayName != null) {
+        contactData["name"] = contact.displayName!;
+      }
+
+      int phoneCount = 1;
+      Map<String, String> phoneNumbersMap = {}; // Change the type to Map<String, String>
+      if (contact.phones != null) {
+        for (var phone in contact.phones!) {
+          String phoneType = phone.label ?? "Phone"; // Default to "Phone" if label is null
+          String phoneNumber = phone.value!.replaceAll(" ", '');
+          phoneNumbersMap["$phoneType$phoneCount"] = phoneNumber;
+          phoneCount++;
+        }
+      }
+      contactData["phone_numbers"] = phoneNumbersMap; // Assign the Map<String, String> to "phone_numbers"
+
+      if (contact.emails != null) {
+        List<String> emailsList = [];
+        for (var email in contact.emails!) {
+          emailsList.add(email.value!);
+        }
+        contactData["emails"] = emailsList.join(", ");
+      }
+
+      if (contact.postalAddresses?.isNotEmpty ?? false) {
+        final address = contact.postalAddresses!.first;
+        contactData["address"] = '${address.street ?? ''}, ${address.city ?? ''}, ${address.postcode ?? ''}, ${address.country ?? ""}';
+      }
+
+      if (contact.avatar != null && contact.avatar!.isNotEmpty) {
+        final image = MemoryImage(contact.avatar!);
+        // Use the image where needed
+      }
+
+      dataList.add(contactData); // Add the contact data map to dataList
+    }
+
+    logger.d("object========${dataList.toString()}");
+
+    // Replace with your API endpoint
+    String userToken = '';
+    var sharedPref = await SharedPreferences.getInstance();
+    userToken =
+    sharedPref.getString("access_token") ?? '';
+    String apiUrl = '${Api.baseurl}/api/contact-upload';  // replace with your API endpoint
+    String jsonString = json.encode(dataList);
+
+    try {
+
+      http.Response response = await http.post(
+        Uri.parse(apiUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $userToken',
+
+        },
+        body: jsonString,
+      );
+
+      if (response.statusCode == 200) {
+        print('Data sent successfully');
+      } else {
+        print('Failed to send data. Error code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 
 
