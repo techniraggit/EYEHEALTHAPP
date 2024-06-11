@@ -2,13 +2,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:alarm/alarm.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,20 +14,13 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:platform_device_id_v2/platform_device_id_v2.dart';
 import 'package:project_new/HomePage.dart';
-import 'package:project_new/demo.dart';
-import 'package:project_new/digitalEyeTest/TestReport.dart';
-import 'package:project_new/eyeHealthTrack.dart';
 import 'package:project_new/sign_up.dart';
-import 'package:project_new/profile/user_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'Custom_navbar/bottom_navbar.dart';
 import 'FirebaseOptions/FirebaseApi.dart';
-import 'alarm/demo_main.dart';
 import 'api/firebase_options.dart';
+
 
 final navigatorKey=GlobalKey<NavigatorState>();
 extension StringExtension on String {
@@ -38,6 +28,7 @@ extension StringExtension on String {
     return "${this[0].toUpperCase()}${this.substring(1)}";
   }
 }
+bool isLoggedIn=false;
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 FlutterLocalNotificationsPlugin();
 @pragma('vm:entry-point')
@@ -70,7 +61,8 @@ Future<void> main() async {
   'pk_test_51OJvAESInaGLb0MUv9RqwK5GqS1LhAWLWPfP2OVRyOzuVPepwaN9L58rWq3ixOUq39RKjkkjf2qUNjl782PntLLX00npNk74Y8';
 
   Fluttertoast.showToast;
-
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  isLoggedIn = prefs.getBool('isLoggedIn')!;
 
   runApp(const MyApp());
   // runApp(const MyApp());
@@ -88,12 +80,23 @@ class MyApp extends StatelessWidget {
     return
       MaterialApp(
         builder: EasyLoading.init(),
-        home:SplashScreen(),// ExampleAlarmHomeScreen(),// SplashScreen(),
+        home:SplashScreen(),
+
         navigatorKey: navigatorKey,
 
+          routes: isLoggedIn
+              ? {
+            '/notification_screen': (context) => SignIn(),
+          }
+              : {
+            '/other_screen': (context) => HomePage(),
+          },
+
+
         // theme: ThemeData.dark(),
-        routes: {'/notification_screen':(context)=>  SignIn(),
-        },//Notificationpage(
+        // routes: {'/notification_screen':(context)=>
+        //     SignIn(),
+        // },//Notificationpage(
         debugShowCheckedModeBanner: false,
 
       );

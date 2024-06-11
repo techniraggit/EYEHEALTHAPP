@@ -129,7 +129,7 @@ int count=0;
       checkAndroidNotificationPermission();
       checkAndroidScheduleExactAlarmPermission();
     }
-    // loadAlarms();
+    loadAlarms();
     getGraph();
 
     subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
@@ -220,12 +220,7 @@ int count=0;
             elevation: 4.0, // Shadow
             child: InkWell(
               onTap: () {
-                // Navigator.push(
-                //   context,
-                //   CupertinoPageRoute(
-                //     builder: (context) => HomePage(),
-                //   ),
-                // );
+
               },
               child: SizedBox(
                 width: 53.0, // Width of the FloatingActionButton
@@ -285,7 +280,15 @@ int count=0;
                           ),
                           GestureDetector(
                               onTap: () {
-                                navigateToAlarmScreen(null);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute<void>(
+                                    builder: (context) =>
+                                        ExampleAlarmHomeScreen(),
+                                  ),
+                                );
+
+                                // navigateToAlarmScreen(null);
                               },
                               child: Image.asset('assets/notification.png'))
                         ],

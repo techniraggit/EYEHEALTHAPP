@@ -192,7 +192,6 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
         backgroundColor: Colors.white,
         title: const Text('Eye Health Track'),
         actions: <Widget>[
-          // ExampleAlarmHomeShortcutButton(refreshAlarms: loadAlarms),
 
           IconButton(
             icon: const Icon(Icons.notifications),
@@ -223,97 +222,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
               padding: const EdgeInsets.all(16.0),
               child: Image.asset('assets/banner1.png'),
             ),
-            // const Padding(
-            //   padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
-            //   child: Text(
-            //     'EYE HEALTH STATUS', // Display formatted current date
-            //     style: TextStyle(
-            //       fontSize: 18,
-            //       fontWeight: FontWeight.bold,
-            //       color: Colors.deepPurple,
-            //     ),
-            //   ),
-            // ),
-            // Padding(
-            //   padding: const EdgeInsets.all(8.0),
-            //   child: Card(
-            //     elevation: 0.1,
-            //     color: Colors.white,
-            //     child: ListTile(
-            //       title: Column(
-            //         children: [
-            //           Row(
-            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //             children: [
-            //               Column(
-            //                 crossAxisAlignment: CrossAxisAlignment.start,
-            //                 children: [
-            //                   const Text('Fatigue Right'),
-            //                   Text(
-            //                     fatigue_right ? 'Yes' : 'No',
-            //
-            //                     style: const TextStyle(
-            //                       fontSize: 16,
-            //                       fontWeight: FontWeight.bold,
-            //                     ),
-            //                   ),
-            //                 ],
-            //               ),
-            //               const SizedBox(width: 3,),
-            //               Column(
-            //                 crossAxisAlignment: CrossAxisAlignment.end,
-            //                 children: [
-            //                   const Text('Mild Tiredness Right'),
-            //                   Text(
-            //                     midtiredness_right ? 'Yes' : 'No',
-            //                     style: const TextStyle(
-            //                       fontSize: 16,
-            //                       fontWeight: FontWeight.bold,
-            //                     ),
-            //                   ),
-            //                 ],
-            //               ),
-            //             ],
-            //           ),
-            //           const SizedBox(height: 16),
-            //           // Add spacing between the row and the additional columns
-            //           Row(
-            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //             children: [
-            //               Column(
-            //                 crossAxisAlignment: CrossAxisAlignment.start,
-            //                 children: [
-            //                   const Text('Fatigue left'),
-            //                   Text(
-            //
-            //                     fatigue_left ? 'Yes' : 'No',
-            //                     style: const TextStyle(
-            //                       fontSize: 16,
-            //                       fontWeight: FontWeight.bold,
-            //                     ),
-            //                   ),
-            //                 ],
-            //               ),
-            //               Column(
-            //                 crossAxisAlignment: CrossAxisAlignment.end,
-            //                 children: [
-            //                   const Text('Mild Tiredness Left'),
-            //                   Text(
-            //                     midtiredness_left ? 'Yes' : 'No',
-            //                     style: const TextStyle(
-            //                       fontSize: 16,
-            //                       fontWeight: FontWeight.bold,
-            //                     ),
-            //                   ),
-            //                 ],
-            //               ),
-            //             ],
-            //           ),
-            //         ],
-            //       ),
-            //     ),
-            //   ),
-            // ),
+
             const Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
               child: Text(
@@ -341,19 +250,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
 
-                        // Padding(
-                        //   padding: EdgeInsets.all(1),
-                        //   child: ListTile(
-                        //     title: Text(
-                        //       'Right Eye Health',
-                        //       style: TextStyle(
-                        //         fontSize: 16.0,
-                        //         fontWeight: FontWeight.bold,
-                        //       ),
-                        //     ),
-                        //     subtitle: Text('April 30-May 30'),
-                        //   ),
-                        // ),
+
                                   if(chartData!=null)...{
                                       Center(
 
@@ -482,12 +379,7 @@ if(count==0&&isLoading1==false)...{
 
   List<SplineSeries<_ChartData, String>> _getVerticalSplineSeries() {
     return <SplineSeries<_ChartData, String>>[
-      // SplineSeries<_ChartData, String>(
-      //     markerSettings: const MarkerSettings(isVisible: true),
-      //     dataSource: chartData,color: Colors.black,
-      //     xValueMapper: (_ChartData sales, _) => sales.x,
-      //     yValueMapper: (_ChartData sales, _) => sales.y,
-      //     name: 'Initial User Score'),
+
       SplineSeries<_ChartData, String>(
         markerSettings: const MarkerSettings(isVisible: true),
         dataSource: chartData,
@@ -501,13 +393,7 @@ if(count==0&&isLoading1==false)...{
           color: Colors.green, // Optional: Set color of the line connecting null points
         ),
       ),
-      // SplineSeries<_ChartData, String>(
-      //   markerSettings: const MarkerSettings(isVisible: true),
-      //   dataSource: chartData,
-      //   name: 'over 3.5 lac users',color:Colors.orange ,
-      //   xValueMapper: (_ChartData sales, _) => sales.x,
-      //   yValueMapper: (_ChartData sales, _) => sales.y3,
-      // ),
+
       SplineSeries<_ChartData, String>(
         markerSettings: const MarkerSettings(isVisible: true),
         dataSource: chartData,color: Colors.blue,
@@ -767,19 +653,7 @@ class RightEyeHealthWidget extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Padding(padding: EdgeInsets.all(1),
-                    // child :ListTile(
-                    //   title: Text(
-                    //     'Right Eye Health',
-                    //     style: TextStyle(
-                    //       fontSize: 16.0,
-                    //       fontWeight: FontWeight.bold,
-                    //     ),
-                    //   ),
-                    //   subtitle: Text('April 30-May 30'),
-                    // ),),
 
-                  // Container with fixed height to contain the LineChart
                   Container(
                     height: 200,
                     width: MediaQuery.of(context).size.width,

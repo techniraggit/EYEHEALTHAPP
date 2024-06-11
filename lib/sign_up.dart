@@ -1545,8 +1545,8 @@ class SignUpScreen extends State<SignUp> {
       setState(() {
         print(
             "location++++++++++${place.street}, ${place.locality}, ${place.administrativeArea}, ${place.country}");
-        _locationController.text =
-            "${place.street}, ${place.locality}, ${place.administrativeArea}, ${place.country}";
+        // _locationController.text =
+        //     "${place.street}, ${place.locality}, ${place.administrativeArea}, ${place.country}";
       });
     } catch (e) {
       print(e);
@@ -2497,10 +2497,10 @@ class SignUpScreen extends State<SignUp> {
       Fluttertoast.showToast(msg: " Enter Email");
       return false;
     }
-    if (_locationController.text.trim().isEmpty) {
-      Fluttertoast.showToast(msg: " Enter Location");
-      return false;
-    }
+    // if (_locationController.text.trim().isEmpty) {
+    //   Fluttertoast.showToast(msg: " Enter Location");
+    //   return false;
+    // }
 
     return true;
   }

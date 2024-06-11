@@ -39,7 +39,7 @@ class ExampleAlarmHomeScreen extends StatefulWidget {
 class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
   late List<AlarmSettings> alarms;
 
-  static StreamSubscription<AlarmSettings>? subscription;
+  // static StreamSubscription<AlarmSettings>? subscription;
 
   @override
   void initState() {
@@ -49,11 +49,11 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
       checkAndroidScheduleExactAlarmPermission();
     }
     loadAlarms();
-    subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
   }
 
   void loadAlarms() {
     setState(() {
+
       alarms = Alarm.getAlarms();
       alarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
     });
@@ -124,14 +124,14 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
 
   @override
   void dispose() {
-    subscription?.cancel();
+    // subscription?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('alarm 3.1.4')),
+      appBar: AppBar(title:  Center(child: Text('Alarms Scheduled',style: TextStyle(fontWeight: FontWeight.w400,fontSize: 17,color: Colors.black),))),
       body: SafeArea(
         child:
         alarms.isNotEmpty
@@ -154,13 +154,13 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
         )
             : Center(
           child: Text(
-            'No alarms set',
+            'No alarm set',
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
       ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.all(10),
+        padding:  EdgeInsets.fromLTRB(10,10,40,60),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -306,45 +306,48 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
                 child: Text(
-                  'Cancel',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge!
-                      .copyWith(color: Colors.blueAccent),
+                  'Select Time Slot',style: TextStyle(color: Colors.black,fontSize: 16),
+                  // style: Theme.of(context)
+                  //     .textTheme
+                  //     .titleLarge!
+                  //     .copyWith(color: Colors.blueAccent),
                 ),
               ),
               TextButton(
                 onPressed: saveAlarm,
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(Colors.background),
+                ),
                 child: loading
                     ? const CircularProgressIndicator()
                     : Text(
-                  'Save',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge!
-                      .copyWith(color: Colors.blueAccent),
+                  'Done',style:TextStyle(color: Colors.white,fontSize: 13)
+                  // style: Theme.of(context)
+                  //     .textTheme
+                  //     .titleLarge!
+                  //     .copyWith(color: Colors.white),
                 ),
               ),
             ],
           ),
-          Text(
-            getDay(),
-            style: Theme.of(context)
-                .textTheme
-                .titleMedium!
-                .copyWith(color: Colors.blueAccent.withOpacity(0.8)),
-          ),
+          // Text(
+          //   getDay(),
+          //   style: Theme.of(context)
+          //       .textTheme
+          //       .titleMedium!
+          //       .copyWith(color: Colors.blueAccent.withOpacity(0.8)),
+          // ),
           RawMaterialButton(
             onPressed: pickTime,
             fillColor: Colors.grey[200],
             child: Container(
-              margin: const EdgeInsets.all(20),
+              margin:  EdgeInsets.all(30),
               child: Text(
                 TimeOfDay.fromDateTime(selectedDateTime).format(context),
                 style: Theme.of(context)
                     .textTheme
                     .displayMedium!
-                    .copyWith(color: Colors.blueAccent),
+                    .copyWith(color: Colors.black,fontSize: 29),
               ),
             ),
           ),
@@ -374,41 +377,41 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
               ),
             ],
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Sound',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              DropdownButton(
-                value: assetAudio,
-                items: const [
-                  DropdownMenuItem<String>(
-                    value: 'assets/marimba.mp3',
-                    child: Text('Marimba'),
-                  ),
-                  DropdownMenuItem<String>(
-                    value: 'assets/nokia.mp3',
-                    child: Text('Nokia'),
-                  ),
-                  DropdownMenuItem<String>(
-                    value: 'assets/mozart.mp3',
-                    child: Text('Mozart'),
-                  ),
-                  DropdownMenuItem<String>(
-                    value: 'assets/star_wars.mp3',
-                    child: Text('Star Wars'),
-                  ),
-                  DropdownMenuItem<String>(
-                    value: 'assets/one_piece.mp3',
-                    child: Text('One Piece'),
-                  ),
-                ],
-                onChanged: (value) => setState(() => assetAudio = value!),
-              ),
-            ],
-          ),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //   children: [
+          //     Text(
+          //       'Sound',
+          //       style: Theme.of(context).textTheme.titleMedium,
+          //     ),
+          //     DropdownButton(
+          //       value: assetAudio,
+          //       items: const [
+          //         DropdownMenuItem<String>(
+          //           value: 'assets/marimba.mp3',
+          //           child: Text('Marimba'),
+          //         ),
+          //         DropdownMenuItem<String>(
+          //           value: 'assets/nokia.mp3',
+          //           child: Text('Nokia'),
+          //         ),
+          //         DropdownMenuItem<String>(
+          //           value: 'assets/mozart.mp3',
+          //           child: Text('Mozart'),
+          //         ),
+          //         DropdownMenuItem<String>(
+          //           value: 'assets/star_wars.mp3',
+          //           child: Text('Star Wars'),
+          //         ),
+          //         DropdownMenuItem<String>(
+          //           value: 'assets/one_piece.mp3',
+          //           child: Text('One Piece'),
+          //         ),
+          //       ],
+          //       onChanged: (value) => setState(() => assetAudio = value!),
+          //     ),
+          //   ],
+          // ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -526,6 +529,17 @@ class ExampleAlarmRingScreen extends StatelessWidget {
   }
 }
 
+
+
+
+
+
+
+
+
+
+
+
 class ExampleAlarmHomeShortcutButton extends StatefulWidget {
   const ExampleAlarmHomeShortcutButton({
     required this.refreshAlarms,
@@ -574,17 +588,17 @@ class _ExampleAlarmHomeShortcutButtonState
   Widget build(BuildContext context) {
     return Row(
       children: [
-        GestureDetector(
-          onLongPress: () {
-            setState(() => showMenu = true);
-          },
-          child: FloatingActionButton(
-            onPressed: () => onPressButton(0),
-            backgroundColor: Colors.red,
-            heroTag: null,
-            child: const Text('RING NOW', textAlign: TextAlign.center),
-          ),
-        ),
+        // GestureDetector(
+        //   onLongPress: () {
+        //     setState(() => showMenu = true);
+        //   },
+        //   child: FloatingActionButton(
+        //     onPressed: () => onPressButton(0),
+        //     backgroundColor: Colors.red,
+        //     heroTag: null,
+        //     child: const Text('RING NOW', textAlign: TextAlign.center),
+        //   ),
+        // ),
         if (showMenu)
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
