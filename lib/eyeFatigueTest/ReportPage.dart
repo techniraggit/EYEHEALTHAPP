@@ -515,14 +515,6 @@
 //
 // }
 
-
-
-
-
-
-
-
-
 import 'dart:convert';
 import 'dart:math';
 import 'package:dio/dio.dart';
@@ -554,6 +546,7 @@ class ReportPage extends StatefulWidget {
   @override
   ReportPageState createState() => ReportPageState();
 }
+
 class _ChartData {
   _ChartData(this.x, this.y, this.y2, this.y3, this.y4);
   final String x;
@@ -561,19 +554,24 @@ class _ChartData {
   final double y2;
   final double y3;
   final double y4;
-
 }
+
 class ReportPageState extends State<ReportPage> {
   List<dynamic> itemsdata = [];
-  bool isLoading = true; List<double> idealTestgraphData = [];
+  bool isLoading = true;
+  List<double> idealTestgraphData = [];
   List<double> populationTestgraphData = [];
   List<dynamic> percentage = [];
   List<dynamic> items = [];
   List<dynamic> ReportIds = [];
-  String testResult = 'Good';int count=0;
-  List<Prescription> prescriptions = [];fatigueGraph? fatigueGraphData;
-  bool midtiredness_right= false;List<double> todaygraphData = [];
-  List<double> firstTestgraphData = [];  List<_ChartData>? chartData;
+  String testResult = 'Good';
+  int count = 0;
+  List<Prescription> prescriptions = [];
+  fatigueGraph? fatigueGraphData;
+  bool midtiredness_right = false;
+  List<double> todaygraphData = [];
+  List<double> firstTestgraphData = [];
+  List<_ChartData>? chartData;
 
   @override
   void initState() {
@@ -583,12 +581,14 @@ class ReportPageState extends State<ReportPage> {
     getGraph();
     getPrescriptionFiles();
   }
+
   Future<List<double>> getGraph() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken = prefs.getString('access_token') ?? '';
       final response = await http.get(
-        Uri.parse('${ApiProvider.baseUrl}/api/fatigue/fatigue-graph?user_timezone=Asia/Kolkata'),
+        Uri.parse(
+            '${ApiProvider.baseUrl}/api/fatigue/fatigue-graph?user_timezone=Asia/Kolkata'),
         headers: <String, String>{
           'Authorization': 'Bearer $authToken',
         },
@@ -597,58 +597,70 @@ class ReportPageState extends State<ReportPage> {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         fatigueGraphData = fatigueGraph.fromJson(responseData);
-
         print("graphdata===:${response.body}");
 
         Map<String, dynamic> jsonData = jsonDecode(response.body);
         // List<dynamic> data = jsonData['data'];
 
         if (responseData.containsKey('status') && responseData['status']) {
-          if (responseData.containsKey('first_day_data') && responseData['first_day_data'].containsKey('value')) {
-            List<dynamic> firstDayValue = responseData['first_day_data']['value'];
-            firstTestgraphData.addAll(firstDayValue.map((value) => value.toDouble()));
+          if (responseData.containsKey('first_day_data') &&
+              responseData['first_day_data'].containsKey('value')) {
+            List<dynamic> firstDayValue =
+                responseData['first_day_data']['value'];
+            firstTestgraphData
+                .addAll(firstDayValue.map((value) => value.toDouble()));
           }
-          if (responseData.containsKey('current_day_data') && responseData['current_day_data'].containsKey('value')) {
-            List<dynamic> currentDayValue = responseData['current_day_data']['value'];
-            todaygraphData.addAll(currentDayValue.map((value) => value.toDouble()));
+          if (responseData.containsKey('current_day_data') &&
+              responseData['current_day_data'].containsKey('value')) {
+            List<dynamic> currentDayValue =
+                responseData['current_day_data']['value'];
+            todaygraphData
+                .addAll(currentDayValue.map((value) => value.toDouble()));
           }
-          if (responseData.containsKey('current_day_data') ) {
-            List<dynamic> population = List<double>.from(jsonData['get_percentile_graph']);
+          if (responseData.containsKey('current_day_data')) {
+            List<dynamic> population =
+                List<double>.from(jsonData['get_percentile_graph']);
 
-            populationTestgraphData.addAll(population.map((value) => value.toDouble()));
+            populationTestgraphData
+                .addAll(population.map((value) => value.toDouble()));
           }
-          if (responseData.containsKey('get_ideal_graph') ) {
-            List<dynamic> ideal =  List<double>.from(jsonData['get_ideal_graph']);
+          if (responseData.containsKey('get_ideal_graph')) {
+            List<dynamic> ideal =
+                List<double>.from(jsonData['get_ideal_graph']);
 
             idealTestgraphData.addAll(ideal.map((value) => value.toDouble()));
           }
+          isLoading = false;
         }
         print("fffffffffffffff$todaygraphData");
         setState(() {
           chartData = <_ChartData>[
-            _ChartData('6 AM', firstTestgraphData[0], idealTestgraphData[0] ,populationTestgraphData[0],todaygraphData[0]),
-            _ChartData('9 AM', firstTestgraphData[1], idealTestgraphData[1], populationTestgraphData[1],todaygraphData[1]),
-            _ChartData('12 PM', firstTestgraphData[2],  idealTestgraphData[2],populationTestgraphData[2],todaygraphData[2]),
-            _ChartData('3 PM', firstTestgraphData[3], idealTestgraphData[3],populationTestgraphData[3], todaygraphData[3]),
-            _ChartData('6 PM', firstTestgraphData[4], idealTestgraphData[4], populationTestgraphData[4],todaygraphData[4]),
-            _ChartData('9 PM', firstTestgraphData[5],  idealTestgraphData[5],populationTestgraphData[5],todaygraphData[5]),
-            _ChartData('12 AM', firstTestgraphData[6],  idealTestgraphData[6],populationTestgraphData[6],todaygraphData[6]),
-
-
-
+            _ChartData('6 AM', firstTestgraphData[0], idealTestgraphData[0],
+                populationTestgraphData[0], todaygraphData[0]),
+            _ChartData('9 AM', firstTestgraphData[1], idealTestgraphData[1],
+                populationTestgraphData[1], todaygraphData[1]),
+            _ChartData('12 PM', firstTestgraphData[2], idealTestgraphData[2],
+                populationTestgraphData[2], todaygraphData[2]),
+            _ChartData('3 PM', firstTestgraphData[3], idealTestgraphData[3],
+                populationTestgraphData[3], todaygraphData[3]),
+            _ChartData('6 PM', firstTestgraphData[4], idealTestgraphData[4],
+                populationTestgraphData[4], todaygraphData[4]),
+            _ChartData('9 PM', firstTestgraphData[5], idealTestgraphData[5],
+                populationTestgraphData[5], todaygraphData[5]),
+            _ChartData('12 AM', firstTestgraphData[6], idealTestgraphData[6],
+                populationTestgraphData[6], todaygraphData[6]),
           ];
         });
         // return data
         //     .map((item) => double.parse(item['value'].toString()))
         //     .toList();
-      }
-      else if (response.statusCode == 401) {
+      } else if (response.statusCode == 401) {
         Fluttertoast.showToast(msg: "Session Expired");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => SignIn()),
         );
-      }      else {
+      } else {
         print(response.body);
       }
     } catch (e) {
@@ -664,89 +676,88 @@ class ReportPageState extends State<ReportPage> {
     String formattedDate = DateFormat('dd MMMM').format(DateTime.now());
     return isLoading
         ? Center(
-      child: CircularProgressIndicator(
-        color: Colors.black,
-      ),
-    )
+            child: CircularProgressIndicator(
+              color: Colors.black,
+            ),
+          )
         : DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Report and Statistics'),
-          bottom: TabBar(
-            tabs: [
-              Tab(text: 'Fatigue Report'),
-              Tab(text: 'Eye Test Report'),
-              Tab(text: 'Other'),
-            ],
-            labelColor: Colors.bluebutton,
-            unselectedLabelColor: Colors.black,
-            labelStyle:
-            TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-            unselectedLabelStyle: TextStyle(fontSize: 14),
-          ),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.notifications),
-              onPressed: () {
-                // Handle notification icon pressed
-              },
-            ),
-          ],
-        ),
-        body: TabBarView(
-          children: [
-            buildFatigueReport(
-              context,
-            ),
-            buildEyeTestReport(context),
-            buildOtherReport(context),
-          ],
-        ),
-        floatingActionButtonLocation:
-        FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.all(8.0), // Add padding
-          child: ClipOval(
-            child: Material(
-              color: Colors.white, // Background color
-              elevation: 1.0, // Shadow
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(
+            length: 3,
+            child: Scaffold(
+              appBar: AppBar(
+                title: const Text('Report and Statistics'),
+                bottom: TabBar(
+                  tabs: [
+                    Tab(text: 'Fatigue Report'),
+                    Tab(text: 'Eye Test Report'),
+                    Tab(text: 'Other'),
+                  ],
+                  labelColor: Colors.bluebutton,
+                  unselectedLabelColor: Colors.black,
+                  labelStyle:
+                      TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  unselectedLabelStyle: TextStyle(fontSize: 14),
+                ),
+                actions: <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.notifications),
+                    onPressed: () {
+                      // Handle notification icon pressed
+                    },
+                  ),
+                ],
+              ),
+              body: TabBarView(
+                children: [
+                  buildFatigueReport(
                     context,
-                    CupertinoPageRoute(
-                      builder: (context) => HomePage(),
-                    ),
-                  );
-                },
-                child: SizedBox(
-                  width: 53.0, // Width of the FloatingActionButton
-                  height: 50.0, // Height of the FloatingActionButton
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      // Add padding for the icon
-                      child: Image.asset(
-                        "assets/home_icon.png",
-                        width: 20,
+                  ),
+                  buildEyeTestReport(context),
+                  buildOtherReport(context),
+                ],
+              ),
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.centerDocked,
+              floatingActionButton: Padding(
+                padding: const EdgeInsets.all(8.0), // Add padding
+                child: ClipOval(
+                  child: Material(
+                    color: Colors.white, // Background color
+                    elevation: 1.0, // Shadow
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                            builder: (context) => HomePage(),
+                          ),
+                        );
+                      },
+                      child: SizedBox(
+                        width: 53.0, // Width of the FloatingActionButton
+                        height: 50.0, // Height of the FloatingActionButton
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            // Add padding for the icon
+                            child: Image.asset(
+                              "assets/home_icon.png",
+                              width: 20,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
+              bottomNavigationBar: CustomBottomAppBar(),
             ),
-          ),
-        ),
-        bottomNavigationBar: CustomBottomAppBar(),
-      ),
-    );
+          );
   }
 
   Widget buildFatigueReport(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
-
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           // const Padding(
@@ -761,9 +772,8 @@ class ReportPageState extends State<ReportPage> {
           // ),
           Container(
             color: Colors.white,
-
             child: Padding(
-              padding:  EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
+              padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
               child: Container(
                 color: Colors.white,
                 width: MediaQuery.of(context).size.width,
@@ -771,10 +781,8 @@ class ReportPageState extends State<ReportPage> {
                   color: Colors.white,
                   elevation: 0.1,
                   child: Column(
-
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-
                       // Padding(
                       //   padding: EdgeInsets.all(1),
                       //   child: ListTile(
@@ -788,18 +796,23 @@ class ReportPageState extends State<ReportPage> {
                       //     subtitle: Text('April 30-May 30'),
                       //   ),
                       // ),
-                      if(chartData!=null)...{
+                      if (chartData != null) ...{
                         Center(
-
                           child: Container(
                             color: Colors.white,
-
-                            child: _buildVerticalSplineChart(),
-
-
+                            height: 280,
+                            child: isLoading
+                                ? const Center(
+                                    child: CircularProgressIndicator(
+                                      color: Colors.blue,
+                                    ),
+                                  )
+                                : _buildVerticalSplineChart(),
                           ),
                         ),
-                        SizedBox(height: 10), // Adjust spacing between chart and color descriptions
+                        SizedBox(
+                            height:
+                                10), // Adjust spacing between chart and color descriptions
 
                         // Color descriptions
                         Row(
@@ -810,7 +823,8 @@ class ReportPageState extends State<ReportPage> {
                             _buildColorDescription(Colors.orange, 'Percentile'),
                             _buildColorDescription(Colors.blue, 'User avg'),
                           ],
-                        ),},
+                        ),
+                      },
                       SizedBox(height: 29),
                     ],
                   ),
@@ -818,9 +832,10 @@ class ReportPageState extends State<ReportPage> {
               ),
             ),
           ),
-          SizedBox(height: 10,),
+          SizedBox(
+            height: 10,
+          ),
           ListView.builder(
-
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
             itemCount: items.length,
@@ -917,6 +932,7 @@ class ReportPageState extends State<ReportPage> {
       ),
     );
   }
+
   Widget _buildColorDescription(Color color, String text) {
     return Row(
       children: [
@@ -931,59 +947,73 @@ class ReportPageState extends State<ReportPage> {
     );
   }
 
-
   SfCartesianChart _buildVerticalSplineChart() {
     return SfCartesianChart(
       isTransposed: false,
-      // title: ChartTitle(text:  'EYE Health Graph - 2024'),
       plotAreaBorderWidth: 0,
-      legend: Legend(isVisible:true),
+      legend: const Legend(isVisible:true),
       primaryXAxis: const CategoryAxis(
         majorTickLines: MajorTickLines(size: 0),
-        axisLine: AxisLine(width: 1),
+        axisLine: AxisLine(width: 0.3),
         majorGridLines: MajorGridLines(width: 0),
-        title:  AxisTitle(text: 'time slots'), // Description for X axis
+        title:  AxisTitle(text: 'time slots  (x-axis) --->'),
       ),// Disable vertical inner gridlines
 
       primaryYAxis: const NumericAxis(
-          minimum: 0,
-          maximum: 11,
-          interval: 1,
-          labelFormat: '{value}',      title: AxisTitle(text: 'eye score'), // Description for X axis
-
-          majorGridLines: MajorGridLines(width: 1)),
+        minimum: 0,
+        maximum: 11,
+        interval: 1,
+        labelFormat: '{value}',
+        title: AxisTitle(text: 'eye score  (y-axis)  --->'), // Description for X axis
+        majorGridLines: MajorGridLines(width: 0), // Hide horizontal grid lines
+      ),
       series: _getVerticalSplineSeries(),
       tooltipBehavior: TooltipBehavior(enable: true),
     );
   }
 
-
   List<SplineSeries<_ChartData, String>> _getVerticalSplineSeries() {
     return <SplineSeries<_ChartData, String>>[
       SplineSeries<_ChartData, String>(
           markerSettings: const MarkerSettings(isVisible: true),
-          dataSource: chartData,color: Colors.black,
+          dataSource: chartData,
+          color: Colors.black,
+          animationDuration: 0.0,
+          cardinalSplineTension: 0.5,
+          splineType: SplineType.monotonic,
           xValueMapper: (_ChartData sales, _) => sales.x,
           yValueMapper: (_ChartData sales, _) => sales.y,
           name: 'First Test'),
       SplineSeries<_ChartData, String>(
         markerSettings: const MarkerSettings(isVisible: true),
         dataSource: chartData,
-        name: 'Ideal',color: Colors.green,
+        name: 'Ideal',
+        color: Colors.green,
+        animationDuration: 0.0,
+        cardinalSplineTension: 0.5,
+        splineType: SplineType.monotonic,
         xValueMapper: (_ChartData sales, _) => sales.x,
         yValueMapper: (_ChartData sales, _) => sales.y2,
       ),
       SplineSeries<_ChartData, String>(
         markerSettings: const MarkerSettings(isVisible: true),
         dataSource: chartData,
-        name: 'over 3.5 lac users',color:Colors.orange ,
+        cardinalSplineTension: 0.5,
+        splineType: SplineType.monotonic,
+        animationDuration: 0.0,
+        name: 'over 3.5 lac users',
+        color: Colors.orange,
         xValueMapper: (_ChartData sales, _) => sales.x,
         yValueMapper: (_ChartData sales, _) => sales.y3,
       ),
       SplineSeries<_ChartData, String>(
         markerSettings: const MarkerSettings(isVisible: true),
-        dataSource: chartData,color: Colors.blue,
+        dataSource: chartData,
+        color: Colors.blue,
         name: 'User avg',
+        animationDuration: 0.0,
+        cardinalSplineTension: 0.5,
+        splineType: SplineType.monotonic,
         xValueMapper: (_ChartData sales, _) => sales.x,
         yValueMapper: (_ChartData sales, _) => sales.y4,
       )
@@ -1102,7 +1132,8 @@ class ReportPageState extends State<ReportPage> {
           ListView.builder(
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
-            itemCount: apiData?['data'].length, // Assuming apiData is your response object
+            itemCount: apiData?['data']
+                .length, // Assuming apiData is your response object
             itemBuilder: (context, index) {
               final eyeTest = apiData?['data'][index];
               return Card(
@@ -1121,7 +1152,10 @@ class ReportPageState extends State<ReportPage> {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            'Date: ' + eyeTest['created_on'].toString().substring(0, 10),
+                            'Date: ' +
+                                eyeTest['created_on']
+                                    .toString()
+                                    .substring(0, 10),
                             style: TextStyle(fontStyle: FontStyle.normal),
                           ),
                         ),
@@ -1189,7 +1223,6 @@ class ReportPageState extends State<ReportPage> {
     );
   }
 
-
   Widget buildOtherReport(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
@@ -1241,7 +1274,10 @@ class ReportPageState extends State<ReportPage> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                prescription.createdOn.toLocal().toString().substring(0, 10),
+                                prescription.createdOn
+                                    .toLocal()
+                                    .toString()
+                                    .substring(0, 10),
                                 style: TextStyle(
                                   fontStyle: FontStyle.normal,
                                 ),
@@ -1255,7 +1291,9 @@ class ReportPageState extends State<ReportPage> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => PrescriptionDetailPage(prescription: prescription),
+                                        builder: (context) =>
+                                            PrescriptionDetailPage(
+                                                prescription: prescription),
                                       ),
                                     );
                                   },
@@ -1266,7 +1304,8 @@ class ReportPageState extends State<ReportPage> {
                                     minimumSize: Size(30, 30),
                                   ),
                                   child: Transform.rotate(
-                                    angle: pi, // Correct rotation angle to 180 degrees
+                                    angle:
+                                        pi, // Correct rotation angle to 180 degrees
                                     child: Transform.scale(
                                       scale: 0.6,
                                       child: Icon(Icons.arrow_back_ios_new),
@@ -1288,7 +1327,6 @@ class ReportPageState extends State<ReportPage> {
       ),
     );
   }
-
 
   Future getPrescriptionFiles() async {
     var sharedPref = await SharedPreferences.getInstance();
@@ -1378,7 +1416,7 @@ class ReportPageState extends State<ReportPage> {
           int id = json.decode(response.body)['data'][i]['report_id'];
           String date = json.decode(response.body)['data'][i]['created_on'];
           dynamic percentage_ =
-          json.decode(response.body)['data'][i]['percentage'];
+              json.decode(response.body)['data'][i]['percentage'];
           ReportIds.add(id);
           items.add(date);
           percentage.add(percentage_);
@@ -1391,6 +1429,7 @@ class ReportPageState extends State<ReportPage> {
       print("exception:$e");
     }*/
   }
+
   Future<void> geteyeReports() async {
     //try {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -1409,7 +1448,7 @@ class ReportPageState extends State<ReportPage> {
         dynamic logger = Logger();
 
         logger.d('ddddd${responseData}');
-        apiData= responseData;
+        apiData = responseData;
         /*   itemsdata = responseData['data'];
         for (int i = 0; i < itemsdata.length; i++) {
           int id = json.decode(response.body)['data'][i]['report_id'];
@@ -1421,8 +1460,7 @@ class ReportPageState extends State<ReportPage> {
           percentage.add(percentage_);
         }*/
       });
-    }
-    else {
+    } else {
       print(response.body);
     }
     /*    }  catch (e) {
@@ -1511,21 +1549,23 @@ class PrescriptionDetailPage extends StatelessWidget {
               SizedBox(height: 20),
               prescription.uploadedFile.endsWith('.pdf')
                   ? ElevatedButton(
-                onPressed: () {
-                  _launchURL('${ApiProvider.baseUrl}${prescription.uploadedFile}');
-                },
-                child: Text('View PDF'),
-              )
+                      onPressed: () {
+                        _launchURL(
+                            '${ApiProvider.baseUrl}${prescription.uploadedFile}');
+                      },
+                      child: Text('View PDF'),
+                    )
                   : Image.network(
-                '${ApiProvider.baseUrl}${prescription.uploadedFile}',
-                errorBuilder: (context, error, stackTrace) {
-                  return Text('Failed to load image');
-                },
-              ),
+                      '${ApiProvider.baseUrl}${prescription.uploadedFile}',
+                      errorBuilder: (context, error, stackTrace) {
+                        return Text('Failed to load image');
+                      },
+                    ),
               SizedBox(height: 20),
               ElevatedButton.icon(
                 onPressed: () {
-                  _launchURL('${ApiProvider.baseUrl}${prescription.uploadedFile}');
+                  _launchURL(
+                      '${ApiProvider.baseUrl}${prescription.uploadedFile}');
                 },
                 icon: Icon(Icons.download),
                 label: Text('Download File'),
@@ -1536,6 +1576,7 @@ class PrescriptionDetailPage extends StatelessWidget {
       ),
     );
   }
+
   void _launchURL(String url) async {
     if (await canLaunch(url)) {
       await launch(url);
@@ -1543,7 +1584,6 @@ class PrescriptionDetailPage extends StatelessWidget {
       throw 'Could not launch $url';
     }
   }
-
 }
 
 Color _getStatusColor(String status) {
@@ -1558,5 +1598,3 @@ Color _getStatusColor(String status) {
       return Colors.black;
   }
 }
-
-
