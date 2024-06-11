@@ -2383,7 +2383,10 @@ class SignUpScreen extends State<SignUp> {
 
         EasyLoading.dismiss();
         if (response.statusCode == 201) {
+          Fluttertoast.showToast(msg: 'user registered successfully..');
+
           Map<String, dynamic> data = json.decode(response.body);
+
           Navigator.pushReplacement(
             context,
             CupertinoPageRoute(builder: (context) => SignIn()),
