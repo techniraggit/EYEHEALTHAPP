@@ -784,6 +784,9 @@ class SignUpScreen extends State<SignUp> {
   @override
   void initState() {
     super.initState();
+    _phoneController.addListener(_onPhoneNumberChanged);
+    _emailController.addListener(_onEmailChanged);
+
   }
 
   bool isVerifiedEmail =
@@ -793,6 +796,7 @@ class SignUpScreen extends State<SignUp> {
   String device_id = "";
   String device_type = "";
   String device_token = "";
+
 
   // Icon getSuffixIconEmail() {
     // Return different icon based on verification status
@@ -847,6 +851,65 @@ class SignUpScreen extends State<SignUp> {
   Widget getSuffixIconPhone() {
     return isVerifiedPhone
         ? SizedBox(
+      height: 20,
+      width: 90,
+      child: ElevatedButton(
+        onPressed: () {
+          // Logic for "Verified" button, if any
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.bluebutton, // Use a color of your choice
+        ),
+        child: Text(
+          'Verified',
+          style: TextStyle(color: Colors.white, fontSize: 11),
+        ),
+      ),
+    )
+        : SizedBox(
+      height: 20,
+      width: 80,
+      child: ElevatedButton(
+        onPressed: getVerifyPhoneOtp,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.bluebutton, // Use a color of your choice
+        ),
+        child: Text(
+          'Verify',
+          style: TextStyle(color: Colors.white, fontSize: 11),
+        ),
+      ),
+    );
+  }
+
+
+
+  @override
+  void dispose() {
+    _phoneController.removeListener(_onPhoneNumberChanged);
+    _phoneController.dispose();
+    _emailController.removeListener(_onEmailChanged);
+    _emailController.dispose();
+    super.dispose();
+  }
+  void _onEmailChanged() {
+    if (_emailController.text.isEmpty) {
+      setState(() {
+        isVerifiedEmail = false;
+      });
+    }
+  }
+  void _onPhoneNumberChanged() {
+    if (_phoneController.text.isEmpty) {
+      setState(() {
+        isVerifiedPhone = false;
+      });
+    }
+  }
+
+/*  Widget getSuffixIconPhone() {
+    return isVerifiedPhone
+        ? SizedBox(
       height: 30, // Set the desired height
       width: 90, // Set the desired width
       child: ElevatedButton(
@@ -880,7 +943,7 @@ class SignUpScreen extends State<SignUp> {
       ),
     );
 
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -1176,47 +1239,41 @@ class SignUpScreen extends State<SignUp> {
                           ),
                         ),
                         const SizedBox(height: 25),
-                        SizedBox(
-                          height: 55,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10.0, vertical: 1),
-                            child: TextField(
-                              controller: _phoneController,
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(10),
-                                // Limits input length to 10 characters
-                              ],
-                              keyboardType: TextInputType.number,
-                              textInputAction: TextInputAction.next,
-                              decoration: InputDecoration(
-                                  labelText: 'Phone',
-                                  hintText: 'Enter Phone Number',
-                                  labelStyle: const TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.background,
-                                      fontWeight: FontWeight.w400),
-                                  hintStyle: const TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.hinttext,
-                                      fontWeight: FontWeight.w400),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        27.0), // Add circular border
-                                  ),
-                                  // Set floatingLabelBehavior to always display the label
-                                  floatingLabelBehavior:
-                                      FloatingLabelBehavior.always,
-                                  suffixIcon: GestureDetector(
-                                      onTap: () {
-                                        getVerifyPhoneOtp();
-                                      },
-                                      child: getSuffixIconPhone())),
-                              style: const TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w400),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: SizedBox(
+                        height: 55,
+                        child: TextField(
+                          controller: _phoneController,
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(10),
+                          ],
+                          keyboardType: TextInputType.number,
+                          textInputAction: TextInputAction.next,
+                          decoration: InputDecoration(
+                            labelText: 'Phone',
+                            hintText: 'Enter Phone Number',
+                            labelStyle: TextStyle(
+                              fontSize: 14,
+                              color: Colors.bluebutton,
+                              fontWeight: FontWeight.w400,
                             ),
+                            hintStyle: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(27.0),
+                            ),
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            suffixIcon: getSuffixIconPhone(),
                           ),
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
                         ),
+                      ),
+                    ),
+
                         const SizedBox(height: 25),
                         SizedBox(
                           height: 69,
