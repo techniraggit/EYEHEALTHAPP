@@ -295,7 +295,7 @@ class _RewardsContactsSync extends State<RewardContact> {
               const Align(
                 alignment: Alignment.center,
                 child: Text(
-                  'Total earn point by Prescription uplaod',
+                  'Total Point Earned Till Now',
                   style: TextStyle(
                       fontSize: 14,
                       color: Colors.black,
@@ -387,7 +387,7 @@ class _RewardsContactsSync extends State<RewardContact> {
                       await [Permission.contacts].request();
 
                       Share.share(
-                        'Check out our awesome app: $appStoreLink Use Referal Code $ReferCode',
+                        'Hi , I am using the Zukti eye health app to track my eye health. Why dont you join me and together we can work towards improving our eye health? Use my code to sign up and get a one-month subscription free.',// $appStoreLink Use Referal Code $ReferCode',
                         subject: 'Share via WhatsApp',
                         sharePositionOrigin: Rect.fromLTRB(0, 0, 0, 0),
                       );
@@ -940,6 +940,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
 
     MaterialApp(
       home: Scaffold(
+        backgroundColor: Colors.white,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: Padding(
           padding: const EdgeInsets.all(8.0), // Add padding
@@ -1106,7 +1107,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
                         child: Align(
                           alignment: Alignment.center,
                           child: Text(
-                            'Total earn point by Prescription uplaod',
+                            'Total Point Earned Till Now',
                             style: TextStyle(
                                 fontSize: 13,
                                 color: Colors.black,
@@ -1145,7 +1146,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
                           ),
                         ),
                       ),
-                      Padding(
+                 /*     Padding(
                         padding: EdgeInsets.fromLTRB(18.0, 10, 18, 10),
                         child: Align(
                           alignment: Alignment.center,
@@ -1159,7 +1160,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
                                 fontWeight: FontWeight.w400),
                           ),
                         ),
-                      ),
+                      ),*/
                       Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -1257,7 +1258,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
                                       ),
                                     ),
                                     child: Text(
-                                      'Test your eye fatigue',
+                                      'Click Here To Start',
                                       style: TextStyle(
                                         fontSize: 16,
                                         color: Colors.background,
@@ -1865,6 +1866,7 @@ class PresUpload extends State<PrescriptionUpload> {
       )
           :
       Scaffold(
+        backgroundColor: Colors.white,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: Padding(
           padding: const EdgeInsets.all(8.0), // Add padding
@@ -2029,7 +2031,7 @@ class PresUpload extends State<PrescriptionUpload> {
                       child: Align(
                         alignment: Alignment.center,
                         child: Text(
-                          'Total earn point by Prescription uplaod',
+                          'Total Point Earned Till Now',
                           style: TextStyle(
                               fontSize: 13,
                               color: Colors.black,

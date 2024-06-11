@@ -242,6 +242,7 @@ class RewardsScreenState extends State<RewardsScreen> {
                           return Padding(
                             padding:  EdgeInsets.all(8.0),
                             child: Card(
+
                               child: Row(
                                 children: [
                                   // Image on the left side
@@ -268,7 +269,7 @@ class RewardsScreenState extends State<RewardsScreen> {
                                             ),
                                           ),
                                         ),
-                                        Padding(
+                                        /*Padding(
                                           padding:  EdgeInsets.symmetric(
                                               vertical: 4.0, horizontal: 8.0),
                                           child: Text(
@@ -279,7 +280,7 @@ class RewardsScreenState extends State<RewardsScreen> {
                                               color: Colors.grey,
                                             ),
                                           ),
-                                        ),
+                                        ),*/
                                         Padding(
                                           padding:  EdgeInsets.all(2.0),
                                           child: ElevatedButton(
