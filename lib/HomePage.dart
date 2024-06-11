@@ -93,7 +93,7 @@ int count=0;
   String fullname = "";
   String no_of_fatigue_test = "0";
   dynamic selectedPlanId = '';
-  bool isActivePlan = false;
+  bool isActivePlan = false;bool isLoading1 = true;
 
   // Define selectedDate within the _CalendarButtonState class
 
@@ -248,7 +248,7 @@ int count=0;
         ),
       ),
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(150),
+        preferredSize: const Size.fromHeight(150),
         child: Stack(
           children: [
             Image.asset(
@@ -292,7 +292,7 @@ int count=0;
                       ),
                       Text(
                         fullname,
-                        style: TextStyle(
+                        style: const TextStyle(
                             color: Colors.lightBlueAccent, fontSize: 18),
                       ),
                       Row(
@@ -471,7 +471,7 @@ int count=0;
               color: Colors.white,
 
               child: Padding(
-                padding:  EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
+                padding:  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
                 child: Container(
                   color: Colors.white,
 
@@ -491,12 +491,18 @@ int count=0;
                             child: Container(
                               color: Colors.white,
 
-                              child: _buildVerticalSplineChart(),
+                              child:isLoading1
+                                  ? const Center(
+                                child: CircularProgressIndicator(
+                                  color: Colors.blue,
+                                ),
+                              )
+                                  : _buildVerticalSplineChart(),
 
 
                             ),
                           ),
-                          SizedBox(height: 10), // Adjust spacing between chart and color descriptions
+                          const SizedBox(height: 10), // Adjust spacing between chart and color descriptions
 
                           // Color descriptions
                           SingleChildScrollView(
@@ -505,24 +511,24 @@ int count=0;
                               children: [
                                 // SizedBox(width: 9),
                                 // _buildColorDescription(Colors.black, 'Initial User Score'),
-                                SizedBox(width: 9),
+                                const SizedBox(width: 9),
 
                                 _buildColorDescription(Colors.green, 'Ideal Score'),
                                 // SizedBox(width: 9),
                                 // _buildColorDescription(Colors.orange, 'Overall User Average'),
-                                SizedBox(width: 9),
+                                const SizedBox(width: 9),
                                 _buildColorDescription(Colors.blue, 'User Average Score'),
-                                SizedBox(width: 9),
+                                const SizedBox(width: 9),
                               ],
                             ),
                           )
 
                         },
-                        if(count==0)...{
+                        if(count==0&&isLoading1==false)...{
 
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
 
-                          Padding(
+                          const Padding(
                             padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
                             child: Text(
                               'Get your first test done now and start tracking your eye health.',
@@ -532,7 +538,7 @@ int count=0;
                                   color: Colors.black),
                             ),
                           ),
-                          SizedBox(height: 9),
+                          const SizedBox(height: 9),
                           Center(
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
@@ -545,9 +551,9 @@ int count=0;
                                             EyeFatigueStartScreen()),
                                   );
                                 },
-                                child: Text('Start Test Now'),
+                                child: const Text('Start Test Now'),
                                 style: ElevatedButton.styleFrom(
-                                  minimumSize: Size(200, 45),
+                                  minimumSize: const Size(200, 45),
                                   foregroundColor: Colors.white,
                                   backgroundColor: Colors.bluebutton,
                                   shape: RoundedRectangleBorder(
@@ -558,7 +564,7 @@ int count=0;
                             ),
                           ),
                         },
-                        SizedBox(height: 29),
+                        const SizedBox(height: 29),
                       ],
                     ),
                   ),
@@ -566,7 +572,7 @@ int count=0;
               ),
             ),
 
-            Padding(
+            const Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
               child: Text(
                 'YOU HAVE TESTED SO FAR', // Display formatted current date
@@ -595,21 +601,21 @@ int count=0;
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             height: 28,
                           ),
                           Padding(
-                            padding: EdgeInsets.symmetric(vertical: 8.0),
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
                             child: Text(
                               no_of_eye_test ?? "0",
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
-                          Padding(
+                          const Padding(
                             padding: EdgeInsets.symmetric(vertical: 5.0),
                             child: Text(
                               'Eye Test',
@@ -634,22 +640,22 @@ int count=0;
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             height: 28,
                           ),
                           Padding(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 vertical: 12.0, horizontal: 8.0),
                             child: Text(
                               no_of_fatigue_test ?? "0",
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
-                          Padding(
+                          const Padding(
                             padding: EdgeInsets.symmetric(
                                 vertical: 5.0, horizontal: 4.0),
                             child: Text(
@@ -683,7 +689,7 @@ int count=0;
             color: color,
             borderRadius: BorderRadius.circular(25), // Adjust the radius to make it rounded
           ),
-          margin: EdgeInsets.only(right: 4),
+          margin: const EdgeInsets.only(right: 4),
         ),
 
         Text(text),
@@ -698,10 +704,10 @@ int count=0;
     return SfCartesianChart(
       isTransposed: false,
       plotAreaBorderWidth: 0,
-      legend: Legend(isVisible:true),
+      legend: const Legend(isVisible:true),
       primaryXAxis: const CategoryAxis(
         majorTickLines: MajorTickLines(size: 0),
-        axisLine: AxisLine(width: 1),
+        axisLine: AxisLine(width: 0.3),
         majorGridLines: MajorGridLines(width: 0),
         title:  AxisTitle(text: 'time slots  (x-axis) --->'),
       ),// Disable vertical inner gridlines
@@ -731,12 +737,15 @@ int count=0;
       SplineSeries<_ChartData, String>(
         markerSettings: const MarkerSettings(isVisible: true),
         dataSource: chartData,
+        cardinalSplineTension: 0.5,
+        splineType: SplineType.monotonic,
+
         name: 'Ideal Score',color: Colors.green,
         xValueMapper: (_ChartData sales, _) => sales.x,
         yValueMapper: (_ChartData sales, _) => sales.y2,
-        emptyPointSettings: EmptyPointSettings(
-          mode: EmptyPointMode.zero, // Connect null points to zero
-          color: Colors.blue, // Optional: Set color of the line connecting null points
+        emptyPointSettings: const EmptyPointSettings(
+          mode: EmptyPointMode.gap, // Connect null points to zero
+          color: Colors.green,borderColor: Colors.green,borderWidth: 2 // Optional: Set color of the line connecting null points
         ),
       ),
       // SplineSeries<_ChartData, String>(
@@ -746,12 +755,18 @@ int count=0;
       //   xValueMapper: (_ChartData sales, _) => sales.x,
       //   yValueMapper: (_ChartData sales, _) => sales.y3,
       // ),
+
       SplineSeries<_ChartData, String>(
         markerSettings: const MarkerSettings(isVisible: true),
         dataSource: chartData,color: Colors.blue,
+        cardinalSplineTension: 0.5,
+        splineType: SplineType.monotonic,
         name: 'User Average Score',
         xValueMapper: (_ChartData sales, _) => sales.x,
-        yValueMapper: (_ChartData sales, _) => sales.y4,
+        yValueMapper: (_ChartData sales, _) => sales.y4, emptyPointSettings: const EmptyPointSettings(
+        mode: EmptyPointMode.zero, // Connect null points to zero
+        color: Colors.blue, borderColor: Colors.blue,borderWidth: 2 // Optional: Set color of the line connecting null points
+      ),
       )
     ];
   }
@@ -929,7 +944,7 @@ int count=0;
 
 
         count = jsonData['no_of_eye_test'];
-
+         isLoading1 = false;
         // return data
         //     .map((item) => double.parse(item['value'].toString()))
         //     .toList();
@@ -948,7 +963,7 @@ int count=0;
 
       print("exception:$e");
     }
-    throw Exception('');
+    throw Exception(Exception );
   }
 }
 
@@ -977,7 +992,7 @@ class ReminderState extends State<setReminder> {
               title: const Text('Plugin example app'),
             ),
             body: Builder(builder: (context) {
-              return Center();
+              return const Center();
             })));
   }
 }
@@ -1002,25 +1017,25 @@ class BottomDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.fromLTRB(16.0, 16, 16, 8),
+      padding: const EdgeInsets.fromLTRB(16.0, 16, 16, 8),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 'Digital Eye Exam',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               IconButton(
-                icon: Icon(Icons.close),
+                icon: const Icon(Icons.close),
                 onPressed: () => Navigator.pop(context),
               ),
             ],
           ),
           Divider(thickness: 1, color: Colors.grey.shade500),
-          SizedBox(height: 18),
+          const SizedBox(height: 18),
           Card(
             child: GestureDetector(
               onTap: () {
@@ -1175,7 +1190,7 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
-          physics: ScrollPhysics(),
+          physics: const ScrollPhysics(),
           child: Form(
             key: _formKey,
             child: Column(
@@ -1184,19 +1199,19 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
+                    const Text(
                       'Test For Someone Else',
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     IconButton(
-                      icon: Icon(Icons.close),
+                      icon: const Icon(Icons.close),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ],
                 ),
                 Divider(thickness: 1.5, color: Colors.grey.shade400),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 SizedBox(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -1206,13 +1221,13 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                       textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
                         labelText: 'Full Name',
-                        labelStyle: TextStyle(
+                        labelStyle: const TextStyle(
                           fontSize: 14,
                           color: Colors.black,
                           fontWeight: FontWeight.w100,
                         ),
                         hintText: 'Enter Full Name',
-                        hintStyle: TextStyle(
+                        hintStyle: const TextStyle(
                           fontSize: 16,
                           color: Colors.grey,
                           fontWeight: FontWeight.w400,
@@ -1227,7 +1242,7 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                         LengthLimitingTextInputFormatter(30),
                       ],
                       style:
-                          TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+                          const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter a full name';
@@ -1241,7 +1256,7 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 SizedBox(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -1256,13 +1271,13 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                       ],
                       decoration: InputDecoration(
                         labelText: 'Age',
-                        labelStyle: TextStyle(
+                        labelStyle: const TextStyle(
                           fontSize: 14,
                           color: Colors.black,
                           fontWeight: FontWeight.w400,
                         ),
                         hintText: 'Age',
-                        hintStyle: TextStyle(
+                        hintStyle: const TextStyle(
                           fontSize: 16,
                           color: Colors.grey,
                           fontWeight: FontWeight.w400,
@@ -1274,7 +1289,7 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       style:
-                          TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+                          const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter an age';
@@ -1288,7 +1303,7 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                     ),
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ElevatedButton(
@@ -1299,9 +1314,9 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                             age: _ageController.text);
                       }
                     },
-                    child: Text('Submit'),
+                    child: const Text('Submit'),
                     style: ElevatedButton.styleFrom(
-                      minimumSize: Size(350, 50),
+                      minimumSize: const Size(350, 50),
                       foregroundColor: Colors.white,
                       backgroundColor: Colors.bluebutton,
                       shape: RoundedRectangleBorder(

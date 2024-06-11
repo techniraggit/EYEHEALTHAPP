@@ -534,6 +534,7 @@ class SignInScreen extends State<SignIn> {
                               const SizedBox(height: 10.0),
                               GestureDetector(
                                 onTap: () {
+                                  print("verify2----");
                                   getVerifyLoginOtp();
                                 },
                                 child: Container(
@@ -541,13 +542,26 @@ class SignInScreen extends State<SignIn> {
                                   // padding: const EdgeInsets.fromLTRB(150, 14, 30, 20),
                                   color: Colors.transparent,
 
-                                  child: const Text(
-                                    textAlign: TextAlign.center,
-                                    'Didn’t you receive the OTP? Resend OTP',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.black54,
+                                  child:  RichText(
+                                    text: const TextSpan(
+                                      text: 'Didn’t you receive the OTP? ',
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w400),
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                          text: 'Resend OTP',
+                                          style: TextStyle(
+                                              color: Colors.blue,
+                                              fontWeight: FontWeight.bold),
+                                          // Add onTap if you want to make the term clickable
+                                          // onTap: () {
+                                          //   // Add your onTap logic here
+                                          // },
+                                        ),
+
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -751,7 +765,7 @@ class SignUpScreen extends State<SignUp> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate:
-          _selectedDate ?? DateTime.now().subtract(Duration(days: 70 * 365)),
+          _selectedDate ?? DateTime.now().subtract(Duration(days: 10 * 365)),
       // Default to 20 years ago
       firstDate: DateTime.now().subtract(Duration(days: 70 * 365)),
       // 70 years ago
@@ -797,7 +811,6 @@ class SignUpScreen extends State<SignUp> {
         width: 90, // Set the desired width
         child: ElevatedButton(
           onPressed: () {
-            // getVerifyEmailOtp();
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.background,
@@ -814,6 +827,7 @@ class SignUpScreen extends State<SignUp> {
         width: 80, // Set the desired width
         child: ElevatedButton(
           onPressed: () {
+            print("getVerifyEmailOtp====");
             getVerifyEmailOtp();
           },
           style: ElevatedButton.styleFrom(
@@ -1310,54 +1324,54 @@ class SignUpScreen extends State<SignUp> {
                           ),
                         ),
                         const SizedBox(height: 25),
-                        SizedBox(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10.0, vertical: 1),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: TextField(
-                                    controller: _locationController,
-                                    maxLines: null,
-                                    decoration: InputDecoration(
-                                      labelText: 'Location',
-                                      hintText: 'Location',
-                                      labelStyle: const TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.background,
-                                          fontWeight: FontWeight.w400),
-                                      hintStyle: const TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.grey,
-                                          fontWeight: FontWeight.w400),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            27.0), // Add circular border
-                                      ),
-                                      // Set floatingLabelBehavior to always display the label
-                                      floatingLabelBehavior:
-                                          FloatingLabelBehavior.always,
-                                      // Add location icon at the end of the text field
-                                      suffixIcon: GestureDetector(
-                                        onTap: () {
-                                          requestLocationPermission();
-                                        },
-                                        child: const Icon(Icons.my_location),
-                                      ),
-                                    ),
-                                    style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400),
-                                    readOnly: true, // Disable manual input
-                                    // controller: TextEditingController(text: ""),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
+                        // SizedBox(
+                        //   child: Padding(
+                        //     padding: const EdgeInsets.symmetric(
+                        //         horizontal: 10.0, vertical: 1),
+                        //     child: Row(
+                        //       children: [
+                        //         Expanded(
+                        //           child: TextField(
+                        //             controller: _locationController,
+                        //             maxLines: null,
+                        //             decoration: InputDecoration(
+                        //               labelText: 'Location',
+                        //               hintText: 'Location',
+                        //               labelStyle: const TextStyle(
+                        //                   fontSize: 14,
+                        //                   color: Colors.background,
+                        //                   fontWeight: FontWeight.w400),
+                        //               hintStyle: const TextStyle(
+                        //                   fontSize: 16,
+                        //                   color: Colors.grey,
+                        //                   fontWeight: FontWeight.w400),
+                        //               border: OutlineInputBorder(
+                        //                 borderRadius: BorderRadius.circular(
+                        //                     27.0), // Add circular border
+                        //               ),
+                        //               // Set floatingLabelBehavior to always display the label
+                        //               floatingLabelBehavior:
+                        //                   FloatingLabelBehavior.always,
+                        //               // Add location icon at the end of the text field
+                        //               suffixIcon: GestureDetector(
+                        //                 onTap: () {
+                        //                   requestLocationPermission();
+                        //                 },
+                        //                 child: const Icon(Icons.my_location),
+                        //               ),
+                        //             ),
+                        //             style: const TextStyle(
+                        //                 fontSize: 14,
+                        //                 fontWeight: FontWeight.w400),
+                        //             readOnly: true, // Disable manual input
+                        //             // controller: TextEditingController(text: ""),
+                        //           ),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
+                        // ),
+                        // const SizedBox(height: 20),
                         Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 25.0, vertical: 20),
@@ -1373,7 +1387,10 @@ class SignUpScreen extends State<SignUp> {
                             width: 300,
                             child: ElevatedButton(
                               onPressed: () {
+
+                                requestLocationPermission();
                                 initPlatformState();
+
                                 RegisterUser();
                               },
                               style: ButtonStyle(
@@ -1517,20 +1534,52 @@ class SignUpScreen extends State<SignUp> {
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied ||
         permission == LocationPermission.deniedForever) {
+      await [Permission.location].request();
+
       // Permissions are denied or denied forever, let's request it!
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
+        await [Permission.location].request();
         print("Location permissions are still denied");
       } else if (permission == LocationPermission.deniedForever) {
         print("Location permissions are permanently denied");
+        // Prompt the user to open app settings to enable location permissions manually
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Location permissions required"),
+              content: Text("Location permissions are permanently denied. Please go to app settings to enable location permissions."),
+              actions: <Widget>[
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors
+                        .background, // Set your desired background color here
+                    // You can also customize other button properties here if needed
+                  ),
+                  onPressed: () async {
+                    Navigator.pop(context); // Close the dialog
+                    await openAppSettings();
+                  },
+            child: Text("OK",
+
+            style: TextStyle(
+                        color: Colors.white, fontSize: 16),
+                  ),
+                ),
+
+              ],
+            );
+          },
+        );
       } else {
+        // Permissions are granted (either whileInUse, always, restricted).
         _determinePosition().then((value) {
-          print("User loation ${value.latitude} ,, ${value.longitude}");
+          print("User location ${value.latitude} ,, ${value.longitude}");
           Latitude = value.latitude;
           Longitude = value.longitude;
           _getAddressFromLatLng(value.latitude, value.longitude);
         });
-        // Permissions are granted (either can be whileInUse, always, restricted).
         print("Location permissions are granted after requesting");
       }
     } else {
@@ -1538,7 +1587,7 @@ class SignUpScreen extends State<SignUp> {
 
       _determinePosition().then((value) {
         _getAddressFromLatLng(value.latitude, value.longitude);
-        print("User loation ${value.latitude} ,, ${value.longitude}");
+        print("User location ${value.latitude} ,, ${value.longitude}");
         Latitude = value.latitude;
         Longitude = value.longitude;
       });
@@ -1610,6 +1659,110 @@ class SignUpScreen extends State<SignUp> {
     return phoneRegex.hasMatch(phone);
   }
 
+
+
+  void resendEmailOtp() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String username = prefs.getString('username')!;
+    if (checkValidationForVerifyEmail(username)) {
+      EasyLoading.show();
+      try {
+        Response response = await post(
+          Uri.parse('${ApiProvider.baseUrl + ApiProvider.verifyEmailOtp}'),
+          body: {
+            "username":username,
+          },
+
+        );
+        print('Response Status Code4: ${response.statusCode}');
+        print('Response Body: ${response.body}');
+        EasyLoading.dismiss();
+        if (response.statusCode == 200) {
+
+
+
+          Map<String, dynamic> data = json.decode(response.body);
+
+          print("Otp Sent$data");
+          Fluttertoast.showToast(msg: data['message'] ?? "");
+
+        } else {
+          Map<String, dynamic> data = json.decode(response.body);
+
+          print("Otp Sent failed");
+          Fluttertoast.showToast(msg: data['message'] ?? "");
+        }
+      } catch (e) {
+        EasyLoading.dismiss();
+        print('Error4: $e');
+        if (e is SocketException) {
+          print('No Internet Connection');
+// Show error message as toast
+          Fluttertoast.showToast(msg: "No Internet Connection");
+        }
+        if (e is FormatException) {
+          print('Invalid JSON Format333$e');
+          EasyLoading.dismiss();
+        }
+      }
+    }
+  }
+  void resendPhoneOtp() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+   String username = prefs.getString('username')!;
+    if (checkValidationForVerifyPhone(username)) {
+      EasyLoading.show();
+      try {
+
+        Response response = await post(
+          Uri.parse('${ApiProvider.baseUrl + ApiProvider.verifyEmailOtp}'),
+          body: {
+            "username": username,
+          },
+
+        );
+        print('Response Status Code33: ${response.statusCode}');
+        print('Response Body: ${response.body}');
+        // Close the loading dialog
+        EasyLoading.dismiss();
+        if (response.statusCode == 200) {
+
+
+
+          Map<String, dynamic> data = json.decode(response.body);
+          Fluttertoast.showToast(msg: data['message'] ?? "");
+
+          print("Otp Sent$data");
+        } else {
+          Map<String, dynamic> data = json.decode(response.body);
+
+          print("Otp Sent failed");
+          Fluttertoast.showToast(msg: data['message'] ?? "");
+        }
+      } catch (e) {
+        EasyLoading.dismiss();
+        print('Error3: $e');
+        if (e is SocketException) {
+          print('No Internet Connection');
+// Show error message as toast
+          Fluttertoast.showToast(msg: "No Internet Connection");
+        }
+        if (e is FormatException) {
+          print('Invalid JSON Format333$e');
+          EasyLoading.dismiss();
+        }
+      }
+    }
+  }
+
+
+
+
+
+
+
+
+
   void getVerifyPhoneOtp() async {
     if (checkValidationForVerifyPhone(_phoneController.text)) {
       EasyLoading.show();
@@ -1630,7 +1783,9 @@ class SignUpScreen extends State<SignUp> {
         EasyLoading.dismiss();
         if (response.statusCode == 200) {
           pincode = '';
+          SharedPreferences prefs = await SharedPreferences.getInstance();
 
+          await prefs.setString('username', _phoneController.text.trim()!);
           showDialog(
             barrierDismissible: false,
             // Set this to false to make the dialog non-cancellable
@@ -1742,22 +1897,36 @@ class SignUpScreen extends State<SignUp> {
                                 ),
                               ),
                               const SizedBox(height: 10.0),
+
                               GestureDetector(
                                 onTap: () {
-                                  // ResendOtp();
-                                },
+                                  print("verify1----");
+                                  resendPhoneOtp();                                },
                                 child: Container(
                                   alignment: Alignment.center,
                                   // padding: const EdgeInsets.fromLTRB(150, 14, 30, 20),
                                   color: Colors.transparent,
 
-                                  child: const Text(
-                                    textAlign: TextAlign.center,
-                                    'Didn’t you receive the OTP? Resend OTP',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.black54,
+                                  child:  RichText(
+                                    text: const TextSpan(
+                                      text: 'Didn’t you receive the OTP? ',
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w400),
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                          text: 'Resend OTP',
+                                          style: TextStyle(
+                                              color: Colors.blue,
+                                              fontWeight: FontWeight.bold),
+                                          // Add onTap if you want to make the term clickable
+                                          // onTap: () {
+                                          //   // Add your onTap logic here
+                                          // },
+                                        ),
+
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -1852,7 +2021,9 @@ class SignUpScreen extends State<SignUp> {
         EasyLoading.dismiss();
         if (response.statusCode == 200) {
           pincode = '';
+          SharedPreferences prefs = await SharedPreferences.getInstance();
 
+          await prefs.setString('username', _emailController.text.trim()!);
           showDialog(
             barrierDismissible: false,
             // Set this to false to make the dialog non-cancellable
@@ -1966,20 +2137,34 @@ class SignUpScreen extends State<SignUp> {
                               const SizedBox(height: 10.0),
                               GestureDetector(
                                 onTap: () {
-                                  // ResendOtp();
+                                  print("verify5----");
+                                  resendEmailOtp();
                                 },
                                 child: Container(
                                   alignment: Alignment.center,
                                   // padding: const EdgeInsets.fromLTRB(150, 14, 30, 20),
                                   color: Colors.transparent,
 
-                                  child: const Text(
-                                    textAlign: TextAlign.center,
-                                    'Didn’t you receive the OTP? Resend OTP',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.black54,
+                                  child:  RichText(
+                                    text: const TextSpan(
+                                      text: 'Didn’t you receive the OTP? ',
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w400),
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                          text: 'Resend OTP',
+                                          style: TextStyle(
+                                              color: Colors.blue,
+                                              fontWeight: FontWeight.bold),
+                                          // Add onTap if you want to make the term clickable
+                                          // onTap: () {
+                                          //   // Add your onTap logic here
+                                          // },
+                                        ),
+
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -2255,7 +2440,10 @@ class SignUpScreen extends State<SignUp> {
 
         EasyLoading.dismiss();
         if (response.statusCode == 201) {
+          Fluttertoast.showToast(msg: 'user registered successfully..');
+
           Map<String, dynamic> data = json.decode(response.body);
+
           Navigator.pushReplacement(
             context,
             CupertinoPageRoute(builder: (context) => SignIn()),
@@ -2431,6 +2619,364 @@ class SignUpScreen extends State<SignUp> {
       }
     }
   }
+
+  void getVerifyLoginOtp() async {
+    if (checkValidationForLogin()) {
+      print('username Body: ${_phoneController.text.trim()}');
+
+      EasyLoading.show();
+      try {
+        Response response = await post(
+          Uri.parse('${ApiProvider.baseUrl + ApiProvider.sendLoginOtp}'),
+          body: {
+            "username": _phoneController.text.trim(),
+          },
+          // headers: {
+          //   'Authorization': 'Bearer $accessToken',
+          //
+          // },
+        );
+        print('Response Status Code1====: ${response.statusCode}');
+        print('Response Body: ${response.body}');
+        // Close the loading dialog
+        EasyLoading.dismiss();
+        if (response.statusCode == 200) {
+          pincode = '';
+
+          showDialog(
+            barrierDismissible: false,
+            // Set this to false to make the dialog non-cancellable
+
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                // title: Center(
+                //   child: Text('OTP Verification',
+                //     style: TextStyle(fontSize: 15,fontWeight: FontWeight.w600,color: Colors.background),),
+                // ),
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 21.0),
+                      child: Text(
+                        'OTP Verification',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.background,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      icon: Icon(Icons.cancel),
+                    ),
+                  ],
+                ),
+                content: Row(
+                  children: [
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Expanded(
+                      child: Container(
+                        // width:MediaQuery.of(context).size.width/1.5,
+                        // height: MediaQuery.of(context).size.height/2,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(30)),
+                        ),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            // crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              SizedBox(
+                                height: 20,
+                              ),
+                              // const Align(
+                              //   alignment: Alignment.center,
+                              //   child: Text(
+                              //     'Enter the OTP',
+                              //     style: TextStyle(
+                              //       fontSize: 14.0,
+                              //       color: Colors.background,
+                              //     ),
+                              //   ),
+                              // ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Center(
+                                child: Container(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: PinCodeTextField(
+                                    appContext: context,
+                                    length: 4,
+                                    // controller: _otpController,
+                                    obscureText: false,
+                                    keyboardType: TextInputType.number,
+                                    animationType: AnimationType.fade,
+                                    pinTheme: PinTheme(
+                                      shape: PinCodeFieldShape.underline,
+                                      borderRadius: BorderRadius.circular(3),
+                                      fieldHeight: 25,
+                                      fieldWidth: 25,
+                                      activeColor: Colors.blue,
+                                      inactiveColor: Colors.grey,
+                                      activeFillColor: Colors.white,
+                                      inactiveFillColor: Colors.white,
+                                    ),
+                                    textStyle: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.black),
+                                    // Set the font size here
+
+                                    onChanged: (String pin) {
+                                      if (pin.length == 4) {
+                                        pincode = pin;
+                                        buttonColor = Colors
+                                            .background; // Change button color to green when enabled
+                                      } else {
+                                        buttonColor = Colors
+                                            .disablebutton; // Change button color to red when disabled
+                                      } // Handle changes in the OTP input
+                                    },
+                                    onCompleted: (String pin) {
+                                      // Handle OTP submission
+                                      print('Entered OTP: $pin');
+                                    },
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 10.0),
+                              GestureDetector(
+                                onTap: () {
+                                  print("verify4----");
+                                  getVerifyLoginOtp();
+                                },
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  // padding: const EdgeInsets.fromLTRB(150, 14, 30, 20),
+                                  color: Colors.transparent,
+
+                                  child:  RichText(
+                                    text: const TextSpan(
+                                      text: 'Didn’t you receive the OTP? ',
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w400),
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                          text: 'Resend OTP',
+                                          style: TextStyle(
+                                              color: Colors.blue,
+                                              fontWeight: FontWeight.bold),
+                                          // Add onTap if you want to make the term clickable
+                                          // onTap: () {
+                                          //   // Add your onTap logic here
+                                          // },
+                                        ),
+
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                  height:
+                                  MediaQuery.of(context).size.width / 8),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 22.0),
+                                child: Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: SizedBox(
+                                    width: 150, // Set the desired width here
+                                    height: 39,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        VerifyLoginOtp();
+                                        // Handle onPressed action
+                                      },
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                          color: buttonColor,
+                                          borderRadius:
+                                          BorderRadius.circular(20),
+                                        ),
+                                        child: const Text(
+                                          'Verify',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+
+          Map<String, dynamic> data = json.decode(response.body);
+
+          print("Otp Sent$data");
+        }
+        if (response.statusCode == 400) {
+          Fluttertoast.showToast(msg: "User does not exists");
+        } else {
+          Map<String, dynamic> data = json.decode(response.body);
+
+          print("Otp Sent failed");
+          Fluttertoast.showToast(msg: data['message'] ?? "");
+        }
+      } catch (e) {
+        EasyLoading.dismiss();
+        print('Error1: $e');
+        if (e is SocketException) {
+          print('No Internet Connection');
+// Show error message as toast
+          Fluttertoast.showToast(msg: "No Internet Connection");
+        }
+        if (e is FormatException) {
+          print('Invalid JSON Format333$e');
+          EasyLoading.dismiss();
+        }
+      }
+    }
+  }
+
+  bool checkValidationForLogin() {
+    setState(() {});
+    // if(_otpController.text.trim().isEmpty || _otpController.text.trim().length!=4){
+    //   Fluttertoast.showToast(msg: "Enter Otp");
+    //   return false;
+    //
+    // }
+    if (isNumeric(_phoneController.text)) {
+      if (_phoneController.text.isEmpty || _phoneController.text.length != 10) {
+        Fluttertoast.showToast(msg: "Enter valid Phone Number");
+        return false;
+      }
+    } else {
+      if (!isEmailIdValid(_phoneController.text)) {
+        Fluttertoast.showToast(msg: "Enter Valid Email");
+        return false;
+      }
+    }
+    return true;
+  }
+  bool isNumeric(String data) {
+    if (data == null) {
+      return false;
+    }
+
+    return double.tryParse(data) != null;
+  }
+
+  bool isEmailIdValid(String email) {
+    String emailPattern =
+        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$'; // Regular expression for email validation
+    RegExp regExp = RegExp(emailPattern);
+    return regExp.hasMatch(email);
+  }
+
+  void VerifyLoginOtp() async {
+    if (checkValidationForLoginOtp()) {
+      EasyLoading.show();
+      try {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        device_type = prefs.getString('device_type')!;
+        device_id = prefs.getString('device_id')!;
+        device_token = prefs.getString('device_token')!;
+        print(
+            "valuesss===========$device_type=====#$device_id======++++$device_token");
+        Response response = await post(
+          Uri.parse('${ApiProvider.baseUrl + ApiProvider.verifyLoginOtp}'),
+          body: {
+            "username": _phoneController.text.trim(),
+            "otp": pincode,
+            "device_type": device_type,
+            "device_token": device_token,
+            // "device_id":  device_id// cahnge device_token
+          },
+          // headers: {
+          //   'Authorization': 'Bearer $accessToken',
+          //
+          // },
+        );
+        print('Response Status Code2: ${response.statusCode}');
+        print('Response Body: ${response.body}');
+
+        // Close the loading dialog
+        EasyLoading.dismiss();
+        if (response.statusCode == 200) {
+          Fluttertoast.showToast(msg: "Login Successfully");
+
+          pincode = '';
+          Map<String, dynamic> data = json.decode(response.body);
+          final SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString('access_token', data['tokens']['access_token']);
+          prefs.setString('refresh_token', data['tokens']["refresh_token"]);
+          prefs.setString('stripe_customer_id', data['data']['stripe_customer_id']);
+          prefs.setString('user_id', data['data']['id']);
+          Navigator.of(context).pop();
+          //  print("Otp Sent${ data['data']['id']}${data['data']['stripe_customer_id']}");
+          Navigator.push(
+            context,
+            CupertinoPageRoute(builder: (context) => HomePage()),
+          );
+        }
+        else {
+          Map<String, dynamic> data = json.decode(response.body);
+          if (data['status'] == false && data['status_code'] == 400) {
+            // Display the error message to the user
+            String errorMessage1 = data['data']['non_field_errors'][0];
+            print("-------------$errorMessage1");
+
+            Fluttertoast.showToast(msg: errorMessage1);
+// Output the error message to the console
+            // You can show this message in a Snackbar, AlertDialog, or any other way you prefer
+          }
+        }
+      } catch (e, StackTrace) {
+        EasyLoading.dismiss();
+        print('Error2: $e========$StackTrace');
+        if (e is SocketException) {
+          print('No Internet Connection');
+// Show error message as toast
+          Fluttertoast.showToast(msg: "No Internet Connection");
+        }
+        if (e is FormatException) {
+          print('Invalid JSON Format333$e');
+          EasyLoading.dismiss();
+        }
+      }
+    }
+  }
+
+  bool checkValidationForLoginOtp() {
+    if (pincode.isEmpty || pincode.length != 4) {
+      Fluttertoast.showToast(msg: "Enter Otp");
+      return false;
+    }
+    return true;
+  }
 }
 
 class OtpVerificationScreen extends StatefulWidget {
@@ -2558,6 +3104,7 @@ class _OTPScreenState extends State<OtpVerificationScreen> {
                             const SizedBox(height: 20.0),
                             GestureDetector(
                               onTap: () {
+                                print("verify3----");
                                 // ResendOtp();
                               },
                               child: Container(
@@ -2565,13 +3112,26 @@ class _OTPScreenState extends State<OtpVerificationScreen> {
                                 // padding: const EdgeInsets.fromLTRB(150, 14, 30, 20),
                                 color: Colors.transparent,
 
-                                child: const Text(
-                                  textAlign: TextAlign.center,
-                                  'Didn’t you receive the OTP? Resend OTP',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black54,
+                                child:  RichText(
+                                  text: const TextSpan(
+                                    text: 'Didn’t you receive the OTP? ',
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w400),
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                        text: 'Resend OTP',
+                                        style: TextStyle(
+                                            color: Colors.blue,
+                                            fontWeight: FontWeight.bold),
+                                        // Add onTap if you want to make the term clickable
+                                        // onTap: () {
+                                        //   // Add your onTap logic here
+                                        // },
+                                      ),
+
+                                    ],
                                   ),
                                 ),
                               ),

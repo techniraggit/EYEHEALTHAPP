@@ -39,10 +39,10 @@ class MyPlanState extends State<MyPlan> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Eye Health Premium Plan'),
+        title: const Text('Eye Health Premium Plan'),
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -52,21 +52,21 @@ class MyPlanState extends State<MyPlan> {
         future: futurePlans,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No plans available'));
+            return const Center(child: Text('No plans available'));
           } else {
             final plans = snapshot.data!;
             return Padding(
               padding: const EdgeInsets.all(8.0),
               child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 10.0,
                   mainAxisSpacing: 10.0,
-                  childAspectRatio: 2 / 3,
+                  childAspectRatio: 0.38,
                 ),
                 itemCount: plans.length,
                 itemBuilder: (context, index) {
@@ -86,12 +86,12 @@ class MyPlanState extends State<MyPlan> {
                           // Spread radius
                           blurRadius: 5,
                           // Blur radius
-                          offset: Offset(0, 3), // Shadow position (x, y)
+                          offset: const Offset(0, 3), // Shadow position (x, y)
                         ),
                       ],
                     ),
                     child: Padding(
-                      padding: EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(8),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -100,8 +100,8 @@ class MyPlanState extends State<MyPlan> {
                                 vertical: 2.0, horizontal: 8.0),
                             child: Text(
                               plan.name,
-                              style: TextStyle(
-                                fontSize: 14,
+                              style: const TextStyle(
+                                fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black,
                               ),
@@ -111,7 +111,7 @@ class MyPlanState extends State<MyPlan> {
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
                             child: Text(
                               '\$${plan.price}/${plan.planType}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 20,
                                   color: Colors.black,
                                   fontWeight: FontWeight.bold),
@@ -121,18 +121,18 @@ class MyPlanState extends State<MyPlan> {
                               Row(
                                 children: [
                                   Icon(
-                                    Icons.check_circle,
+                                    Icons.check,
                                     color: isSelected
                                         ? Colors.bluebutton
                                         : Colors.bluebutton,
                                     size: 20,
                                   ),
-                                  SizedBox(width: 5),
+                                  const SizedBox(width: 5),
                                   Expanded(
                                     child: Text(
-                                      feature,maxLines: null,overflow:null,
+                                      feature,
                                       style: TextStyle(
-                                        fontSize: 13,
+                                        fontSize: 16,
                                         color: Colors.grey.shade700,
                                         fontStyle: FontStyle.normal,
                                       ),
@@ -140,7 +140,7 @@ class MyPlanState extends State<MyPlan> {
                                   ),
                                 ],
                               )),
-                          Spacer(),
+                          const Spacer(),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             child: ElevatedButton(
@@ -155,8 +155,8 @@ class MyPlanState extends State<MyPlan> {
                                 backgroundColor: isSelected
                                     ? Colors.deepPurple.shade100
                                     : Colors.bluebutton,
-                                padding: EdgeInsets.all(10),
-                                minimumSize: Size(100, 20),
+                                padding: const EdgeInsets.all(10),
+                                minimumSize: const Size(100, 20),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(26),
                                 ),

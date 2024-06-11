@@ -25,7 +25,7 @@ class EyeHealthTrackDashboard extends StatefulWidget {
 }
 
 class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
-  bool fatigue_left=false; List<double>? _data;int i=0;
+  bool fatigue_left=false; List<double>? _data;int i=0;bool isLoading = false;bool isLoading1 =true;
   bool fatigue_right=false;fatigueGraph? fatigueGraphData;int count=0;
   bool midtiredness_right= false;List<double> todaygraphData = [];
   List<double> firstTestgraphData = [];
@@ -102,6 +102,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
           ];
         });
         count = jsonData['no_of_eye_test'];
+        isLoading1=false;
 
         // return data
         //     .map((item) => double.parse(item['value'].toString()))
@@ -359,7 +360,13 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
                     child: Container(
                     color: Colors.white,
 
-                        child: _buildVerticalSplineChart(),
+                        child:isLoading1
+                            ? const Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.blue,
+                          ),
+                        )
+                            : _buildVerticalSplineChart(),
 
 
                     ),
@@ -379,7 +386,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
 
 
 
-if(count==0)...{
+if(count==0&&isLoading1==false)...{
                         SizedBox(height: 10),
 
                         Padding(
@@ -451,14 +458,14 @@ if(count==0)...{
     return SfCartesianChart(
       isTransposed: false,
       plotAreaBorderWidth: 0,
-      legend: Legend(isVisible:true),
+
+      legend: const Legend(isVisible:true),
       primaryXAxis: const CategoryAxis(
         majorTickLines: MajorTickLines(size: 0),
-        axisLine: AxisLine(width: 1),
+        axisLine: AxisLine(width: 0.3),
         majorGridLines: MajorGridLines(width: 0),
         title:  AxisTitle(text: 'time slots  (x-axis) --->'),
       ),// Disable vertical inner gridlines
-
       primaryYAxis: const NumericAxis(
         minimum: 0,
         maximum: 11,
@@ -484,12 +491,14 @@ if(count==0)...{
       SplineSeries<_ChartData, String>(
         markerSettings: const MarkerSettings(isVisible: true),
         dataSource: chartData,
+        cardinalSplineTension: 0.5,
+        splineType: SplineType.monotonic,
         name: 'Ideal Score',color: Colors.green,
         xValueMapper: (_ChartData sales, _) => sales.x,
         yValueMapper: (_ChartData sales, _) => sales.y2,
         emptyPointSettings: EmptyPointSettings(
-          mode: EmptyPointMode.zero, // Connect null points to zero
-          color: Colors.blue, // Optional: Set color of the line connecting null points
+          mode: EmptyPointMode.gap, // Connect points with a line when there's a gap
+          color: Colors.green, // Optional: Set color of the line connecting null points
         ),
       ),
       // SplineSeries<_ChartData, String>(
@@ -503,8 +512,13 @@ if(count==0)...{
         markerSettings: const MarkerSettings(isVisible: true),
         dataSource: chartData,color: Colors.blue,
         name: 'User Average Score',
+        cardinalSplineTension: 0.5,
+        splineType: SplineType.monotonic,
         xValueMapper: (_ChartData sales, _) => sales.x,
-        yValueMapper: (_ChartData sales, _) => sales.y4,
+        yValueMapper: (_ChartData sales, _) => sales.y4, emptyPointSettings: EmptyPointSettings(
+        mode: EmptyPointMode.gap, // Connect points with a line when there's a gap
+        color: Colors.blue, // Optional: Set color of the line connecting null points
+      ),
       )
     ];
   }
