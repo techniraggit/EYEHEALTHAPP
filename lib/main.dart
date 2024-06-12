@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:alarm/alarm.dart';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -16,8 +17,10 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:platform_device_id_v2/platform_device_id_v2.dart';
 import 'package:project_new/HomePage.dart';
+import 'package:project_new/digitalEyeTest/testScreen.dart';
 import 'package:project_new/sign_up.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'FirebaseOptions/FirebaseApi.dart';
 import 'api/firebase_options.dart';
 
@@ -62,7 +65,7 @@ Future<void> main() async {
 
   Fluttertoast.showToast;
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  isLoggedIn = prefs.getBool('isLoggedIn')!;
+  isLoggedIn =  prefs.getBool('isLoggedIn') ?? false;
 
   runApp(const MyApp());
   // runApp(const MyApp());
@@ -80,7 +83,7 @@ class MyApp extends StatelessWidget {
     return
       MaterialApp(
         builder: EasyLoading.init(),
-        home:SplashScreen(),
+        home:SplashScreen(),//SplashScreen(),
 
         navigatorKey: navigatorKey,
 
@@ -103,6 +106,32 @@ class MyApp extends StatelessWidget {
 
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

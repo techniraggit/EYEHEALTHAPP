@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:action_broadcast/action_broadcast.dart';
 import 'package:dio/dio.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,6 +17,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 import '../api/config.dart';
+import '../notification/notification_dashboard.dart';
 import 'eyeFatigueTest.dart'; // Import intl package
 
 class EyeFatigueTestReport extends StatefulWidget {
@@ -23,7 +25,7 @@ class EyeFatigueTestReport extends StatefulWidget {
   EyeFatigueTestReportState createState() => EyeFatigueTestReportState();
 }
 
-class EyeFatigueTestReportState extends State<EyeFatigueTestReport> {
+class EyeFatigueTestReportState extends State<EyeFatigueTestReport> with AutoCancelStreamMixin{
   String firstname="";String lastname="";String age="";String testresult= "";String created_on="";
   int report_id = 0;
 
@@ -40,14 +42,92 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> {
     "If you feel the power displayed is different than your old power, then please speak with your eye doctor or call EyeMyEye and speak with the optometrist.",
     "Without confirmation from your eye doctor or Eye health optometrist, do not use this power to make glasses."
   ];
-
+  final GlobalKey<ScaffoldState> _scafoldKey = GlobalKey();
+  int? isReadFalseCount = 0;
   @override
   void initState() {
     super.initState();
     isclose = false;
     uploaded = false;
     isLoading = false;
-    getReport();
+    getReport(); getNotifactionCount();
+  }
+  Future<void> getNotifactionCount() async {
+    try{
+      String userToken = '';
+      var sharedPref = await SharedPreferences.getInstance();
+      userToken = sharedPref.getString("access_token") ?? '';
+      String url = "'${ApiProvider.baseUrl}/api/helping/get-count";
+      print("URL: $url");
+
+      Map<String, String> headers = {
+        'Authorization': 'Bearer $userToken', // Bearer token type
+        'Content-Type': 'application/json',
+      };
+      var response = await Dio().get(url, options: Options(headers: headers));
+      print('drf gfbt Count: $response');
+
+      if (response.statusCode == 200) {
+        final responseData = response.data;
+        // Map<String, dynamic> responseData = json.decode(response.data);
+        int unreadNotificationCount = responseData['unread_notification_count'];
+        isReadFalseCount = unreadNotificationCount;
+        print('Unread Notification Count: $unreadNotificationCount');
+        print('Unread gfbt Count: $response');
+        if(mounted){
+          setState(() {});
+
+        }
+      }else if (response.statusCode == 401) {
+
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      }   else if (response.statusCode == 401) {
+
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } on DioError catch (e) {
+      if (e.response != null || e.response!.statusCode == 401) {
+        // Handle 401 error
+
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      }
+
+      else {
+        // Handle other Dio errors
+        print("DioError: ${e.error}");
+      }
+    } catch (e) {
+      // Handle other exceptions
+      print("Exception---: $e");
+    }
+  }
+  @override
+  Iterable<StreamSubscription> get registerSubscriptions sync* {
+    yield registerReceiver(['actionMusicPlaying']).listen(
+          (intent) {
+        switch (intent.action) {
+          case 'actionMusicPlaying':
+            setState(() {
+              getNotifactionCount();
+            });
+            break;
+        }
+      },
+    );
   }
 
   // Sample data for line 2
@@ -69,21 +149,126 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> {
               ),
             )
           : Scaffold(
-              appBar: AppBar(
-                title: const Center(
-                    child: Text(
-                  'Eye Fatigue Test Report',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-                )),
-                actions: <Widget>[
-                  IconButton(
-                    icon: const Icon(Icons.notifications),
-                    onPressed: () {
-                      // Handle notification icon pressed
-                    },
+        key: _scafoldKey,
+        endDrawer: NotificationSideBar(
+          onNotificationUpdate: () {
+            setState(() {
+              if (isReadFalseCount != null) {
+                if (isReadFalseCount! > 0) {
+                  isReadFalseCount = isReadFalseCount! - 1;
+                }
+              }
+            });
+          },
+        ),
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(60),
+          child: Stack(
+            children: [
+              Align(
+                alignment: Alignment.topLeft,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.black,
                   ),
+                  iconSize: 28, // Back button icon
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomePage()),
+                    );                  },
+                ),
+              ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    height: 10, // Adjust height as needed
+                  ),
+                  Center(
+                    child: Text(
+                      'Eye Fatigue Test Report',
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        // Adjust size as needed
+                        // Add other styling properties as needed
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+
                 ],
               ),
+              Positioned(
+                right: 16,
+                top: 16,
+                child: GestureDetector(
+                  onTap: () {
+                    _scafoldKey.currentState!.openEndDrawer();
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xffF9F9FA),
+                          borderRadius: BorderRadius.circular(17.0),
+                        ),
+                        height: 40,
+                        width: 40,
+                        child: Center(
+                          child: Icon(
+                            Icons.notifications,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        right: 0,
+                        top: -1, // Adjust this value to position the text properly
+                        child: Container(
+                          padding: EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.red,
+                          ),
+                          child: Text(
+                            '${isReadFalseCount}',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // appBar: AppBar(
+              //   title: const Center(
+              //       child: Text(
+              //     'Eye Fatigue Test Report',
+              //     style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+              //   )),
+              //   actions: <Widget>[
+              //     IconButton(
+              //       icon: const Icon(Icons.notifications),
+              //       onPressed: () {
+              //         // Handle notification icon pressed
+              //       },
+              //     ),
+              //   ],
+              // ),
               body: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,

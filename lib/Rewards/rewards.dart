@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'package:action_broadcast/action_broadcast.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +17,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../Custom_navbar/bottom_navbar.dart';
 import '../Custom_navbar/customDialog.dart';
 import '../HomePage.dart';
+import '../notification/notification_dashboard.dart';
+import '../sign_up.dart';
 // Import intl package
 
 class Offer {
@@ -47,14 +52,99 @@ class RewardsScreen extends StatefulWidget {
   RewardsScreenState createState() => RewardsScreenState();
 }
 
-class RewardsScreenState extends State<RewardsScreen> {
+class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixin{
+
+  final GlobalKey<ScaffoldState> _scafoldKey = GlobalKey();
+  int? isReadFalseCount = 0;
+
+  @override
+  Iterable<StreamSubscription> get registerSubscriptions sync* {
+    yield registerReceiver(['actionMusicPlaying']).listen(
+          (intent) {
+        switch (intent.action) {
+          case 'actionMusicPlaying':
+            setState(() {
+              getNotifactionCount();
+            });
+            break;
+        }
+      },
+    );
+  }
+
+
   late Future<List<Offer>> futureOffers = Future.value([]);
 
   String eyeHealthScore = '0';
   @override
   void initState() {
     super.initState();
+    getNotifactionCount();
+
     futureOffers = fetchOffers();
+  }
+  Future<void> getNotifactionCount() async {
+    try{
+      String userToken = '';
+      var sharedPref = await SharedPreferences.getInstance();
+      userToken = sharedPref.getString("access_token") ?? '';
+      String url = "'${ApiProvider.baseUrl}/api/helping/get-count";
+      print("URL: $url");
+
+      Map<String, String> headers = {
+        'Authorization': 'Bearer $userToken', // Bearer token type
+        'Content-Type': 'application/json',
+      };
+      var response = await Dio().get(url, options: Options(headers: headers));
+      print('drf gfbt Count: $response');
+
+      if (response.statusCode == 200) {
+        final responseData = response.data;
+        // Map<String, dynamic> responseData = json.decode(response.data);
+        int unreadNotificationCount = responseData['unread_notification_count'];
+        isReadFalseCount = unreadNotificationCount;
+        print('Unread Notification Count: $unreadNotificationCount');
+        print('Unread gfbt Count: $response');
+        if(mounted){
+          setState(() {});
+
+        }
+      }else if (response.statusCode == 401) {
+
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      }   else if (response.statusCode == 401) {
+
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } on DioError catch (e) {
+      if (e.response != null || e.response!.statusCode == 401) {
+        // Handle 401 error
+
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      }
+
+      else {
+        // Handle other Dio errors
+        print("DioError: ${e.error}");
+      }
+    } catch (e) {
+      // Handle other exceptions
+      print("Exception---: $e");
+    }
   }
 
   Future<List<Offer>> fetchOffers() async {
@@ -106,6 +196,18 @@ class RewardsScreenState extends State<RewardsScreen> {
   Widget build(BuildContext context) {
     String formattedDate = DateFormat('dd MMMM').format(DateTime.now());
     return Scaffold(
+      key: _scafoldKey,
+      endDrawer: NotificationSideBar(
+        onNotificationUpdate: () {
+          setState(() {
+            if (isReadFalseCount != null) {
+              if (isReadFalseCount! > 0) {
+                isReadFalseCount = isReadFalseCount! - 1;
+              }
+            }
+          });
+        },
+      ),
       backgroundColor: Colors.white,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Padding(
@@ -143,23 +245,82 @@ class RewardsScreenState extends State<RewardsScreen> {
           ),
         ),
       ),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text('Rewards', style: TextStyle(
-          fontSize: 26.0,
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
-          // Adjust size as needed
-          // Add other styling properties as needed
-        ),),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.notifications),
-            onPressed: () {
-              // Handle notification icon pressed
-            },
-          ),
-        ],
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(50),
+        child: Stack(
+          children: [
+
+            Align(
+              alignment: Alignment.topLeft,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.black,
+                ),
+                iconSize: 28, // Back button icon
+                onPressed: () {
+                  Navigator.pop(context);
+
+                },
+              ),
+            ),
+            Center(
+              child: Text('Rewards', style: TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+                // Adjust size as needed
+                // Add other styling properties as needed
+              ),),
+            ),
+            Positioned(
+              right: 16,
+              top: 16,
+              child: GestureDetector(
+                onTap: () {
+                  _scafoldKey.currentState!.openEndDrawer();
+                },
+                child: Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xffF9F9FA),
+                        borderRadius: BorderRadius.circular(17.0),
+                      ),
+                      height: 40,
+                      width: 40,
+                      child: Center(
+                        child: Image(
+                          image: AssetImage('assets/notification.png'),
+                          height: 20,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      right: 0,
+                      top: -1, // Adjust this value to position the text properly
+                      child: Container(
+                        padding: EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.red,
+                        ),
+                        child: Text(
+                          '${isReadFalseCount}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(

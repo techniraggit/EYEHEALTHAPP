@@ -28,6 +28,7 @@ import '../dinogame/constants.dart';
 import '../dinogame/dino.dart';
 import '../dinogame/game_object.dart';
 import '../dinogame/ground.dart';
+import '../notification/notification_dashboard.dart';
 import 'EyeFatigueSelfieScreen.dart';
 import 'eyeFatigueTestReport.dart';
 
@@ -290,7 +291,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
 
 
     _animationController = AnimationController(
-      duration: Duration(seconds: 9), // Adjust duration as needed
+      duration: Duration(seconds: 6), // Adjust duration as needed
       vsync: MyTickerProvider1(),
     );
 
@@ -468,7 +469,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
 
   void _startAnimation() async {
     await _animationController.forward().orCancel;
-    _startIndex += 2;
+    _startIndex += 1;
     if (_startIndex >= _lines.length) _startIndex = 0;
     _animationController.reset();
     _startAnimation();
@@ -534,7 +535,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
       else {
         // Fluttertoast.showToast(msg: "222222222222222222");
         // MyProgressDialog.dismissProgressDialog(progressDialog!);
-        Fluttertoast.showToast(msg: "Something went wrong !!, please test again");
+        Fluttertoast.showToast(msg: "Face not Captured Properl,please test again !!");
         setState(() {
           isclose=false; uploaded=false;
           isLoading = false;startgame=false;gamepermission=false;
@@ -746,10 +747,13 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
 
 
               Container(
-                decoration: const BoxDecoration(
+                decoration:  BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage('assets/background_fatigue.png'), // Replace 'assets/background_image.jpg' with your image path
-                    fit: BoxFit.cover,
+                    image: AssetImage('assets/background_fatigue.png',), // Replace 'assets/background_image.jpg' with your image path
+                    fit: BoxFit.cover, colorFilter: ColorFilter.mode(
+                    Colors.white.withOpacity(1), // Adjust opacity as needed
+                    BlendMode.dstATop,
+                  ),
                   ),
                 ),
                 child: isLoading
@@ -818,6 +822,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
 
                     : Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
+
                   children: [
                     const SizedBox(height: 10),
                   Column(
@@ -827,12 +832,12 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
                         builder: (context, child) {
                           return Column(
                             mainAxisAlignment: MainAxisAlignment.end,
-                            children: List.generate(2, (index) {
+                            children: List.generate(1, (index) {
                               final lineIndex = (_startIndex + index) % _lines.length;
                               final line = _lines[lineIndex];
                               final animationValue = _animationController.value;
                               final opacity = 1.0 - animationValue;
-                              final translateY = (1.0 - opacity) * 100.0;
+                              final translateY = (1.0 - opacity) * 30.0;//TODO fade
                               return Transform.translate(
                                 offset: Offset(0.0, translateY),
                                 child: Opacity(
@@ -842,8 +847,8 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
                                     child: Text(
                                       line,
                                       style: TextStyle(
-                                        fontSize: 20.0,
-                                        fontWeight: FontWeight.w700,
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.w500,
                                       ),
                                     ),
                                   ),
@@ -1019,6 +1024,7 @@ class EyeFatigueThirdScreen extends StatefulWidget {
 }
 
 class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
+
   bool success = false;bool enable=false;
 @override
   void initState() {
@@ -1027,7 +1033,6 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
     super.initState();
     sendReportDb();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -1040,6 +1045,7 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
       child: MaterialApp(
 
         home: Scaffold(
+
           backgroundColor: Colors.white,
           appBar: AppBar(
             title: const Center(

@@ -26,11 +26,13 @@ import 'package:project_new/sign_up.dart';
 import 'package:rename/platform_file_editors/abs_platform_file_editor.dart';
 import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../Custom_navbar/bottom_navbar.dart';
 import '../HomePage.dart';
 import '../api/Api.dart';
 import '../api/config.dart';
+import '../digitalEyeTest/testScreen.dart';
 import '../eyeFatigueTest/eyeFatigueTest.dart';
 import 'new_address_screen.dart';
 
@@ -51,13 +53,15 @@ class _RewardsContactsSync extends State<RewardContact> {
   bool _permissionDenied = false;
   final Map<int, bool> _invitationStatus = {};
   final Map<int, bool> condition = {};
-  List< dynamic> _refferconatcts = [];
+  List<dynamic> _refferconatcts = [];
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getReferCode();
-    _fetchContacts();getMyRefferConatcts();
+    _fetchContacts();
+    getMyRefferConatcts();
   }
 
   // void shareAppLink(int i) async {
@@ -126,7 +130,8 @@ class _RewardsContactsSync extends State<RewardContact> {
       DefaultTabController(
         length: 2,
         child: Scaffold(
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+          floatingActionButtonLocation: FloatingActionButtonLocation
+              .centerDocked,
           floatingActionButton: Padding(
             padding: const EdgeInsets.all(8.0), // Add padding
             child: ClipOval(
@@ -137,8 +142,9 @@ class _RewardsContactsSync extends State<RewardContact> {
                   onTap: () {
                     Navigator.push(
                       context, CupertinoPageRoute(
-                      builder: (context) => HomePage(
-                      ),
+                      builder: (context) =>
+                          HomePage(
+                          ),
                     ),
 
                     );
@@ -148,7 +154,8 @@ class _RewardsContactsSync extends State<RewardContact> {
                     height: 50.0, // Height of the FloatingActionButton
                     child: Center(
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0), // Add padding for the icon
+                        padding: const EdgeInsets.all(8.0),
+                        // Add padding for the icon
                         child: Image.asset(
                           "assets/home_icon.png",
                           width: 20,
@@ -183,7 +190,8 @@ class _RewardsContactsSync extends State<RewardContact> {
                     decoration: const BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage(
-                            "assets/rewards_back.png"), // Add your background image path
+                            "assets/rewards_back.png"),
+                        // Add your background image path
                         fit: BoxFit.fill,
                       ),
                     ),
@@ -221,7 +229,8 @@ class _RewardsContactsSync extends State<RewardContact> {
                                 const TextSpan(
                                   text: 'Invite a friend and get ',
                                   style: TextStyle(
-                                      fontSize: 15, fontWeight: FontWeight.w400),
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w400),
                                 ),
                                 WidgetSpan(
                                   alignment: PlaceholderAlignment.middle,
@@ -252,7 +261,8 @@ class _RewardsContactsSync extends State<RewardContact> {
                                 const TextSpan(
                                   text: ' Points',
                                   style: TextStyle(
-                                      fontSize: 15, fontWeight: FontWeight.w400),
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w400),
                                 ),
                               ],
                             ),
@@ -316,16 +326,24 @@ class _RewardsContactsSync extends State<RewardContact> {
                   },
                   child: Container(
                     height: 44,
-                    width: MediaQuery.of(context).size.width /
+                    width: MediaQuery
+                        .of(context)
+                        .size
+                        .width /
                         2.2, // Set a width for the container
                     child: Stack(
                       children: [
                         // Image widget as the background
                         Center(
                           child: Image.asset(
-                            'assets/referoutline.png', // Replace with your image asset path
-                            width: MediaQuery.of(context).size.width /
-                                1.5, // Set a width for the container
+                            'assets/referoutline.png',
+                            // Replace with your image asset path
+                            width: MediaQuery
+                                .of(context)
+                                .size
+                                .width /
+                                1.5,
+                            // Set a width for the container
                             // height: 65, // Set height to match container height
                             fit: BoxFit.fill,
                           ),
@@ -384,16 +402,13 @@ class _RewardsContactsSync extends State<RewardContact> {
                       // You can also customize other button properties here if needed
                     ),
                     onPressed: () async {
-
                       await [Permission.contacts].request();
-
                       Share.share(
-                        'Hi , I am using the Zukti eye health app to track my eye health. Why dont you join me and together we can work towards improving our eye health? Use my code to sign up and get a one-month subscription free.',// $appStoreLink Use Referal Code $ReferCode',
+                        'Hi , I am using the Zukti eye health app to track my eye health. Why dont you join me and together we can work towards improving our eye health? Use my code to sign up and get a one-month subscription free.',
+                        // $appStoreLink Use Referal Code $ReferCode',
                         subject: 'Share via WhatsApp',
                         sharePositionOrigin: Rect.fromLTRB(0, 0, 0, 0),
                       );
-
-
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -418,7 +433,10 @@ class _RewardsContactsSync extends State<RewardContact> {
 
               PreferredSize(
                 preferredSize:
-                Size.fromHeight(MediaQuery.of(context).size.height / 2),
+                Size.fromHeight(MediaQuery
+                    .of(context)
+                    .size
+                    .height / 2),
                 child: TabBar(
                   isScrollable: false,
                   tabs: [
@@ -436,89 +454,94 @@ class _RewardsContactsSync extends State<RewardContact> {
                             ? ListView.builder(
                           shrinkWrap: true,
                           itemCount: _contacts.length,
-                          itemBuilder: (context, i) => Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Card(
-                              color: Colors.white,
-                              elevation: 0.9,
-                              child: ListTile(
-                                leading: _contacts[i].avatar != null &&
-                                    _contacts[i].avatar!.isNotEmpty
-                                    ? Container(
-                                    height: 50,
-                                    width: 50,
-                                    decoration: const BoxDecoration(
-                                        shape: BoxShape.circle),
-                                    child: Image.memory(
-                                        _contacts[i].avatar!))
-                                    : Container(
-                                    height: 50,
-                                    width: 50,
-                                    decoration: const BoxDecoration(
-                                        shape: BoxShape.circle),
-                                    child: Image.asset(
-                                        'assets/contact.png')),
+                          itemBuilder: (context, i) =>
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Card(
+                                  color: Colors.white,
+                                  elevation: 0.9,
+                                  child: ListTile(
+                                    leading: _contacts[i].avatar != null &&
+                                        _contacts[i].avatar!.isNotEmpty
+                                        ? Container(
+                                        height: 50,
+                                        width: 50,
+                                        decoration: const BoxDecoration(
+                                            shape: BoxShape.circle),
+                                        child: Image.memory(
+                                            _contacts[i].avatar!))
+                                        : Container(
+                                        height: 50,
+                                        width: 50,
+                                        decoration: const BoxDecoration(
+                                            shape: BoxShape.circle),
+                                        child: Image.asset(
+                                            'assets/contact.png')),
 
-                                title: Text(
-                                  _contacts[i].displayName ?? '',
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 15,
-                                      color: Colors.black),
-                                ),
-                                subtitle: Row(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '+91 ${_contacts[i].phones!.isNotEmpty ? _contacts[i].phones!.first.value : 'N/A'}',
+                                    title: Text(
+                                      _contacts[i].displayName ?? '',
                                       style: const TextStyle(
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 14,
-                                          color: Color(0xFF667085)),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 15,
+                                          color: Colors.black),
                                     ),
-                                    const Spacer(),
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          // if(  _invitationStatus[i] ==false){
-                                          print(
-                                              "===${_invitationStatus[i].toString()}");
-                                          // _invitationStatus[i] =
-                                          //     !(_invitationStatus[i] ?? false);
-                                          shareAppLink(i);
-                                          // }
-                                        });
-                                      },
-                                      child: _invitationStatus[i] == true
-                                          ? Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors
-                                                .green, // Green background color
-                                            borderRadius:
-                                            BorderRadius.circular(
-                                                20), // Rounded border
-                                          ),
-                                          child: const Icon(
-                                              Icons.check,
-                                              color: Colors
-                                                  .white)) // Display verified icon
-                                          : const Text(
-                                        'INVITE',
-                                        style: TextStyle(
-                                            fontWeight:
-                                            FontWeight.w400,
-                                            fontSize: 14,
-                                            color:
-                                            Color(0xFF667085)),
-                                      ), // Display "INVITE" text
+                                    subtitle: Row(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '+91 ${_contacts[i].phones!.isNotEmpty
+                                              ? _contacts[i].phones!.first.value
+                                              : 'N/A'}',
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 14,
+                                              color: Color(0xFF667085)),
+                                        ),
+                                        const Spacer(),
+                                        GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              // if(  _invitationStatus[i] ==false){
+                                              print(
+                                                  "===${_invitationStatus[i]
+                                                      .toString()}");
+                                              // _invitationStatus[i] =
+                                              //     !(_invitationStatus[i] ?? false);
+                                              shareAppLink(i);
+                                              // }
+                                            });
+                                          },
+                                          child: _invitationStatus[i] == true
+                                              ? Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors
+                                                    .green,
+                                                // Green background color
+                                                borderRadius:
+                                                BorderRadius.circular(
+                                                    20), // Rounded border
+                                              ),
+                                              child: const Icon(
+                                                  Icons.check,
+                                                  color: Colors
+                                                      .white)) // Display verified icon
+                                              : const Text(
+                                            'INVITE',
+                                            style: TextStyle(
+                                                fontWeight:
+                                                FontWeight.w400,
+                                                fontSize: 14,
+                                                color:
+                                                Color(0xFF667085)),
+                                          ), // Display "INVITE" text
+                                        ),
+                                      ],
                                     ),
-                                  ],
+                                    onTap: () async {},
+                                  ),
                                 ),
-                                onTap: () async {},
                               ),
-                            ),
-                          ),
                         )
                             : Container()
                       // if (_permissionDenied)
@@ -528,73 +551,75 @@ class _RewardsContactsSync extends State<RewardContact> {
                     ),
 
 
-
                     Center(
                         child: _refferconatcts.isNotEmpty
                             ? ListView.builder(
                           shrinkWrap: true,
                           itemCount: _refferconatcts.length,
-                          itemBuilder: (context, i) => Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Card(
-                              color: Colors.white,
-                              elevation: 0.9,
-                              child: ListTile(
-                                leading:
+                          itemBuilder: (context, i) =>
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Card(
+                                  color: Colors.white,
+                                  elevation: 0.9,
+                                  child: ListTile(
+                                    leading:
 
-                                Container(
-                                    height: 50,
-                                    width: 50,
-                                    decoration: const BoxDecoration(
-                                        shape: BoxShape.circle),
-                                    child: Image.asset(
-                                        'assets/contact.png')),
+                                    Container(
+                                        height: 50,
+                                        width: 50,
+                                        decoration: const BoxDecoration(
+                                            shape: BoxShape.circle),
+                                        child: Image.asset(
+                                            'assets/contact.png')),
 
-                                title: Text(
-                                  _refferconatcts[i]['full_name'] ?? '',
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 15,
-                                      color: Colors.black),
-                                ),
-                                subtitle: Row(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '+91 ${ _refferconatcts[i]['phone']}',
+                                    title: Text(
+                                      _refferconatcts[i]['full_name'] ?? '',
                                       style: const TextStyle(
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 14,
-                                          color: Color(0xFF667085)),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 15,
+                                          color: Colors.black),
                                     ),
-                                    const Spacer(),
-                                     Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors
-                                              .green.withOpacity(0.5), // Green background color
-                                          borderRadius:
-                                          BorderRadius.circular(
-                                              20), // Rounded border
+                                    subtitle: Row(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '+91 ${ _refferconatcts[i]['phone']}',
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 14,
+                                              color: Color(0xFF667085)),
                                         ),
-                                       child: Padding(
-                                         padding: const EdgeInsets.all(4.0),
-                                         child: Text(
-                                                                               'Accepted',
-                                                                               style: TextStyle(
-                                            fontWeight:
-                                            FontWeight.w400,
-                                            fontSize: 14,
-                                            color:
-                                            Color(0xFF667085)),
-                                                                             ),
-                                       ),
-                                     ) ],
+                                        const Spacer(),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors
+                                                .green.withOpacity(0.5),
+                                            // Green background color
+                                            borderRadius:
+                                            BorderRadius.circular(
+                                                20), // Rounded border
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4.0),
+                                            child: Text(
+                                              'Accepted',
+                                              style: TextStyle(
+                                                  fontWeight:
+                                                  FontWeight.w400,
+                                                  fontSize: 14,
+                                                  color:
+                                                  Color(0xFF667085)),
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    onTap: () async {},
+                                  ),
                                 ),
-                                onTap: () async {},
                               ),
-                            ),
-                          ),
                         )
                             : Container()
                       // if (_permissionDenied)
@@ -626,17 +651,6 @@ class _RewardsContactsSync extends State<RewardContact> {
 
     // final contacts = await FlutterContacts.getContacts();
     if (await Permission.contacts.isGranted) {
-
-
-
-
-
-
-
-
-
-
-
       List<Contact> contacts = await ContactsService.getContacts();
 
       setState(() => _contacts = contacts);
@@ -692,7 +706,6 @@ class _RewardsContactsSync extends State<RewardContact> {
   }
 
 
-
   Future<dynamic> getMyRefferConatcts() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -711,7 +724,7 @@ class _RewardsContactsSync extends State<RewardContact> {
         // _progressDialog!.hide();
 
         final jsonResponse = jsonDecode(response.body);
-        _refferconatcts=jsonResponse['data'];
+        _refferconatcts = jsonResponse['data'];
 
         print("responseviewprofile:${response.body}");
 
@@ -728,10 +741,11 @@ class _RewardsContactsSync extends State<RewardContact> {
     }
     throw Exception('');
   }
+
   Future<void> sendContacts() async {
     List<Map<String, dynamic>> dataList = [];
 
-    
+
     for (var contact in _contacts) {
       Map<String, dynamic> contactData = {}; // Create a map for each contact
 
@@ -740,16 +754,19 @@ class _RewardsContactsSync extends State<RewardContact> {
       }
 
       int phoneCount = 1;
-      Map<String, String> phoneNumbersMap = {}; // Change the type to Map<String, String>
+      Map<String, String> phoneNumbersMap = {
+      }; // Change the type to Map<String, String>
       if (contact.phones != null) {
         for (var phone in contact.phones!) {
-          String phoneType = phone.label ?? "Phone"; // Default to "Phone" if label is null
+          String phoneType = phone.label ??
+              "Phone"; // Default to "Phone" if label is null
           String phoneNumber = phone.value!.replaceAll(" ", '');
           phoneNumbersMap["$phoneType$phoneCount"] = phoneNumber;
           phoneCount++;
         }
       }
-      contactData["phone_numbers"] = phoneNumbersMap; // Assign the Map<String, String> to "phone_numbers"
+      contactData["phone_numbers"] =
+          phoneNumbersMap; // Assign the Map<String, String> to "phone_numbers"
 
       if (contact.emails != null) {
         List<String> emailsList = [];
@@ -761,7 +778,9 @@ class _RewardsContactsSync extends State<RewardContact> {
 
       if (contact.postalAddresses?.isNotEmpty ?? false) {
         final address = contact.postalAddresses!.first;
-        contactData["address"] = '${address.street ?? ''}, ${address.city ?? ''}, ${address.postcode ?? ''}, ${address.country ?? ""}';
+        contactData["address"] =
+        '${address.street ?? ''}, ${address.city ?? ''}, ${address.postcode ??
+            ''}, ${address.country ?? ""}';
       }
 
       if (contact.avatar != null && contact.avatar!.isNotEmpty) {
@@ -778,12 +797,12 @@ class _RewardsContactsSync extends State<RewardContact> {
     String userToken = '';
     var sharedPref = await SharedPreferences.getInstance();
     userToken =
-    sharedPref.getString("access_token") ?? '';
-    String apiUrl = '${Api.baseurl}/api/contact-upload';  // replace with your API endpoint
+        sharedPref.getString("access_token") ?? '';
+    String apiUrl = '${Api
+        .baseurl}/api/contact-upload'; // replace with your API endpoint
     String jsonString = json.encode(dataList);
 
     try {
-
       http.Response response = await http.post(
         Uri.parse(apiUrl),
         headers: <String, String>{
@@ -795,6 +814,9 @@ class _RewardsContactsSync extends State<RewardContact> {
       );
 
       if (response.statusCode == 200) {
+
+        await _sendMessageToAll( 'hello');
+
         print('Data sent successfully');
       } else {
         print('Failed to send data. Error code: ${response.statusCode}');
@@ -804,9 +826,57 @@ class _RewardsContactsSync extends State<RewardContact> {
     }
   }
 
+  Future<List<Contact>> fetchContacts() async {
+    // Fetch contacts from the phone's contact list
+    Iterable<Contact> contacts = await ContactsService.getContacts();
+    return contacts.toList();
+  }
+
+  Future<void> _sendMessageToAll( String message) async {
+    List<Contact> contacts = await fetchContacts(); // Fetch contacts from the phone's contact list
+    for (var contact in contacts) {
+      for (var phoneNumber in contact.phones ?? []) {
+        if (phoneNumber != null && phoneNumber.isNotEmpty) {
+          print("phone-----no-----------$phoneNumber");
+          // Construct and send the WhatsApp message
+          var whatsappUrl = "whatsapp://send?phone=$phoneNumber&text=$message";
+          if (await canLaunch(whatsappUrl)) {
+            await launch(whatsappUrl);
+          } else {
+            throw 'Could not launch $whatsappUrl';
+          }
+        } else {
+          // Handle empty or null phone numbers
+          print("Skipping invalid phone number for contact: $contact");
+        }
+      }
+
+    }
 
 
-}
+  }
+
+
+
+
+
+
+
+
+
+  }
+
+  Future<List<Contact>> fetchContacts() async {
+    Iterable<Contact> contacts = await ContactsService.getContacts();
+    return contacts.toList();
+  }
+
+
+
+
+
+
+// }
 
 class RewardSpecs extends StatefulWidget {
   final String offer_id; // Declare variable to hold received data
@@ -1327,10 +1397,45 @@ class RewardSpecsSync extends State<RewardSpecs> {
                             const SizedBox(height: 18),
 
                             GestureDetector(
-                              onTap:(){
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => EyeFatigueStartScreen()),
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Choose a Test'),
+                                      content: Container(
+                                        height: 200, // Adjust the height as needed
+                                        width: MediaQuery.of(context).size.width * 0.8, // Adjust the width as needed
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () {
+                                                sendcustomerDetails( true) ;
+
+                                              },
+                                              child: Image.asset(
+                                                'assets/digital_eye_exam.png',
+                                                // height: 100,
+                                              ),
+                                            ),
+                                            GestureDetector(
+                                              onTap: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(builder: (context) => EyeFatigueStartScreen()),
+                                                );
+                                              },
+                                              child: Image.asset(
+                                                'assets/eyeFatigueTest.png',
+                                                // height: 100,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 );
                               },
                               child: Padding(
@@ -1341,10 +1446,8 @@ class RewardSpecsSync extends State<RewardSpecs> {
                                     decoration: BoxDecoration(
                                       border: Border(
                                         bottom: BorderSide(
-                                          color: Colors
-                                              .background, // Change the color as needed
-                                          width:
-                                          1.5, // Change the width as needed
+                                          color: Colors.background,
+                                          width: 1.5,
                                         ),
                                       ),
                                     ),
@@ -1763,6 +1866,57 @@ class RewardSpecsSync extends State<RewardSpecs> {
   }
 
 
+  Future<void> sendcustomerDetails( bool isSelf) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken = prefs.getString('access_token') ?? '';
+    final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
+
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $authToken',
+      'Content-Type': 'application/json',
+    };
+
+    var body = json.encode({
+      'is_self': isSelf,
+
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: body,
+      );
+
+      print('API Response: ${response.statusCode} - ${response.body}');
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        if (jsonResponse.containsKey('customer_id')) {
+          String customerId = jsonResponse['customer_id'];
+
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString('customer_id', customerId);
+
+          print('Customer ID: $customerId');
+
+          // Check if the context is still mounted before navigating
+          if (context.mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => GiveInfo()),
+            );
+          }
+        } else {
+          print('Customer ID not found in response.');
+        }
+      } else {
+        print('API call failed with status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Exception: $e');
+    }
+  }
   Future<void> callredeemApi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
@@ -2525,3 +2679,62 @@ class ImagePreviewDialog extends StatelessWidget {
   }
 }
 
+
+class SendMessageScreen extends StatefulWidget {
+  @override
+  _SendMessageScreenState createState() => _SendMessageScreenState();
+}
+
+class _SendMessageScreenState extends State<SendMessageScreen> {
+
+  void _sendMessageToAll(List<Contact> contacts, String message) async {
+    for (var contact in contacts) {
+      var whatsappUrl = "whatsapp://send?phone=${contact.phones}&text=$message";
+      if (await canLaunch(whatsappUrl)) {
+        await launch(whatsappUrl);
+      } else {
+        throw 'Could not launch $whatsappUrl';
+      }
+    }
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Send WhatsApp Message'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+
+
+            ElevatedButton(
+              onPressed: () async {
+                List<Contact> contacts = await ContactsService.getContacts();
+
+                String message = "Hello, this is a test message.";
+                _sendMessageToAll(contacts, message);
+
+              },
+              style: ButtonStyle(
+                elevation: MaterialStateProperty.all<double>(
+                    0), // Set elevation to 0 to remove shadow
+
+                backgroundColor: MaterialStateProperty.all<Color>(
+                    Colors.white.withOpacity(
+                        1)), // Set your desired background color here
+              ),
+              child: const Text('Send Message',
+                  style: TextStyle(
+                      color: Colors.background,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 16)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
