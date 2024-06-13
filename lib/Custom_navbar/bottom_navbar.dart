@@ -11,6 +11,9 @@ import '../Rewards/rewards_sync.dart';
 
 
 class CustomBottomAppBar extends StatelessWidget {
+  final String currentScreen;
+
+  CustomBottomAppBar({required this.currentScreen});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -35,17 +38,15 @@ class CustomBottomAppBar extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(
+                        if (currentScreen != "ReportPage"){
+
+                           Navigator.pushReplacement(
                               context, CupertinoPageRoute(
                               builder: (context) => ReportPage(
                               ),
                             ),
-                              // CupertinoPageRoute(
-                              //   builder: (context) => NotificationSideBar(
-                              //     onNotificationUpdate: () {},
-                              //   ),
-                              // ),
-                            );
+
+                            );}
                           },
                           child: Image.asset(
                             'assets/reports.png',
@@ -66,13 +67,15 @@ class CustomBottomAppBar extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(
+    if (currentScreen != "EyeHealth"){
+
+    Navigator.pushReplacement(
                               context, CupertinoPageRoute(
                               builder: (context) => EyeHealthTrackDashboard(
                               ),
                             ),
 
-                            );
+                            );}
                           },
                           child: Image.asset(
                             'assets/health.png',
@@ -96,11 +99,12 @@ class CustomBottomAppBar extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(
+                            if (currentScreen != "Rewards"){
+                            Navigator.pushReplacement(
                               context,
                               CupertinoPageRoute(
                                   builder: (context) =>  RewardsScreen()),
-                            );
+                            );}
                           },
                           child: Image.asset(
                             'assets/rewards.png',
@@ -121,7 +125,7 @@ class CustomBottomAppBar extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(
+                            Navigator.pushReplacement(
                               context,
                               CupertinoPageRoute(
                                   builder: (context) =>  UserDashboard()),

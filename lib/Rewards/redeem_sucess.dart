@@ -144,8 +144,8 @@ class RedeemSuccess extends State<RedeemSuccessPage> {
 
       ),
       bottomNavigationBar:
-      CustomBottomAppBar(),
-    );
+      CustomBottomAppBar(currentScreen: "Rewards"),    );
+
   }
 
 

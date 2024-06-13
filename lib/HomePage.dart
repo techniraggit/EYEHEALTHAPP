@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:action_broadcast/action_broadcast.dart';
 import 'package:alarm/alarm.dart';
@@ -9,7 +10,7 @@ import 'package:draw_graph/models/feature.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'package:fl_chart/fl_chart.dart'hide AxisTitle;
+import 'package:fl_chart/fl_chart.dart' hide AxisTitle;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -65,12 +66,11 @@ class HomePage extends StatefulWidget {
   HomePageState createState() => HomePageState();
 }
 
-class HomePageState extends State<HomePage> with AutoCancelStreamMixin{
-
+class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   @override
   Iterable<StreamSubscription> get registerSubscriptions sync* {
     yield registerReceiver(['actionMusicPlaying']).listen(
-          (intent) {
+      (intent) {
         switch (intent.action) {
           case 'actionMusicPlaying':
             setState(() {
@@ -81,19 +81,22 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin{
       },
     );
   }
+
   List<double>? _data;
   List<String>? dates;
-  int i = 0;
+  int i = 0;bool edited=false;
   List<Feature>? features;
   List<String>? labelX;
-int count=0;
+  int count = 0;
   List<String>? labelY;
   List<double> todaygraphData = [];
-  List<double> firstTestgraphData = [];  List<double> idealTestgraphData = [];
+  List<double> firstTestgraphData = [];
+  List<double> idealTestgraphData = [];
   List<dynamic> populationTestgraphData = [];
 
   String _status = '';
-  List<FlSpot> _value = [];  List<_ChartData>? chartData;
+  List<FlSpot> _value = [];
+  List<_ChartData>? chartData;
 
   List<FlSpot> _spots = [FlSpot(0, 0)]; // Initialize _spots as needed
   bool fatigue_left = false;
@@ -111,7 +114,8 @@ int count=0;
   String fullname = "";
   String no_of_fatigue_test = "0";
   dynamic selectedPlanId = '';
-  bool isActivePlan = false;bool isLoading1 = true;
+  bool isActivePlan = false;
+  bool isLoading1 = true;
   int? isReadFalseCount = 0;
   late Timer? _timer;
   // Define selectedDate within the _CalendarButtonState class
@@ -148,12 +152,14 @@ int count=0;
       getNotifactionCount();
     });
   }
+
   @override
   void dispose() {
     _timer?.cancel();
     subscription?.cancel();
     super.dispose();
   }
+
 
 
   @override
@@ -172,9 +178,8 @@ int count=0;
     Future.delayed(const Duration(seconds: 1), () {})
         .then((_) => getNotifactionCount())
         .then((_) {
-      if(mounted){
+      if (mounted) {
         setState(() {});
-
       }
       // _timer = Timer.periodic(Duration(seconds: 10), (timer) {
       //   getNotifactionCount();
@@ -188,8 +193,9 @@ int count=0;
       final res = await Permission.notification.request();
     }
   }
+
   Future<void> getNotifactionCount() async {
-    try{
+    try {
       String userToken = '';
       var sharedPref = await SharedPreferences.getInstance();
       userToken = sharedPref.getString("access_token") ?? '';
@@ -210,19 +216,16 @@ int count=0;
         isReadFalseCount = unreadNotificationCount;
         print('Unread Notification Count: $unreadNotificationCount');
         print('Unread gfbt Count: $response');
-        if(mounted){
+        if (mounted) {
           setState(() {});
-
         }
-      }else if (response.statusCode == 401) {
-
+      } else if (response.statusCode == 401) {
         Fluttertoast.showToast(msg: "Session Expired");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => SignIn()),
         );
-      }   else if (response.statusCode == 401) {
-
+      } else if (response.statusCode == 401) {
         Fluttertoast.showToast(msg: "Session Expired");
         Navigator.pushReplacement(
           context,
@@ -240,9 +243,7 @@ int count=0;
           context,
           MaterialPageRoute(builder: (context) => SignIn()),
         );
-      }
-
-      else {
+      } else {
         // Handle other Dio errors
         print("DioError: ${e.error}");
       }
@@ -251,10 +252,86 @@ int count=0;
       print("Exception---: $e");
     }
   }
-  void loadAlarms() {
+
+  Future<void> loadAlarms() async {
+
+    var sharedPref = await SharedPreferences.getInstance();
+    edited = sharedPref.getBool("edited") ?? false;
     setState(() {
       alarms = Alarm.getAlarms();
       alarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
+    });
+if(edited==false){
+    if(alarms.isNotEmpty){
+      for(int i =0 ;i<alarms.length;i++){
+        await Alarm.stop(alarms[i].id);
+      }
+    }
+    alarms.clear();
+}
+
+
+
+    if (alarms.isEmpty) {
+
+      DateTime now = DateTime.now();
+
+      // Define alarm times for today
+      List<DateTime> todayAlarmTimes = [
+        DateTime(now.year, now.month, now.day, 6),
+        DateTime(now.year, now.month, now.day, 9),
+        DateTime(now.year, now.month, now.day, 12),
+        DateTime(now.year, now.month, now.day, 15),
+        DateTime(now.year, now.month, now.day, 18),
+        DateTime(now.year, now.month, now.day, 21),
+        DateTime(now.year, now.month, now.day+1, 0),
+      ];
+
+      // Define alarm times for tomorrow
+      List<DateTime> tomorrowAlarmTimes = todayAlarmTimes.map((alarmTime) {
+        return alarmTime.add(Duration(days: 1));
+      }).toList();
+
+      for (int i = 0; i < 7; i++) {
+        DateTime alarmTime;
+        if (todayAlarmTimes[i].isBefore(now)) {
+          // Set alarm for tomorrow
+          alarmTime = tomorrowAlarmTimes[i];
+        } else {
+          // Set alarm for today
+          alarmTime = todayAlarmTimes[i];
+        }
+
+        print("Alarm Time $alarmTime");
+        saveAlarm(i, alarmTime);
+      }
+    }
+
+  }
+
+  AlarmSettings buildAlarmSettings(int i,DateTime duration) {
+    final id =  DateTime.now().millisecondsSinceEpoch % 10000 + i;
+    final alarmSettings = AlarmSettings(
+      id: id,
+      dateTime: duration,
+      loopAudio: true,
+      vibrate: true,
+      volume: null,
+      assetAudioPath: 'assets/marimba.mp3',
+      notificationTitle: 'Test Reminder',
+      notificationBody: 'Do your eye test',
+      enableNotificationOnKill: Platform.isIOS,
+    );
+    return alarmSettings;
+  }
+
+  void saveAlarm(int i,DateTime duration) {
+    Alarm.set(alarmSettings: buildAlarmSettings(i,duration)).then((res) {
+      if(mounted) {
+        setState(() {
+
+        });
+      }
     });
   }
 
@@ -268,8 +345,6 @@ int count=0;
     );
     loadAlarms();
   }
-
-
 
   Future<void> checkAndroidExternalStoragePermission() async {
     final status = await Permission.storage.status;
@@ -337,9 +412,7 @@ int count=0;
             color: Colors.white, // Background color
             elevation: 4.0, // Shadow
             child: InkWell(
-              onTap: () {
-
-              },
+              onTap: () {},
               child: SizedBox(
                 width: 53.0, // Width of the FloatingActionButton
                 height: 50.0, // Height of the FloatingActionButton
@@ -480,7 +553,9 @@ int count=0;
                             child: Text(
                               salutation,
                               style: const TextStyle(
-                                  color: Colors.white, fontSize: 18,fontWeight: FontWeight.w500),
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500),
                             ),
                           ),
                         ],
@@ -533,24 +608,25 @@ int count=0;
                       height: 40,
                       width: 40,
                       child: Center(
-                        child: Image(
-                          image: AssetImage('assets/notification.png'),
-                          height: 20,
+                        child: Icon(
+                          Icons.notifications,
+                          color: Colors.black,
                         ),
                       ),
                     ),
                     Positioned(
                       right: 0,
-                      top: -1, // Adjust this value to position the text properly
+                      top:
+                          -1, // Adjust this value to position the text properly
                       child: Container(
-                        padding: EdgeInsets.all(2),
-                        decoration: BoxDecoration(
+                        padding: const EdgeInsets.all(2),
+                        decoration: const BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors.red,
                         ),
                         child: Text(
                           '${isReadFalseCount}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
@@ -697,8 +773,6 @@ int count=0;
 //             ),
 //
 
-
-
             Row(
               children: [
                 const Padding(
@@ -711,14 +785,15 @@ int count=0;
                     ),
                   ),
                 ),
-                SizedBox(width: 10,),
+                const SizedBox(
+                  width: 10,
+                ),
                 GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute<void>(
-                          builder: (context) =>
-                              ExampleAlarmHomeScreen(),
+                          builder: (context) => const ExampleAlarmHomeScreen(),
                         ),
                       );
                     },
@@ -726,43 +801,36 @@ int count=0;
               ],
             ),
 
-
             Container(
               color: Colors.white,
-
               child: Padding(
-                padding:  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
                 child: Container(
                   color: Colors.white,
-
                   width: MediaQuery.of(context).size.width,
                   child: Card(
                     elevation: 0.1,
                     color: Colors.white,
                     child: Column(
-
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-
-
-                        if(chartData!=null)...{
+                        if (chartData != null) ...{
                           Center(
-
                             child: Container(
                               color: Colors.white,
-
-                              child:isLoading1
+                              child: isLoading1
                                   ? const Center(
-                                child: CircularProgressIndicator(
-                                  color: Colors.blue,
-                                ),
-                              )
+                                      child: CircularProgressIndicator(
+                                        color: Colors.blue,
+                                      ),
+                                    )
                                   : _buildVerticalSplineChart(),
-
-
                             ),
                           ),
-                          const SizedBox(height: 10), // Adjust spacing between chart and color descriptions
+                          const SizedBox(
+                              height:
+                                  10), // Adjust spacing between chart and color descriptions
 
                           // Color descriptions
                           SingleChildScrollView(
@@ -773,29 +841,27 @@ int count=0;
                                 // _buildColorDescription(Colors.black, 'Initial User Score'),
                                 const SizedBox(width: 9),
 
-                                _buildColorDescription(Colors.green, 'Ideal Score'),
+                                _buildColorDescription(
+                                    Colors.green, 'Ideal Score'),
                                 // SizedBox(width: 9),
                                 // _buildColorDescription(Colors.orange, 'Overall User Average'),
                                 const SizedBox(width: 9),
-                                _buildColorDescription(Colors.blue, 'User Average Score'),
+                                _buildColorDescription(
+                                    Colors.blue, 'User Average Score'),
                                 const SizedBox(width: 9),
                               ],
                             ),
                           )
-
                         },
-                        if(count==0&&isLoading1==false)...{
-
+                        if (count == 0 && isLoading1 == false) ...{
                           const SizedBox(height: 10),
-
                           const Padding(
                             padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
                             child: Text(
                               'Get your first test done now and start tracking your eye health.',
                               // Display formatted current date
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black),
+                              style:
+                                  TextStyle(fontSize: 14, color: Colors.black),
                             ),
                           ),
                           const SizedBox(height: 9),
@@ -936,9 +1002,10 @@ int count=0;
           ],
         ),
       ),
-      bottomNavigationBar: CustomBottomAppBar(),
+      bottomNavigationBar: CustomBottomAppBar(currentScreen: 'HomePage',),
     );
   }
+
   Widget _buildColorDescription(Color color, String text) {
     return Row(
       children: [
@@ -947,44 +1014,41 @@ int count=0;
           height: 15,
           decoration: BoxDecoration(
             color: color,
-            borderRadius: BorderRadius.circular(25), // Adjust the radius to make it rounded
+            borderRadius: BorderRadius.circular(
+                25), // Adjust the radius to make it rounded
           ),
           margin: const EdgeInsets.only(right: 4),
         ),
-
         Text(text),
-
-
       ],
     );
   }
-
 
   SfCartesianChart _buildVerticalSplineChart() {
     return SfCartesianChart(
       isTransposed: false,
       plotAreaBorderWidth: 0,
-      legend: const Legend(isVisible:true),
+      legend: const Legend(isVisible: true),
       primaryXAxis: const CategoryAxis(
         majorTickLines: MajorTickLines(size: 0),
         axisLine: AxisLine(width: 0.3),
         majorGridLines: MajorGridLines(width: 0),
-        title:  AxisTitle(text: 'time slots  (x-axis) --->'),
-      ),// Disable vertical inner gridlines
+        title: AxisTitle(text: 'time slots  (x-axis) --->'),
+      ), // Disable vertical inner gridlines
 
       primaryYAxis: const NumericAxis(
         minimum: 0,
         maximum: 11,
         interval: 1,
         labelFormat: '{value}',
-        title: AxisTitle(text: 'eye score  (y-axis)  --->'), // Description for X axis
+        title: AxisTitle(
+            text: 'eye score  (y-axis)  --->'), // Description for X axis
         majorGridLines: MajorGridLines(width: 0), // Hide horizontal grid lines
       ),
       series: _getVerticalSplineSeries(),
       tooltipBehavior: TooltipBehavior(enable: true),
     );
   }
-
 
   List<SplineSeries<_ChartData, String>> _getVerticalSplineSeries() {
     return <SplineSeries<_ChartData, String>>[
@@ -999,14 +1063,17 @@ int count=0;
         dataSource: chartData,
         cardinalSplineTension: 0.5,
         splineType: SplineType.monotonic,
-
-        name: 'Ideal Score',color: Colors.green,
+        name: 'Ideal Score',
+        color: Colors.green,
         xValueMapper: (_ChartData sales, _) => sales.x,
         yValueMapper: (_ChartData sales, _) => sales.y2,
         emptyPointSettings: const EmptyPointSettings(
-          mode: EmptyPointMode.gap, // Connect null points to zero
-          color: Colors.green,borderColor: Colors.green,borderWidth: 2 // Optional: Set color of the line connecting null points
-        ),
+            mode: EmptyPointMode.gap, // Connect null points to zero
+            color: Colors.green,
+            borderColor: Colors.green,
+            borderWidth:
+                2 // Optional: Set color of the line connecting null points
+            ),
       ),
       // SplineSeries<_ChartData, String>(
       //   markerSettings: const MarkerSettings(isVisible: true),
@@ -1018,18 +1085,24 @@ int count=0;
 
       SplineSeries<_ChartData, String>(
         markerSettings: const MarkerSettings(isVisible: true),
-        dataSource: chartData,color: Colors.blue,
+        dataSource: chartData,
+        color: Colors.blue,
         cardinalSplineTension: 0.5,
         splineType: SplineType.monotonic,
         name: 'User Average Score',
         xValueMapper: (_ChartData sales, _) => sales.x,
-        yValueMapper: (_ChartData sales, _) => sales.y4, emptyPointSettings: const EmptyPointSettings(
-        mode: EmptyPointMode.zero, // Connect null points to zero
-        color: Colors.blue, borderColor: Colors.blue,borderWidth: 2 // Optional: Set color of the line connecting null points
-      ),
+        yValueMapper: (_ChartData sales, _) => sales.y4,
+        emptyPointSettings: const EmptyPointSettings(
+            mode: EmptyPointMode.zero, // Connect null points to zero
+            color: Colors.blue,
+            borderColor: Colors.blue,
+            borderWidth:
+                2 // Optional: Set color of the line connecting null points
+            ),
       )
     ];
   }
+
   void checkActivePlan(String testType) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('access_token') ?? '';
@@ -1053,18 +1126,15 @@ int count=0;
 
         setState(() {
           if (isActivePlan == false) {
-
-              Fluttertoast.showToast(
-                msg: "Before Start the Test Please Purchase the Plan",
-                toastLength: Toast.LENGTH_LONG,
-                gravity: ToastGravity.BOTTOM,
-                timeInSecForIosWeb: 1,
-                backgroundColor: Colors.bluebutton,
-
-                textColor: Colors.white,
-                fontSize: 16.0,
-              );
-
+            Fluttertoast.showToast(
+              msg: "Before Start the Test Please Purchase the Plan",
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.bluebutton,
+              textColor: Colors.white,
+              fontSize: 16.0,
+            );
           } else {
             if (testType == 'fatigue') {
               Navigator.push(
@@ -1140,7 +1210,8 @@ int count=0;
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken = prefs.getString('access_token') ?? '';
       final response = await http.get(
-        Uri.parse('${ApiProvider.baseUrl}/api/fatigue/fatigue-graph?user_timezone=Asia/Kolkata'),
+        Uri.parse(
+            '${ApiProvider.baseUrl}/api/fatigue/fatigue-graph?user_timezone=Asia/Kolkata'),
         headers: <String, String>{
           'Authorization': 'Bearer $authToken',
         },
@@ -1166,56 +1237,66 @@ int count=0;
           eye_health_score = eye_hscore.toString();
         });
         if (responseData.containsKey('status') && responseData['status']) {
-          if (responseData.containsKey('first_day_data') && responseData['first_day_data'].containsKey('value')) {
-            List<dynamic> firstDayValue = responseData['first_day_data']['value'];
-            firstTestgraphData.addAll(firstDayValue.map((value) => value.toDouble()));
+          if (responseData.containsKey('first_day_data') &&
+              responseData['first_day_data'].containsKey('value')) {
+            List<dynamic> firstDayValue =
+                responseData['first_day_data']['value'];
+            firstTestgraphData
+                .addAll(firstDayValue.map((value) => value.toDouble()));
           }
-          if (responseData.containsKey('current_day_data') && responseData['current_day_data'].containsKey('value')) {
-            List<dynamic> currentDayValue = responseData['current_day_data']['value'];
-            todaygraphData.addAll(currentDayValue.map((value) => value.toDouble()));
+          if (responseData.containsKey('current_day_data') &&
+              responseData['current_day_data'].containsKey('value')) {
+            List<dynamic> currentDayValue =
+                responseData['current_day_data']['value'];
+            todaygraphData
+                .addAll(currentDayValue.map((value) => value.toDouble()));
           }
-          if (responseData.containsKey('get_percentile_graph') ) {
-            List<dynamic> population = List<dynamic>.from(jsonData['get_percentile_graph']);
+          if (responseData.containsKey('get_percentile_graph')) {
+            List<dynamic> population =
+                List<dynamic>.from(jsonData['get_percentile_graph']);
 
-            populationTestgraphData.addAll(population.map((value) => value.toDouble()));
+            populationTestgraphData
+                .addAll(population.map((value) => value.toDouble()));
           }
-          if (responseData.containsKey('get_ideal_graph') ) {
-            List<dynamic> ideal =  List<dynamic>.from(jsonData['get_ideal_graph']);
+          if (responseData.containsKey('get_ideal_graph')) {
+            List<dynamic> ideal =
+                List<dynamic>.from(jsonData['get_ideal_graph']);
 
-    idealTestgraphData.addAll(ideal.map((value) => value.toDouble()));
+            idealTestgraphData.addAll(ideal.map((value) => value.toDouble()));
           }
         }
         print("fffffffffffffff$todaygraphData");
         setState(() {
           chartData = <_ChartData>[
-            _ChartData('6 AM', firstTestgraphData[0], idealTestgraphData[0] ,populationTestgraphData[0],todaygraphData[0]),
-            _ChartData('9 AM', firstTestgraphData[1], idealTestgraphData[1], populationTestgraphData[1],todaygraphData[1]),
-            _ChartData('12 PM', firstTestgraphData[2],  idealTestgraphData[2],populationTestgraphData[2],todaygraphData[2]),
-            _ChartData('3 PM', firstTestgraphData[3], idealTestgraphData[3],populationTestgraphData[3], todaygraphData[3]),
-            _ChartData('6 PM', firstTestgraphData[4], idealTestgraphData[4], populationTestgraphData[4],todaygraphData[4]),
-            _ChartData('9 PM', firstTestgraphData[5],  idealTestgraphData[5],populationTestgraphData[5],todaygraphData[5]),
-            _ChartData('12 AM', firstTestgraphData[6],  idealTestgraphData[6],populationTestgraphData[6],todaygraphData[6]),
-
-
-
+            _ChartData('6 AM', firstTestgraphData[0], idealTestgraphData[0],
+                populationTestgraphData[0], todaygraphData[0]),
+            _ChartData('9 AM', firstTestgraphData[1], idealTestgraphData[1],
+                populationTestgraphData[1], todaygraphData[1]),
+            _ChartData('12 PM', firstTestgraphData[2], idealTestgraphData[2],
+                populationTestgraphData[2], todaygraphData[2]),
+            _ChartData('3 PM', firstTestgraphData[3], idealTestgraphData[3],
+                populationTestgraphData[3], todaygraphData[3]),
+            _ChartData('6 PM', firstTestgraphData[4], idealTestgraphData[4],
+                populationTestgraphData[4], todaygraphData[4]),
+            _ChartData('9 PM', firstTestgraphData[5], idealTestgraphData[5],
+                populationTestgraphData[5], todaygraphData[5]),
+            _ChartData('12 AM', firstTestgraphData[6], idealTestgraphData[6],
+                populationTestgraphData[6], todaygraphData[6]),
           ];
         });
 
-
-
         count = jsonData['no_of_eye_test'];
-         isLoading1 = false;
+        isLoading1 = false;
         // return data
         //     .map((item) => double.parse(item['value'].toString()))
         //     .toList();
-      }
-      else if (response.statusCode == 401) {
+      } else if (response.statusCode == 401) {
         Fluttertoast.showToast(msg: "Session Expired");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => SignIn()),
         );
-      }      else {
+      } else {
         print(response.body);
       }
     } catch (e) {
@@ -1223,7 +1304,7 @@ int count=0;
 
       print("exception:$e");
     }
-    throw Exception(Exception );
+    throw Exception(Exception);
   }
 }
 
@@ -1234,9 +1315,7 @@ class _ChartData {
   final double y2;
   final double y3;
   final double y4;
-
 }
-
 
 class setReminder extends StatefulWidget {
   @override
@@ -1501,8 +1580,8 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                       inputFormatters: [
                         LengthLimitingTextInputFormatter(30),
                       ],
-                      style:
-                          const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+                      style: const TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.w400),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter a full name';
@@ -1548,8 +1627,8 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                         ),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      style:
-                          const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+                      style: const TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.w400),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter an age';
@@ -1598,7 +1677,7 @@ class ExampleAlarmRingScreen extends StatelessWidget {
   const ExampleAlarmRingScreen({required this.alarmSettings, super.key});
 
   final AlarmSettings alarmSettings;
-
+//TODO Data Change Alarm Design
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1607,7 +1686,7 @@ class ExampleAlarmRingScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             Text(
-              'You alarm (${alarmSettings.id}) is ringing...',
+              'Its a reminder , please do eye test',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const Text('🔔', style: TextStyle(fontSize: 50)),

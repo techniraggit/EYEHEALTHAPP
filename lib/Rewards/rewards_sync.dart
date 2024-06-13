@@ -636,8 +636,8 @@ class _RewardsContactsSync extends State<RewardContact> {
             ],
           ),
           bottomNavigationBar:
-          CustomBottomAppBar(), // Include the persistent bottom bar here
-        ),
+          CustomBottomAppBar(currentScreen: "Rewards"),    )
+
       );
   }
 
@@ -1507,7 +1507,8 @@ class RewardSpecsSync extends State<RewardSpecs> {
           ],
         ),
         bottomNavigationBar:
-        CustomBottomAppBar(), // Include the persistent bottom bar here
+        CustomBottomAppBar(currentScreen: "Rewards"),
+// Include the persistent bottom bar here
       ),
     );
   }
@@ -1995,7 +1996,7 @@ class PresUpload extends State<PrescriptionUpload> {
   List<PlatformFile> _files = [];
   String Date = '1 May, 2024 ';
   String Time = "2 days";
-  String offer_id = "aa8e1bb0-c7cd-4732-81c0-09de236c05ec";
+  // String offer_id = "aa8e1bb0-c7cd-4732-81c0-09de236c05ec";
   int points = 10;
   final double _currentTime = 80.0; // Initial time
   int _countdownValue = 0;
@@ -2505,14 +2506,15 @@ class PresUpload extends State<PrescriptionUpload> {
                         ],
                       ),
 
-                      // ),
-                    ),
-                  ),
-                ],
+                // ),
               ),
-              bottomNavigationBar:
-                  CustomBottomAppBar(), // Include the persistent bottom bar here
             ),
+          ],
+        ),
+        bottomNavigationBar:
+        CustomBottomAppBar(currentScreen: "Rewards"),
+      ),
+
     );
   }
 

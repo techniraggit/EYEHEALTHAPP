@@ -423,7 +423,7 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin{
             ),
           ),
         ),
-        bottomNavigationBar: CustomBottomAppBar(),
+        bottomNavigationBar: CustomBottomAppBar(currentScreen: 'ReportPage',),
       ),
     );
   }

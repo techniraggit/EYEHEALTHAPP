@@ -510,7 +510,8 @@ if(count==0&&isLoading1==false)...{
         ),
       ),
       bottomNavigationBar:
-      CustomBottomAppBar(),
+      CustomBottomAppBar(currentScreen: "EyeHealth"),
+
     );
   }
   Widget _buildColorDescription(Color color, String text) {
