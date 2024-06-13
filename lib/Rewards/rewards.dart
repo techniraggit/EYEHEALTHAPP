@@ -17,6 +17,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../Custom_navbar/bottom_navbar.dart';
 import '../Custom_navbar/customDialog.dart';
 import '../HomePage.dart';
+import '../api/Api.dart';
+import '../digitalEyeTest/testScreen.dart';
+import '../eyeFatigueTest/eyeFatigueTest.dart';
 import '../notification/notification_dashboard.dart';
 import '../sign_up.dart';
 // Import intl package
@@ -377,7 +380,7 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
             Padding(
               padding: EdgeInsets.fromLTRB(16.0,0, 0, 0),
               child: Text(
-                'Offers', // Display formatted current date
+                'Redeem Offers', // Display formatted current date
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -406,7 +409,7 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
                           return Padding(
                             padding:  EdgeInsets.all(8.0),
                             child: Card(
-
+                           color: Colors.white,
                               child: Row(
                                 children: [
                                   // Image on the left side
@@ -486,10 +489,146 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
                 },
               ),
 
-            ), // Add spacing between titles and dynamic list
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(16.0, 0, 0, 10),
+              child: Text(
+                'Perform EyeTest', // Display formatted current date
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepPurple,
+                ),
+              ),
+            ),
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Card(
+                color: Colors.white,
+                child: Row(
+                  children: [
+                    // Image on the left side
+                    Image.asset(
+                      'assets/eyetest.png',
+                      // Add any additional properties to style the image
+                    ),
+                    // Columns on the right side
+                    Flexible(
+                      child: Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 4.0,
+                                horizontal: 8.0,
+                              ),
+                              child: Text(
+                                'Eye Test',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 4.0,
+                                horizontal: 8.0,
+                              ),
+                              child: Text(
+                                '',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(2.0),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('Choose a Test'),
+                                        content: Container(
+                                          height: 200, // Adjust the height as needed
+                                          width: MediaQuery.of(context).size.width * 0.8, // Adjust the width as needed
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              GestureDetector(
+                                                onTap: () {
+                                                  sendcustomerDetails( true) ;
+
+                                                },
+                                                child: Image.asset(
+                                                  'assets/digital_eye_exam.png',
+                                                  // height: 100,
+                                                ),
+                                              ),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(builder: (context) => EyeFatigueStartScreen()),
+                                                  );
+                                                },
+                                                child: Image.asset(
+                                                  'assets/eyeFatigueTest.png',
+                                                  // height: 100,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                                child: Text('Start Test'),
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  backgroundColor: Colors.deepPurple,
+                                  // Background color
+                                  // Text color
+                                  padding: EdgeInsets.all(10),
+                                  minimumSize: Size(100, 20),
+                                  // Button padding
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(26),
+                                    // Button border radius
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),// Add spacing between titles and dynamic list
+            Padding(
+              padding: EdgeInsets.fromLTRB(16.0, 0, 0, 10),
+              child: Text(
+                'Refer and Earn', // Display formatted current date
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepPurple,
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Card(color: Colors.white,
                 child: Row(
                   children: [
 
@@ -583,6 +722,7 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Card(
+                color: Colors.white ,
                 child: Row(
                   children: [
                     // Image on the left side
@@ -660,6 +800,7 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
                 ),
               ),
             ),
+
           ],
         ),
       ),
@@ -667,5 +808,56 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
       bottomNavigationBar:
       CustomBottomAppBar(),
     );
+  }
+  Future<void> sendcustomerDetails( bool isSelf) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken = prefs.getString('access_token') ?? '';
+    final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
+
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $authToken',
+      'Content-Type': 'application/json',
+    };
+
+    var body = json.encode({
+      'is_self': isSelf,
+
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: body,
+      );
+
+      print('API Response: ${response.statusCode} - ${response.body}');
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        if (jsonResponse.containsKey('customer_id')) {
+          String customerId = jsonResponse['customer_id'];
+
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString('customer_id', customerId);
+
+          print('Customer ID: $customerId');
+
+          // Check if the context is still mounted before navigating
+          if (context.mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => GiveInfo()),
+            );
+          }
+        } else {
+          print('Customer ID not found in response.');
+        }
+      } else {
+        print('API call failed with status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Exception: $e');
+    }
   }
 }

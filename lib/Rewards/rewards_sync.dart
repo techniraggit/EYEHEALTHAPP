@@ -1451,14 +1451,14 @@ class RewardSpecsSync extends State<RewardSpecs> {
                                         ),
                                       ),
                                     ),
-                                    child: Text(
+                                   /* child: Text(
                                       'Click Here To Start',
                                       style: TextStyle(
                                         fontSize: 16,
                                         color: Colors.background,
                                         fontWeight: FontWeight.w500,
                                       ),
-                                    ),
+                                    ),*/
                                   ),
                                 ),
                               ),
