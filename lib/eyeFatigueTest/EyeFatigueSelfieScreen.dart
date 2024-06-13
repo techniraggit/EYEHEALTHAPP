@@ -143,7 +143,7 @@ class EyeFatigueTestSelfieState extends State<EyeFatigueSelfieScreen> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
             onPressed: () {
-              // Add your back button functionality here
+              Navigator.pop(context);
             },
           ),
         ),

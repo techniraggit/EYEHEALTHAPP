@@ -85,6 +85,7 @@ class FirebaseApi{
     AndroidNotificationDetails(
       'high_importance_channel',
       'High Importance Notification',
+      sound: RawResourceAndroidNotificationSound('mario'),
       channelDescription: 'Your channel description',
       importance: Importance.high,
       priority: Priority.high,
@@ -122,7 +123,7 @@ class FirebaseApi{
         carPlay: true,
         criticalAlert: true,
         provisional: true,
-        sound: true
+        sound:true,
     );
     if(settings.authorizationStatus==AuthorizationStatus.authorized){
       print("user granted permissions");

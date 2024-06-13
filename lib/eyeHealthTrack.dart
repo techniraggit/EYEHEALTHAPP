@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:action_broadcast/action_broadcast.dart';
+import 'package:dio/dio.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:project_new/sign_up.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -18,13 +20,97 @@ import 'HomePage.dart';
 import 'api/config.dart';
 import 'eyeFatigueTest/eyeFatigueTest.dart';
 import 'models/fatigueGraphModel.dart';
+import 'notification/notification_dashboard.dart';
 
 class EyeHealthTrackDashboard extends StatefulWidget {
   @override
   EyeHealthTrackDashboardState createState() => EyeHealthTrackDashboardState();
 }
 
-class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
+class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with AutoCancelStreamMixin{
+
+  final GlobalKey<ScaffoldState> _scafoldKey = GlobalKey();
+  int? isReadFalseCount = 0;
+
+  @override
+  Iterable<StreamSubscription> get registerSubscriptions sync* {
+    yield registerReceiver(['actionMusicPlaying']).listen(
+          (intent) {
+        switch (intent.action) {
+          case 'actionMusicPlaying':
+            setState(() {
+              getNotifactionCount();
+            });
+            break;
+        }
+      },
+    );
+  }
+  Future<void> getNotifactionCount() async {
+    try{
+      String userToken = '';
+      var sharedPref = await SharedPreferences.getInstance();
+      userToken = sharedPref.getString("access_token") ?? '';
+      String url = "'${ApiProvider.baseUrl}/api/helping/get-count";
+      print("URL: $url");
+
+      Map<String, String> headers = {
+        'Authorization': 'Bearer $userToken', // Bearer token type
+        'Content-Type': 'application/json',
+      };
+      var response = await Dio().get(url, options: Options(headers: headers));
+      print('drf gfbt Count: $response');
+
+      if (response.statusCode == 200) {
+        final responseData = response.data;
+        // Map<String, dynamic> responseData = json.decode(response.data);
+        int unreadNotificationCount = responseData['unread_notification_count'];
+        isReadFalseCount = unreadNotificationCount;
+        print('Unread Notification Count: $unreadNotificationCount');
+        print('Unread gfbt Count: $response');
+        if(mounted){
+          setState(() {});
+
+        }
+      }else if (response.statusCode == 401) {
+
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      }   else if (response.statusCode == 401) {
+
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } on DioError catch (e) {
+      if (e.response != null || e.response!.statusCode == 401) {
+        // Handle 401 error
+
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      }
+
+      else {
+        // Handle other Dio errors
+        print("DioError: ${e.error}");
+      }
+    } catch (e) {
+      // Handle other exceptions
+      print("Exception---: $e");
+    }
+  }
+
+
   bool fatigue_left=false; List<double>? _data;int i=0;bool isLoading = false;bool isLoading1 =true;
   bool fatigue_right=false;fatigueGraph? fatigueGraphData;int count=0;
   bool midtiredness_right= false;List<double> todaygraphData = [];
@@ -131,7 +217,8 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
   void initState() {
     super.initState();
 
-    getGraph();
+    getGraph();    getNotifactionCount();
+
 
 
   }
@@ -148,6 +235,18 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
   Widget build(BuildContext context) {
     String formattedDate = DateFormat('dd MMMM').format(DateTime.now());
     return Scaffold(
+      key: _scafoldKey,
+      endDrawer: NotificationSideBar(
+        onNotificationUpdate: () {
+          setState(() {
+            if (isReadFalseCount != null) {
+              if (isReadFalseCount! > 0) {
+                isReadFalseCount = isReadFalseCount! - 1;
+              }
+            }
+          });
+        },
+      ),
       backgroundColor: Colors.white,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Padding(
@@ -188,24 +287,102 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
 
 
 
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: const Text('Eye Health Track'),
-        actions: <Widget>[
-          // ExampleAlarmHomeShortcutButton(refreshAlarms: loadAlarms),
-
-          IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () async {
-              print("asdklaskldjaskldasjkdjlkas");
-              // navigateToAlarmScreen(null);
-
-
-
-            },
-          ),
-        ],
+      // appBar: AppBar(
+      //   backgroundColor: Colors.white,
+      //   title: const Text('Eye Health Track'),
+      //   actions: <Widget>[
+      //
+      //     IconButton(
+      //       icon: const Icon(Icons.notifications),
+      //       onPressed: () async {
+      //         print("asdklaskldjaskldasjkdjlkas");
+      //         // navigateToAlarmScreen(null);
+      //
+      //
+      //
+      //       },
+      //     ),
+      //   ],
+      // ),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(50),
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.topLeft,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.black,
+                ),
+                iconSize: 28, // Back button icon
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            Center(
+              child: Text(
+                'Eye Health Track',
+                style: TextStyle(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                  // Adjust size as needed
+                  // Add other styling properties as needed
+                ),
+              ),
+            ),
+            Positioned(
+              right: 16,
+              top: 16,
+              child: GestureDetector(
+                onTap: () async {
+                  _scafoldKey.currentState!.openEndDrawer();
+                },
+                child: Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xffF9F9FA),
+                        borderRadius: BorderRadius.circular(17.0),
+                      ),
+                      height: 40,
+                      width: 40,
+                      child: Center(
+                        child: Icon(
+                          Icons.notifications,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      right: 0,
+                      top: -1, // Adjust this value to position the text properly
+                      child: Container(
+                        padding: EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.red,
+                        ),
+                        child: Text(
+                          '${isReadFalseCount}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
+
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -223,97 +400,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
               padding: const EdgeInsets.all(16.0),
               child: Image.asset('assets/banner1.png'),
             ),
-            // const Padding(
-            //   padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
-            //   child: Text(
-            //     'EYE HEALTH STATUS', // Display formatted current date
-            //     style: TextStyle(
-            //       fontSize: 18,
-            //       fontWeight: FontWeight.bold,
-            //       color: Colors.deepPurple,
-            //     ),
-            //   ),
-            // ),
-            // Padding(
-            //   padding: const EdgeInsets.all(8.0),
-            //   child: Card(
-            //     elevation: 0.1,
-            //     color: Colors.white,
-            //     child: ListTile(
-            //       title: Column(
-            //         children: [
-            //           Row(
-            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //             children: [
-            //               Column(
-            //                 crossAxisAlignment: CrossAxisAlignment.start,
-            //                 children: [
-            //                   const Text('Fatigue Right'),
-            //                   Text(
-            //                     fatigue_right ? 'Yes' : 'No',
-            //
-            //                     style: const TextStyle(
-            //                       fontSize: 16,
-            //                       fontWeight: FontWeight.bold,
-            //                     ),
-            //                   ),
-            //                 ],
-            //               ),
-            //               const SizedBox(width: 3,),
-            //               Column(
-            //                 crossAxisAlignment: CrossAxisAlignment.end,
-            //                 children: [
-            //                   const Text('Mild Tiredness Right'),
-            //                   Text(
-            //                     midtiredness_right ? 'Yes' : 'No',
-            //                     style: const TextStyle(
-            //                       fontSize: 16,
-            //                       fontWeight: FontWeight.bold,
-            //                     ),
-            //                   ),
-            //                 ],
-            //               ),
-            //             ],
-            //           ),
-            //           const SizedBox(height: 16),
-            //           // Add spacing between the row and the additional columns
-            //           Row(
-            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //             children: [
-            //               Column(
-            //                 crossAxisAlignment: CrossAxisAlignment.start,
-            //                 children: [
-            //                   const Text('Fatigue left'),
-            //                   Text(
-            //
-            //                     fatigue_left ? 'Yes' : 'No',
-            //                     style: const TextStyle(
-            //                       fontSize: 16,
-            //                       fontWeight: FontWeight.bold,
-            //                     ),
-            //                   ),
-            //                 ],
-            //               ),
-            //               Column(
-            //                 crossAxisAlignment: CrossAxisAlignment.end,
-            //                 children: [
-            //                   const Text('Mild Tiredness Left'),
-            //                   Text(
-            //                     midtiredness_left ? 'Yes' : 'No',
-            //                     style: const TextStyle(
-            //                       fontSize: 16,
-            //                       fontWeight: FontWeight.bold,
-            //                     ),
-            //                   ),
-            //                 ],
-            //               ),
-            //             ],
-            //           ),
-            //         ],
-            //       ),
-            //     ),
-            //   ),
-            // ),
+
             const Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
               child: Text(
@@ -341,19 +428,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
 
-                        // Padding(
-                        //   padding: EdgeInsets.all(1),
-                        //   child: ListTile(
-                        //     title: Text(
-                        //       'Right Eye Health',
-                        //       style: TextStyle(
-                        //         fontSize: 16.0,
-                        //         fontWeight: FontWeight.bold,
-                        //       ),
-                        //     ),
-                        //     subtitle: Text('April 30-May 30'),
-                        //   ),
-                        // ),
+
                                   if(chartData!=null)...{
                                       Center(
 
@@ -482,12 +557,7 @@ if(count==0&&isLoading1==false)...{
 
   List<SplineSeries<_ChartData, String>> _getVerticalSplineSeries() {
     return <SplineSeries<_ChartData, String>>[
-      // SplineSeries<_ChartData, String>(
-      //     markerSettings: const MarkerSettings(isVisible: true),
-      //     dataSource: chartData,color: Colors.black,
-      //     xValueMapper: (_ChartData sales, _) => sales.x,
-      //     yValueMapper: (_ChartData sales, _) => sales.y,
-      //     name: 'Initial User Score'),
+
       SplineSeries<_ChartData, String>(
         markerSettings: const MarkerSettings(isVisible: true),
         dataSource: chartData,
@@ -501,13 +571,7 @@ if(count==0&&isLoading1==false)...{
           color: Colors.green, // Optional: Set color of the line connecting null points
         ),
       ),
-      // SplineSeries<_ChartData, String>(
-      //   markerSettings: const MarkerSettings(isVisible: true),
-      //   dataSource: chartData,
-      //   name: 'over 3.5 lac users',color:Colors.orange ,
-      //   xValueMapper: (_ChartData sales, _) => sales.x,
-      //   yValueMapper: (_ChartData sales, _) => sales.y3,
-      // ),
+
       SplineSeries<_ChartData, String>(
         markerSettings: const MarkerSettings(isVisible: true),
         dataSource: chartData,color: Colors.blue,
@@ -767,19 +831,7 @@ class RightEyeHealthWidget extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Padding(padding: EdgeInsets.all(1),
-                    // child :ListTile(
-                    //   title: Text(
-                    //     'Right Eye Health',
-                    //     style: TextStyle(
-                    //       fontSize: 16.0,
-                    //       fontWeight: FontWeight.bold,
-                    //     ),
-                    //   ),
-                    //   subtitle: Text('April 30-May 30'),
-                    // ),),
 
-                  // Container with fixed height to contain the LineChart
                   Container(
                     height: 200,
                     width: MediaQuery.of(context).size.width,

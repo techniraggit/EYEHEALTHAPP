@@ -1602,8 +1602,8 @@ class SignUpScreen extends State<SignUp> {
       setState(() {
         print(
             "location++++++++++${place.street}, ${place.locality}, ${place.administrativeArea}, ${place.country}");
-        _locationController.text =
-            "${place.street}, ${place.locality}, ${place.administrativeArea}, ${place.country}";
+        // _locationController.text =
+        //     "${place.street}, ${place.locality}, ${place.administrativeArea}, ${place.country}";
       });
     } catch (e) {
       print(e);
@@ -2554,10 +2554,10 @@ class SignUpScreen extends State<SignUp> {
       Fluttertoast.showToast(msg: " Enter Email");
       return false;
     }
-    /*if (_locationController.text.trim().isEmpty) {
-      Fluttertoast.showToast(msg: " Enter Location");
-      return false;
-    }*/
+    // if (_locationController.text.trim().isEmpty) {
+    //   Fluttertoast.showToast(msg: " Enter Location");
+    //   return false;
+    // }
 
     return true;
   }
@@ -2837,7 +2837,7 @@ class SignUpScreen extends State<SignUp> {
 
           print("Otp Sent$data");
         }
-        if (response.statusCode == 404) {
+        if (response.statusCode == 400) {
           Fluttertoast.showToast(msg: "User does not exists");
         } else {
           Map<String, dynamic> data = json.decode(response.body);

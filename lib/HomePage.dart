@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:action_broadcast/action_broadcast.dart';
 import 'package:alarm/alarm.dart';
 import 'package:alarm/model/alarm_settings.dart';
+import 'package:dio/dio.dart';
 import 'package:draw_graph/models/feature.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +29,7 @@ import 'api/config.dart';
 
 import 'eyeFatigueTest/eyeFatigueTest.dart';
 import 'models/fatigueGraphModel.dart';
+import 'notification/notification_dashboard.dart';
 
 class EyeHealthData {
   final String date;
@@ -62,7 +65,22 @@ class HomePage extends StatefulWidget {
   HomePageState createState() => HomePageState();
 }
 
-class HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> with AutoCancelStreamMixin{
+
+  @override
+  Iterable<StreamSubscription> get registerSubscriptions sync* {
+    yield registerReceiver(['actionMusicPlaying']).listen(
+          (intent) {
+        switch (intent.action) {
+          case 'actionMusicPlaying':
+            setState(() {
+              getNotifactionCount();
+            });
+            break;
+        }
+      },
+    );
+  }
   List<double>? _data;
   List<String>? dates;
   int i = 0;
@@ -94,8 +112,10 @@ int count=0;
   String no_of_fatigue_test = "0";
   dynamic selectedPlanId = '';
   bool isActivePlan = false;bool isLoading1 = true;
-
+  int? isReadFalseCount = 0;
+  late Timer? _timer;
   // Define selectedDate within the _CalendarButtonState class
+  final GlobalKey<ScaffoldState> _scafoldKey = GlobalKey();
 
   late List<AlarmSettings> alarms;
   List<Map<String, dynamic>>? _datagraph;
@@ -121,6 +141,21 @@ int count=0;
     }
   }
 
+  void _startTimer() {
+    const tenSeconds = Duration(seconds: 10);
+    _timer = Timer.periodic(tenSeconds, (timer) {
+      // Make your API call here
+      getNotifactionCount();
+    });
+  }
+  @override
+  void dispose() {
+    _timer?.cancel();
+    subscription?.cancel();
+    super.dispose();
+  }
+
+
   @override
   void initState() {
     super.initState();
@@ -129,10 +164,22 @@ int count=0;
       checkAndroidNotificationPermission();
       checkAndroidScheduleExactAlarmPermission();
     }
-    // loadAlarms();
+    loadAlarms();
     getGraph();
+    _startTimer();
 
     subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
+    Future.delayed(const Duration(seconds: 1), () {})
+        .then((_) => getNotifactionCount())
+        .then((_) {
+      if(mounted){
+        setState(() {});
+
+      }
+      // _timer = Timer.periodic(Duration(seconds: 10), (timer) {
+      //   getNotifactionCount();
+      // });
+    });
   }
 
   Future<void> checkAndroidNotificationPermission() async {
@@ -141,7 +188,69 @@ int count=0;
       final res = await Permission.notification.request();
     }
   }
+  Future<void> getNotifactionCount() async {
+    try{
+      String userToken = '';
+      var sharedPref = await SharedPreferences.getInstance();
+      userToken = sharedPref.getString("access_token") ?? '';
+      String url = "'${ApiProvider.baseUrl}/api/helping/get-count";
+      print("URL: $url");
 
+      Map<String, String> headers = {
+        'Authorization': 'Bearer $userToken', // Bearer token type
+        'Content-Type': 'application/json',
+      };
+      var response = await Dio().get(url, options: Options(headers: headers));
+      print('drf gfbt Count: $response');
+
+      if (response.statusCode == 200) {
+        final responseData = response.data;
+        // Map<String, dynamic> responseData = json.decode(response.data);
+        int unreadNotificationCount = responseData['unread_notification_count'];
+        isReadFalseCount = unreadNotificationCount;
+        print('Unread Notification Count: $unreadNotificationCount');
+        print('Unread gfbt Count: $response');
+        if(mounted){
+          setState(() {});
+
+        }
+      }else if (response.statusCode == 401) {
+
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      }   else if (response.statusCode == 401) {
+
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } on DioError catch (e) {
+      if (e.response != null || e.response!.statusCode == 401) {
+        // Handle 401 error
+
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      }
+
+      else {
+        // Handle other Dio errors
+        print("DioError: ${e.error}");
+      }
+    } catch (e) {
+      // Handle other exceptions
+      print("Exception---: $e");
+    }
+  }
   void loadAlarms() {
     setState(() {
       alarms = Alarm.getAlarms();
@@ -160,11 +269,7 @@ int count=0;
     loadAlarms();
   }
 
-  @override
-  void dispose() {
-    subscription?.cancel();
-    super.dispose();
-  }
+
 
   Future<void> checkAndroidExternalStoragePermission() async {
     final status = await Permission.storage.status;
@@ -211,6 +316,19 @@ int count=0;
     //   salutation = 'Good evening';
     // }
     return Scaffold(
+      key: _scafoldKey,
+      endDrawer: NotificationSideBar(
+        onNotificationUpdate: () {
+          setState(() {
+            if (isReadFalseCount != null) {
+              if (isReadFalseCount! > 0) {
+                isReadFalseCount = isReadFalseCount! - 1;
+              }
+            }
+          });
+        },
+      ),
+      endDrawerEnableOpenDragGesture: false,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Padding(
         padding: const EdgeInsets.all(8.0), // Add padding
@@ -220,12 +338,7 @@ int count=0;
             elevation: 4.0, // Shadow
             child: InkWell(
               onTap: () {
-                // Navigator.push(
-                //   context,
-                //   CupertinoPageRoute(
-                //     builder: (context) => HomePage(),
-                //   ),
-                // );
+
               },
               child: SizedBox(
                 width: 53.0, // Width of the FloatingActionButton
@@ -247,13 +360,100 @@ int count=0;
           ),
         ),
       ),
+      // appBar: PreferredSize(
+      //   preferredSize: const Size.fromHeight(150),
+      //   child: Stack(
+      //     children: [
+      //       Image.asset(
+      //         'assets/pageBackground.png',
+      //         // Replace 'background_image.jpg' with your image asset
+      //         fit: BoxFit.fill,
+      //         width: double.infinity,
+      //         height: 250,
+      //       ),
+      //       Padding(
+      //         padding: const EdgeInsets.all(16.0),
+      //         child: SizedBox(
+      //           child: Padding(
+      //             padding: const EdgeInsets.fromLTRB(8.0, 10.0, 0, 4),
+      //             child: Column(
+      //               crossAxisAlignment: CrossAxisAlignment.start,
+      //               children: [
+      //                 Row(
+      //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //                   children: [
+      //                     GestureDetector(
+      //                       onTap: () {
+      //                         Navigator.push(
+      //                           context,
+      //                           CupertinoPageRoute(
+      //                               builder: (context) => setReminder()),
+      //                         );
+      //                       },
+      //                       child: Text(
+      //                         salutation,
+      //                         style: const TextStyle(
+      //                             color: Colors.white, fontSize: 18,fontWeight: FontWeight.w500),
+      //                       ),
+      //                     ),
+      //
+      //                     GestureDetector(
+      //                         onTap: () {
+      //                           Navigator.push(
+      //                             context,
+      //                             MaterialPageRoute<void>(
+      //                               builder: (context) =>
+      //                                   ExampleAlarmHomeScreen(),
+      //                             ),
+      //                           );
+      //
+      //                           // navigateToAlarmScreen(null);
+      //                         },
+      //                         child: Image.asset('assets/notification.png'))
+      //                   ],
+      //                 ),
+      //                 Text(
+      //                   fullname,
+      //                   style: const TextStyle(
+      //                       color: Colors.lightBlueAccent, fontSize: 18),
+      //                 ),
+      //                 Row(
+      //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //                   children: [
+      //                     const Text(
+      //                       'Your Eye Health Score',
+      //                       style: TextStyle(color: Colors.white, fontSize: 18),
+      //                     ),
+      //                     Text(
+      //                       eye_health_score,
+      //                       style: TextStyle(
+      //                         color: Colors.yellowAccent,
+      //                         fontSize: 28,
+      //                         decoration: TextDecoration.combine(
+      //                           [TextDecoration.underline],
+      //                         ),
+      //                         decorationColor: Colors
+      //                             .yellow, // Set the underline color to yellow
+      //                       ),
+      //                     ),
+      //                   ],
+      //                 ),
+      //               ],
+      //             ),
+      //           ),
+      //         ),
+      //       ),
+      //
+      //     ],
+      //   ),
+      //
+      // ),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(150),
         child: Stack(
           children: [
             Image.asset(
               'assets/pageBackground.png',
-              // Replace 'background_image.jpg' with your image asset
               fit: BoxFit.fill,
               width: double.infinity,
               height: 250,
@@ -283,11 +483,6 @@ int count=0;
                                   color: Colors.white, fontSize: 18,fontWeight: FontWeight.w500),
                             ),
                           ),
-                          GestureDetector(
-                              onTap: () {
-                                navigateToAlarmScreen(null);
-                              },
-                              child: Image.asset('assets/notification.png'))
                         ],
                       ),
                       Text(
@@ -321,9 +516,56 @@ int count=0;
                 ),
               ),
             ),
+            Positioned(
+              right: 16,
+              top: 16,
+              child: GestureDetector(
+                onTap: () {
+                  _scafoldKey.currentState!.openEndDrawer();
+                },
+                child: Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xffF9F9FA),
+                        borderRadius: BorderRadius.circular(17.0),
+                      ),
+                      height: 40,
+                      width: 40,
+                      child: Center(
+                        child: Image(
+                          image: AssetImage('assets/notification.png'),
+                          height: 20,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      right: 0,
+                      top: -1, // Adjust this value to position the text properly
+                      child: Container(
+                        padding: EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.red,
+                        ),
+                        child: Text(
+                          '${isReadFalseCount}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
+
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -457,16 +699,34 @@ int count=0;
 
 
 
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
-              child: Text(
-                'EYE HEALTH GRAPH OVERVIEW', // Display formatted current date
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+            Row(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
+                  child: Text(
+                    'EYE HEALTH GRAPH OVERVIEW', // Display formatted current date
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-              ),
+                SizedBox(width: 10,),
+                GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (context) =>
+                              ExampleAlarmHomeScreen(),
+                        ),
+                      );
+                    },
+                    child: Image.asset('assets/notification.png')),
+              ],
             ),
+
+
             Container(
               color: Colors.white,
 

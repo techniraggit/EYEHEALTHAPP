@@ -10,6 +10,7 @@
 
 import 'dart:convert';
 import 'dart:math';
+import 'package:action_broadcast/action_broadcast.dart';
 import 'package:dio/dio.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -33,6 +34,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../Custom_navbar/bottom_navbar.dart';
 import '../api/config.dart';
 import '../models/fatigueGraphModel.dart';
+import '../notification/notification_dashboard.dart';
 import '../sign_up.dart';
 import 'FatigueReportDetails.dart';
 
@@ -49,8 +51,9 @@ class _ChartData {
   final double y4;
 
 }
-class ReportPageState extends State<ReportPage> {
-  List<dynamic> itemsdata = [];
+class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin{
+  List<dynamic> itemsdata = []; final GlobalKey<ScaffoldState> _scafoldKey = GlobalKey();
+  int? isReadFalseCount = 0;
   bool isLoading = true; List<double> idealTestgraphData = [];
   List<double> populationTestgraphData = [];
   List<dynamic> percentage = [];
@@ -60,13 +63,27 @@ class ReportPageState extends State<ReportPage> {
   List<Prescription> prescriptions = [];fatigueGraph? fatigueGraphData;
   bool midtiredness_right= false;List<double> todaygraphData = [];
   List<double> firstTestgraphData = [];  List<_ChartData>? chartData;
-
+  @override
+  Iterable<StreamSubscription> get registerSubscriptions sync* {
+    yield registerReceiver(['actionMusicPlaying']).listen(
+          (intent) {
+        switch (intent.action) {
+          case 'actionMusicPlaying':
+            setState(() {
+              getNotifactionCount();
+            });
+            break;
+        }
+      },
+    );
+  }
   @override
   void initState() {
     super.initState();
     getReports();
     geteyeReports();
-    getGraph();
+    getGraph();    getNotifactionCount();
+
     getPrescriptionFiles();
   }
   Future<List<double>> getGraph() async {
@@ -98,7 +115,7 @@ class ReportPageState extends State<ReportPage> {
             List<dynamic> currentDayValue = responseData['current_day_data']['value'];
             todaygraphData.addAll(currentDayValue.map((value) => value.toDouble()));
           }
-          if (responseData.containsKey('current_day_data') ) {
+          if (responseData.containsKey('get_percentile_graph') ) {
             List<dynamic> population = List<double>.from(jsonData['get_percentile_graph']);
 
             populationTestgraphData.addAll(population.map((value) => value.toDouble()));
@@ -144,6 +161,69 @@ class ReportPageState extends State<ReportPage> {
     }
     throw Exception('');
   }
+  Future<void> getNotifactionCount() async {
+    try{
+      String userToken = '';
+      var sharedPref = await SharedPreferences.getInstance();
+      userToken = sharedPref.getString("access_token") ?? '';
+      String url = "'${ApiProvider.baseUrl}/api/helping/get-count";
+      print("URL: $url");
+
+      Map<String, String> headers = {
+        'Authorization': 'Bearer $userToken', // Bearer token type
+        'Content-Type': 'application/json',
+      };
+      var response = await Dio().get(url, options: Options(headers: headers));
+      print('drf gfbt Count: $response');
+
+      if (response.statusCode == 200) {
+        final responseData = response.data;
+        // Map<String, dynamic> responseData = json.decode(response.data);
+        int unreadNotificationCount = responseData['unread_notification_count'];
+        isReadFalseCount = unreadNotificationCount;
+        print('Unread Notification Count: $unreadNotificationCount');
+        print('Unread gfbt Count: $response');
+        if(mounted){
+          setState(() {});
+
+        }
+      }else if (response.statusCode == 401) {
+
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      }   else if (response.statusCode == 401) {
+
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } on DioError catch (e) {
+      if (e.response != null || e.response!.statusCode == 401) {
+        // Handle 401 error
+
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      }
+
+      else {
+        // Handle other Dio errors
+        print("DioError: ${e.error}");
+      }
+    } catch (e) {
+      // Handle other exceptions
+      print("Exception---: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -157,31 +237,150 @@ class ReportPageState extends State<ReportPage> {
         : DefaultTabController(
       length: 3,
       child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          title: const Text('Report and Statistics'),
-          bottom: TabBar(
-            tabs: [
-              Tab(text: 'Fatigue Report'),
-              Tab(text: 'Eye Test Report'),
-              Tab(text: 'Other'),
-            ],
-            labelColor: Colors.bluebutton,
-            unselectedLabelColor: Colors.black,
-            labelStyle:
-            TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-            unselectedLabelStyle: TextStyle(fontSize: 14),
-          ),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.notifications),
-              onPressed: () {
-                // Handle notification icon pressed
-              },
-            ),
-          ],
+
+
+
+        key: _scafoldKey,
+        endDrawer: NotificationSideBar(
+          onNotificationUpdate: () {
+            setState(() {
+              if (isReadFalseCount != null) {
+                if (isReadFalseCount! > 0) {
+                  isReadFalseCount = isReadFalseCount! - 1;
+                }
+              }
+            });
+          },
         ),
+        backgroundColor: Colors.white,
+        // appBar: AppBar(
+        //   backgroundColor: Colors.white,
+        //   title: const Text('Report and Statistics'),
+        //   bottom: TabBar(
+        //     tabs: [
+        //       Tab(text: 'Fatigue Report'),
+        //       Tab(text: 'Eye Test Report'),
+        //       Tab(text: 'Other'),
+        //     ],
+        //     labelColor: Colors.bluebutton,
+        //     unselectedLabelColor: Colors.black,
+        //     labelStyle:
+        //     TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+        //     unselectedLabelStyle: TextStyle(fontSize: 14),
+        //   ),
+        //   actions: <Widget>[
+        //     IconButton(
+        //       icon: Icon(Icons.notifications),
+        //       onPressed: () {
+        //         // Handle notification icon pressed
+        //       },
+        //     ),
+        //   ],
+        // ),
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(140),
+          child: Stack(
+            children: [
+              Align(
+                alignment: Alignment.topLeft,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.black,
+                  ),
+                  iconSize: 28, // Back button icon
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                      height:  10, // Adjust height as needed
+                    ),
+                  // SizedBox(
+                  //   height: kToolbarHeight + 10, // Adjust height as needed
+                  // ),
+                  Center(
+                    child: Text(
+                      'Reports and Statistics',
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        // Adjust size as needed
+                        // Add other styling properties as needed
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  TabBar(
+                    tabs: [
+                      Tab(text: 'Fatigue Report'),
+                      Tab(text: 'Eye Test Report'),
+                      Tab(text: 'Other'),
+                    ],
+                    labelColor: Colors.bluebutton,
+                    unselectedLabelColor: Colors.black,
+                    labelStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                    unselectedLabelStyle: TextStyle(fontSize: 14),
+                  ),
+                ],
+              ),
+              Positioned(
+                right: 16,
+                top: 16,
+                child: GestureDetector(
+                  onTap: () {
+                    _scafoldKey.currentState!.openEndDrawer();
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xffF9F9FA),
+                          borderRadius: BorderRadius.circular(17.0),
+                        ),
+                        height: 40,
+                        width: 40,
+                        child: Center(
+                          child: Icon(
+                            Icons.notifications,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        right: 0,
+                        top: -1, // Adjust this value to position the text properly
+                        child: Container(
+                          padding: EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.red,
+                          ),
+                          child: Text(
+                            '${isReadFalseCount}',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+
         body: TabBarView(
           children: [
             buildFatigueReport(
