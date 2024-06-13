@@ -22,6 +22,7 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:project_new/HomePage.dart';
+import 'package:project_new/Rewards/rewards_sync.dart';
 import 'package:project_new/api/Api.dart';
 import 'package:project_new/digitalEyeTest/EyeTestReportDetail.dart';
 import 'package:project_new/digitalEyeTest/TestReport.dart';
@@ -493,109 +494,6 @@ class ReportPageState extends State<ReportPage> {
       )
     ];
   }
-/*
-  Widget buildEyeTestReport(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          ListView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              return Card(
-                elevation: 1,
-                margin: EdgeInsets.symmetric(horizontal: 10, vertical: 9),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(17.0),
-                ),
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 2, vertical: 11),
-                  child: ListTile(
-                    title: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Date: ' + items[index].toString().substring(0, 10),
-                            style: TextStyle(fontStyle: FontStyle.normal),
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Text(
-                              'Test Result : ',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 16,
-                              ),
-                            ),
-                            Builder(
-                              builder: (context) {
-                                if (percentage[index] > 50.0) {
-                                  testResult = "Good";
-                                } else {
-                                  testResult = "Bad";
-                                }
-                                return Text(
-                                  testResult,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 16,
-                                    color: testResult == 'Good'
-                                        ? Colors.green
-                                        : Colors.red,
-                                  ),
-                                );
-                              },
-                            ),
-                            Expanded(
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      CupertinoPageRoute(
-                                        builder: (context) => ReportDetails(
-                                          reportId: ReportIds[index],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.white,
-                                    backgroundColor: Colors.bluebutton,
-                                    shape: CircleBorder(),
-                                    minimumSize: Size(30, 30),
-                                  ),
-                                  child: Transform.rotate(
-                                    angle: -pi / 1,
-                                    child: Transform.scale(
-                                      scale: 0.6,
-                                      child: Icon(Icons.arrow_back_ios_new),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-*/
 
   Map<String, dynamic>? apiData;
   Widget buildEyeTestReport(BuildContext context) {
@@ -694,6 +592,7 @@ class ReportPageState extends State<ReportPage> {
   }
 
 
+/*
   Widget buildOtherReport(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
@@ -788,7 +687,141 @@ class ReportPageState extends State<ReportPage> {
               );
             },
           ),
+    ],
+      ),);
+  }
+*/
+  Widget buildOtherReport(BuildContext context) {
+    return Scaffold(
+      floatingActionButton: Stack(
+        alignment: Alignment.bottomRight,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PrescriptionUpload(),
+                  ),
+                );
+              },
+              backgroundColor: Colors.bluebutton, // Set the background color of the FAB
+              child: Icon(Icons.camera_enhance_outlined, color: Colors.white), // Set the icon of the FAB
+            ),
+          ),
+     /*     Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Positioned(
+              bottom: 10,
+              right: 10,
+              child: Text(
+                'Upload Prescription',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),*/
         ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: prescriptions.length,
+              itemBuilder: (context, index) {
+                final prescription = prescriptions[index];
+                return Card(
+                  color: Colors.white,
+                  elevation: 1,
+                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(17.0),
+                  ),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 2, vertical: 11),
+                    child: ListTile(
+                      title: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            prescription.problemFaced,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 12,
+                              color: Colors.bluebutton,
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  'Date: ',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  prescription.createdOn.toLocal().toString().substring(0, 10),
+                                  style: TextStyle(
+                                    fontStyle: FontStyle.normal,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => PrescriptionDetailPage(prescription: prescription),
+                                        ),
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.white,
+                                      backgroundColor: Colors.bluebutton,
+                                      shape: CircleBorder(),
+                                      minimumSize: Size(30, 30),
+                                    ),
+                                    child: Transform.rotate(
+                                      angle: pi, // Correct rotation angle to 180 degrees
+                                      child: Transform.scale(
+                                        scale: 0.6,
+                                        child: Icon(Icons.arrow_back_ios_new),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

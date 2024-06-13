@@ -103,6 +103,7 @@ class RewardsStatusScreenState extends State<RewardStatusScreen> {
   Widget build(BuildContext context) {
     String formattedDate = DateFormat('dd MMMM').format(DateTime.now());
     return Scaffold(
+      backgroundColor: Colors.white,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Padding(
         padding:  EdgeInsets.all(8.0), // Add padding
@@ -140,6 +141,7 @@ class RewardsStatusScreenState extends State<RewardStatusScreen> {
         ),
       ),
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Center(
           child: Text('Reward Details', style: TextStyle(
             fontSize: 16.0,

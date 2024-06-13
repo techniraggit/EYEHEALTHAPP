@@ -176,10 +176,13 @@ class RewardsScreenState extends State<RewardsScreen> {
             Stack(
               alignment: Alignment.center,
               children: [
-                Image.asset(
-                  'assets/reward.png',
-                  fit: BoxFit.contain,
-                  // Add any additional properties to style the image
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Image.asset(
+                    'assets/reward.png',
+                    fit: BoxFit.contain,
+                    // Add any additional properties to style the image
+                  ),
                 ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -211,7 +214,7 @@ class RewardsScreenState extends State<RewardsScreen> {
             ),
             // Add spacing between titles and dynamic list
             Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
+              padding: EdgeInsets.fromLTRB(16.0,0, 0, 0),
               child: Text(
                 'Offers', // Display formatted current date
                 style: TextStyle(
@@ -246,11 +249,14 @@ class RewardsScreenState extends State<RewardsScreen> {
                               child: Row(
                                 children: [
                                   // Image on the left side
-                                  Image.network(
-                                    '${ApiProvider.baseUrl}${offer.image}',
-                                    width: 100, // Set the desired width
-                                    height: 100, // Set the desired height
-                                    fit: BoxFit.cover,
+                                  Padding(
+                                    padding: const EdgeInsets.all(6.0),
+                                    child: Image.network(
+                                      '${ApiProvider.baseUrl}${offer.image}',
+                                      width: 80, // Set the desired width
+                                      height: 80, // Set the desired height
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                   // Columns on the right side
                                   Expanded(
@@ -269,7 +275,7 @@ class RewardsScreenState extends State<RewardsScreen> {
                                             ),
                                           ),
                                         ),
-                                        /*Padding(
+                                        Padding(
                                           padding:  EdgeInsets.symmetric(
                                               vertical: 4.0, horizontal: 8.0),
                                           child: Text(
@@ -280,7 +286,7 @@ class RewardsScreenState extends State<RewardsScreen> {
                                               color: Colors.grey,
                                             ),
                                           ),
-                                        ),*/
+                                        ),
                                         Padding(
                                           padding:  EdgeInsets.all(2.0),
                                           child: ElevatedButton(
