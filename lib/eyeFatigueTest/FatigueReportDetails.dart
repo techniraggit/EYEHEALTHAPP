@@ -7,6 +7,7 @@ import 'package:external_path/external_path.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
@@ -522,21 +523,24 @@ class EyeFatiguereports extends State<ReportDetails>  with AutoCancelStreamMixin
                             height: 10,
                           ),
                       Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        // crossAxisAlignment: CrossAxisAlignment.start,
                         children: testresult
                             .split('\n')
                             .map(
-                              (point) => Html(
-                            data: point.contains(':')
-                                ? "<div><b>${point.split(':')[0]}:</b></div><div>${point.split(':')[1]}</div>"
-                                : "<div>$point</div>",
-                            style: {
-                              "div": Style(
-                                fontSize: FontSize(14),
-                                fontWeight: FontWeight.w400,
-                                margin: Margins.only(bottom: 8),
+                              (line) => Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(Icons.circle, size: 7),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  line,
+                                  style: TextStyle(fontSize: 14),
+                                ),
                               ),
-                            },
+                              SizedBox(height: 8),
+
+                            ],
                           ),
                         )
                             .toList(),

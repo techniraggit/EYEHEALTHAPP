@@ -68,7 +68,7 @@ bool isLoading=true;
   }
 
   File? _imageFile;
-  String imageUrl1 = '';
+  String imageUrl1 = "";
   File? imageFile;
   bool isVerifiedEmail =
       false; // Example boolean variable indicating verification status
@@ -701,8 +701,10 @@ bool isLoading=true;
           }
           _phoneController.text = jsonResponse['data']['phone_number'];
           _emailController.text = jsonResponse['data']['email'];
+          if( jsonResponse['data']['image']!=null){
           imageUrl1 = "${ApiProvider.baseUrl}" +
-              jsonResponse['data']['image'];
+              jsonResponse['data']['image'];}else{imageUrl1='';}
+
           isLoading=false;//replace url
         });
         /** String imageData=data['profile_pic'];

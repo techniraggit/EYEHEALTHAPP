@@ -429,7 +429,6 @@ class _RewardsContactsSync extends State<RewardContact> {
                 ),
               ),
 
-              //TODO INcorrect Parentage
 
               PreferredSize(
                 preferredSize:
@@ -2460,30 +2459,47 @@ class PresUpload extends State<PrescriptionUpload> {
                                             onTap: () {
                                               showDialog(
                                                 context: context,
-                                                builder:
-                                                    (BuildContext context) {
-                                                  print(
-                                                      "imageUrl----------${image[index]}");
-                                                  return ImagePreviewDialog(
-                                                      imageUrl:
-                                                          "https://eyehealth.backend.zuktiinnovations.com" +
-                                                              image[index]);
+                                                builder: (BuildContext context) {
+                                                  return Dialog(
+                                                    child: SizedBox(
+                                                      height: MediaQuery.of(context).size.height * 0.9, // Set height to half of screen height
+                                                      child: Column(
+                                                        mainAxisSize: MainAxisSize.min,
+                                                        children: [
+                                                          Center(
+                                                            child: Container(
+                                                              height: MediaQuery.of(context).size.height * 0.8, // Set the height of the image container
+                                                              child: ClipRect(
+                                                                child: FittedBox(
+                                                                  fit: BoxFit.contain,
+                                                                  alignment: Alignment.center,
+                                                                  child: Image.network(
+                                                                    "https://eyehealth.backend.zuktiinnovations.com" + image[index],
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          TextButton(
+                                                            onPressed: () => Navigator.of(context).pop(),
+                                                            child: Text('Close'),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  );
                                                 },
                                               );
                                             },
                                             child: Container(
                                               decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    color: Colors.black),
-                                                borderRadius:
-                                                    BorderRadius.circular(5.0),
+                                                border: Border.all(color: Colors.black),
+                                                borderRadius: BorderRadius.circular(5.0),
                                               ),
                                               padding: EdgeInsets.all(8.0),
                                               child: Text(
                                                 'Preview',
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 12),
+                                                style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12),
                                               ),
                                             ),
                                           ),

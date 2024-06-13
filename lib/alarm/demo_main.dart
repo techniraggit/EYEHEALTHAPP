@@ -309,7 +309,8 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
         if (permission.isDenied) {
           await Permission.notification.request();
           print("Notification permissions are still denied");
-        } else if (permission.isPermanentlyDenied) {
+        }
+        else if (permission.isPermanentlyDenied) {
           print("Notification permissions are permanently denied");
           // Prompt the user to open app settings to enable notification permissions manually
           showDialog(
@@ -340,12 +341,14 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
               );
             },
           );
-        } else {
+        }
+        else {
           saveAlarm();
           // Permissions are granted.
           print("Notification permissions are granted");
         }
-      } else {
+      }
+      else {
         saveAlarm();
         print("Notification permissions are already granted");
       }
@@ -358,7 +361,7 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
   Future<void> saveAlarm() async {
     print('alrm 0000000000');
 
-    requestAlarmNotiPermission();
+    // requestAlarmNotiPermission();
 
 
 
@@ -399,14 +402,15 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
                 //     .copyWith(color: Colors.blueAccent),
               ),
               TextButton(
-                onPressed:requestAlarmNotiPermission,// saveAlarm,
+                onPressed:requestAlarmNotiPermission,// saveAlarm,requestAlarmNotiPermission
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all<Color>(Colors.background),
                 ),
                 child: loading
                     ? const CircularProgressIndicator()
                     : Text(
-                  'Done',style:TextStyle(color: Colors.white,fontSize: 13)
+                  'Done',
+                    style:TextStyle(color: Colors.white,fontSize: 13)
                   // style: Theme.of(context)
                   //     .textTheme
                   //     .titleLarge!

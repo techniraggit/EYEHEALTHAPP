@@ -317,8 +317,10 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                 ),
                 iconSize: 28, // Back button icon
                 onPressed: () {
-                  Navigator.pop(context);
-                },
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePage()),
+                  );                },
               ),
             ),
             Center(

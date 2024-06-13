@@ -510,24 +510,43 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> with AutoCan
                                 ),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: testresult
+                                  children:testresult
                                       .split('\n')
                                       .map(
-                                        (point) => Html(
-                                      data: point.contains(':')
-                                          ? "<div><b>${point.split(':')[0]}:</b></div><div>${point.split(':')[1]}</div>"
-                                          : "<div>$point</div>",
-                                      style: {
-                                        "div": Style(
-                                          fontSize: FontSize(14),
-                                          fontWeight: FontWeight.w400,
-                                          margin: Margins.only(bottom: 8),
+                                        (line) => Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Icon(Icons.circle, size: 10),
+                                        SizedBox(width: 8),
+                                        Flexible(
+                                          child: Text(
+                                            line,
+                                            style: TextStyle(fontSize: 16),
+                                          ),
                                         ),
-                                      },
+                                      ],
                                     ),
                                   )
                                       .toList(),
                                 ),
+                                  // children: testresult
+                                  //     .split('\n')
+                                  //     .map(
+                                  //       (point) => Html(
+                                  //     data: point.contains(':')
+                                  //         ? "<div><b>${point.split(':')[0]}:</b></div><div>${point.split(':')[1]}</div>"
+                                  //         : "<div>$point</div>",
+                                  //     style: {
+                                  //       "div": Style(
+                                  //         fontSize: FontSize(14),
+                                  //         fontWeight: FontWeight.w400,
+                                  //         margin: Margins.only(bottom: 8),
+                                  //       ),
+                                  //     },
+                                  //   ),
+                                  // )
+                                  //     .toList(),
+                                // ),
                                 // Text(
                                 //   testresult!,
                                 //   style: const TextStyle(

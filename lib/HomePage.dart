@@ -577,9 +577,9 @@ if(edited==false){
                             style: TextStyle(
                               color: Colors.yellowAccent,
                               fontSize: 28,
-                              decoration: TextDecoration.combine(
-                                [TextDecoration.underline],
-                              ),
+                              // decoration: TextDecoration.combine(
+                              //   [TextDecoration.underline],
+                              // ),
                               decorationColor: Colors
                                   .yellow, // Set the underline color to yellow
                             ),
@@ -833,23 +833,20 @@ if(edited==false){
                                   10), // Adjust spacing between chart and color descriptions
 
                           // Color descriptions
-                          SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: [
-                                // SizedBox(width: 9),
-                                // _buildColorDescription(Colors.black, 'Initial User Score'),
-                                const SizedBox(width: 9),
-
-                                _buildColorDescription(
-                                    Colors.green, 'Ideal Score'),
-                                // SizedBox(width: 9),
-                                // _buildColorDescription(Colors.orange, 'Overall User Average'),
-                                const SizedBox(width: 9),
-                                _buildColorDescription(
-                                    Colors.blue, 'User Average Score'),
-                                const SizedBox(width: 9),
-                              ],
+                          Center(
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  const SizedBox(width: 9),
+                                  _buildColorDescription(
+                                      Colors.green, 'Ideal Score'),
+                                  const SizedBox(width: 9),
+                                  _buildColorDescription(
+                                      Colors.blue, 'User Average Score'),
+                                  const SizedBox(width: 9),
+                                ],
+                              ),
                             ),
                           )
                         },
