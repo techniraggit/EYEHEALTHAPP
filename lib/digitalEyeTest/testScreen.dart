@@ -1359,7 +1359,7 @@ class Reading extends State<ReadingTest> {
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+    //_initializeCamera();
     getReadingSnellFractionNew();
 
     _configureTts();
@@ -1568,17 +1568,20 @@ class Reading extends State<ReadingTest> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken = prefs.getString('access_token') ?? '';
       String testname = prefs.getString('test') ?? '';
+      String CustomerId = prefs.getString('customer_id') ?? '';
+
       var headers = {
         'Authorization': 'Bearer $authToken',
+        'Customer-Id' :CustomerId
       };
       var uri = Uri.parse(
-          '${Api.baseurl}/reading-snellen-fraction/');
+          '${Api.baseurl}/api/eye/reading-snellen-fraction/');
       var response = await http.get(
         uri,
         headers: headers,
 
       );
-      print("aaaaaaaaaa${response.body}");
+      print("readingdata${response.body}");
       if (response.statusCode == 200) {
 
         final parsedData = json.decode(response.body);
@@ -1966,7 +1969,7 @@ class Reading extends State<ReadingTest> {
         'Content-Type': 'application/json',
       };
       var request = http.Request(
-          'POST', Uri.parse('${Api.baseurl}/random-word-Reading-test'));
+          'POST', Uri.parse('${Api.baseurl}/api/eye/random-word-Reading-test'));
       request.body =
           json.encode({"test_id": id, "action": "not_read","action_count":counter,  "snellen_fraction": nextFraction});
       request.headers.addAll(headers);
