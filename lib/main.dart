@@ -357,7 +357,7 @@ class _OnBoardingScreen1State extends State<OnBoardingScreen1> {
                       )
                   ) ;               },
                 child: const Padding(
-                  padding: EdgeInsets.only(right: 28.0,top:40,bottom: 20,),
+                  padding: EdgeInsets.only(right: 18.0,top:40,bottom: 20,),
                   child: SizedBox(
                     height:17 ,width: 31,
                     child: Text(
@@ -492,7 +492,7 @@ class _OnBoardingScreen2State extends State<OnBoardingScreen2> {
                       )
                   );               },
                 child: const Padding(
-                  padding: EdgeInsets.only(right: 28.0,top: 20,bottom: 20),
+                  padding: EdgeInsets.only(right: 18.0,top: 20,bottom: 20),
                   child: SizedBox(
                     height:17 ,width: 31,
                     child: Text(
