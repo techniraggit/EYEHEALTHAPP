@@ -615,7 +615,7 @@ class SignInScreen extends State<SignIn> {
 
           print("Otp Sent$data");
         }
-        if (response.statusCode == 400) {
+        if (response.statusCode == 404) {
           Fluttertoast.showToast(msg: "User does not exists");
         } else {
           Map<String, dynamic> data = json.decode(response.body);

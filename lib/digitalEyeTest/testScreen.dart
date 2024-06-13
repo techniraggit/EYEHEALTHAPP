@@ -98,7 +98,10 @@ class SelectQuestion extends State<GiveInfo> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
             onPressed: () {
-              // Add your back button functionality here
+               Navigator.push(
+                context,
+                CupertinoPageRoute(builder: (context) => HomePage()),
+              );
             },
           ),
         ),
@@ -1351,12 +1354,14 @@ class Reading extends State<ReadingTest> {
   CameraController? _controller;
   late List<CameraDescription> _cameras;
   bool isLoadingRandomText = false;
+  int counter =0;
 
   @override
   void initState() {
     super.initState();
     _initializeCamera();
-    getReadingSnellFraction();
+    getReadingSnellFractionNew();
+
     _configureTts();
     _onReplayPressed();
   }
@@ -1515,7 +1520,7 @@ class Reading extends State<ReadingTest> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken = prefs.getString('access_token') ?? '';
-      String testname = "hyperopia";
+      String testname = prefs.getString('test') ?? '';
       var headers = {
         'Authorization': 'Bearer $authToken',
       };
@@ -1557,15 +1562,68 @@ class Reading extends State<ReadingTest> {
       throw Exception('Failed to send data');
     }
   }
+  Future<void> getReadingSnellFractionNew() async {
+
+      try{
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken = prefs.getString('access_token') ?? '';
+      String testname = prefs.getString('test') ?? '';
+      var headers = {
+        'Authorization': 'Bearer $authToken',
+      };
+      var uri = Uri.parse(
+          '${Api.baseurl}/reading-snellen-fraction/');
+      var response = await http.get(
+        uri,
+        headers: headers,
+
+      );
+      print("aaaaaaaaaa${response.body}");
+      if (response.statusCode == 200) {
+
+        final parsedData = json.decode(response.body);
+       currentTextSize= parsedData['data']['text_size'];
+    randomText= parsedData['data']['text'];
+    snellenFractions=parsedData['data']['initial_snellen_fraction'];
+    /*message: json['message'],
+    status: json['status'],*/
+// Process the parsed data here
+      //  snellenFractions = List<Map<String, dynamic>>.from(parsedData['data']);
+     //   len = snellenFractions.length;
+    //    print('Snellen Fractions: $snellenFractions' + "lenght: $len");
+      } else {
+        var connectivityResult = await Connectivity().checkConnectivity();
+        if (connectivityResult == ConnectivityResult.none) {
+          Fluttertoast.showToast(
+            msg:
+            'Poor internet connection , make sure you have a good internet',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+          );
+        }
+        print(response.reasonPhrase);
+      }
+    } catch (e) {
+      if (e is SocketException) {
+        CustomAlertDialog.attractivepopup(
+            context, 'poor internet connectivity , please try again later!');
+      }
+
+// If the server returns an error response, throw an exception
+      throw Exception('Failed to send data');
+    }
+  }
 
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        /* Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => TestScreen()),
-        );*/
+         Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
         return false;
       },
       child: MaterialApp(
@@ -1646,8 +1704,11 @@ class Reading extends State<ReadingTest> {
                             width: 160,
                             child: ElevatedButton(
                               onPressed: () {
-                                getReadingSnellFraction();
-                                increaseReadingTextSize();
+                                getReadingSnellFractionNew();
+                                getReadingRandomTestNew('not_read');
+                               // increaseReadingTextSize();
+                                counter+1;
+
                               },
                               child: Text(
                                 'Back',
@@ -1672,8 +1733,11 @@ class Reading extends State<ReadingTest> {
                             width: 150,
                             child: ElevatedButton(
                               onPressed: () {
-                                getReadingSnellFraction();
-                                decreaseReadingTextSize();
+                                getReadingSnellFractionNew();
+                                getReadingRandomTestNew('read');
+
+                               // decreaseReadingTextSize();
+                                counter+1;
                               },
                               child: Text(
                                 'Perfectly Visible',
@@ -1702,7 +1766,9 @@ class Reading extends State<ReadingTest> {
                           width: 160,
                           child: ElevatedButton(
                             onPressed: () {
-                              Update_HyperMyopiaTest(context);
+                              getReadingRandomTestNew('not_able_to_read');
+
+                              //Update_HyperMyopiaTest(context);
                             },
                             child: Text(
                               'Not able to Read',
@@ -1860,6 +1926,76 @@ class Reading extends State<ReadingTest> {
             await prefs.setString('choose_astigmatism', choose_astigmatism);
             print("choose_astigmatism: $choose_astigmatism");
             return choose_astigmatism; // Return the response data**/
+      } else {
+        var connectivityResult = await Connectivity().checkConnectivity();
+        if (connectivityResult == ConnectivityResult.none) {
+          Fluttertoast.showToast(
+            msg:
+            'Poor internet connection , make sure you have a good internet',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+          );
+        }
+        print(response.reasonPhrase);
+        return null; // Return null or handle error accordingly
+      }
+    } catch (e) {
+      if (e is SocketException) {
+        CustomAlertDialog.attractivepopup(
+            context, 'poor internet connectivity , please try again later!');
+      }
+
+// If the server returns an error response, throw an exception
+      throw Exception('Failed to send data');
+    }
+  }
+  Future<String?> getReadingRandomTestNew(String button) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken =
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
+      String id = prefs.getString('test_id') ?? '';
+      print('beebeb$id');
+//todo notworking
+      print("nahi$nextFraction");
+      var headers = {
+        'Authorization': 'Bearer $authToken',
+        'Content-Type': 'application/json',
+      };
+      var request = http.Request(
+          'POST', Uri.parse('${Api.baseurl}/random-word-Reading-test'));
+      request.body =
+          json.encode({"test_id": id, "action": "not_read","action_count":counter,  "snellen_fraction": nextFraction});
+      request.headers.addAll(headers);
+      http.StreamedResponse response = await request.send();
+      print(response.statusCode);
+      String responseBody = await response.stream.bytesToString();
+      Map<String, dynamic> parsedJson = json.decode(responseBody);
+      print(parsedJson.toString());
+      if (response.statusCode == 200) {
+          final responseData = jsonDecode(responseBody);
+
+          if (responseData.containsKey('data')) {
+            // Handle the first type of response
+            final data = responseData['data'];
+            currentTextSize = data['text_size'];
+            randomText = data['text'];
+            print('Text Size: ${data['text_size']}');
+            print('Text: ${data['text']}');
+            print('Initial Snellen Fraction: ${data['initial_snellen_fraction']}');
+          } else {
+            // Handle the second type of response
+            print('Test: ${responseData['test']}');
+            print('Eye: ${responseData['eye']}');
+          }
+        setState(() {
+// Assign fetched data to your variables
+          currentTextSize;
+          randomText;
+        }); //remove for reading test update
       } else {
         var connectivityResult = await Connectivity().checkConnectivity();
         if (connectivityResult == ConnectivityResult.none) {
@@ -5368,17 +5504,10 @@ class redgreen extends State<RedGreenTest> {
               }
             }
           } else {
-            if (age >= 40) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ReadingTest()),
-              );
-            } else {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => RightEye()),
               );
-            }
           }
         } else {
           print("Invalid response format or missing 'eye_status' field.");

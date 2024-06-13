@@ -280,7 +280,7 @@ class MyPlanState extends State<MyPlan> {
 
      try {
     final response = await http.get(
-      Uri.parse('${ApiProvider.baseUrl + ApiProvider.isActivePlan}'),
+      Uri.parse(ApiProvider.baseUrl + ApiProvider.isActivePlan),
       headers: <String, String>{
         'Authorization': 'Bearer $token',
       },

@@ -2339,156 +2339,172 @@ class PresUpload extends State<PrescriptionUpload> {
                                     child: Text(
                                       isEnabled ? 'Drag & drop files or Browse' : 'Prescription upload' ,
 
-                                      // 'Drag & drop files or Browse',
-                                      // 'Win a cool pair of sunglasses of worth rs 1000 free',
-                                      style: TextStyle(
-                                          fontSize: 13,
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w500),
+                                            // 'Drag & drop files or Browse',
+                                            // 'Win a cool pair of sunglasses of worth rs 1000 free',
+                                            style: TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w500),
+                                          ),
+                                        )),
+                                    SizedBox(
+                                      height: isEnabled
+                                          ? 10
+                                          : 0, // Adjust height based on condition
                                     ),
-                                  )),
-                              SizedBox(
-                                height: isEnabled ? 10 : 0, // Adjust height based on condition
-                              ),
-                              Padding(
-                                  padding: EdgeInsets.fromLTRB(18.0, 0, 18, 4),
-                                  child: Align(
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      isEnabled ? 'Supported formates: JPG, JPEG, PNG, WEBP, SVG, BMP': 'Your prescription has been uploaded and is currently being verified by our team. This process will take approximately 24 hours. ',
+                                    Padding(
+                                        padding:
+                                            EdgeInsets.fromLTRB(18.0, 0, 18, 4),
+                                        child: Align(
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            isEnabled
+                                                ? 'Supported formates: JPG, JPEG, PNG, WEBP, SVG, BMP'
+                                                : 'Your prescription has been uploaded and is currently being verified by our team. This process will take approximately 24 hours. ',
 
-
-                                      // 'Win a cool pair of sunglasses of worth rs 1000 free',
-                                      style: TextStyle(
-                                          fontSize: 11,
-                                          color: Colors.greytext,
-                                          fontWeight: FontWeight.w400),
-                                    ),
-                                  )),
-                            ],
-                          )),
-                    ),
+                                            // 'Win a cool pair of sunglasses of worth rs 1000 free',
+                                            style: TextStyle(
+                                                fontSize: 11,
+                                                color: Colors.greytext,
+                                                fontWeight: FontWeight.w400),
+                                          ),
+                                        )),
+                                  ],
+                                )),
+                          ),
 // TODO REPLACEMENT ===add progress bar for uploading files
 
-                    // Padding(
-                    //   padding: EdgeInsets.fromLTRB(18.0,10,18,10),
-                    //   child: Text(
-                    //     'Uploading - 1/1 files',
-                    //     // 'Win a cool pair of sunglasses of worth rs 1000 free',
-                    //     style: TextStyle(
-                    //         fontSize: 13,
-                    //         color: Colors.greytext,
-                    //         fontWeight: FontWeight.w500),
-                    //   ),
-                    // ),
+                          // Padding(
+                          //   padding: EdgeInsets.fromLTRB(18.0,10,18,10),
+                          //   child: Text(
+                          //     'Uploading - 1/1 files',
+                          //     // 'Win a cool pair of sunglasses of worth rs 1000 free',
+                          //     style: TextStyle(
+                          //         fontSize: 13,
+                          //         color: Colors.greytext,
+                          //         fontWeight: FontWeight.w500),
+                          //   ),
+                          // ),
 
-                    SizedBox(
-                      height: 15,
-                    ),
+                          SizedBox(
+                            height: 15,
+                          ),
 
-                    Expanded(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        physics: const ScrollPhysics(),
-                        itemCount: _files.length,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            leading: const Icon(Icons.picture_as_pdf_outlined),
-                            title: Text(
-                              _files[index].name ?? '',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500, fontSize: 11),
-                            ),
-                            subtitle: Padding(
-                              padding: const EdgeInsets.only(top: 5.0),
-                              child: Text(
-                                  '${dates[index].toString().substring(0, 10)} , ${dates[index].toString().substring(12, 19)} ago',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 12)),
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-
-                                  Row(
+                          Expanded(
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              physics: const ScrollPhysics(),
+                              itemCount: _files.length,
+                              itemBuilder: (context, index) {
+                                return ListTile(
+                                  leading:
+                                      const Icon(Icons.picture_as_pdf_outlined),
+                                  title: Text(
+                                    _files[index].name ?? '',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 11),
+                                  ),
+                                  subtitle: Padding(
+                                    padding: const EdgeInsets.only(top: 5.0),
+                                    child: Text(
+                                        '${dates[index].toString().substring(0, 10)} , ${dates[index].toString().substring(12, 19)} ago',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 12)),
+                                  ),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      if (statuses[index].toLowerCase() == "approved")
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          border: Border.all(color: Colors.black),
-                                          borderRadius: BorderRadius.circular(5.0),
-                                        ),
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          '$points Points',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w400,
-                                              fontSize: 12),
-                                        ),
+                                      Row(
+                                        children: [
+                                          if (statuses[index].toLowerCase() ==
+                                              "approved")
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    color: Colors.black),
+                                                borderRadius:
+                                                    BorderRadius.circular(5.0),
+                                              ),
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Text(
+                                                '$points Points',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 12),
+                                              ),
+                                            ),
+                                          if (statuses[index].toLowerCase() ==
+                                              "pending")
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    color: Colors.black),
+                                                borderRadius:
+                                                    BorderRadius.circular(5.0),
+                                              ),
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Text(
+                                                '${statuses[index]}',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 12),
+                                              ),
+                                            ),
+                                          SizedBox(
+                                            width: 20,
+                                          ),
+                                          // if (statuses[index].toLowerCase() == "pending")
+                                          GestureDetector(
+                                            onTap: () {
+                                              showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  print(
+                                                      "imageUrl----------${image[index]}");
+                                                  return ImagePreviewDialog(
+                                                      imageUrl:
+                                                          "https://eyehealth.backend.zuktiinnovations.com" +
+                                                              image[index]);
+                                                },
+                                              );
+                                            },
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    color: Colors.black),
+                                                borderRadius:
+                                                    BorderRadius.circular(5.0),
+                                              ),
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Text(
+                                                'Preview',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 12),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      if (statuses[index].toLowerCase() == "pending")
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            border: Border.all(color: Colors.black),
-                                            borderRadius: BorderRadius.circular(5.0),
-                                          ),
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text(
-                                            '${statuses[index]}',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 12),
-                                          ),
-                                        ),
-                                      SizedBox(width: 20,),
-                                      // if (statuses[index].toLowerCase() == "pending")
-                                        GestureDetector(
-                                          onTap:(){
-                                            showDialog(
-                                              context: context,
-                                              builder: (BuildContext context) {
-                                                print("imageUrl----------${image[index]}");
-                                                return ImagePreviewDialog(imageUrl: "https://eyehealth.backend.zuktiinnovations.com"+image[index]);
-                                              },
-                                            );
-                                          },
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              border: Border.all(color: Colors.black),
-                                              borderRadius: BorderRadius.circular(5.0),
-                                            ),
-                                            padding: EdgeInsets.all(8.0),
-                                            child: Text(
-                                              'Preview',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 12),
-                                            ),
-                                          ),
-                                        ),
 
-
-
+                                      // Add your text here
+                                      // IconButton(
+                                      //   icon: Icon(Icons.more_vert),
+                                      //   onPressed: () {
+                                      //     // _removeFile(index, _files[index].identifier ?? '');
+                                      //   },
+                                      // ),
                                     ],
                                   ),
-
-
-                                // Add your text here
-                                // IconButton(
-                                //   icon: Icon(Icons.more_vert),
-                                //   onPressed: () {
-                                //     // _removeFile(index, _files[index].identifier ?? '');
-                                //   },
-                                // ),
-                              ],
+                                );
+                              },
                             ),
-                          );
-                        },
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
 
                 // ),
               ),
@@ -2521,7 +2537,7 @@ class PresUpload extends State<PrescriptionUpload> {
       List<File> files = pickedFiles.paths.map((path) => File(path!)).toList();
 
       List<PlatformFile> pdfFiles =
-      pickedFiles.files.where((file) => file.extension == 'pdf').toList();
+          pickedFiles.files.where((file) => file.extension == 'pdf').toList();
       setState(() {});
       // if (pdfFiles.length < pickedFiles.files.length) {
       //   Fluttertoast.showToast(
@@ -2534,67 +2550,150 @@ class PresUpload extends State<PrescriptionUpload> {
       //     fontSize: 16.0,
       //   );
       // } else {
-        _files1.addAll(files);
-      showDialog(
+      _files1.addAll(files);
+      showModalBottomSheet(
         context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text(
-                    "Report an Issue",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+        isScrollControlled: true,
+        builder: (context) => Padding(
+          padding: EdgeInsets.all(16
+              //  bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+          child: Wrap(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Prescription Upload Feedback',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+              Divider(thickness: 1, color: Colors.grey.shade500),
+              Padding(
+                padding: EdgeInsets.all(4.0),
+                child: Text(
+                  "Please provide additional comments while uploading your prescription:",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.bluebutton,
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text("What problem are you facing?"),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 1.0),
+                child:
+                    Text("1.Kindly enter the name of the Doctor you visited. "),
+              ),
+              SizedBox(height: 10),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 5),
+                child: TextField(
+                  controller: _doctorController,
+                  decoration: InputDecoration(
+                    hintText: "Enter Doctor Name...",
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 3,
                 ),
-                SizedBox(height: 10),
-                Padding(
-                  padding: EdgeInsets.all(16.0),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 1.0, vertical: 10),
+                child: Text("2.Kindly enter the date of your eye test."),
+              ),
+              SizedBox(height: 10),
+              SizedBox(
+                height: 55,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14.0, vertical: 1),
                   child: TextField(
-                    controller: _commentController,
+                    controller: _dateController,
+                    readOnly: true,
+                    // Make the TextField read-only
+                    onTap: () {
+                      _selectDate(
+                          context); // Show date picker when the TextField is tapped
+                    },
                     decoration: InputDecoration(
-                      hintText: "Type your problem here...",
-                      border: OutlineInputBorder(),
+                      labelText: 'Visited Date',
+                      hintText: 'YYYY-MM-DD',
+                      labelStyle: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.background,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      hintStyle: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.hinttext,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(6.0), // Add circular border
+                      ),
+                      // Set floatingLabelBehavior to always display the label
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
                     ),
-                    maxLines: 3,
+                    style: const TextStyle(
+                        fontSize: 15, fontWeight: FontWeight.w400),
                   ),
                 ),
-                ButtonBar(
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(); // Close the dialog
-                      },
-                      child: Text("Cancel"),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Retrieve the user's comment
-                        String comment = _commentController.text;
-                        // You can do something with the comment here
-                        print("User comment: $comment");
-                        uploadPrescription(pickedFiles.files,comment);
-
-                        Navigator.of(context).pop(); // Close the dialog
-                      },
-                      child: Text("Upload"),
-                    ),
-                  ],
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 1.0),
+                child: Text("3.Why you visited for the eyetest?"),
+              ),
+              SizedBox(height: 10),
+              Padding(
+                padding: EdgeInsets.all(16.0),
+                child: TextField(
+                  controller: _commentController,
+                  decoration: InputDecoration(
+                    hintText: "Type your problem here...",
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 3,
                 ),
-              ],
-            ),
-          );
-        },
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: SizedBox(
+                  width: MediaQuery.sizeOf(context).width,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Retrieve the user's comment
+                      String comment = _commentController.text;
+                      // You can do something with the comment here
+                      print("User comment: $comment");
+                      uploadPrescription(pickedFiles.files, comment);
+
+                      Navigator.of(context).pop(); // Close the dialog
+                    },
+                    style: ButtonStyle(
+                      elevation: MaterialStateProperty.all<double>(
+                          0), // Set elevation to 0 to remove shadow
+
+                      backgroundColor: MaterialStateProperty.all<Color>(Colors
+                          .background), // Set your desired background color here
+                    ),
+                    child: const Text('Submit',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       );
 
       // uploadPrescription(pickedFiles.files);
@@ -2602,7 +2701,28 @@ class PresUpload extends State<PrescriptionUpload> {
     }
   }
 
-  Future<void> uploadPrescription(List<PlatformFile> _files,Comment) async {
+  DateTime? _selectedDate;
+  TextEditingController _dateController = TextEditingController();
+  TextEditingController _doctorController = TextEditingController();
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate ?? DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+        _dateController.text = _selectedDate
+            .toString()
+            .substring(0, 10); // Update the TextField with selected date
+      });
+    }
+  }
+
+  Future<void> uploadPrescription(List<PlatformFile> _files, Comment) async {
     var sharedPref = await SharedPreferences.getInstance();
     String userToken = sharedPref.getString("access_token") ?? '';
 
@@ -2614,13 +2734,15 @@ class PresUpload extends State<PrescriptionUpload> {
     };
     request.headers.addAll(headers);
 
-    for (var i = 0; i <_files.length; i++) {
-    request.files.add(await http.MultipartFile.fromPath(
-      'uploaded_file',
-      _files[i].path!,
-    ));
-  }
+    for (var i = 0; i < _files.length; i++) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'uploaded_file',
+        _files[i].path!,
+      ));
+    }
     request.fields['problem_faced'] = Comment;
+    request.fields['doctor_name'] = _doctorController.text;
+    request.fields['visit_date'] = _dateController.text;
 
     print("Request==: ${request.toString()}");
 
