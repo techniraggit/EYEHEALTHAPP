@@ -260,7 +260,7 @@ class RewardsStatusScreenState extends State<RewardStatusScreen> with AutoCancel
                 ),
                 Center(
                   child: Text(
-                    'Eye Fatigue Test Report',
+                    'Reward Status',
                     style: TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
@@ -462,7 +462,8 @@ class RewardsStatusScreenState extends State<RewardStatusScreen> with AutoCancel
 
 
     bottomNavigationBar:
-      CustomBottomAppBar(),
-    );
+    CustomBottomAppBar(currentScreen: "Rewards"),    );
+
+
   }
 }

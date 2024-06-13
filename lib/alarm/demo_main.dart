@@ -6,13 +6,9 @@ import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-
-import 'dart:async';
-
-import 'package:alarm/alarm.dart';
 import 'package:alarm/model/alarm_settings.dart';
-import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,7 +49,6 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
 
   void loadAlarms() {
     setState(() {
-
       alarms = Alarm.getAlarms();
       alarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
     });
@@ -132,12 +127,37 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title:  Center(child: Text('Alarms Scheduled',style: TextStyle(fontWeight: FontWeight.w400,fontSize: 17,color: Colors.black),))),
+      // body: SafeArea(
+      //   child:
+      //   alarms.isNotEmpty
+      //       ? ListView.separated(
+      //     itemCount: alarms.length,
+      //     separatorBuilder: (context, index) => const Divider(height: 0.0),
+      //     itemBuilder: (context, index) {
+      //       return ExampleAlarmTile(
+      //         key: Key(alarms[index].id.toString()),
+      //         title: TimeOfDay(
+      //           hour: alarms[index].dateTime.hour,
+      //           minute: alarms[index].dateTime.minute,
+      //         ).format(context),
+      //         onPressed: () => navigateToAlarmScreen(alarms[index]),
+      //         onDismissed: () {
+      //           Alarm.stop(alarms[index].id).then((_) => loadAlarms());
+      //         },
+      //       );
+      //     },
+      //   )
+      //       : Center(
+      //     child: Text(
+      //       'No alarm set',
+      //       style: Theme.of(context).textTheme.titleMedium,
+      //     ),
+      //   ),
+      // ),
       body: SafeArea(
-        child:
-        alarms.isNotEmpty
-            ? ListView.separated(
+        child: alarms.isNotEmpty
+            ? ListView.builder(
           itemCount: alarms.length,
-          separatorBuilder: (context, index) => const Divider(height: 1),
           itemBuilder: (context, index) {
             return ExampleAlarmTile(
               key: Key(alarms[index].id.toString()),
@@ -159,6 +179,7 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
           ),
         ),
       ),
+
       floatingActionButton: Padding(
         padding:  EdgeInsets.fromLTRB(10,10,40,60),
         child: Row(
@@ -271,26 +292,93 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
 
       volume: volume,
       assetAudioPath: assetAudio,
-      notificationTitle: 'Alarm example',
-      notificationBody: 'Your alarm ($id) is ringing',
+      notificationTitle: 'Test Reminder',
+      notificationBody: 'Do your eye test',
       enableNotificationOnKill: Platform.isIOS,
     );
     return alarmSettings;
   }
+  void requestAlarmNotiPermission() async {
+      PermissionStatus permission = await Permission.notification.status;
 
-  void saveAlarm() {
+      if (permission.isDenied || permission.isPermanentlyDenied) {
+        await Permission.notification.request();
+
+        // Permissions are denied or denied forever, let's request it!
+        permission = await Permission.notification.status;
+        if (permission.isDenied) {
+          await Permission.notification.request();
+          print("Notification permissions are still denied");
+        } else if (permission.isPermanentlyDenied) {
+          print("Notification permissions are permanently denied");
+          // Prompt the user to open app settings to enable notification permissions manually
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("Notification permissions required"),
+                content: Text("Notification permissions are permanently denied. Please go to app settings to enable notification permissions."),
+                actions: <Widget>[
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue, // Set your desired background color here
+                      // You can also customize other button properties here if needed
+                    ),
+                    onPressed: () async {
+                      Navigator.pop(context); // Close the dialog
+                      await openAppSettings();
+                    },
+                    child: Text(
+                      "OK",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+        } else {
+          saveAlarm();
+          // Permissions are granted.
+          print("Notification permissions are granted");
+        }
+      } else {
+        saveAlarm();
+        print("Notification permissions are already granted");
+      }
+    }
+
+
+
+
+
+  Future<void> saveAlarm() async {
+    print('alrm 0000000000');
+
+    requestAlarmNotiPermission();
+
+
+
     if (loading) return;
     setState(() => loading = true);
     Alarm.set(alarmSettings: buildAlarmSettings()).then((res) {
       if (res) Navigator.pop(context, true);
       setState(() => loading = false);
     });
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('edited', true);
   }
 
-  void deleteAlarm() {
+  Future<void> deleteAlarm() async {
     Alarm.stop(widget.alarmSettings!.id).then((res) {
       if (res) Navigator.pop(context, true);
     });
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('edited', true);
   }
 
   @override
@@ -303,18 +391,15 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text(
-                  'Select Time Slot',style: TextStyle(color: Colors.black,fontSize: 16),
-                  // style: Theme.of(context)
-                  //     .textTheme
-                  //     .titleLarge!
-                  //     .copyWith(color: Colors.blueAccent),
-                ),
+              Text(
+                'Select Time Slot',style: TextStyle(color: Colors.black,fontSize: 16),
+                // style: Theme.of(context)
+                //     .textTheme
+                //     .titleLarge!
+                //     .copyWith(color: Colors.blueAccent),
               ),
               TextButton(
-                onPressed: saveAlarm,
+                onPressed:requestAlarmNotiPermission,// saveAlarm,
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all<Color>(Colors.background),
                 ),
@@ -377,41 +462,7 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
               ),
             ],
           ),
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //   children: [
-          //     Text(
-          //       'Sound',
-          //       style: Theme.of(context).textTheme.titleMedium,
-          //     ),
-          //     DropdownButton(
-          //       value: assetAudio,
-          //       items: const [
-          //         DropdownMenuItem<String>(
-          //           value: 'assets/marimba.mp3',
-          //           child: Text('Marimba'),
-          //         ),
-          //         DropdownMenuItem<String>(
-          //           value: 'assets/nokia.mp3',
-          //           child: Text('Nokia'),
-          //         ),
-          //         DropdownMenuItem<String>(
-          //           value: 'assets/mozart.mp3',
-          //           child: Text('Mozart'),
-          //         ),
-          //         DropdownMenuItem<String>(
-          //           value: 'assets/star_wars.mp3',
-          //           child: Text('Star Wars'),
-          //         ),
-          //         DropdownMenuItem<String>(
-          //           value: 'assets/one_piece.mp3',
-          //           child: Text('One Piece'),
-          //         ),
-          //       ],
-          //       onChanged: (value) => setState(() => assetAudio = value!),
-          //     ),
-          //   ],
-          // ),
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -483,7 +534,7 @@ class ExampleAlarmRingScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             Text(
-              'You alarm (${alarmSettings.id}) is ringing...',
+              'You alarm (${alarmSettings.id}) is-- ringing...',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const Text('🔔', style: TextStyle(fontSize: 50)),
@@ -573,9 +624,8 @@ class _ExampleAlarmHomeShortcutButtonState
       dateTime: dateTime,
       assetAudioPath: 'assets/marimba.mp3',
       volume: volume,
-      notificationTitle: 'Alarm example',
-      notificationBody:
-      'Shortcut button alarm with delay of $delayInHours hours',
+      notificationTitle: 'Test Reminder',
+      notificationBody: 'Do your eye test',
       enableNotificationOnKill: Platform.isIOS,
     );
 
@@ -636,39 +686,33 @@ class ExampleAlarmTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Dismissible(
-      key: key!,
-      direction: onDismissed != null
-          ? DismissDirection.endToStart
-          : DismissDirection.none,
-      background: Container(
-        color: Colors.red,
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 30),
-        child: const Icon(
-          Icons.delete,
-          size: 30,
-          color: Colors.white,
-        ),
-      ),
-      onDismissed: (_) => onDismissed?.call(),
-      child: RawMaterialButton(
-        onPressed: onPressed,
-        child: Container(
-          height: 100,
-          padding: const EdgeInsets.all(35),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w500,
+    return GestureDetector(
+      onTap: (){
+        onPressed();
+      },
+      child: SizedBox( // Wrap the Card in a SizedBox to control its size
+        height: 85, // Set height to 40
+        child: Card(
+          elevation: 0.4, // Adjust the elevation as needed
+          margin: EdgeInsets.symmetric(horizontal: 22, vertical: 8), // Adjust the margin as needed
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20), // Adjust the border radius as needed
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0,horizontal: 18),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16, // Adjusted font size
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
-              ),
-              const Icon(Icons.keyboard_arrow_right_rounded, size: 35),
-            ],
+                const Icon(Icons.keyboard_arrow_right_rounded, size: 24), // Adjusted icon size
+              ],
+            ),
           ),
         ),
       ),

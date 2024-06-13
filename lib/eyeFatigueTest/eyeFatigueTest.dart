@@ -1054,66 +1054,64 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
             ),
           ),
           body:
-           uploaded
-        ? const Center(
-
-      )
-          :
-           Column(
-             // mainAxisAlignment: MainAxisAlignment.center,
-             children: [
-               Image.asset(
-                 'assets/congrats_icon.png',
-                 width: 300,
-                 height: 300,
-               ),
-               const SizedBox(height: 8),
-               const Padding(
-                 padding: EdgeInsets.fromLTRB(20, 8, 20, 8),
-                 child: Text(
-                   'Congratulations! You have completed the Eye Fatigue Test.',
-                   style: TextStyle(
-                     color: Colors.deepPurple,
-                     fontSize: 20,
-                     fontWeight: FontWeight.w700,
-                   ),
-                   textAlign: TextAlign.center,
+           SingleChildScrollView(
+             child: uploaded
+                     ? const Center() :
+             Column(
+               children: [
+                 Image.asset(
+                   'assets/congrats_icon.png',
+                   width: 300,
+                   height: 300,
                  ),
-               ),
-               const SizedBox(height: 10),
-               const Padding(
-                 padding: EdgeInsets.fromLTRB(15, 8, 15, 8),
-                 child: Text(
-                   'To view your results, go to the Report section to find your Eye Fatigue Test report and gain insights.',
-                   style: TextStyle(
-                     color: Colors.black,
-                     fontSize: 14,
-                   ),
-                   textAlign: TextAlign.center, // Optional: align text center
-                 ),
-               ),
-               const SizedBox(height: 20),
-               ElevatedButton(
-                 onPressed:enable ? () async {
-                   setState(() {
-                     Navigator.push(
-                       context,
-                       MaterialPageRoute(
-                           builder: (context) => EyeFatigueTestReport()),
-                     );
-                   });
-                 }:null,
-                 style: ElevatedButton.styleFrom(
-                   foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
-                   padding: const EdgeInsets.all(16),
-                   minimumSize: const Size(300, 40),
-                   shape: RoundedRectangleBorder(
-                     borderRadius: BorderRadius.circular(26),
+                 const SizedBox(height: 8),
+                 const Padding(
+                   padding: EdgeInsets.fromLTRB(20, 8, 20, 8),
+                   child: Text(
+                     'Congratulations! You have completed the Eye Fatigue Test.',
+                     style: TextStyle(
+                       color: Colors.deepPurple,
+                       fontSize: 20,
+                       fontWeight: FontWeight.w700,
+                     ),
+                     textAlign: TextAlign.center,
                    ),
                  ),
-                 child: const Text('GO TO REPORTS'),
-               ),
-             ],
+                 const SizedBox(height: 10),
+                 const Padding(
+                   padding: EdgeInsets.fromLTRB(15, 8, 15, 8),
+                   child: Text(
+                     'To view your results, go to the Report section to find your Eye Fatigue Test report and gain insights.',
+                     style: TextStyle(
+                       color: Colors.black,
+                       fontSize: 14,
+                     ),
+                     textAlign: TextAlign.center, // Optional: align text center
+                   ),
+                 ),
+                 const SizedBox(height: 20),
+                 ElevatedButton(
+                   onPressed:enable ? () async {
+                     setState(() {
+                       Navigator.push(
+                         context,
+                         MaterialPageRoute(
+                             builder: (context) => EyeFatigueTestReport()),
+                       );
+                     });
+                   }:null,
+                   style: ElevatedButton.styleFrom(
+                     foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
+                     padding: const EdgeInsets.all(16),
+                     minimumSize: const Size(300, 40),
+                     shape: RoundedRectangleBorder(
+                       borderRadius: BorderRadius.circular(26),
+                     ),
+                   ),
+                   child: const Text('GO TO REPORTS'),
+                 ),
+               ],
+             ),
            )
 
 

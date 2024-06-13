@@ -236,11 +236,14 @@ class _OnBoardingScreen1State extends State<OnBoardingScreen1> {
       await prefs.setString('device_type', deviceType);
 
       DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-      print('Running on ${androidInfo.id}');  // e.g. "Moto G (4)"
-
-      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-      print('Running on ${iosInfo.identifierForVendor}');  // e.g. "iPod7,1"
+      if(Platform.isAndroid) {
+        AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+        print('Running on ${androidInfo.id}'); // e.g. "Moto G (4)"
+      }
+      if(Platform.isIOS) {
+        IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+        print('Running on ${iosInfo.identifierForVendor}');
+      }// e.g. "iPod7,1"
 
 // WebBrowserInfo webBrowserInfo = await deviceInfo.webBrowserInfo;
 // print('Running on ${webBrowserInfo.userAgent}');  // e.g. "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0"

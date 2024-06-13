@@ -290,11 +290,11 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
                       height: 40,
                       width: 40,
                       child: Center(
-                        child: Image(
-                          image: AssetImage('assets/notification.png'),
-                          height: 20,
-                        ),
-                      ),
+              child: Icon(
+              Icons.notifications,
+              color: Colors.black,
+            ),
+      ),
                     ),
                     Positioned(
                       right: 0,
@@ -659,7 +659,6 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
       ),
 
       bottomNavigationBar:
-      CustomBottomAppBar(),
-    );
+      CustomBottomAppBar(currentScreen: "Rewards"),    );
   }
 }
