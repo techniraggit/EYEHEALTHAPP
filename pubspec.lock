@@ -590,6 +590,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.19"
+  flutter_sms:
+    dependency: "direct main"
+    description:
+      path: flutter_sms-master
+      relative: true
+    source: path
+    version: "2.3.3"
   flutter_spinkit:
     dependency: transitive
     description:

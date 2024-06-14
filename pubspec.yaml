@@ -100,6 +100,8 @@ dependencies:
   alarm: ^3.1.4
   flutter_html: ^3.0.0-beta.2
   flutter_staggered_animations: ^1.1.1
+  flutter_sms:
+    path: flutter_sms-master
 
 dev_dependencies:
   flutter_test:

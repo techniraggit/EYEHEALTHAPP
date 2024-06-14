@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_sms/flutter_sms.dart';
 
 import 'package:contacts_service/contacts_service.dart';
 // import 'package:flutter_contacts/flutter_contacts.dart';
@@ -54,6 +55,7 @@ class _RewardsContactsSync extends State<RewardContact> {
   final Map<int, bool> _invitationStatus = {};
   final Map<int, bool> condition = {};
   List<dynamic> _refferconatcts = [];
+  bool sendDirect = false; String? _message;
 
   @override
   void initState() {
@@ -403,18 +405,24 @@ class _RewardsContactsSync extends State<RewardContact> {
                     ),
                     onPressed: () async {
                       await [Permission.contacts].request();
-                      Share.share(
-                        'Hi , I am using the Zukti eye health app to track my eye health. Why dont you join me and together we can work towards improving our eye health? Use my code to sign up and get a one-month subscription free.',
-                        // $appStoreLink Use Referal Code $ReferCode',
-                        subject: 'Share via WhatsApp',
-                        sharePositionOrigin: Rect.fromLTRB(0, 0, 0, 0),
-                      );
+
+requestSmsPermission();
+                      // Call the method here
+
+
+
+                      // Share.share(
+                      //   'Hi , I am using the Zukti eye health app to track my eye health. Why dont you join me and together we can work towards improving our eye health? Use my code to sign up and get a one-month subscription free.',
+                      //   // $appStoreLink Use Referal Code $ReferCode',
+                      //   subject: 'Share via WhatsApp',
+                      //   sharePositionOrigin: Rect.fromLTRB(0, 0, 0, 0),
+                      // );
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text(
-                          'Invite Via Whatsapp ',
+                          'Invite Via SMS ',
                           style: TextStyle(color: Colors.white70, fontSize: 14),
                         ),
                         const SizedBox(
@@ -542,7 +550,17 @@ class _RewardsContactsSync extends State<RewardContact> {
                                 ),
                               ),
                         )
-                            : Container()
+                            : Container(
+                          // Set constraints, width, height, etc. for the Container
+                          child: Center(
+                            child: Text(
+                              'Sync Contacts to see contact list here',
+                              textAlign: TextAlign.center,
+                              // You can specify other text properties here like style, fontSize, etc.
+                            ),
+                          ),
+                        )
+
                       // if (_permissionDenied)
                       //   const Center(child: Text('Permission denied')),
                       // if (_contacts != null) ...{
@@ -639,6 +657,155 @@ class _RewardsContactsSync extends State<RewardContact> {
 
       );
   }
+
+
+
+  Future<void> _sendSMS(List<String> recipients) async {
+    try {
+      String _result = await sendSMS(
+        message: 'Hi , I am using the Zukti eye health app to track my eye health. Why dont you join me and together we can work towards improving our eye health? Use my code to sign up and get a one-month subscription free.',
+        recipients: recipients,
+        sendDirect: sendDirect,
+      );
+      setState(() => _message = _result);
+    } catch (error) {
+      setState(() => _message = error.toString());
+    }
+  }
+
+  Future<List<String>> _getContactNumbers() async {
+    List<String> numbers = [];
+    Iterable<Contact> contacts = await ContactsService.getContacts();
+    for (var contact in contacts) {
+      for (var phone in contact.phones!) {
+        numbers.add(phone.value!.replaceAll(RegExp(r'\D'), ''));
+      }
+    }
+    return numbers;
+  }
+  void requestSmsPermission() async {
+    PermissionStatus status = await Permission.sms.status;
+    PermissionStatus status1 = await Permission.contacts.status;
+
+    if (!status.isGranted ) {
+      status = await Permission.sms.request();
+    }
+    if (!status1.isGranted ) {
+      status1 = await Permission.contacts.request();
+    }
+    if (status == PermissionStatus.denied ||
+        status == PermissionStatus.permanentlyDenied) {
+      await [Permission.sms].request();
+
+      // Permissions are denied or denied forever, let's request it!
+      status =  await Permission.sms.status;
+      if (status == PermissionStatus.denied) {
+        await [Permission.sms].request();
+        print("Location permissions are still denied");
+      } else if (status ==PermissionStatus.permanentlyDenied) {
+        print("Location permissions are permanently denied");
+        // Prompt the user to open app settings to enable location permissions manually
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("SMS permissions required"),
+              content: Text("SMS permissions are permanently denied. Please go to app settings to enable location permissions."),
+              actions: <Widget>[
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors
+                        .background, // Set your desired background color here
+                    // You can also customize other button properties here if needed
+                  ),
+                  onPressed: () async {
+                    Navigator.pop(context); // Close the dialog
+                    await openAppSettings();
+                  },
+                  child: Text("OK",
+
+                    style: TextStyle(
+                        color: Colors.white, fontSize: 16),
+                  ),
+                ),
+
+              ],
+            );
+          },
+        );
+      } else {
+        // Permissions are granted (either whileInUse, always, restricted).
+
+        print("SMS permissions are granted after requesting");
+      }
+    }
+    if (status1 == PermissionStatus.denied ||
+        status1 == PermissionStatus.permanentlyDenied) {
+      await [Permission.contacts].request();
+
+      // Permissions are denied or denied forever, let's request it!
+      status1 =  await Permission.contacts.status;
+      if (status1 == PermissionStatus.denied) {
+        await [Permission.contacts].request();
+        print("contacts permissions are still denied");
+      }
+      else if (status1 ==PermissionStatus.permanentlyDenied) {
+        print("contacts permissions are permanently denied");
+        // Prompt the user to open app settings to enable location permissions manually
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("contacts permissions required"),
+              content: Text("contacts permissions are permanently denied. Please go to app settings to enable location permissions."),
+              actions: <Widget>[
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors
+                        .background, // Set your desired background color here
+                    // You can also customize other button properties here if needed
+                  ),
+                  onPressed: () async {
+                    Navigator.pop(context); // Close the dialog
+                    await openAppSettings();
+                  },
+                  child: Text("OK",
+
+                    style: TextStyle(
+                        color: Colors.white, fontSize: 16),
+                  ),
+                ),
+
+              ],
+            );
+          },
+        );
+      } else {
+        // Permissions are granted (either whileInUse, always, restricted).
+
+        print("contacts permissions are granted after requesting");
+      }
+    }
+
+
+
+    else if(status1.isGranted && status.isGranted) {
+      print("SMS permissions are granted ");
+      sendSMSToAllContacts();
+
+    }
+  }
+
+  Future<void> sendSMSToAllContacts() async {
+    try {
+      List<String> allContactNumbers = await _getContactNumbers();
+      await _sendSMS(allContactNumbers);
+    } catch (error) {
+      print("erooooorrrrrrrrrr"+error.toString());
+    }
+  }
+
+
 
   Future _fetchContacts() async {
     await [Permission.contacts].request();
@@ -2819,62 +2986,3 @@ class ImagePreviewDialog extends StatelessWidget {
   }
 }
 
-
-class SendMessageScreen extends StatefulWidget {
-  @override
-  _SendMessageScreenState createState() => _SendMessageScreenState();
-}
-
-class _SendMessageScreenState extends State<SendMessageScreen> {
-
-  void _sendMessageToAll(List<Contact> contacts, String message) async {
-    for (var contact in contacts) {
-      var whatsappUrl = "whatsapp://send?phone=${contact.phones}&text=$message";
-      if (await canLaunch(whatsappUrl)) {
-        await launch(whatsappUrl);
-      } else {
-        throw 'Could not launch $whatsappUrl';
-      }
-    }
-  }
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Send WhatsApp Message'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-
-
-            ElevatedButton(
-              onPressed: () async {
-                List<Contact> contacts = await ContactsService.getContacts();
-
-                String message = "Hello, this is a test message.";
-                _sendMessageToAll(contacts, message);
-
-              },
-              style: ButtonStyle(
-                elevation: MaterialStateProperty.all<double>(
-                    0), // Set elevation to 0 to remove shadow
-
-                backgroundColor: MaterialStateProperty.all<Color>(
-                    Colors.white.withOpacity(
-                        1)), // Set your desired background color here
-              ),
-              child: const Text('Send Message',
-                  style: TextStyle(
-                      color: Colors.background,
-                      fontWeight: FontWeight.w400,
-                      fontSize: 16)),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
