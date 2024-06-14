@@ -110,7 +110,7 @@ class MyPlanState extends State<MyPlan> {
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
                             child: Text(
-                              '\$${plan.price}/${plan.planType}',
+                              '\₹${plan.price}/${plan.planType}',
                               style: const TextStyle(
                                   fontSize: 20,
                                   color: Colors.black,
