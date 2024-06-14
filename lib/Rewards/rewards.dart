@@ -389,8 +389,131 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
                   color: Colors.deepPurple,
                 ),
               ),
-            ),
-            Padding(
+            ),Padding(
+      padding: EdgeInsets.all(8.0),
+      child: FutureBuilder<List<Offer>>(
+        future: futureOffers,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('No offers found'));
+          } else {
+            return SizedBox(
+              height: MediaQuery.of(context).size.height / 2.3, // Set a fixed height or any height you deem appropriate
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal, // Set the scroll direction to horizontal
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  final offer = snapshot.data![index];
+                  return Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Card(
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                        side: BorderSide(color: Colors.grey.shade100, width: 1.0), // Add this line to set the border color and width
+                      ),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.8, // Adjust the width as needed
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Image on the top
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Image.network(
+                                '${ApiProvider.baseUrl}${offer.image}',
+                                width: MediaQuery.sizeOf(context).width, // Set the image to take the full width
+                                height: 105, // Set the desired height
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            // Title
+                            Padding(
+                              padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                              child: Text(
+                                offer.title,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                            // Description
+                            Padding(
+                              padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                              child: Text(
+                                offer.description,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                            // Explore More Button
+                            Spacer(),
+                            Center(
+                              child: Padding(
+                                padding: EdgeInsets.only(bottom: 10.0),
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => RewardSpecs(offer_id: offer.offerId)),
+                                    );
+                                  },
+                                  child: Text('Explore More'),
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                    backgroundColor: Colors.deepPurple, // Text color
+                                    padding: EdgeInsets.all(10),
+                                    minimumSize: Size(100, 20), // Button padding
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30), // Button border radius
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                        /*    Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => RewardSpecs(offer_id: offer.offerId)),
+                                  );
+                                },
+                                child: Text('Explore More'),
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  backgroundColor: Colors.deepPurple, // Text color
+                                  padding: EdgeInsets.all(10),
+                                  minimumSize: Size(100, 20), // Button padding
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30), // Button border radius
+                                  ),
+                                ),
+                              ),
+                            ),*/
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          }
+        },
+      ),
+    ),
+        /* Padding(
               padding:  EdgeInsets.all(8.0),
               child: FutureBuilder<List<Offer>>(
                 future: futureOffers,
@@ -491,7 +614,7 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
                 },
               ),
 
-            ),
+            ),*/
             Padding(
               padding: EdgeInsets.fromLTRB(16.0, 0, 0, 10),
               child: Text(
