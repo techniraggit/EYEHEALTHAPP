@@ -102,6 +102,7 @@ dependencies:
   flutter_staggered_animations: ^1.1.1
   flutter_sms:
     path: flutter_sms-master
+  flutter_native_image: ^0.0.6+1
 
 dev_dependencies:
   flutter_test:
@@ -125,6 +126,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
+     - assets/banner1.png
      - assets/
      - assets/dino/
      - assets/cacti/

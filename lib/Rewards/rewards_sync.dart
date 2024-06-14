@@ -7,6 +7,8 @@ import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
+
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -19,6 +21,7 @@ import 'package:contacts_service/contacts_service.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:project_new/Rewards/redeem_sucess.dart';
 import 'package:project_new/models/OfferData.dart';
@@ -66,41 +69,48 @@ class _RewardsContactsSync extends State<RewardContact> {
     getMyRefferConatcts();
   }
 
-  // void shareAppLink(int i) async {
-  //   try {
-  //     Share.share('Check out our awesome app: $appStoreLink'
-  //         'Use Referal Code $ReferCode');
-  //
-  //     setState(() {
-  //
-  //       _invitationStatus[i] = !(_invitationStatus[i] ?? false);
-  //     });
-  //   } catch (e) {
-  //     // If there's an error during sharing, set isShareSuccess to false
-  //     setState(() {
-  //       _invitationStatus[i] = false;
-  //     });
-  //
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text('Failed to share the app.'),
-  //       ),
-  //     );
-  //
-  //     _invitationStatus[i] = !(_invitationStatus[i] ?? false);
-  //   }
-  // }
+
   void shareAppLink(int i) async {
     try {
-      // Share the app link using the Share package
-      Share.share('Check out our awesome app: $appStoreLink'
-          'Use Referal Code $ReferCode');
+      // File imageFile = File('assets/banner1.png'); // Replace 'assets/image.png' with the path to your image file
+      //
+      // // Resize the image to reduce its size (optional)
+      // File resizedImage = await FlutterNativeImage.compressImage(
+      //   imageFile.path,
+      //   quality: 70, // Adjust the quality as needed
+      //   percentage: 50, // Adjust the percentage as needed
+      // );
+      // await Share.shareFiles(
+      //   [resizedImage.path],
+      //   text: 'Check out our awesome app: $appStoreLink\n'
+      //       'Use Referral Code: $ReferCode',
+      //   subject: 'Check out our awesome app',
+      // );
+      Directory tempDir = await getTemporaryDirectory();
 
-      // If sharing is successful, update the UI state
+      // Prepare the image file path in the temporary directory
+      String imagePath = '${tempDir.path}/banner1.png'; // Adjust the file name as needed
+
+      // Check if the image file already exists in the temporary directory
+      bool fileExists = await File(imagePath).exists();
+      if (!fileExists) {
+        // Image file doesn't exist, so we need to copy it from the assets to the temporary directory
+        ByteData imageData = await rootBundle.load('assets/banner1.png'); // Replace 'banner1.png' with your image asset path
+        List<int> bytes = imageData.buffer.asUint8List();
+        await File(imagePath).writeAsBytes(bytes);
+      }
+
+      // Share the app link along with the image and other details
+      await Share.shareFiles(
+        [imagePath],
+        text: 'Check out our awesome app: $appStoreLink\nUse Referral Code: $ReferCode',
+        subject: 'Check out our awesome app',
+      );
       setState(() {
         _invitationStatus[i] = !(_invitationStatus[i] ?? false);
       });
     } catch (e) {
+      print("88888888888888$e");
       // If there's an error during sharing, handle it
       // Set _invitationStatus to false to indicate failure
       setState(() {
@@ -122,13 +132,7 @@ class _RewardsContactsSync extends State<RewardContact> {
   @override
   Widget build(BuildContext context) {
     return
-      //   isLoading
-      //     ? const Center(
-      //   child: CircularProgressIndicator(
-      //     color: Colors.black,
-      //   ),
-      // )
-      //     :
+
       DefaultTabController(
         length: 2,
         child: Scaffold(
@@ -405,11 +409,14 @@ class _RewardsContactsSync extends State<RewardContact> {
                     ),
                     onPressed: () async {
                       await [Permission.contacts].request();
+                      await [Permission.sms].request();
 
-requestSmsPermission();
+                      requestSmsPermission();
+
+
+
+
                       // Call the method here
-
-
 
                       // Share.share(
                       //   'Hi , I am using the Zukti eye health app to track my eye health. Why dont you join me and together we can work towards improving our eye health? Use my code to sign up and get a one-month subscription free.',
@@ -417,6 +424,10 @@ requestSmsPermission();
                       //   subject: 'Share via WhatsApp',
                       //   sharePositionOrigin: Rect.fromLTRB(0, 0, 0, 0),
                       // );
+
+
+
+
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -428,9 +439,11 @@ requestSmsPermission();
                         const SizedBox(
                           width: 9,
                         ),
-                        Image.asset('assets/wp_icon.png',
-                            width: 19,
-                            color: Colors.white70), // Add your icon here
+                        Icon(
+                          Icons.sms,
+                          size: 19,
+                          color: Colors.white70,
+                        ),// Add your icon here
                       ],
                     ),
                   ),
@@ -545,7 +558,9 @@ requestSmsPermission();
                                         ),
                                       ],
                                     ),
-                                    onTap: () async {},
+                                    onTap: () async {
+
+                                    },
                                   ),
                                 ),
                               ),
@@ -701,16 +716,15 @@ requestSmsPermission();
       status =  await Permission.sms.status;
       if (status == PermissionStatus.denied) {
         await [Permission.sms].request();
-        print("Location permissions are still denied");
+        print("sms permissions are still denied");
       } else if (status ==PermissionStatus.permanentlyDenied) {
-        print("Location permissions are permanently denied");
-        // Prompt the user to open app settings to enable location permissions manually
+        print("sms permissions are permanently denied");
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text("SMS permissions required"),
-              content: Text("SMS permissions are permanently denied. Please go to app settings to enable location permissions."),
+              content: Text("SMS permissions are permanently denied. Please go to app settings to enable sms permissions."),
               actions: <Widget>[
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -751,13 +765,12 @@ requestSmsPermission();
       }
       else if (status1 ==PermissionStatus.permanentlyDenied) {
         print("contacts permissions are permanently denied");
-        // Prompt the user to open app settings to enable location permissions manually
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text("contacts permissions required"),
-              content: Text("contacts permissions are permanently denied. Please go to app settings to enable location permissions."),
+              content: Text("contacts permissions are permanently denied. Please go to app settings to enable contacts permissions."),
               actions: <Widget>[
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
