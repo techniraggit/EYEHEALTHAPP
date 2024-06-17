@@ -17,7 +17,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:platform_device_id_v2/platform_device_id_v2.dart';
 import 'package:project_new/HomePage.dart';
-import 'package:project_new/demoFiles/smsdemo.dart';
+//import 'package:project_new/demoFiles/smsdemo.dart';
 import 'package:project_new/digitalEyeTest/testScreen.dart';
 import 'package:project_new/sign_up.dart';
 import 'package:shared_preferences/shared_preferences.dart';
