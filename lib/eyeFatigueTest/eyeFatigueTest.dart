@@ -9,7 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:light_compressor/light_compressor.dart';
+// import 'package:light_compressor/light_compressor.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:project_new/HomePage.dart';
@@ -19,6 +19,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:video_compress/video_compress.dart';
 
 import '../api/Api.dart';
 import '../api/config.dart';
@@ -205,7 +206,8 @@ class EyeFatigueSecondScreen extends StatefulWidget {
 }
 
 class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with SingleTickerProviderStateMixin{
-  bool cancel=true;  final LightCompressor _lightCompressor = LightCompressor();
+  bool cancel=true;
+  //final LightCompressor _lightCompressor = LightCompressor();
   bool isRecording = false;
 
   Dino dino = Dino();
@@ -311,7 +313,6 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
     if (_controller != null) {
       _controller!.dispose();
     }
-    // _controller?.dispose();
     _animationController.dispose();
     gravityController.dispose();
     accelerationController.dispose();
@@ -337,15 +338,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
     ).animate(_timercontroller!);
 
     _timercontroller?.forward();
-    // _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-    //   setState(() {
-    //     _secondsLeft--;
-    //     _position = _secondsLeft / 30;
-    //   });
-    //   if (_secondsLeft <= 0) {
-    //     _timer?.cancel();
-    //   }
-    // });
+
   }
 
   void _die() {
@@ -506,12 +499,10 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
 
-      // Fluttertoast.showToast(msg: "99999999999999999999999");
 
       print('Video upload=response=${response.body}');
       if (response.statusCode == 200)
       {
-        // Fluttertoast.showToast(msg: "11111111111111111111");
 
         print('Video uploaded successfully');
 
@@ -531,7 +522,6 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
 
       }
       else {
-        // Fluttertoast.showToast(msg: "222222222222222222");
         // MyProgressDialog.dismissProgressDialog(progressDialog!);
         Fluttertoast.showToast(msg: "Face not Captured Properly,please test again !!");
         setState(() {
@@ -567,8 +557,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
     if (!_controller!.value.isInitialized) {
       return;
     }
-    // final directory = await getTemporaryDirectory(); // Get temporary directory
-    //  videoPath = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.mp4'; // Set the path in the temporary directory
+
     final directory = await getApplicationDocumentsDirectory();
      videoPath = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
     try {
@@ -585,7 +574,6 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
           isRecording = false;
           print('Video recorded to: ${file.path}');
           setState(() {
-            // Proceed with further operations like uploading or processing the video
             gamepermission = true;
             isLoading = true;
             _compressAndUploadVideo(file.path);
@@ -595,115 +583,26 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
           print('Failed to record video: Empty or null file path');
           Fluttertoast.showToast(msg: "Video file path is empty or null.");
         }
-        // XFile file = await _controller!.stopVideoRecording();
-        // isRecording = false;
-        // setState(() {
-        //   // Check if the file exists
-        //   File videoFile = File(file.path);
-        //   print("path-------------");
-        //
-        //   videoFile.exists().then((exists) {
-        //     if (exists) {
-        //       // Proceed with further operations (e.g., upload, compress)
-        //       print('Video recorded to: ${file.path}');
-        //       gamepermission=true; isLoading=true;
-        //       _compressAndUploadVideo(file.path);
-        //     } else {
-        //       // Handle case where file does not exist
-        //       Fluttertoast.showToast(msg: "Video file does not exist.");
-        //     }
-        //   });
-        // });
+
       }
     } catch (e) {
 
-      // Handle any exceptions thrown during video recording or processing
       print("Error: ===============$e");
       // Fluttertoast.showToast(msg: "Error: $e");
     }
 
-    // try {
-    //   await _controller!.startVideoRecording();
-    //   isRecording = true;
-    //   setState(() {});
-    //
-    //   await Future.delayed(const Duration(seconds: 30));
-    //
-    //   if (_controller!.value.isRecordingVideo) {
-    //     final XFile file = await _controller!.stopVideoRecording();
-    //     isRecording = false;
-    //
-    //
-    //     print('Video recorded to: ${file.path}');
-    //
-    //     // Verify file existence
-    //     // if ( await File(file.path).exists()) {
-    //     if (File(file.path).existsSync()) {
-    //       setState(() {
-    //
-    //         gamepermission=true; isLoading=true;
-    //
-    //
-    //         // Fluttertoast.showToast(msg: "77777777777");
-    //
-    //         print("isLoading========$isLoading");
-    //         _compressAndUploadVideo(file.path);
-    //
-    //       });
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //     } else {
-    //       // Fluttertoast.showToast(msg: "888888888888");
-    //
-    //       Fluttertoast.showToast(msg: "Your Phone doesnt have sufficient storage or you haven't given permission to media access");
-    //       print('File does not exist.');
-    //     }
-    //   }
-    //
-    // } catch (e) {
-    //   print("Error:== $e");
-    // }
+
   }
-  void _compressAndUploadVideo(String videoPath) async {
-    print("String videoPath=========$videoPath");
-    try {
-      final String videoName =
-            'MyVideo-${DateTime.now().millisecondsSinceEpoch}.mp4';
-      final Result response = await _lightCompressor.compressVideo(
-        path: videoPath,
-        videoQuality: VideoQuality.low,
-        isMinBitrateCheckEnabled: false,
-        android: AndroidConfig(isSharedStorage: true, saveAt: SaveAt.Movies),
-        ios: IOSConfig(saveInGallery: false),
-        video: Video(videoName: videoName),
-      );
-
-      if (response is OnSuccess) {
-        final videoFile = File(response.destinationPath);
-        final videoSizeBytes = await videoFile.length();
-        print('Compressed Video size: ${videoSizeBytes / (1024 * 1024)} MB');
-        _uploadVideo(response.destinationPath);
-
-        print('Compressed video path: ${response.destinationPath}');
-      } else {
-        print('Compression failed: ${response.toString()}');
-        Fluttertoast.showToast(msg: 'Video compression failed');
-      }
-    } catch (e) {
-      print('Compression error: $e');
-      Fluttertoast.showToast(msg: 'Error occurred during compression');
-    }
-    throw(     "Compression error: $e"
-    );
-  }
-
-  //   final String videoName =
-  //       'MyVideo-${DateTime.now().millisecondsSinceEpoch}.mp4';
+  // Future<void> disposeCamera() async {
+  //   await _controller?.dispose();
+  // }
+  // void _compressAndUploadVideo(String videoPath) async {
+  //   print("String videoPath=========$videoPath");
+  //
+  //   // try {
+  //
+  //     final String videoName = 'MyVideo-${DateTime.now().millisecondsSinceEpoch}.mp4';
+  //   print("String cccvideoPath=========$videoPath");
   //
   //   final Result response = await _lightCompressor.compressVideo(
   //     path: videoPath,
@@ -713,24 +612,50 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
   //     ios: IOSConfig(saveInGallery: false),
   //     video: Video(videoName: videoName),
   //   );
-  //
-  //
-  //   if (response is OnSuccess) {
-  //     // setState(() async {
+  //   print("String dddvideoPath=========$videoPath");
+  //     // Proceed with further operations only if compression succeeds
+  //     if (response is OnSuccess) {
   //       final videoFile = File(response.destinationPath);
   //       final videoSizeBytes = await videoFile.length();
   //       print('Compressed Video size: ${videoSizeBytes / (1024 * 1024)} MB');
   //       _uploadVideo(response.destinationPath);
   //
   //       print('Compressed video path: ${response.destinationPath}');
-  //     // });
-  //   }else {
+  //     }
   //
-  //     print(response.toString());
-  //     // Fluttertoast.showToast(msg: "you phone may have insufficient storage");
-  //   }
+  //     else {
+  //       print('Compression failed: ${response.toString()}');
+  //       Fluttertoast.showToast(msg: 'Video compression failed');
+  //       throw Exception('Failed to fetch data: ${response.toString()}');
   //
+  //     }
+  //   // }
+  //   // catch (e, stackTrace) {
+  //     print('Compression error: $e');
+  //     // print('Stack trace: $stackTrace');
+  //     Fluttertoast.showToast(msg: 'Error occurred during compression');
+  //   // }
   // }
+  void _compressAndUploadVideo(String videoPath) async {
+    try {
+      final info = await VideoCompress.compressVideo(
+        videoPath,
+        quality: VideoQuality.LowQuality,
+      );
+
+      if (info != null) {
+        print('Video compression successful');
+        _uploadVideo(info.path!);
+      } else {
+        print('Video compression failed');
+        Fluttertoast.showToast(msg: 'Video compression failed');
+        throw Exception('Video compression failed');
+      }
+    } catch (e) {
+      print('Compression error: $e');
+      Fluttertoast.showToast(msg: 'Error occurred during compression');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1214,11 +1139,9 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
         headers: headers,
       );
       print("senddata====0000000===========${response.body}");
-      print("senddata====0000000=========== status code ${response.statusCode}");
 
       final responseData = json.decode(response.body);
 
-      // Fluttertoast.showToast(msg: "3131313131");
 
       if (response.statusCode == 200) {
 
@@ -1230,7 +1153,6 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
           uploaded=false;
           enable=true;
         });
-        // Fluttertoast.showToast(msg: "414141441441411");
 
 
 
@@ -1238,7 +1160,6 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
 
       }
       else if (response.statusCode == 401) {
-        // Fluttertoast.showToast(msg: "5151515151");
 
         setState(() {
           isclose=false; uploaded=false;
@@ -1292,7 +1213,6 @@ print("50000");
       }
     }
     on DioError catch (e) {
-      // Fluttertoast.showToast(msg: "8181818818181818");
 
       setState(() {
         isclose=false; uploaded=false;
@@ -1307,9 +1227,6 @@ print("50000");
           MaterialPageRoute(builder: (context) => SignIn()),
         );
       } else {
-        // Fluttertoast.showToast(msg: "9191919199191919");
-
-        // Handle other Dio errors
         print("DioError: ${e.error}");
       }
     } catch (e,Stacktrace) {

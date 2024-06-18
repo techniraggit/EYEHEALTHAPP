@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:camera/camera.dart';
+import 'package:camera/camera.dart' ;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert'as convert;
 import 'package:http/http.dart' as http;
@@ -30,13 +31,166 @@ class EyeFatigueTestSelfieState extends State<EyeFatigueSelfieScreen> {
   @override
   void initState() {
     super.initState();
+    // getPermission();
     _initializeCamera();
     isclose=false; uploaded=false;
     isLoading = false;startgame=false;gamepermission=false;
     sendcustomerDetails();
 
   }
-   Future<void> sendcustomerDetails() async {
+
+
+
+
+  // void getPermission() async {
+  //   PermissionStatus status = await Permission.storage.status;
+  //   PermissionStatus status1 = await Permission.photos.status;
+  //   PermissionStatus status2 = await Permission.microphone.status;
+  //
+  //   if((status==PermissionStatus.granted&&status2==PermissionStatus.granted) ){
+  //     setState(() {
+  //       _initializeCamera();
+  //     });
+  //
+  //   }
+  //   if (!status.isGranted ) {
+  //     status = await Permission.storage.request();
+  //   }
+  //   if (!status2.isGranted ) {
+  //     status = await Permission.microphone.request();
+  //   }//status1==PermissionStatus.granted&&
+  //   // if (!status1.isGranted ) {
+  //   //   status1 = await Permission.photos.request();
+  //   // }
+  //   if (status == PermissionStatus.denied ||
+  //       status == PermissionStatus.permanentlyDenied) {
+  //     await [Permission.storage].request();
+  //
+  //     // Permissions are denied or denied forever, let's request it!
+  //     status =  await Permission.storage.status;
+  //     if (status == PermissionStatus.denied) {
+  //       await [Permission.storage].request();
+  //       print("storage permissions are still denied");
+  //     } else if (status ==PermissionStatus.permanentlyDenied) {
+  //       print("storage permissions are permanently denied");
+  //       showDialog(
+  //         context: context,
+  //         builder: (BuildContext context) {
+  //           return AlertDialog(
+  //             title: Text("storage permissions required"),
+  //             content: Text("storage permissions are permanently denied. Please go to app settings to enable files and media permissions."),
+  //             actions: <Widget>[
+  //               ElevatedButton(
+  //                 style: ElevatedButton.styleFrom(
+  //                   backgroundColor: Colors
+  //                       .background, // Set your desired background color here
+  //                   // You can also customize other button properties here if needed
+  //                 ),
+  //                 onPressed: () async {
+  //                   Navigator.pop(context); // Close the dialog
+  //                   await openAppSettings();
+  //                 },
+  //                 child: Text("OK",
+  //
+  //                   style: TextStyle(
+  //                       color: Colors.white, fontSize: 16),
+  //                 ),
+  //               ),
+  //
+  //             ],
+  //           );
+  //         },
+  //       );
+  //     }
+  //   }
+  //   // if (status1 == PermissionStatus.denied ||
+  //   //     status1 == PermissionStatus.permanentlyDenied) {
+  //   //   await [Permission.photos].request();
+  //   //
+  //   //   // Permissions are denied or denied forever, let's request it!
+  //   //   status1 =  await Permission.photos.status;
+  //   //   if (status1 == PermissionStatus.denied) {
+  //   //     await [Permission.photos].request();
+  //   //     print("photos permissions are still denied");
+  //   //   }
+  //   //    if (status1 ==PermissionStatus.permanentlyDenied) {
+  //   //     print("photos permissions are permanently denied");
+  //   //     showDialog(
+  //   //       context: context,
+  //   //       builder: (BuildContext context) {
+  //   //         return AlertDialog(
+  //   //           title: Text("photos permissions required"),
+  //   //           content: Text("photos permissions are permanently denied. Please go to app settings to enable files and media permissions."),
+  //   //           actions: <Widget>[
+  //   //             ElevatedButton(
+  //   //               style: ElevatedButton.styleFrom(
+  //   //                 backgroundColor: Colors
+  //   //                     .background, // Set your desired background color here
+  //   //                 // You can also customize other button properties here if needed
+  //   //               ),
+  //   //               onPressed: () async {
+  //   //                 Navigator.pop(context); // Close the dialog
+  //   //                 await openAppSettings();
+  //   //               },
+  //   //               child: Text("OK",
+  //   //
+  //   //                 style: TextStyle(
+  //   //                     color: Colors.white, fontSize: 16),
+  //   //               ),
+  //   //             ),
+  //   //
+  //   //           ],
+  //   //         );
+  //   //       },
+  //   //     );
+  //   //   }
+  //   // }
+  //   if (status2 == PermissionStatus.denied ||
+  //       status2 == PermissionStatus.permanentlyDenied) {
+  //     await [Permission.microphone].request();
+  //
+  //     // Permissions are denied or denied forever, let's request it!
+  //     status2 =  await Permission.microphone.status;
+  //     if (status2 == PermissionStatus.denied) {
+  //       await [Permission.microphone].request();
+  //       print("microphone permissions are still denied");
+  //     }  if (status2 ==PermissionStatus.permanentlyDenied) {
+  //       print("microphone permissions are permanently denied");
+  //       showDialog(
+  //         context: context,
+  //         builder: (BuildContext context) {
+  //           return AlertDialog(
+  //             title: Text("microphone permissions required"),
+  //             content: Text("microphone permissions are permanently denied. Please go to app settings to enable microphone permissions."),
+  //             actions: <Widget>[
+  //               ElevatedButton(
+  //                 style: ElevatedButton.styleFrom(
+  //                   backgroundColor: Colors
+  //                       .background, // Set your desired background color here
+  //                   // You can also customize other button properties here if needed
+  //                 ),
+  //                 onPressed: () async {
+  //                   Navigator.pop(context); // Close the dialog
+  //                   await openAppSettings();
+  //                 },
+  //                 child: Text("OK",
+  //
+  //                   style: TextStyle(
+  //                       color: Colors.white, fontSize: 16),
+  //                 ),
+  //               ),
+  //
+  //             ],
+  //           );
+  //         },
+  //       );
+  //     }
+  //   }
+  //
+  //
+  // }
+
+    Future<void> sendcustomerDetails() async {
      SharedPreferences prefs = await SharedPreferences.getInstance();
      String authToken =
      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
