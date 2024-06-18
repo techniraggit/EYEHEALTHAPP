@@ -1,13 +1,4 @@
 
-
-
-
-
-
-
-
-
-
 import 'dart:convert';
 import 'dart:math';
 import 'package:action_broadcast/action_broadcast.dart';
@@ -51,18 +42,24 @@ class _ChartData {
   final double y4;
 
 }
-class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin{
-  List<dynamic> itemsdata = []; final GlobalKey<ScaffoldState> _scafoldKey = GlobalKey();
+class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin {
+
+  final GlobalKey<ScaffoldState> _scafoldKey = GlobalKey();
   int? isReadFalseCount = 0;
-  bool isLoading = true; List<double> idealTestgraphData = [];
+  bool isLoading = false;
+  List<double> idealTestgraphData = [];
   List<double> populationTestgraphData = [];
   List<dynamic> percentage = [];
-  List<dynamic> items = [];
-  List<dynamic> ReportIds = [];
-  String testResult = 'Good';int count=0;
-  List<Prescription> prescriptions = [];fatigueGraph? fatigueGraphData;
-  bool midtiredness_right= false;List<double> todaygraphData = [];
-  List<double> firstTestgraphData = [];  List<_ChartData>? chartData;
+
+  String testResult = 'Good';
+  int count = 0;
+  List<Prescription> prescriptions = [];
+  fatigueGraph? fatigueGraphData;
+  bool midtiredness_right = false;
+  List<double> todaygraphData = [];
+  List<double> firstTestgraphData = [];
+  List<_ChartData>? chartData;
+
   @override
   Iterable<StreamSubscription> get registerSubscriptions sync* {
     yield registerReceiver(['actionMusicPlaying']).listen(
@@ -77,92 +74,15 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin{
       },
     );
   }
+
   @override
   void initState() {
     super.initState();
-    getReports();
-    geteyeReports();
-    getGraph();    getNotifactionCount();
-
-    getPrescriptionFiles();
+   // getNotifactionCount();
   }
-  Future<List<double>> getGraph() async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String authToken = prefs.getString('access_token') ?? '';
-      final response = await http.get(
-        Uri.parse('${ApiProvider.baseUrl}/api/fatigue/fatigue-graph?user_timezone=Asia/Kolkata'),
-        headers: <String, String>{
-          'Authorization': 'Bearer $authToken',
-        },
-      );
 
-      if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        fatigueGraphData = fatigueGraph.fromJson(responseData);
-
-        print("graphdata===:${response.body}");
-
-        Map<String, dynamic> jsonData = jsonDecode(response.body);
-        // List<dynamic> data = jsonData['data'];
-
-        if (responseData.containsKey('status') && responseData['status']) {
-          if (responseData.containsKey('first_day_data') && responseData['first_day_data'].containsKey('value')) {
-            List<dynamic> firstDayValue = responseData['first_day_data']['value'];
-            firstTestgraphData.addAll(firstDayValue.map((value) => value.toDouble()));
-          }
-          if (responseData.containsKey('current_day_data') && responseData['current_day_data'].containsKey('value')) {
-            List<dynamic> currentDayValue = responseData['current_day_data']['value'];
-            todaygraphData.addAll(currentDayValue.map((value) => value.toDouble()));
-          }
-          if (responseData.containsKey('get_percentile_graph') ) {
-            List<dynamic> population = List<double>.from(jsonData['get_percentile_graph']);
-
-            populationTestgraphData.addAll(population.map((value) => value.toDouble()));
-          }
-          if (responseData.containsKey('get_ideal_graph') ) {
-            List<dynamic> ideal =  List<double>.from(jsonData['get_ideal_graph']);
-
-            idealTestgraphData.addAll(ideal.map((value) => value.toDouble()));
-          }
-        }
-        print("fffffffffffffff$todaygraphData");
-        setState(() {
-          chartData = <_ChartData>[
-            _ChartData('6 AM', firstTestgraphData[0], idealTestgraphData[0] ,populationTestgraphData[0],todaygraphData[0]),
-            _ChartData('9 AM', firstTestgraphData[1], idealTestgraphData[1], populationTestgraphData[1],todaygraphData[1]),
-            _ChartData('12 PM', firstTestgraphData[2],  idealTestgraphData[2],populationTestgraphData[2],todaygraphData[2]),
-            _ChartData('3 PM', firstTestgraphData[3], idealTestgraphData[3],populationTestgraphData[3], todaygraphData[3]),
-            _ChartData('6 PM', firstTestgraphData[4], idealTestgraphData[4], populationTestgraphData[4],todaygraphData[4]),
-            _ChartData('9 PM', firstTestgraphData[5],  idealTestgraphData[5],populationTestgraphData[5],todaygraphData[5]),
-            _ChartData('12 AM', firstTestgraphData[6],  idealTestgraphData[6],populationTestgraphData[6],todaygraphData[6]),
-
-
-
-          ];
-        });
-        // return data
-        //     .map((item) => double.parse(item['value'].toString()))
-        //     .toList();
-      }
-      else if (response.statusCode == 401) {
-        Fluttertoast.showToast(msg: "Session Expired");
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => SignIn()),
-        );
-      }      else {
-        print(response.body);
-      }
-    } catch (e) {
-      // _progressDialog!.hide();
-
-      print("exception:$e");
-    }
-    throw Exception('');
-  }
   Future<void> getNotifactionCount() async {
-    try{
+    try {
       String userToken = '';
       var sharedPref = await SharedPreferences.getInstance();
       userToken = sharedPref.getString("access_token") ?? '';
@@ -183,19 +103,16 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin{
         isReadFalseCount = unreadNotificationCount;
         print('Unread Notification Count: $unreadNotificationCount');
         print('Unread gfbt Count: $response');
-        if(mounted){
+        if (mounted) {
           setState(() {});
-
         }
-      }else if (response.statusCode == 401) {
-
+      } else if (response.statusCode == 401) {
         Fluttertoast.showToast(msg: "Session Expired");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => SignIn()),
         );
-      }   else if (response.statusCode == 401) {
-
+      } else if (response.statusCode == 401) {
         Fluttertoast.showToast(msg: "Session Expired");
         Navigator.pushReplacement(
           context,
@@ -299,8 +216,8 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin{
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SizedBox(
-                      height:  10, // Adjust height as needed
-                    ),
+                    height: 10, // Adjust height as needed
+                  ),
                   // SizedBox(
                   //   height: kToolbarHeight + 10, // Adjust height as needed
                   // ),
@@ -313,22 +230,17 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin{
                         color: Colors.black,
                         // Adjust size as needed
                         // Add other styling properties as needed
-                      ),
+                      ),),
+
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(16.0, 0, 0, 8),
+                    child: Text(
+                      'Today $formattedDate', // Display formatted current date
+                      style:
+                      TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.grey),
                     ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  TabBar(
-                    tabs: [
-                      Tab(text: 'Fatigue Report'),
-                      Tab(text: 'Eye Test Report'),
-                      Tab(text: 'Other'),
-                    ],
-                    labelColor: Colors.bluebutton,
-                    unselectedLabelColor: Colors.black,
-                    labelStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                    unselectedLabelStyle: TextStyle(fontSize: 14),
                   ),
                 ],
               ),
@@ -357,7 +269,8 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin{
                       ),
                       Positioned(
                         right: 0,
-                        top: -1, // Adjust this value to position the text properly
+                        top: -1,
+                        // Adjust this value to position the text properly
                         child: Container(
                           padding: EdgeInsets.all(2),
                           decoration: BoxDecoration(
@@ -382,7 +295,219 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin{
           ),
         ),
 
-        body: TabBarView(
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: GestureDetector(
+                onTap: (){
+                  Navigator.push(context,
+                      CupertinoPageRoute(builder:
+                          (context) =>
+                          _ReportFatigueTest()//change this in final step  SecondScreen
+                      )
+                  ) ;
+                },
+                  child: Card(
+                    color: Colors.white,
+                    elevation: 2,
+                    child: Row(
+                      children: [
+
+                        // Image on the left side
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Image.asset(
+                            'assets/fatigue.png',
+                            // Add any additional properties to style the image
+                          ),
+                        ),
+                        // Columns on the right side
+                        Flexible(
+                          child: Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0),
+                                  child: Text(
+                                    'Eye Fatigue Test',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.deepPurple,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 4.0,
+                                    horizontal: 8.0,
+                                  ),
+                                  child: Text(
+                                    'Evaluate vision clarity, focus, and eye health with interactive diagnostic assessments.',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ), // Add spacing between titles and dynamic list
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: GestureDetector(
+                  onTap: (){
+                    Navigator.push(context,
+                        CupertinoPageRoute(builder:
+                            (context) =>
+                            _ReportEyeTest()//change this in final step  SecondScreen
+                        )
+                    ) ;
+                  },
+                  child: Card(color: Colors.white,
+                    elevation: 2,
+                    child: Row(
+                      children: [
+                        // Image on the left side
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Image.asset(
+                            'assets/eye.png',
+                            // Add any additional properties to style the image
+                          ),
+                        ),
+                        // Columns on the right side
+                        Flexible(
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 4.0,
+                                    horizontal: 8.0,
+                                  ),
+                                  child: Text(
+                                    'Eye Test Report',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 4.0,
+                                    horizontal: 8.0,
+                                  ),
+                                  child: Text(
+                                    'Evaluate vision clarity, focus, and eye health with interactive diagnostic assessments.',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: GestureDetector(
+                  onTap: (){
+                    Navigator.push(context,
+                        CupertinoPageRoute(builder:
+                            (context) =>
+                            _ReportOther()//change this in final step  SecondScreen
+                        )
+                    ) ;
+                  },
+                  child: Card(
+                    color: Colors.white,
+                    elevation: 2,
+                    child: Row(
+                      children: [
+                        // Image on the left side
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Image.asset(
+                            'assets/document_upload.png',
+                            // Add any additional properties to style the image
+                          ),
+                        ),
+                        // Columns on the right side
+                        Flexible(
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 4.0,
+                                    horizontal: 8.0,
+                                  ),
+                                  child: Text(
+                                    'Upload Prescription',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.green,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 4.0,
+                                    horizontal: 8.0,
+                                  ),
+                                  child: Text(
+                                    'Evaluate vision clarity, focus, and eye health with interactive diagnostic assessments.',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ),
+
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+            ],
+          ),
+        ), /*TabBarView(
           children: [
             buildFatigueReport(
               context,
@@ -390,7 +515,7 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin{
             buildEyeTestReport(context),
             buildOtherReport(context),
           ],
-        ),
+        ),*/
         floatingActionButtonLocation:
         FloatingActionButtonLocation.centerDocked,
         floatingActionButton: Padding(
@@ -431,171 +556,569 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin{
     );
   }
 
-  Widget buildFatigueReport(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
 
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          // const Padding(
-          //   padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
-          //   child: Text(
-          //     'EYE HEALTH GRAPH OVERVIEW', // Display formatted current date
-          //     style: TextStyle(
-          //       fontSize: 18,
-          //       fontWeight: FontWeight.bold,
-          //     ),
-          //   ),
-          // ),
-          Container(
-            color: Colors.white,
-            child: Padding(
-              padding:  EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
-              child: Container(
-                color: Colors.white,
-                width: MediaQuery.of(context).size.width,
-                child: Card(
-                  color: Colors.white,
-                  elevation: 0.1,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+}
+class _ReportOther extends StatefulWidget {
+  @override
+  _ReportOtherState createState() => _ReportOtherState();
+}
+class _ReportOtherState extends State<_ReportOther> {
+  @override
+  void initState() {
+    super.initState();
+    getPrescriptionFiles();
+  }
 
-                      // Padding(
-                      //   padding: EdgeInsets.all(1),
-                      //   child: ListTile(
-                      //     title: Text(
-                      //       'Right Eye Health',
-                      //       style: TextStyle(
-                      //         fontSize: 16.0,
-                      //         fontWeight: FontWeight.bold,
-                      //       ),
-                      //     ),
-                      //     subtitle: Text('April 30-May 30'),
-                      //   ),
-                      // ),
-                      if(chartData!=null)...{
-                        Center(
-
-                          child: Container(
-                            color: Colors.white,
-
-                            child: _buildVerticalSplineChart(),
-
-
-                          ),
-                        ),
-                        SizedBox(height: 10), // Adjust spacing between chart and color descriptions
-
-                        // Color descriptions
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            _buildColorDescription(Colors.black, 'First Test'),
-                            _buildColorDescription(Colors.green, 'Ideal'),
-                            _buildColorDescription(Colors.orange, 'Percentile'),
-                            _buildColorDescription(Colors.blue, 'User avg'),
-                          ],
-                        ),},
-                      SizedBox(height: 29),
-                    ],
+  List<Prescription> prescriptions = [];
+  List<dynamic> itemsdata = [];
+  List<dynamic> items = [];
+  List<dynamic> ReportIds = [];
+  bool isLoading= false;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      floatingActionButton: Stack(
+        alignment: Alignment.bottomRight,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PrescriptionUpload(),
                   ),
+                );
+              },
+              backgroundColor: Colors.bluebutton,
+              // Set the background color of the FAB
+              child: Icon(Icons.camera_enhance_outlined,
+                  color: Colors.white), // Set the icon of the FAB
+            ),
+          ),
+          /*     Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Positioned(
+              bottom: 10,
+              right: 10,
+              child: Text(
+                'Upload Prescription',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-          ),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              return Card(
-                color: Colors.white,
-                elevation: 0.4,
-                margin: EdgeInsets.symmetric(horizontal: 10, vertical: 9),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(17.0),
-                  side: BorderSide(color: Colors.grey.shade400, width: 1.0), // Add this line to set the border color and width
-                ),
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 2, vertical: 11),
-                  child: ListTile(
-                    title: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Date: ' + items[index].toString().substring(0, 10),
-                            style: TextStyle(fontStyle: FontStyle.normal),
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Text(
-                              'Test Result : ',
+          ),*/
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: prescriptions.length,
+              itemBuilder: (context, index) {
+                final prescription = prescriptions[index];
+                return Card(
+                  color: Colors.white,
+                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(17.0),
+                    side: BorderSide(color: Colors.grey.shade400,
+                        width: 1.0), // Add this line to set the border color and width
+                  ),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 2, vertical: 11),
+                    child: ListTile(
+                      title: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Text(
+                              prescription.problemFaced,
                               style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 12,
+                                color: Colors.greytext,
                               ),
                             ),
-                            Builder(
-                              builder: (context) {
-                                if (percentage[index] > 5.0) {
-                                  testResult = "Good";
-                                } else {
-                                  testResult = "Bad";
-                                }
-                                return Text(
-                                  testResult,
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  'Date: ',
                                   style: TextStyle(
-                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w700,
                                     fontSize: 16,
-                                    color: testResult == 'Good' ? Colors.green : Colors.red,
                                   ),
-                                );
-                              },
-                            ),
-                            Expanded(
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      CupertinoPageRoute(
-                                        builder: (context) => ReportDetails(
-                                          reportId: ReportIds[index],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  prescription.createdOn.toLocal()
+                                      .toString()
+                                      .substring(0, 10),
+                                  style: TextStyle(
+                                    fontStyle: FontStyle.normal,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              PrescriptionDetailPage(
+                                                  prescription: prescription),
                                         ),
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.white,
+                                      backgroundColor: Colors.bluebutton,
+                                      shape: CircleBorder(),
+                                      minimumSize: Size(30, 30),
+                                    ),
+                                    child: Transform.rotate(
+                                      angle: pi,
+                                      // Correct rotation angle to 180 degrees
+                                      child: Transform.scale(
+                                        scale: 0.6,
+                                        child: Icon(Icons.arrow_back_ios_new),
                                       ),
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.white,
-                                    backgroundColor: Colors.bluebutton,
-                                    shape: CircleBorder(),
-                                    minimumSize: Size(30, 30),
-                                  ),
-                                  child: Transform.rotate(
-                                    angle: -pi / 1,
-                                    child: Transform.scale(
-                                      scale: 0.6,
-                                      child: Icon(Icons.arrow_back_ios_new),
                                     ),
                                   ),
                                 ),
                               ),
-                            )
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-              /*    return Card(
+
+  List<dynamic> percentage = [];
+  Future getPrescriptionFiles() async {
+    var sharedPref = await SharedPreferences.getInstance();
+    String userToken = sharedPref.getString("access_token") ?? '';
+    try {
+      Map<String, String> headers = {
+        'Authorization': 'Bearer $userToken', // Bearer token type
+        // 'Content-Type': 'application/json',
+      };
+      // Make the API request to fetch project sites
+      var response = await Dio().get(
+          "${ApiProvider.baseUrl}${ApiProvider.uploadPrescription}",
+          options: Options(headers: headers));
+      dynamic logger = Logger();
+
+      logger.d(response.data);
+      // Check the response status code
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.toString());
+
+        prescriptions = (data['data'] as List)
+            .map((item) => Prescription.fromJson(item))
+            .toList();
+
+        /*  Map<String, dynamic> data = json.decode(response.toString());
+        List<dynamic> prescriptionFiles = data['data']; // Specify the file name
+        List<String> prescriptionNames = [];
+        isLoading = false;
+        for (var fileEntry in prescriptionFiles) {
+          String invoiceFile = fileEntry['file'];
+          String date = fileEntry['created_on'];
+          String status = fileEntry['status'];
+
+          String images = fileEntry['file'];
+         // image.add(images);
+
+
+          String prescription_id = fileEntry['prescription_id'];
+
+          prescriptionNames.add(invoiceFile);
+        //  dates.add(date);
+       //   statuses.add(status);
+        //  prescriptionid.add(prescription_id);
+        }
+        print('Purchase Orderdd: $prescriptionNames');
+        // Extract the invoice_file values and create PlatformFile objects
+        List<PlatformFile> platformFiles = [];
+        for (var fileEntry in prescriptionFiles) {
+          String invoiceFilePath = fileEntry['file'];
+          PlatformFile platformFile = PlatformFile(
+            name: invoiceFilePath.split('/').last,
+            size: 0, // Set appropriate file size
+            bytes: null, // Set appropriate file bytes
+          );
+          platformFiles.add(platformFile);
+        }
+      //  _files.addAll(platformFiles);
+
+        setState(() {});*/
+      } else {
+        // If the request was not successful, throw an error
+        throw Exception('Failed to load data: ${response.statusCode}');
+      }
+    } catch (e, stacktrace) {
+      // If an error occurs during the request, throw the error
+      throw Exception('Failed to load data: $e    $stacktrace');
+    }
+  }
+
+
+}
+class _ReportFatigueTest extends StatefulWidget {
+  @override
+  __ReportFatigueTestState createState() => __ReportFatigueTestState();
+}
+class __ReportFatigueTestState extends State<_ReportFatigueTest> {
+  final GlobalKey<ScaffoldState> _scafoldKey = GlobalKey();
+  int? isReadFalseCount = 0;
+  bool isLoading = true;
+  List<double> idealTestgraphData = [];
+  List<double> populationTestgraphData = [];
+  List<dynamic> percentage = [];
+
+  String testResult = 'Good';
+  int count = 0;
+  List<Prescription> prescriptions = [];
+  fatigueGraph? fatigueGraphData;
+  bool midtiredness_right = false;
+  List<double> todaygraphData = [];
+  List<double> firstTestgraphData = [];
+  List<_ChartData>? chartData;
+  List<dynamic> itemsdata = [];
+  @override
+  void initState() {
+    getGraph();
+    getReports();
+    super.initState();
+  }
+  Future<void> getReports() async {
+    // try {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken = prefs.getString('access_token') ?? '';
+    final response = await http.get(
+      Uri.parse('${ApiProvider.baseUrl}/api/fatigue/fatigue-reports'),
+      headers: <String, String>{
+        'Authorization': 'Bearer $authToken',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      setState(() {
+        isLoading = false;
+        itemsdata = responseData['data'];
+        for (int i = 0; i < itemsdata.length; i++) {
+          int id = json.decode(response.body)['data'][i]['report_id'];
+          String date = json.decode(response.body)['data'][i]['created_on'];
+          dynamic percentage_ =
+          json.decode(response.body)['data'][i]['percentage'];
+          ReportIds.add(id);
+          items.add(date);
+          percentage.add(percentage_);
+        }
+      });
+    } else {
+      print(response.body);
+    }
+    /*  } catch (e) {
+      print("exception:$e");
+    }*/
+  }
+  Future<List<double>> getGraph() async {
+  try {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken = prefs.getString('access_token') ?? '';
+    final response = await http.get(
+      Uri.parse('${ApiProvider
+          .baseUrl}/api/fatigue/fatigue-graph?user_timezone=Asia/Kolkata'),
+      headers: <String, String>{
+        'Authorization': 'Bearer $authToken',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      fatigueGraphData = fatigueGraph.fromJson(responseData);
+
+      print("graphdata===:${response.body}");
+
+      Map<String, dynamic> jsonData = jsonDecode(response.body);
+      // List<dynamic> data = jsonData['data'];
+
+      if (responseData.containsKey('status') && responseData['status']) {
+        if (responseData.containsKey('first_day_data') &&
+            responseData['first_day_data'].containsKey('value')) {
+          List<
+              dynamic> firstDayValue = responseData['first_day_data']['value'];
+          firstTestgraphData.addAll(
+              firstDayValue.map((value) => value.toDouble()));
+        }
+        if (responseData.containsKey('current_day_data') &&
+            responseData['current_day_data'].containsKey('value')) {
+          List<
+              dynamic> currentDayValue = responseData['current_day_data']['value'];
+          todaygraphData.addAll(
+              currentDayValue.map((value) => value.toDouble()));
+        }
+        if (responseData.containsKey('get_percentile_graph')) {
+          List<dynamic> population = List<double>.from(
+              jsonData['get_percentile_graph']);
+
+          populationTestgraphData.addAll(
+              population.map((value) => value.toDouble()));
+        }
+        if (responseData.containsKey('get_ideal_graph')) {
+          List<dynamic> ideal = List<double>.from(
+              jsonData['get_ideal_graph']);
+
+          idealTestgraphData.addAll(ideal.map((value) => value.toDouble()));
+        }
+      }
+      print("fffffffffffffff$todaygraphData");
+      setState(() {
+        chartData = <_ChartData>[
+          _ChartData('6 AM', firstTestgraphData[0], idealTestgraphData[0],
+              populationTestgraphData[0], todaygraphData[0]),
+          _ChartData('9 AM', firstTestgraphData[1], idealTestgraphData[1],
+              populationTestgraphData[1], todaygraphData[1]),
+          _ChartData('12 PM', firstTestgraphData[2], idealTestgraphData[2],
+              populationTestgraphData[2], todaygraphData[2]),
+          _ChartData('3 PM', firstTestgraphData[3], idealTestgraphData[3],
+              populationTestgraphData[3], todaygraphData[3]),
+          _ChartData('6 PM', firstTestgraphData[4], idealTestgraphData[4],
+              populationTestgraphData[4], todaygraphData[4]),
+          _ChartData('9 PM', firstTestgraphData[5], idealTestgraphData[5],
+              populationTestgraphData[5], todaygraphData[5]),
+          _ChartData('12 AM', firstTestgraphData[6], idealTestgraphData[6],
+              populationTestgraphData[6], todaygraphData[6]),
+
+
+        ];
+      });
+      // return data
+      //     .map((item) => double.parse(item['value'].toString()))
+      //     .toList();
+    }
+    else if (response.statusCode == 401) {
+      Fluttertoast.showToast(msg: "Session Expired");
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => SignIn()),
+      );
+    } else {
+      print(response.body);
+    }
+  } catch (e) {
+    // _progressDialog!.hide();
+
+    print("exception:$e");
+  }
+  throw Exception('');
+}
+  List<dynamic> ReportIds = [];
+  List<dynamic> items = [];
+Widget build(BuildContext context) {
+  AppBar(title: Text('Prescription Details'),backgroundColor: Colors.white,);
+  return SingleChildScrollView(
+    child: Column(
+
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        // const Padding(
+        //   padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
+        //   child: Text(
+        //     'EYE HEALTH GRAPH OVERVIEW', // Display formatted current date
+        //     style: TextStyle(
+        //       fontSize: 18,
+        //       fontWeight: FontWeight.bold,
+        //     ),
+        //   ),
+        // ),
+        Container(
+          color: Colors.white,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
+            child: Container(
+              color: Colors.white,
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
+              child: Card(
+                color: Colors.white,
+                elevation: 0.1,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+
+                    // Padding(
+                    //   padding: EdgeInsets.all(1),
+                    //   child: ListTile(
+                    //     title: Text(
+                    //       'Right Eye Health',
+                    //       style: TextStyle(
+                    //         fontSize: 16.0,
+                    //         fontWeight: FontWeight.bold,
+                    //       ),
+                    //     ),
+                    //     subtitle: Text('April 30-May 30'),
+                    //   ),
+                    // ),
+                    if(chartData != null)...{
+                      Center(
+                        child: Container(
+                          color: Colors.white,
+                          child: _buildVerticalSplineChart(),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      // Adjust spacing between chart and color descriptions
+
+                      // Color descriptions
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildColorDescription(Colors.black, 'First Test'),
+                          _buildColorDescription(Colors.green, 'Ideal'),
+                          _buildColorDescription(Colors.orange, 'Percentile'),
+                          _buildColorDescription(Colors.blue, 'User avg'),
+                        ],
+                      ),
+                    },
+                    SizedBox(height: 29),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            return Card(
+              color: Colors.white,
+              elevation: 0.4,
+              margin: EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(17.0),
+                side: BorderSide(color: Colors.grey.shade400,
+                    width: 1.0), // Add this line to set the border color and width
+              ),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 2, vertical: 11),
+                child: ListTile(
+                  title: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Date: ' + items[index].toString().substring(0, 10),
+                          style: TextStyle(fontStyle: FontStyle.normal),
+
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Text(
+                            'Test Result : ',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Builder(
+                            builder: (context) {
+                              if (percentage[index] > 5.0) {
+                                testResult = "Good";
+                              } else {
+                                testResult = "Bad";
+                              }
+                              return Text(
+                                testResult,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                  color: testResult == 'Good'
+                                      ? Colors.green
+                                      : Colors.red,
+                                ),
+                              );
+                            },
+                          ),
+                          Expanded(
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    CupertinoPageRoute(
+                                      builder: (context) =>
+                                          ReportDetails(
+                                            reportId: ReportIds[index],
+                                          ),
+                                    ),
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  backgroundColor: Colors.bluebutton,
+                                  shape: CircleBorder(),
+                                  minimumSize: Size(30, 30),
+                                ),
+                                child: Transform.rotate(
+                                  angle: -pi / 1,
+                                  child: Transform.scale(
+                                    scale: 0.6,
+                                    child: Icon(Icons.arrow_back_ios_new),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+
+            /*    return Card(
                 color: Colors.white,
                 elevation: 0.4,
                 margin: EdgeInsets.symmetric(horizontal: 10, vertical: 9),
@@ -681,104 +1204,122 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin{
                   ),
                 ),
               );*/
-            },
-          ),
-        ],
-      ),
-    );
-  }
-  Widget _buildColorDescription(Color color, String text) {
-    return Row(
-      children: [
-        Container(
-          width: 10,
-          height: 10,
-          color: color,
-          margin: EdgeInsets.only(right: 5),
+          },
         ),
-        Text(text),
       ],
-    );
-  }
+    ),
+  );
+}
 
-
-  SfCartesianChart _buildVerticalSplineChart() {
-    return SfCartesianChart(
-      isTransposed: false,
-      // title: ChartTitle(text:  'EYE Health Graph - 2024'),
-      plotAreaBorderWidth: 0,
-      legend: Legend(isVisible:true),
-      primaryXAxis: const CategoryAxis(
-        majorTickLines: MajorTickLines(size: 0),
-        axisLine: AxisLine(width: 0.3),
-        majorGridLines: MajorGridLines(width: 0),
-        title:  AxisTitle(text: 'time slots  (x-axis) --->'),
-      ),// Disable vertical inner gridlines
-
-      primaryYAxis: const NumericAxis(
-        minimum: 0,
-        maximum: 11,
-        interval: 1,
-        labelFormat: '{value}',
-        title: AxisTitle(text: 'eye score  (y-axis)  --->'), // Description for X axis
-        majorGridLines: MajorGridLines(width: 0), // Hide horizontal grid lines
+Widget _buildColorDescription(Color color, String text) {
+  return Row(
+    children: [
+      Container(
+        width: 10,
+        height: 10,
+        color: color,
+        margin: EdgeInsets.only(right: 5),
       ),
-      series: _getVerticalSplineSeries(),
-      tooltipBehavior: TooltipBehavior(enable: true),
-    );
-  }
+      Text(text),
+    ],
+  );
+}
 
 
-  List<SplineSeries<_ChartData, String>> _getVerticalSplineSeries() {
-    return <SplineSeries<_ChartData, String>>[
-      SplineSeries<_ChartData, String>(
-          markerSettings: const MarkerSettings(isVisible: true),
-          dataSource: chartData,
-          color: Colors.black,
-          animationDuration: 0.0,
-          cardinalSplineTension: 0.5,
-          splineType: SplineType.monotonic,
-          xValueMapper: (_ChartData sales, _) => sales.x,
-          yValueMapper: (_ChartData sales, _) => sales.y,
-          name: 'First Test'),
-      SplineSeries<_ChartData, String>(
+SfCartesianChart _buildVerticalSplineChart() {
+  return SfCartesianChart(
+    isTransposed: false,
+    // title: ChartTitle(text:  'EYE Health Graph - 2024'),
+    plotAreaBorderWidth: 0,
+    legend: Legend(isVisible: true),
+    primaryXAxis: const CategoryAxis(
+      majorTickLines: MajorTickLines(size: 0),
+      axisLine: AxisLine(width: 0.3),
+      majorGridLines: MajorGridLines(width: 0),
+      title: AxisTitle(text: 'time slots  (x-axis) --->'),
+    ),
+    // Disable vertical inner gridlines
+
+    primaryYAxis: const NumericAxis(
+      minimum: 0,
+      maximum: 11,
+      interval: 1,
+      labelFormat: '{value}',
+      title: AxisTitle(text: 'eye score  (y-axis)  --->'),
+      // Description for X axis
+      majorGridLines: MajorGridLines(width: 0), // Hide horizontal grid lines
+    ),
+    series: _getVerticalSplineSeries(),
+    tooltipBehavior: TooltipBehavior(enable: true),
+  );
+}
+
+
+List<SplineSeries<_ChartData, String>> _getVerticalSplineSeries() {
+  return <SplineSeries<_ChartData, String>>[
+    SplineSeries<_ChartData, String>(
         markerSettings: const MarkerSettings(isVisible: true),
         dataSource: chartData,
-        name: 'Ideal',
-        color: Colors.green,
+        color: Colors.black,
         animationDuration: 0.0,
         cardinalSplineTension: 0.5,
         splineType: SplineType.monotonic,
         xValueMapper: (_ChartData sales, _) => sales.x,
-        yValueMapper: (_ChartData sales, _) => sales.y2,
-      ),
-      SplineSeries<_ChartData, String>(
-        markerSettings: const MarkerSettings(isVisible: true),
-        dataSource: chartData,
-        cardinalSplineTension: 0.5,
-        splineType: SplineType.monotonic,
-        animationDuration: 0.0,
-        name: 'over 3.5 lac users',
-        color: Colors.orange,
-        xValueMapper: (_ChartData sales, _) => sales.x,
-        yValueMapper: (_ChartData sales, _) => sales.y3,
-      ),
-      SplineSeries<_ChartData, String>(
-        markerSettings: const MarkerSettings(isVisible: true),
-        dataSource: chartData,
-        color: Colors.blue,
-        name: 'User avg',
-        animationDuration: 0.0,
-        cardinalSplineTension: 0.5,
-        splineType: SplineType.monotonic,
-        xValueMapper: (_ChartData sales, _) => sales.x,
-        yValueMapper: (_ChartData sales, _) => sales.y4,
-      )
-    ];
-  }
+        yValueMapper: (_ChartData sales, _) => sales.y,
+        name: 'First Test'),
+    SplineSeries<_ChartData, String>(
+      markerSettings: const MarkerSettings(isVisible: true),
+      dataSource: chartData,
+      name: 'Ideal',
+      color: Colors.green,
+      animationDuration: 0.0,
+      cardinalSplineTension: 0.5,
+      splineType: SplineType.monotonic,
+      xValueMapper: (_ChartData sales, _) => sales.x,
+      yValueMapper: (_ChartData sales, _) => sales.y2,
+    ),
+    SplineSeries<_ChartData, String>(
+      markerSettings: const MarkerSettings(isVisible: true),
+      dataSource: chartData,
+      cardinalSplineTension: 0.5,
+      splineType: SplineType.monotonic,
+      animationDuration: 0.0,
+      name: 'over 3.5 lac users',
+      color: Colors.orange,
+      xValueMapper: (_ChartData sales, _) => sales.x,
+      yValueMapper: (_ChartData sales, _) => sales.y3,
+    ),
+    SplineSeries<_ChartData, String>(
+      markerSettings: const MarkerSettings(isVisible: true),
+      dataSource: chartData,
+      color: Colors.blue,
+      name: 'User avg',
+      animationDuration: 0.0,
+      cardinalSplineTension: 0.5,
+      splineType: SplineType.monotonic,
+      xValueMapper: (_ChartData sales, _) => sales.x,
+      yValueMapper: (_ChartData sales, _) => sales.y4,
+    )
+  ];
+}
 
+
+}
+class _ReportEyeTest extends StatefulWidget {
+  @override
+  __ReportEyeTestState createState() => __ReportEyeTestState();
+}
+class __ReportEyeTestState extends State<_ReportEyeTest> {
   Map<String, dynamic>? apiData;
-  Widget buildEyeTestReport(BuildContext context) {
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    geteyeReports();
+    super.initState();
+  }
+
+  Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -786,7 +1327,8 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin{
           ListView.builder(
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
-            itemCount: apiData?['data'].length, // Assuming apiData is your response object
+            itemCount: apiData?['data'].length,
+            // Assuming apiData is your response object
             itemBuilder: (context, index) {
               final eyeTest = apiData?['data'][index];
               return Card(
@@ -795,7 +1337,8 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin{
                 margin: EdgeInsets.symmetric(horizontal: 10, vertical: 9),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(17.0),
-                  side: BorderSide(color: Colors.grey.shade400, width: 1.0), // Add this line to set the border color and width
+                  side: BorderSide(color: Colors.grey.shade400,
+                      width: 1.0), // Add this line to set the border color and width
                 ),
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 2, vertical: 11),
@@ -806,11 +1349,14 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin{
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            'Date: ' + eyeTest['created_on'].toString().substring(0, 10),
+                            'Date: ' +
+                                eyeTest['created_on'].toString().substring(
+                                    0, 10),
                             style: TextStyle(fontStyle: FontStyle.normal),
                           ),
                         ),
                         SizedBox(height: 10),
+
                         Row(
                           children: [
                             Text(
@@ -838,9 +1384,10 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin{
                                     Navigator.push(
                                       context,
                                       CupertinoPageRoute(
-                                        builder: (context) => EyeTestReport(
-                                          reportId: eyeTest['report_id'],
-                                        ),
+                                        builder: (context) =>
+                                            EyeTestReport(
+                                              reportId: eyeTest['report_id'],
+                                            ),
                                       ),
                                     );
                                   },
@@ -873,250 +1420,8 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin{
       ),
     );
   }
-
-  Widget buildOtherReport(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      floatingActionButton: Stack(
-        alignment: Alignment.bottomRight,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PrescriptionUpload(),
-                  ),
-                );
-              },
-              backgroundColor: Colors.bluebutton, // Set the background color of the FAB
-              child: Icon(Icons.camera_enhance_outlined, color: Colors.white), // Set the icon of the FAB
-            ),
-          ),
-     /*     Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Positioned(
-              bottom: 10,
-              right: 10,
-              child: Text(
-                'Upload Prescription',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),*/
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: prescriptions.length,
-              itemBuilder: (context, index) {
-                final prescription = prescriptions[index];
-                return Card(
-                  color: Colors.white,
-                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 9),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(17.0),
-                    side: BorderSide(color: Colors.grey.shade400, width: 1.0), // Add this line to set the border color and width
-                  ),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 2, vertical: 11),
-                    child: ListTile(
-                      title: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
-                            child: Text(
-                              prescription.problemFaced,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 12,
-                                color: Colors.greytext,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Date: ',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  prescription.createdOn.toLocal().toString().substring(0, 10),
-                                  style: TextStyle(
-                                    fontStyle: FontStyle.normal,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => PrescriptionDetailPage(prescription: prescription),
-                                        ),
-                                      );
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      foregroundColor: Colors.white,
-                                      backgroundColor: Colors.bluebutton,
-                                      shape: CircleBorder(),
-                                      minimumSize: Size(30, 30),
-                                    ),
-                                    child: Transform.rotate(
-                                      angle: pi, // Correct rotation angle to 180 degrees
-                                      child: Transform.scale(
-                                        scale: 0.6,
-                                        child: Icon(Icons.arrow_back_ios_new),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-
-  Future getPrescriptionFiles() async {
-    var sharedPref = await SharedPreferences.getInstance();
-    String userToken = sharedPref.getString("access_token") ?? '';
-    try {
-      Map<String, String> headers = {
-        'Authorization': 'Bearer $userToken', // Bearer token type
-        // 'Content-Type': 'application/json',
-      };
-      // Make the API request to fetch project sites
-      var response = await Dio().get(
-          "${ApiProvider.baseUrl}${ApiProvider.uploadPrescription}",
-          options: Options(headers: headers));
-      dynamic logger = Logger();
-
-      logger.d(response.data);
-      // Check the response status code
-      if (response.statusCode == 200) {
-        Map<String, dynamic> data = json.decode(response.toString());
-
-        prescriptions = (data['data'] as List)
-            .map((item) => Prescription.fromJson(item))
-            .toList();
-
-        /*  Map<String, dynamic> data = json.decode(response.toString());
-        List<dynamic> prescriptionFiles = data['data']; // Specify the file name
-        List<String> prescriptionNames = [];
-        isLoading = false;
-        for (var fileEntry in prescriptionFiles) {
-          String invoiceFile = fileEntry['file'];
-          String date = fileEntry['created_on'];
-          String status = fileEntry['status'];
-
-          String images = fileEntry['file'];
-         // image.add(images);
-
-
-          String prescription_id = fileEntry['prescription_id'];
-
-          prescriptionNames.add(invoiceFile);
-        //  dates.add(date);
-       //   statuses.add(status);
-        //  prescriptionid.add(prescription_id);
-        }
-        print('Purchase Orderdd: $prescriptionNames');
-        // Extract the invoice_file values and create PlatformFile objects
-        List<PlatformFile> platformFiles = [];
-        for (var fileEntry in prescriptionFiles) {
-          String invoiceFilePath = fileEntry['file'];
-          PlatformFile platformFile = PlatformFile(
-            name: invoiceFilePath.split('/').last,
-            size: 0, // Set appropriate file size
-            bytes: null, // Set appropriate file bytes
-          );
-          platformFiles.add(platformFile);
-        }
-      //  _files.addAll(platformFiles);
-
-        setState(() {});*/
-      } else {
-        // If the request was not successful, throw an error
-        throw Exception('Failed to load data: ${response.statusCode}');
-      }
-    } catch (e, stacktrace) {
-      // If an error occurs during the request, throw the error
-      throw Exception('Failed to load data: $e    $stacktrace');
-    }
-  }
-
-  Future<void> getReports() async {
-    // try {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken = prefs.getString('access_token') ?? '';
-    final response = await http.get(
-      Uri.parse('${ApiProvider.baseUrl}/api/fatigue/fatigue-reports'),
-      headers: <String, String>{
-        'Authorization': 'Bearer $authToken',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final responseData = json.decode(response.body);
-      setState(() {
-        isLoading = false;
-        itemsdata = responseData['data'];
-        for (int i = 0; i < itemsdata.length; i++) {
-          int id = json.decode(response.body)['data'][i]['report_id'];
-          String date = json.decode(response.body)['data'][i]['created_on'];
-          dynamic percentage_ =
-          json.decode(response.body)['data'][i]['percentage'];
-          ReportIds.add(id);
-          items.add(date);
-          percentage.add(percentage_);
-        }
-      });
-    } else {
-      print(response.body);
-    }
-    /*  } catch (e) {
-      print("exception:$e");
-    }*/
-  }
   Future<void> geteyeReports() async {
-    //try {
+    try {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken = prefs.getString('access_token') ?? '';
     final response = await http.get(
@@ -1126,7 +1431,7 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin{
       },
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode ==  200) {
       final responseData = json.decode(response.body);
       setState(() {
         isLoading = false;
@@ -1149,11 +1454,10 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin{
     else {
       print(response.body);
     }
-    /*    }  catch (e) {
+        }  catch (e) {
       print("exception:$e");
-    }*/
-  }
-}
+    }
+  }}
 
 class Prescription {
   final String prescriptionId;
