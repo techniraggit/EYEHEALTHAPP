@@ -28,6 +28,7 @@ import '../models/fatigueGraphModel.dart';
 import '../notification/notification_dashboard.dart';
 import '../sign_up.dart';
 import 'FatigueReportDetails.dart';
+import 'eyeFatigueTest.dart';
 
 class ReportPage extends StatefulWidget {
   @override
@@ -874,7 +875,7 @@ class __ReportFatigueTestState extends State<_ReportFatigueTest> {
 
       Map<String, dynamic> jsonData = jsonDecode(response.body);
       // List<dynamic> data = jsonData['data'];
-
+count=jsonData['no_of_fatigue_test'];
       if (responseData.containsKey('status') && responseData['status']) {
         if (responseData.containsKey('first_day_data') &&
             responseData['first_day_data'].containsKey('value')) {
@@ -948,52 +949,34 @@ class __ReportFatigueTestState extends State<_ReportFatigueTest> {
   List<dynamic> ReportIds = [];
   List<dynamic> items = [];
 Widget build(BuildContext context) {
-  AppBar(title: Text('Prescription Details'),backgroundColor: Colors.white,);
-  return SingleChildScrollView(
-    child: Column(
 
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        // const Padding(
-        //   padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
-        //   child: Text(
-        //     'EYE HEALTH GRAPH OVERVIEW', // Display formatted current date
-        //     style: TextStyle(
-        //       fontSize: 18,
-        //       fontWeight: FontWeight.bold,
-        //     ),
-        //   ),
-        // ),
-        Container(
-          color: Colors.white,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
-            child: Container(
-              color: Colors.white,
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
-              child: Card(
+  AppBar(title: Text('Prescription Details'),
+    backgroundColor: Colors.white,);
+  return SingleChildScrollView(
+    child: Container(
+      color: Colors.white,
+      child: Column(
+
+
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+
+          Container(
+            color: Colors.white,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
+              child: Container(
                 color: Colors.white,
-                elevation: 0.1,
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
                 child: Column(
+
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
 
-                    // Padding(
-                    //   padding: EdgeInsets.all(1),
-                    //   child: ListTile(
-                    //     title: Text(
-                    //       'Right Eye Health',
-                    //       style: TextStyle(
-                    //         fontSize: 16.0,
-                    //         fontWeight: FontWeight.bold,
-                    //       ),
-                    //     ),
-                    //     subtitle: Text('April 30-May 30'),
-                    //   ),
-                    // ),
+
                     if(chartData != null)...{
                       Center(
                         child: Container(
@@ -1014,116 +997,78 @@ Widget build(BuildContext context) {
                           _buildColorDescription(Colors.blue, 'User avg'),
                         ],
                       ),
+
+
+
+                      if(count==0)...{
+                        SizedBox(height: 10),
+
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
+                          child: Text(
+                            'Get your first test done now and start tracking your eye health.', // Display formatted current date
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.black),
+                          ),
+                        ),
+                        SizedBox(height: 9),
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => EyeFatigueStartScreen()),
+                                );
+                              },
+                              child: Text('Start Test Now'),
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: Size(200, 45),
+                                foregroundColor: Colors.white,
+                                backgroundColor: Colors.bluebutton,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 30),
+                        Center(
+                          child: Text(
+                            'No Reports to show', // Display formatted current date
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.black),
+                          ),
+                        ),
+                        SizedBox(height: 30),
+
+                      },
                     },
+
                     SizedBox(height: 29),
                   ],
                 ),
               ),
             ),
           ),
-        ),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            return Card(
-              color: Colors.white,
-              elevation: 0.4,
-              margin: EdgeInsets.symmetric(horizontal: 10, vertical: 9),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(17.0),
-                side: BorderSide(color: Colors.grey.shade400,
-                    width: 1.0), // Add this line to set the border color and width
-              ),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 2, vertical: 11),
-                child: ListTile(
-                  title: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'Date: ' + items[index].toString().substring(0, 10),
-                          style: TextStyle(fontStyle: FontStyle.normal),
-
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Text(
-                            'Test Result : ',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                            ),
-                          ),
-                          Builder(
-                            builder: (context) {
-                              if (percentage[index] > 5.0) {
-                                testResult = "Good";
-                              } else {
-                                testResult = "Bad";
-                              }
-                              return Text(
-                                testResult,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 16,
-                                  color: testResult == 'Good'
-                                      ? Colors.green
-                                      : Colors.red,
-                                ),
-                              );
-                            },
-                          ),
-                          Expanded(
-                            child: Align(
-                              alignment: Alignment.centerRight,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    CupertinoPageRoute(
-                                      builder: (context) =>
-                                          ReportDetails(
-                                            reportId: ReportIds[index],
-                                          ),
-                                    ),
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  backgroundColor: Colors.bluebutton,
-                                  shape: CircleBorder(),
-                                  minimumSize: Size(30, 30),
-                                ),
-                                child: Transform.rotate(
-                                  angle: -pi / 1,
-                                  child: Transform.scale(
-                                    scale: 0.6,
-                                    child: Icon(Icons.arrow_back_ios_new),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-
-            /*    return Card(
+          ListView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              return Card(
                 color: Colors.white,
                 elevation: 0.4,
                 margin: EdgeInsets.symmetric(horizontal: 10, vertical: 9),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(17.0),
+                  side: BorderSide(color: Colors.grey.shade400,
+                      width: 1.0), // Add this line to set the border color and width
                 ),
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 2, vertical: 11),
@@ -1136,6 +1081,7 @@ Widget build(BuildContext context) {
                           child: Text(
                             'Date: ' + items[index].toString().substring(0, 10),
                             style: TextStyle(fontStyle: FontStyle.normal),
+
                           ),
                         ),
                         SizedBox(height: 10),
@@ -1175,9 +1121,10 @@ Widget build(BuildContext context) {
                                     Navigator.push(
                                       context,
                                       CupertinoPageRoute(
-                                        builder: (context) => ReportDetails(
-                                          reportId: ReportIds[index],
-                                        ),
+                                        builder: (context) =>
+                                            ReportDetails(
+                                              reportId: ReportIds[index],
+                                            ),
                                       ),
                                     );
                                   },
@@ -1203,10 +1150,12 @@ Widget build(BuildContext context) {
                     ),
                   ),
                 ),
-              );*/
-          },
-        ),
-      ],
+              );
+
+            },
+          ),
+        ],
+      ),
     ),
   );
 }
