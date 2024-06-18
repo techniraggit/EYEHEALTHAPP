@@ -6,7 +6,6 @@ import 'package:action_broadcast/action_broadcast.dart';
 import 'package:alarm/alarm.dart';
 import 'package:alarm/model/alarm_settings.dart';
 import 'package:dio/dio.dart';
-import 'package:draw_graph/models/feature.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -20,6 +19,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:project_new/alarm/demo_main.dart';
 
 import 'package:project_new/digitalEyeTest/testScreen.dart';
+import 'package:project_new/eyeFatigueTest/EyeFatigueSelfieScreen.dart';
 import 'package:project_new/sign_up.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -74,7 +74,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
         switch (intent.action) {
           case 'actionMusicPlaying':
             setState(() {
-              getNotifactionCount();
+              // getNotifactionCount();
             });
             break;
         }
@@ -85,7 +85,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   List<double>? _data;
   List<String>? dates;
   int i = 0;bool edited=false;
-  List<Feature>? features;
+  // List<Feature>? features;
   List<String>? labelX;
   int count = 0;
   List<String>? labelY;
@@ -97,6 +97,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   String _status = '';
   List<FlSpot> _value = [];
   List<_ChartData>? chartData;
+  List<_ChartData2>? chartData2;
 
   List<FlSpot> _spots = [FlSpot(0, 0)]; // Initialize _spots as needed
   bool fatigue_left = false;
@@ -149,7 +150,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     const tenSeconds = Duration(seconds: 10);
     _timer = Timer.periodic(tenSeconds, (timer) {
       // Make your API call here
-      getNotifactionCount();
+      // getNotifactionCount();
     });
   }
 
@@ -176,7 +177,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
 
     subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
     Future.delayed(const Duration(seconds: 1), () {})
-        .then((_) => getNotifactionCount())
+        // .then((_) => getNotifactionCount())
         .then((_) {
       if (mounted) {
         setState(() {});
@@ -1042,7 +1043,7 @@ if(edited==false){
             text: 'eye score  (y-axis)  --->'), // Description for X axis
         majorGridLines: MajorGridLines(width: 0), // Hide horizontal grid lines
       ),
-      series: _getVerticalSplineSeries(),
+      series: firstTestgraphData.isNotEmpty ? _getVerticalSplineSeries() : _getVerticalSplineSeries1(),
       tooltipBehavior: TooltipBehavior(enable: true),
     );
   }
@@ -1100,6 +1101,48 @@ if(edited==false){
     ];
   }
 
+  List<SplineSeries<_ChartData2, String>> _getVerticalSplineSeries1() {
+    return <SplineSeries<_ChartData2, String>>[
+
+      SplineSeries<_ChartData2, String>(
+        markerSettings: const MarkerSettings(isVisible: true),
+        dataSource: chartData2,
+        cardinalSplineTension: 0.5,
+        splineType: SplineType.monotonic,
+        name: 'Ideal Score',
+        color: Colors.green,
+        xValueMapper: (_ChartData2 sales, _) => sales.x,
+        yValueMapper: (_ChartData2 sales, _) => sales.y,
+        emptyPointSettings: const EmptyPointSettings(
+            mode: EmptyPointMode.gap, // Connect null points to zero
+            color: Colors.green,
+            borderColor: Colors.green,
+            borderWidth:
+            2 // Optional: Set color of the line connecting null points
+        ),
+      ),
+
+
+      SplineSeries<_ChartData2, String>(
+        markerSettings: const MarkerSettings(isVisible: true),
+        dataSource: chartData2,
+        color: Colors.blue,
+        cardinalSplineTension: 0.5,
+        splineType: SplineType.monotonic,
+        name: 'User Average Score',
+        xValueMapper: (_ChartData2 sales, _) => sales.x,
+        yValueMapper: (_ChartData2 sales, _) => sales.y2,
+        emptyPointSettings: const EmptyPointSettings(
+            mode: EmptyPointMode.zero, // Connect null points to zero
+            color: Colors.blue,
+            borderColor: Colors.blue,
+            borderWidth:
+            2 // Optional: Set color of the line connecting null points
+        ),
+      )
+    ];
+  }
+
   void checkActivePlan(String testType) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('access_token') ?? '';
@@ -1137,7 +1180,7 @@ if(edited==false){
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => EyeFatigueStartScreen()),
+                    builder: (context) => EyeFatigueSelfieScreen()),
               );
             } else {
               showModalBottomSheet(
@@ -1202,8 +1245,9 @@ if(edited==false){
     }
   }
 
-  Future<List<double>> getGraph() async {
-    try {
+  Future<void> getGraph() async {
+    //List<double>
+    // try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken = prefs.getString('access_token') ?? '';
       final response = await http.get(
@@ -1213,7 +1257,7 @@ if(edited==false){
           'Authorization': 'Bearer $authToken',
         },
       );
-
+print("response=======data===${response.body}");
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         fatigueGraphData = fatigueGraph.fromJson(responseData);
@@ -1264,22 +1308,43 @@ if(edited==false){
         }
         print("fffffffffffffff$todaygraphData");
         setState(() {
+          if (firstTestgraphData.isNotEmpty){
           chartData = <_ChartData>[
-            _ChartData('6 AM', firstTestgraphData[0], idealTestgraphData[0],
-                populationTestgraphData[0], todaygraphData[0]),
-            _ChartData('9 AM', firstTestgraphData[1], idealTestgraphData[1],
-                populationTestgraphData[1], todaygraphData[1]),
-            _ChartData('12 PM', firstTestgraphData[2], idealTestgraphData[2],
-                populationTestgraphData[2], todaygraphData[2]),
-            _ChartData('3 PM', firstTestgraphData[3], idealTestgraphData[3],
-                populationTestgraphData[3], todaygraphData[3]),
-            _ChartData('6 PM', firstTestgraphData[4], idealTestgraphData[4],
-                populationTestgraphData[4], todaygraphData[4]),
-            _ChartData('9 PM', firstTestgraphData[5], idealTestgraphData[5],
-                populationTestgraphData[5], todaygraphData[5]),
-            _ChartData('12 AM', firstTestgraphData[6], idealTestgraphData[6],
-                populationTestgraphData[6], todaygraphData[6]),
-          ];
+
+              _ChartData('6 AM', firstTestgraphData[0], idealTestgraphData[0],
+                  populationTestgraphData[0], todaygraphData[0]),
+              _ChartData('9 AM', firstTestgraphData[1], idealTestgraphData[1],
+                  populationTestgraphData[1], todaygraphData[1]),
+              _ChartData('12 PM', firstTestgraphData[2], idealTestgraphData[2],
+                  populationTestgraphData[2], todaygraphData[2]),
+              _ChartData('3 PM', firstTestgraphData[3], idealTestgraphData[3],
+                  populationTestgraphData[3], todaygraphData[3]),
+              _ChartData('6 PM', firstTestgraphData[4], idealTestgraphData[4],
+                  populationTestgraphData[4], todaygraphData[4]),
+              _ChartData('9 PM', firstTestgraphData[5], idealTestgraphData[5],
+                  populationTestgraphData[5], todaygraphData[5]),
+              _ChartData('12 AM', firstTestgraphData[6], idealTestgraphData[6],
+                 populationTestgraphData[6], todaygraphData[6]),];
+            }
+            else{
+            chartData2 = <_ChartData2>[
+              _ChartData2('6 AM',  idealTestgraphData[0],
+                  populationTestgraphData[0]),
+              _ChartData2('9 AM',  idealTestgraphData[1],
+                  populationTestgraphData[1] ),
+              _ChartData2('12 PM',  idealTestgraphData[2],
+                  populationTestgraphData[2]),
+              _ChartData2('3 PM',  idealTestgraphData[3],
+                  populationTestgraphData[3]),
+              _ChartData2('6 PM',  idealTestgraphData[4],
+                  populationTestgraphData[4],),
+              _ChartData2('9 PM',  idealTestgraphData[5],
+                  populationTestgraphData[5]),
+              _ChartData2('12 AM',  idealTestgraphData[6],
+                  populationTestgraphData[6])];
+          }
+
+
         });
 
         count = jsonData['no_of_eye_test'];
@@ -1287,7 +1352,8 @@ if(edited==false){
         // return data
         //     .map((item) => double.parse(item['value'].toString()))
         //     .toList();
-      } else if (response.statusCode == 401) {
+      }
+      else if (response.statusCode == 401) {
         Fluttertoast.showToast(msg: "Session Expired");
         Navigator.pushReplacement(
           context,
@@ -1296,12 +1362,12 @@ if(edited==false){
       } else {
         print(response.body);
       }
-    } catch (e) {
-      // _progressDialog!.hide();
-
-      print("exception:$e");
-    }
-    throw Exception(Exception);
+    // } catch (e) {
+    //   // _progressDialog!.hide();
+    //
+    //   print("exception---:$e");
+    // }
+    // throw Exception(Exception);
   }
 }
 
@@ -1313,7 +1379,13 @@ class _ChartData {
   final double y3;
   final double y4;
 }
+class _ChartData2 {
+  _ChartData2(this.x, this.y, this.y2);
+  final String x;
+  final double y;
+  final double y2;
 
+}
 class setReminder extends StatefulWidget {
   @override
   State<setReminder> createState() => ReminderState();

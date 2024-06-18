@@ -13,21 +13,26 @@ import 'package:http/http.dart' as http;
 import '../Custom_navbar/customDialog.dart';
 import '../api/Api.dart';
 import 'eyeFatigueTest.dart';
- GlobalKey _cameraPreviewKey = GlobalKey();
 
+bool isclose=false;bool uploaded=false;
+bool isLoading = false;bool startgame=false;bool gamepermission=false;
 class EyeFatigueSelfieScreen extends StatefulWidget {
   @override
   EyeFatigueTestSelfieState createState() => EyeFatigueTestSelfieState();
 }
 
 class EyeFatigueTestSelfieState extends State<EyeFatigueSelfieScreen> {
-   CameraController? _controller;
-  late List<CameraDescription> _cameras;
+  GlobalKey _cameraPreviewKey1 = GlobalKey();
+
+  CameraController? _controller;
+  late List<CameraDescription> _cameras;bool selfieloader=false;
   bool _isCameraInitialized = false; // Flag to track camera initialization
   @override
   void initState() {
     super.initState();
     _initializeCamera();
+    isclose=false; uploaded=false;
+    isLoading = false;startgame=false;gamepermission=false;
     sendcustomerDetails();
 
   }
@@ -93,16 +98,20 @@ class EyeFatigueTestSelfieState extends State<EyeFatigueSelfieScreen> {
   }
 
   void _captureImage() async {
-    if (_isCameraInitialized) { // Capture images only if camera is initialized
+    // Capture images only if camera is initialized
+
+    if (_isCameraInitialized) {
       try {
         XFile? image = await _controller!.takePicture();
         print('Image captured: ${image.path}');
         capturePhoto(image);
             } catch (e) {
+        selfieloader=false;
+
         Fluttertoast.showToast(msg: "Image not Captured Properly , please capture again.");
         print('Error capturing image: $e');
         resetCameraPreview();
-        _cameraPreviewKey = GlobalKey();
+        _cameraPreviewKey1 = GlobalKey();
 
       }
 
@@ -119,6 +128,8 @@ class EyeFatigueTestSelfieState extends State<EyeFatigueSelfieScreen> {
   }
   void resetCameraPreview() {
     setState(() {
+      selfieloader=true;// Capture images only if camera is initialized
+
       // Generate a new GlobalKey to force the CameraPreview widget to rebuild
     });
   }
@@ -126,10 +137,16 @@ class EyeFatigueTestSelfieState extends State<EyeFatigueSelfieScreen> {
 
   Widget build(BuildContext context) {
 
-    if (!_isCameraInitialized) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+    // if (!_isCameraInitialized) {
+    //   return const Center(
+    //     child: CircularProgressIndicator(),
+    //   );
+    // }
+    if(_controller==null){
+      return Container();
+    }
+    if (!_controller!.value.isInitialized) {
+      return Container();
     }
     return WillPopScope(
       onWillPop: () async {
@@ -158,7 +175,7 @@ class EyeFatigueTestSelfieState extends State<EyeFatigueSelfieScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(22.0),
+                        padding: const EdgeInsets.all(20.0),
                         child: Text('Look straight ahead, position your face inside the box, '
                             'and click capture button!',style: TextStyle(fontWeight: FontWeight.w400,color: Colors.black,fontSize: 16),),
                       ),
@@ -174,36 +191,69 @@ class EyeFatigueTestSelfieState extends State<EyeFatigueSelfieScreen> {
                              child: ClipRect(
                               child: FittedBox(
                                 fit: BoxFit.cover,
-                                key: _cameraPreviewKey,
+                                key: _cameraPreviewKey1,
 
                                 child: SizedBox(
-                                  width: (_controller!.value.previewSize?.height ?? 0) / 2,
-                                  height: (_controller!.value.previewSize?.width??0)/2,
+                                  width: (_controller?.value.previewSize?.height ?? 0) / 2,
+                                  height: (_controller?.value.previewSize?.width??0)/2,
+
                                   child: CameraPreview(_controller!),
                                 ),
                               ),
                                                        ),
                            ),
                           SizedBox(height: 90),
-                          Container(
-                            margin: EdgeInsets.all(20),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                _captureImage();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                foregroundColor: Colors.white,
-                                backgroundColor: Colors.bluebutton,
-                                padding: EdgeInsets.all(16),
-                                minimumSize: Size(300, 30),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(22),
-                                ),
-                              ),
-                              child: Text('Take Selfie'),
-                            ),
-                          ),
-                        ],
+                          // Container(
+                          //   margin: EdgeInsets.all(20),
+                          //   child: ElevatedButton(
+                          //     onPressed: selfieloader ? null : () {
+                          //       _captureImage();
+                          //     },
+                          //     style: ElevatedButton.styleFrom(
+                          //       foregroundColor: Colors.white,
+                          //       backgroundColor: Colors.bluebutton,
+                          //       padding: EdgeInsets.all(16),
+                          //       minimumSize: Size(300, 30),
+                          //       shape: RoundedRectangleBorder(
+                          //         borderRadius: BorderRadius.circular(22),
+                          //       ),
+                          //     ),
+                          //     child: Text('Take Selfie'),
+                          //   ),
+                          // ),
+      Container(
+        margin: EdgeInsets.all(20),
+        child: Stack(
+          children: [
+            ElevatedButton(
+              onPressed: selfieloader ? null : () {
+                setState(() {
+                  selfieloader=true;
+                });
+                _captureImage();
+              },
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.blue, // Assuming you have defined Colors.bluebutton somewhere
+                padding: EdgeInsets.all(16),
+                minimumSize: Size(300, 30),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(22),
+                ),
+              ),
+              child: Text('Take Selfie'),
+            ),
+            if (selfieloader)
+              Positioned.fill(
+                child: Center(
+                  child: CircularProgressIndicator(), // Replace with your desired loader widget
+                ),
+              ),
+          ],
+        ),
+      )
+
+      ],
                       ),
                     ],
                   ),
@@ -268,16 +318,21 @@ print("access_token===="+userToken);
       // print("test_distance :" + distanceType);
       print("response-camera${response.body}");
       if (response.statusCode == 200) {
-        Map<String, dynamic> data = jsonDecode(response.body);
 
         Navigator.push(
            context,
            MaterialPageRoute(
-               builder: (context) => EyeFatigueSecondScreen()),
+               builder: (context) => EyeFatigueStartScreen()),
          );
-
+        Map<String, dynamic> data = jsonDecode(response.body);
+        setState(() {
+          selfieloader=false;
+        });
       }
         if (response.statusCode == 404){
+          setState(() {
+            selfieloader=false;
+          });
           final responseData = json.decode(response.body);
           String alertMessage = responseData['error'];
           Fluttertoast.showToast(msg: alertMessage);
@@ -288,10 +343,16 @@ print("access_token===="+userToken);
         final responseData = json.decode(response.body);
         String alertMessage = responseData['error'];
 Fluttertoast.showToast(msg: alertMessage);
+setState(() {
+  selfieloader=false;
+});
 
         // Handle error response
       }
     } }catch (e) {
+      setState(() {
+        selfieloader=false;
+      });
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
             context, 'poor internet connectivity , please try again later!');

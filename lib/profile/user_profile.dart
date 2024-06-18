@@ -24,7 +24,7 @@ class UserProfile extends StatefulWidget {
 }
 
 class ProfileDetails extends State<UserProfile> {
-  bool isMobileValid = true;
+  bool isMobileValid = true;String initialEmail='';String initialPhone='';
   TextEditingController _firstNameController = TextEditingController();
   TextEditingController _lastNmeController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
@@ -315,125 +315,161 @@ bool isLoading=true;
                               ),
                             ),
                             const SizedBox(height: 25),
-                            SizedBox(
-                              height: 55,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10.0, vertical: 1),
-                                child: TextField(
-                                  controller: _phoneController,
-                                  inputFormatters: [
-                                    LengthLimitingTextInputFormatter(10),
-                                    // Limits input length to 10 characters
-                                  ],
-                                  keyboardType: TextInputType.number,
-                                  textInputAction: TextInputAction.next,
-                                  onSubmitted: (_) {
-                                    // Call your API function when the user submits the text field
-                                    verifyUserphone();
-                                  },
-                                  onEditingComplete: () {
-                                    // Call your API function when the user completes editing the text field
-                                    verifyUserphone();
-                                  },
-                                  decoration: InputDecoration(
-                                    labelText: 'Phone',
-                                    hintText: 'Enter Phone Number',
-                                    labelStyle: const TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.background,
-                                        fontWeight: FontWeight.w400),
-                                    hintStyle: const TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.hinttext,
-                                        fontWeight: FontWeight.w400),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                          27.0), // Add circular border
-                                    ),
-                                    // Set floatingLabelBehavior to always display the label
-                                    floatingLabelBehavior:
-                                        FloatingLabelBehavior.always,
-                                    suffixIcon: !isVerifiedphone
-                                        ? GestureDetector(
-                                            onTap: () {
-                                              getVerifyPhoneOtp();
-                                            },
-                                            child: getSuffixIconPhone(),
-                                          )
-                                        : null,
+                            Builder(
+                              builder: (context) {
+                                if( _phoneController.text.isNotEmpty &&
+                                    _phoneController.text != initialPhone){
+                                  // setState(() {
+                                    isVerifiedphone=false;
+                                  // });
 
-                                    // suffixIcon: GestureDetector(
-                                    //     onTap: () {
-                                    //       getVerifyPhoneOtp();
-                                    //
-                                    //     },
-                                    //     child: getSuffixIconPhone())
+                                }else{
+                                  isVerifiedphone=true;
+                                }
+                                return SizedBox(
+                                  height: 55,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10.0, vertical: 1),
+                                    child: TextField(
+                                      controller: _phoneController,
+                                      inputFormatters: [
+                                        LengthLimitingTextInputFormatter(10),
+                                        // Limits input length to 10 characters
+                                      ],
+                                      keyboardType: TextInputType.number,
+                                      textInputAction: TextInputAction.next,
+                                      onSubmitted: (_) {
+
+                                        // isVerifiedphone=true;
+                                        // Call your API function when the user submits the text field
+                                        verifyUserphone();
+                                      },
+                                      onEditingComplete: () {
+                                        setState(() {
+                                          isVerifiedphone=false;
+                                        });
+
+                                        // Call your API function when the user completes editing the text field
+                                        verifyUserphone();
+                                      },
+                                      decoration: InputDecoration(
+                                        labelText: 'Phone',
+                                        hintText: 'Enter Phone Number',
+                                        labelStyle: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.background,
+                                            fontWeight: FontWeight.w400),
+                                        hintStyle: const TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.hinttext,
+                                            fontWeight: FontWeight.w400),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                              27.0), // Add circular border
+                                        ),
+                                        // Set floatingLabelBehavior to always display the label
+                                        floatingLabelBehavior:
+                                            FloatingLabelBehavior.always,
+                                        suffixIcon: !isVerifiedphone
+                                            ? GestureDetector(
+                                                onTap: () {
+                                                  getVerifyPhoneOtp();
+                                                },
+                                                child: getSuffixIconPhone(),
+                                              )
+                                            : null,
+
+                                        // suffixIcon: GestureDetector(
+                                        //     onTap: () {
+                                        //       getVerifyPhoneOtp();
+                                        //
+                                        //     },
+                                        //     child: getSuffixIconPhone())
+                                      ),
+                                      style: const TextStyle(
+                                          fontSize: 15, fontWeight: FontWeight.w400),
+                                    ),
                                   ),
-                                  style: const TextStyle(
-                                      fontSize: 15, fontWeight: FontWeight.w400),
-                                ),
-                              ),
+                                );
+                              }
                             ),
                             const SizedBox(height: 25),
-                            SizedBox(
-                              height: 69,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10.0, vertical: 1),
-                                child: TextField(
-                                  controller: _emailController,
-                                  textInputAction: TextInputAction.next,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _emailValid = isValidEmail(
-                                          value); // Validate email on change
-                                    });
-                                  },
-                                  onSubmitted: (_) {
-                                    // Call your API function when the user submits the text field
-                                    verifyUseremail();
-                                  },
-                                  onEditingComplete: () {
-                                    // Call your API function when the user completes editing the text field
-                                    verifyUseremail();
-                                  },
-                                  decoration: InputDecoration(
-                                    labelText: 'Email',
-                                    hintText: 'Enter Email Address',
-                                    labelStyle: const TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.background,
-                                        fontWeight: FontWeight.w400),
+                            Builder(
+                              builder: (context) {
+if( _emailController.text.isNotEmpty &&
+    _emailController.text != initialEmail){
+  // setState(() {
+    isVerifiedemail=false;
+  // });
 
-                                    hintStyle: const TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.hinttext,
-                                        fontWeight: FontWeight.w400),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                          27.0), // Add circular border
+}else{
+  isVerifiedemail=true;
+}
+
+                                return SizedBox(
+                                  height: 69,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10.0, vertical: 1),
+                                    child: TextField(
+                                      controller: _emailController,
+                                      textInputAction: TextInputAction.next,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _emailValid = isValidEmail(
+                                              value); // Validate email on change
+                                        });
+                                      },
+                                      onSubmitted: (_) {
+                                        // Call your API function when the user submits the text field
+                                        verifyUseremail();
+                                      },
+                                      onEditingComplete: () {
+                                        setState(() {
+                                          isVerifiedemail=false;
+                                        });
+                                        // Call your API function when the user completes editing the text field
+                                        verifyUseremail();
+                                      },
+                                      decoration: InputDecoration(
+                                        labelText: 'Email',
+                                        hintText: 'Enter Email Address',
+                                        labelStyle: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.background,
+                                            fontWeight: FontWeight.w400),
+
+                                        hintStyle: const TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.hinttext,
+                                            fontWeight: FontWeight.w400),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                              27.0), // Add circular border
+                                        ),
+                                        // Set floatingLabelBehavior to always display the label
+                                        floatingLabelBehavior:
+                                            FloatingLabelBehavior.always,
+                                        suffixIcon: !isVerifiedemail
+                                            ? GestureDetector(
+                                                onTap: () {
+                                                  getVerifyPhoneOtp();
+                                                },
+                                                child: getSuffixIconEmail(),
+                                              )
+                                            : null,
+
+                                        errorText: _emailValid
+                                            ? null
+                                            : 'Please enter a valid email',
+                                      ),
+                                      style: const TextStyle(
+                                          fontSize: 15, fontWeight: FontWeight.w400),
                                     ),
-                                    // Set floatingLabelBehavior to always display the label
-                                    floatingLabelBehavior:
-                                        FloatingLabelBehavior.always,
-                                    suffixIcon: !isVerifiedemail
-                                        ? GestureDetector(
-                                            onTap: () {
-                                              getVerifyPhoneOtp();
-                                            },
-                                            child: getSuffixIconEmail(),
-                                          )
-                                        : null,
-
-                                    errorText: _emailValid
-                                        ? null
-                                        : 'Please enter a valid email',
                                   ),
-                                  style: const TextStyle(
-                                      fontSize: 15, fontWeight: FontWeight.w400),
-                                ),
-                              ),
+                                );
+                              }
                             ),
                             const SizedBox(height: 20),
                             Padding(
@@ -701,6 +737,8 @@ bool isLoading=true;
           }
           _phoneController.text = jsonResponse['data']['phone_number'];
           _emailController.text = jsonResponse['data']['email'];
+          initialEmail=jsonResponse['data']['email'];
+          initialPhone=jsonResponse['data']['phone_number'];
           if( jsonResponse['data']['image']!=null){
           imageUrl1 = "${ApiProvider.baseUrl}" +
               jsonResponse['data']['image'];}else{imageUrl1='';}
@@ -1278,7 +1316,7 @@ bool isLoading=true;
     //
     // }
     setState(() {});
-    if (pincode.isEmpty || pincode.length != 6) {
+    if (pincode.isEmpty || pincode.length != 4) {
       Fluttertoast.showToast(msg: "Enter Otp");
       return false;
     }
@@ -1293,7 +1331,7 @@ bool isLoading=true;
     //
     // }
 
-    if (pincode.isEmpty || pincode.length != 6) {
+    if (pincode.isEmpty || pincode.length != 4) {
       Fluttertoast.showToast(msg: "Enter Otp");
       return false;
     }

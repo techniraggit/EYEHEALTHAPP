@@ -33,8 +33,6 @@ import 'EyeFatigueSelfieScreen.dart';
 import 'eyeFatigueTestReport.dart';
 
 
-bool isclose=false;bool uploaded=false;
-bool isLoading = false;bool startgame=false;bool gamepermission=false;
 class EyeFatigueStartScreen extends StatefulWidget {
   @override
   EyeFatigueStartScreenState createState() => EyeFatigueStartScreenState();
@@ -160,7 +158,7 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => EyeFatigueSelfieScreen()),
+                          builder: (context) => EyeFatigueSecondScreen()),
                     );
 
                   },
@@ -535,7 +533,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
       else {
         // Fluttertoast.showToast(msg: "222222222222222222");
         // MyProgressDialog.dismissProgressDialog(progressDialog!);
-        Fluttertoast.showToast(msg: "Face not Captured Properl,please test again !!");
+        Fluttertoast.showToast(msg: "Face not Captured Properly,please test again !!");
         setState(() {
           isclose=false; uploaded=false;
           isLoading = false;startgame=false;gamepermission=false;
@@ -569,95 +567,170 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
     if (!_controller!.value.isInitialized) {
       return;
     }
-    final directory = await getTemporaryDirectory(); // Get temporary directory
-     videoPath = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.mp4'; // Set the path in the temporary directory
-
+    // final directory = await getTemporaryDirectory(); // Get temporary directory
+    //  videoPath = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.mp4'; // Set the path in the temporary directory
+    final directory = await getApplicationDocumentsDirectory();
+     videoPath = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
     try {
       await _controller!.startVideoRecording();
       isRecording = true;
       setState(() {});
 
-      await Future.delayed(const Duration(seconds: 30));
+      await Future.delayed(const Duration(seconds: 30)); // Assuming you wait for 30 seconds for recording
 
       if (_controller!.value.isRecordingVideo) {
-        final XFile file = await _controller!.stopVideoRecording();
-        isRecording = false;
-
-
-        print('Video recorded to: ${file.path}');
-
-        // Verify file existence
-        // if ( await File(file.path).exists()) {
-        if (File(file.path).existsSync()) {
+        print("path--------0000-----");
+        XFile? file = await _controller!.stopVideoRecording();
+        if (file != null && file.path.isNotEmpty) {
+          isRecording = false;
+          print('Video recorded to: ${file.path}');
           setState(() {
-
-            gamepermission=true; isLoading=true;
-
-
-            // Fluttertoast.showToast(msg: "77777777777");
-
-            print("isLoading========$isLoading");
+            // Proceed with further operations like uploading or processing the video
+            gamepermission = true;
+            isLoading = true;
             _compressAndUploadVideo(file.path);
 
           });
-
-
-
-
-
-
-
         } else {
-          // Fluttertoast.showToast(msg: "888888888888");
-
-          Fluttertoast.showToast(msg: "Your Phone doesnt have sufficient storage or you haven't given permission to media access");
-          print('File does not exist.');
+          print('Failed to record video: Empty or null file path');
+          Fluttertoast.showToast(msg: "Video file path is empty or null.");
         }
+        // XFile file = await _controller!.stopVideoRecording();
+        // isRecording = false;
+        // setState(() {
+        //   // Check if the file exists
+        //   File videoFile = File(file.path);
+        //   print("path-------------");
+        //
+        //   videoFile.exists().then((exists) {
+        //     if (exists) {
+        //       // Proceed with further operations (e.g., upload, compress)
+        //       print('Video recorded to: ${file.path}');
+        //       gamepermission=true; isLoading=true;
+        //       _compressAndUploadVideo(file.path);
+        //     } else {
+        //       // Handle case where file does not exist
+        //       Fluttertoast.showToast(msg: "Video file does not exist.");
+        //     }
+        //   });
+        // });
       }
     } catch (e) {
-      print("Error: $e");
+
+      // Handle any exceptions thrown during video recording or processing
+      print("Error: ===============$e");
+      // Fluttertoast.showToast(msg: "Error: $e");
     }
+
+    // try {
+    //   await _controller!.startVideoRecording();
+    //   isRecording = true;
+    //   setState(() {});
+    //
+    //   await Future.delayed(const Duration(seconds: 30));
+    //
+    //   if (_controller!.value.isRecordingVideo) {
+    //     final XFile file = await _controller!.stopVideoRecording();
+    //     isRecording = false;
+    //
+    //
+    //     print('Video recorded to: ${file.path}');
+    //
+    //     // Verify file existence
+    //     // if ( await File(file.path).exists()) {
+    //     if (File(file.path).existsSync()) {
+    //       setState(() {
+    //
+    //         gamepermission=true; isLoading=true;
+    //
+    //
+    //         // Fluttertoast.showToast(msg: "77777777777");
+    //
+    //         print("isLoading========$isLoading");
+    //         _compressAndUploadVideo(file.path);
+    //
+    //       });
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //     } else {
+    //       // Fluttertoast.showToast(msg: "888888888888");
+    //
+    //       Fluttertoast.showToast(msg: "Your Phone doesnt have sufficient storage or you haven't given permission to media access");
+    //       print('File does not exist.');
+    //     }
+    //   }
+    //
+    // } catch (e) {
+    //   print("Error:== $e");
+    // }
   }
   void _compressAndUploadVideo(String videoPath) async {
-    final String videoName =
-        'MyVideo-${DateTime.now().millisecondsSinceEpoch}.mp4';
+    print("String videoPath=========$videoPath");
+    try {
+      final String videoName =
+            'MyVideo-${DateTime.now().millisecondsSinceEpoch}.mp4';
+      final Result response = await _lightCompressor.compressVideo(
+        path: videoPath,
+        videoQuality: VideoQuality.low,
+        isMinBitrateCheckEnabled: false,
+        android: AndroidConfig(isSharedStorage: true, saveAt: SaveAt.Movies),
+        ios: IOSConfig(saveInGallery: false),
+        video: Video(videoName: videoName),
+      );
 
-    final Result response = await _lightCompressor.compressVideo(
-      path: videoPath,
-      videoQuality: VideoQuality.low,
-      isMinBitrateCheckEnabled: false,android: AndroidConfig(isSharedStorage: true, saveAt: SaveAt.Movies),
-      ios: IOSConfig(saveInGallery: false), video: Video(videoName: videoName),
-    );
-
-    // Fluttertoast.showToast(msg: "6666666666666666");
-
-    if (response is OnSuccess) {
-      // setState(() async {
+      if (response is OnSuccess) {
         final videoFile = File(response.destinationPath);
         final videoSizeBytes = await videoFile.length();
         print('Compressed Video size: ${videoSizeBytes / (1024 * 1024)} MB');
         _uploadVideo(response.destinationPath);
-        // Fluttertoast.showToast(msg: "444444444444444");
 
         print('Compressed video path: ${response.destinationPath}');
-      // });
-    }else {
-      // Fluttertoast.showToast(msg: "555555555555555555555");
-
-      Fluttertoast.showToast(msg: "you phone may have insufficient storage");
+      } else {
+        print('Compression failed: ${response.toString()}');
+        Fluttertoast.showToast(msg: 'Video compression failed');
+      }
+    } catch (e) {
+      print('Compression error: $e');
+      Fluttertoast.showToast(msg: 'Error occurred during compression');
     }
-    // else if (response is OnFailure) {
-    //
-    //   setState(() {
-    //     Fluttertoast.showToast(msg: "${response.message}");
-    //
-    //   });
-    // }
-    // else if (response is OnCancelled) {
-    //   Fluttertoast.showToast(msg: "${response.isCancelled}");
-    //   print(response.isCancelled);
-    // }
+    throw(     "Compression error: $e"
+    );
   }
+
+  //   final String videoName =
+  //       'MyVideo-${DateTime.now().millisecondsSinceEpoch}.mp4';
+  //
+  //   final Result response = await _lightCompressor.compressVideo(
+  //     path: videoPath,
+  //     videoQuality: VideoQuality.low,
+  //     isMinBitrateCheckEnabled: false,
+  //     android: AndroidConfig(isSharedStorage: true, saveAt: SaveAt.Movies),
+  //     ios: IOSConfig(saveInGallery: false),
+  //     video: Video(videoName: videoName),
+  //   );
+  //
+  //
+  //   if (response is OnSuccess) {
+  //     // setState(() async {
+  //       final videoFile = File(response.destinationPath);
+  //       final videoSizeBytes = await videoFile.length();
+  //       print('Compressed Video size: ${videoSizeBytes / (1024 * 1024)} MB');
+  //       _uploadVideo(response.destinationPath);
+  //
+  //       print('Compressed video path: ${response.destinationPath}');
+  //     // });
+  //   }else {
+  //
+  //     print(response.toString());
+  //     // Fluttertoast.showToast(msg: "you phone may have insufficient storage");
+  //   }
+  //
+  // }
 
   @override
   Widget build(BuildContext context) {
