@@ -24,7 +24,9 @@ class UserProfile extends StatefulWidget {
 }
 
 class ProfileDetails extends State<UserProfile> {
-  bool isMobileValid = true;String initialEmail='';String initialPhone='';
+  bool isMobileValid = true;
+  String initialEmail = '';
+  String initialPhone = '';
   TextEditingController _firstNameController = TextEditingController();
   TextEditingController _lastNmeController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
@@ -37,7 +39,7 @@ class ProfileDetails extends State<UserProfile> {
   String pincode = '';
   double Latitude = 0.0;
   double Longitude = 0.0;
-bool isLoading=true;
+  bool isLoading = true;
   DateTime? _selectedDate;
   String user_id = '';
   Color buttonColor = Colors.disablebutton; // Default color
@@ -108,254 +110,193 @@ bool isLoading=true;
           primarySwatch: Colors.blue,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        home:  isLoading
+        home: isLoading
             ? const Center(
-          child: CircularProgressIndicator(
-            color: Colors.blue,
-          ),
-        )
-            :
-         Scaffold(
-            backgroundColor: Colors.background,
-            body: Column(
-              children: [
-                SizedBox(
-                  height: 40,
+                child: CircularProgressIndicator(
+                  color: Colors.blue,
                 ),
-                Stack(
+              )
+            : Scaffold(
+                backgroundColor: Colors.background,
+                body: Column(
                   children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.width / 3,
-                      alignment: Alignment.topLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(29, 3, 20, 20),
-                        child: Text(
-                          "Profile", // Your title text
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white, // Adjust the text color as needed
-                          ),
-                        ),
-                      ),
+                    SizedBox(
+                      height: 40,
                     ),
-                    Positioned(
-                      // top: MediaQuery.of(context).size.width / 3, // Adjust the top position as needed
-                      left: 0,
-                      right: 0,
-                      child: Image.asset(
-                        'assets/profileline.png', // Replace this with your image path
-                      ),
-                    ),
-                    Positioned.fill(
-                      child: Center(
-                        child: GestureDetector(
-                          onTap: () {
-                            _getImage();
-                          },
-                          child: Stack(
-                            children: [
-                              // Circular image
-                              // CircleAvatar(
-                              //   radius: 50.0,
-                              //   backgroundColor: Colors.transparent,
-                              //   child: ClipOval(
-                              //     child: SizedBox(
-                              //       width: 80.0,
-                              //       height: 80.0,
-                              //       child: imageUrl1 != ''
-                              //           ? Image.network(
-                              //               imageUrl1,
-                              //               fit: BoxFit.cover,
-                              //             )
-                              //           : _imageFile == null && imageUrl1 == ""
-                              //               ? Image.asset(
-                              //                   'assets/profile_pic.png',
-                              //                   fit: BoxFit.cover,
-                              //                 )
-                              //               : Image.file(
-                              //                   _imageFile!,
-                              //                   fit: BoxFit.cover,
-                              //                 ),
-                              //     ),
-                              //   ),
-                              // ),
-                              // Icon for editing
-                              CircleAvatar(
-                                radius: 50.0,
-                                backgroundColor: Colors.transparent,
-                                child: ClipOval(
-                                  child: SizedBox(
-                                    width: 80.0,
-                                    height: 80.0,
-                                    child: _imageFile != null
-                                        ? Image.file(
-                                      _imageFile!,
-                                      fit: BoxFit.cover,
-                                    )
-                                        : imageUrl1.isNotEmpty
-                                        ? Image.network(
-                                      imageUrl1,
-                                      fit: BoxFit.cover,
-                                    )
-                                        : Image.asset(
-                                      'assets/profile_pic.png',
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                              ),
-
-                              Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: Container(
-                                  padding: const EdgeInsets.all(2),
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.white,
-                                  ),
-                                  child: Icon(
-                                    Icons.edit,
-                                    color: Colors.grey[800],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 30,
-                ),
-                Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-                    ),
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.all(25),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const SizedBox(height: 14),
-                            SizedBox(
-                              height: 55,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10.0, vertical: 1),
-                                child: TextField(
-                                  controller: _firstNameController,
-                                  textInputAction: TextInputAction.next,
-                                  decoration: InputDecoration(
-                                    labelText: 'First Name',
-                                    labelStyle: const TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.background,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                    hintText: 'Enter First Name',
-                                    hintStyle: const TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.hinttext,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                          27.0), // Add circular border
-                                    ),
-                                    // Set floatingLabelBehavior to always display the label
-                                    floatingLabelBehavior:
-                                        FloatingLabelBehavior.always,
-                                    // Add button to the end of the TextField
-                                  ),
-                                  style: const TextStyle(
-                                      fontSize: 15, fontWeight: FontWeight.w400),
-                                ),
+                    Stack(
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.width / 3,
+                          alignment: Alignment.topLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(29, 3, 20, 20),
+                            child: Text(
+                              "Profile", // Your title text
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                                color: Colors
+                                    .white, // Adjust the text color as needed
                               ),
                             ),
-                            const SizedBox(height: 25),
-                            SizedBox(
-                              height: 55,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10.0, vertical: 1),
-                                child: TextField(
-                                  controller: _lastNmeController,
-                                  textInputAction: TextInputAction.next,
-                                  decoration: InputDecoration(
-                                    labelText: 'Last Name',
-                                    hintText: 'Enter Last Name',
-                                    labelStyle: const TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.background,
-                                        fontWeight: FontWeight.w400),
-                                    hintStyle: const TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.hinttext,
-                                        fontWeight: FontWeight.w400),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                          27.0), // Add circular border
+                          ),
+                        ),
+                        Positioned(
+                          // top: MediaQuery.of(context).size.width / 3, // Adjust the top position as needed
+                          left: 0,
+                          right: 0,
+                          child: Image.asset(
+                            'assets/profileline.png', // Replace this with your image path
+                          ),
+                        ),
+                        Positioned.fill(
+                          child: Center(
+                            child: GestureDetector(
+                              onTap: () {
+                                _getImage();
+                              },
+                              child: Stack(
+                                children: [
+                                  // Circular image
+                                  // CircleAvatar(
+                                  //   radius: 50.0,
+                                  //   backgroundColor: Colors.transparent,
+                                  //   child: ClipOval(
+                                  //     child: SizedBox(
+                                  //       width: 80.0,
+                                  //       height: 80.0,
+                                  //       child: imageUrl1 != ''
+                                  //           ? Image.network(
+                                  //               imageUrl1,
+                                  //               fit: BoxFit.cover,
+                                  //             )
+                                  //           : _imageFile == null && imageUrl1 == ""
+                                  //               ? Image.asset(
+                                  //                   'assets/profile_pic.png',
+                                  //                   fit: BoxFit.cover,
+                                  //                 )
+                                  //               : Image.file(
+                                  //                   _imageFile!,
+                                  //                   fit: BoxFit.cover,
+                                  //                 ),
+                                  //     ),
+                                  //   ),
+                                  // ),
+                                  // Icon for editing
+                                  CircleAvatar(
+                                    radius: 50.0,
+                                    backgroundColor: Colors.transparent,
+                                    child: ClipOval(
+                                      child: SizedBox(
+                                        width: 80.0,
+                                        height: 80.0,
+                                        child: _imageFile != null
+                                            ? Image.file(
+                                                _imageFile!,
+                                                fit: BoxFit.cover,
+                                              )
+                                            : imageUrl1.isNotEmpty
+                                                ? Image.network(
+                                                    imageUrl1,
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : Image.asset(
+                                                    'assets/profile_pic.png',
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                      ),
                                     ),
-                                    // Set floatingLabelBehavior to always display the label
-                                    floatingLabelBehavior:
-                                        FloatingLabelBehavior.always,
                                   ),
-                                  style: const TextStyle(
-                                      fontSize: 15, fontWeight: FontWeight.w400),
-                                ),
+
+                                  Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(2),
+                                      decoration: const BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white,
+                                      ),
+                                      child: Icon(
+                                        Icons.edit,
+                                        color: Colors.grey[800],
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(height: 25),
-                            Builder(
-                              builder: (context) {
-                                if( _phoneController.text.isNotEmpty &&
-                                    _phoneController.text != initialPhone){
-                                  // setState(() {
-                                    isVerifiedphone=false;
-                                  // });
-
-                                }else{
-                                  isVerifiedphone=true;
-                                }
-                                return SizedBox(
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    Expanded(
+                      child: Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(30)),
+                        ),
+                        child: SingleChildScrollView(
+                          child: Padding(
+                            padding: const EdgeInsets.all(25),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const SizedBox(height: 14),
+                                SizedBox(
                                   height: 55,
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 10.0, vertical: 1),
                                     child: TextField(
-                                      controller: _phoneController,
-                                      inputFormatters: [
-                                        LengthLimitingTextInputFormatter(10),
-                                        // Limits input length to 10 characters
-                                      ],
-                                      keyboardType: TextInputType.number,
+                                      controller: _firstNameController,
                                       textInputAction: TextInputAction.next,
-                                      onSubmitted: (_) {
-
-                                        // isVerifiedphone=true;
-                                        // Call your API function when the user submits the text field
-                                        verifyUserphone();
-                                      },
-                                      onEditingComplete: () {
-                                        setState(() {
-                                          isVerifiedphone=false;
-                                        });
-
-                                        // Call your API function when the user completes editing the text field
-                                        verifyUserphone();
-                                      },
                                       decoration: InputDecoration(
-                                        labelText: 'Phone',
-                                        hintText: 'Enter Phone Number',
+                                        labelText: 'First Name',
+                                        labelStyle: const TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.background,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                        hintText: 'Enter First Name',
+                                        hintStyle: const TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.hinttext,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                              27.0), // Add circular border
+                                        ),
+                                        // Set floatingLabelBehavior to always display the label
+                                        floatingLabelBehavior:
+                                            FloatingLabelBehavior.always,
+                                        // Add button to the end of the TextField
+                                      ),
+                                      style: const TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w400),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 25),
+                                SizedBox(
+                                  height: 55,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10.0, vertical: 1),
+                                    child: TextField(
+                                      controller: _lastNmeController,
+                                      textInputAction: TextInputAction.next,
+                                      decoration: InputDecoration(
+                                        labelText: 'Last Name',
+                                        hintText: 'Enter Last Name',
                                         labelStyle: const TextStyle(
                                             fontSize: 14,
                                             color: Colors.background,
@@ -371,45 +312,169 @@ bool isLoading=true;
                                         // Set floatingLabelBehavior to always display the label
                                         floatingLabelBehavior:
                                             FloatingLabelBehavior.always,
-                                        suffixIcon: !isVerifiedphone
-                                            ? GestureDetector(
-                                                onTap: () {
-                                                  getVerifyPhoneOtp();
-                                                },
-                                                child: getSuffixIconPhone(),
-                                              )
-                                            : null,
-
-                                        // suffixIcon: GestureDetector(
-                                        //     onTap: () {
-                                        //       getVerifyPhoneOtp();
-                                        //
-                                        //     },
-                                        //     child: getSuffixIconPhone())
                                       ),
                                       style: const TextStyle(
-                                          fontSize: 15, fontWeight: FontWeight.w400),
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w400),
                                     ),
                                   ),
-                                );
-                              }
-                            ),
-                            const SizedBox(height: 25),
-                            Builder(
-                              builder: (context) {
-if( _emailController.text.isNotEmpty &&
-    _emailController.text != initialEmail){
-  // setState(() {
-    isVerifiedemail=false;
-  // });
+                                ),
+                                const SizedBox(height: 25),
+                                // Builder(builder: (context) {
+                                //   print("_phoneController=======${_phoneController.text}========initialPhone$initialPhone");
+                                //   if( _phoneController.text.isNotEmpty &&
+                                //       _phoneController.text.trim() != initialPhone)
+                                //   {
+                                //     isVerifiedphone=false;
+                                //
+                                //   }
+                                //   else{
+                                //     isVerifiedphone=true;
+                                //   }
+                                //   return SizedBox(
+                                //     height: 55,
+                                //     child: Padding(
+                                //       padding: const EdgeInsets.symmetric(
+                                //           horizontal: 10.0, vertical: 1),
+                                //       child: TextField(
+                                //         controller: _phoneController,
+                                //         inputFormatters: [
+                                //           LengthLimitingTextInputFormatter(10),
+                                //           // Limits input length to 10 characters
+                                //         ],
+                                //         keyboardType: TextInputType.number,
+                                //         textInputAction: TextInputAction.next,
+                                //
+                                //         onSubmitted: (_) {
+                                //           // Call your API function when the user submits the text field
+                                //           verifyUserphone();
+                                //         },
+                                //         onEditingComplete: () {
+                                //           setState(() {
+                                //             isVerifiedphone = false;
+                                //           });
+                                //           // Call your API function when the user completes editing the text field
+                                //           verifyUserphone();
+                                //         },
+                                //
+                                //         decoration: InputDecoration(
+                                //           labelText: 'Phone',
+                                //           hintText: 'Enter Phone Number',
+                                //           labelStyle: const TextStyle(
+                                //               fontSize: 14,
+                                //               color: Colors.background,
+                                //               fontWeight: FontWeight.w400),
+                                //           hintStyle: const TextStyle(
+                                //               fontSize: 16,
+                                //               color: Colors.hinttext,
+                                //               fontWeight: FontWeight.w400),
+                                //           border: OutlineInputBorder(
+                                //             borderRadius: BorderRadius.circular(
+                                //                 27.0), // Add circular border
+                                //           ),
+                                //           // Set floatingLabelBehavior to always display the label
+                                //           floatingLabelBehavior:
+                                //               FloatingLabelBehavior.always,
+                                //           suffixIcon: !isVerifiedphone
+                                //               ? GestureDetector(
+                                //                   onTap: () {
+                                //                     getVerifyPhoneOtp();
+                                //                   },
+                                //                   child: getSuffixIconPhone(),
+                                //                 )
+                                //               : null,
+                                //
+                                //
+                                //         ),
+                                //         style: const TextStyle(
+                                //             fontSize: 15,
+                                //             fontWeight: FontWeight.w400),
+                                //       ),
+                                //     ),
+                                //   );
+                                // }),
+                                Builder(builder: (context) {
+                                  print("_phoneController=======${_phoneController.text}========initialPhone$initialPhone");
 
-}else{
-  isVerifiedemail=true;
-}
+                                  // Add listener to _phoneController to update isVerifiedphone state
+                                  _phoneController.addListener(() {
+                                    setState(() {
+                                      if (_phoneController.text.trim() != initialPhone) {
+                                        isVerifiedphone = false;
+                                      } else {
+                                        isVerifiedphone = true;
+                                      }
+                                    });
+                                  });
 
-                                return SizedBox(
-                                  height: 69,
-                                  child: Padding(
+                                  return SizedBox(
+                                    height: 55,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
+                                      child: TextField(
+                                        controller: _phoneController,
+                                        inputFormatters: [
+                                          LengthLimitingTextInputFormatter(10),
+                                          // Limits input length to 10 characters
+                                        ],
+                                        keyboardType: TextInputType.number,
+                                        textInputAction: TextInputAction.next,
+                                        onSubmitted: (_) {
+                                          // Call your API function when the user submits the text field
+                                          verifyUserphone();
+                                        },
+                                        onEditingComplete: () {
+                                          setState(() {
+                                            isVerifiedphone = false;
+                                          });
+                                          // Call your API function when the user completes editing the text field
+                                          verifyUserphone();
+                                        },
+                                        decoration: InputDecoration(
+                                          labelText: 'Phone',
+                                          hintText: 'Enter Phone Number',
+                                          labelStyle: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.background,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                          hintStyle: const TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.hinttext,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(27.0), // Add circular border
+                                          ),
+                                          // Set floatingLabelBehavior to always display the label
+                                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                                          suffixIcon: !isVerifiedphone
+                                              ? GestureDetector(
+                                            onTap: () {
+                                              getVerifyPhoneOtp();
+                                            },
+                                            child: getSuffixIconPhone(),
+                                          )
+                                              : null,
+                                        ),
+                                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+                                      ),
+                                    ),
+                                  );
+                                }),
+
+                                const SizedBox(height: 25),
+                                Builder(builder: (context) {
+                                  if (_emailController.text.isNotEmpty &&
+                                      _emailController.text != initialEmail) {
+                                    // setState(() {
+                                    isVerifiedemail = false;
+                                    // });
+                                  } else {
+                                    isVerifiedemail = true;
+                                  }
+
+                                  return Padding(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 10.0, vertical: 1),
                                     child: TextField(
@@ -427,7 +492,7 @@ if( _emailController.text.isNotEmpty &&
                                       },
                                       onEditingComplete: () {
                                         setState(() {
-                                          isVerifiedemail=false;
+                                          isVerifiedemail = false;
                                         });
                                         // Call your API function when the user completes editing the text field
                                         verifyUseremail();
@@ -440,7 +505,7 @@ if( _emailController.text.isNotEmpty &&
                                             color: Colors.background,
                                             fontWeight: FontWeight.w400),
 
-                                        hintStyle: const TextStyle(
+                                        hintStyle:  TextStyle(
                                             fontSize: 16,
                                             color: Colors.hinttext,
                                             fontWeight: FontWeight.w400),
@@ -454,7 +519,7 @@ if( _emailController.text.isNotEmpty &&
                                         suffixIcon: !isVerifiedemail
                                             ? GestureDetector(
                                                 onTap: () {
-                                                  getVerifyPhoneOtp();
+                                                  getVerifyEmailOtp();
                                                 },
                                                 child: getSuffixIconEmail(),
                                               )
@@ -464,57 +529,56 @@ if( _emailController.text.isNotEmpty &&
                                             ? null
                                             : 'Please enter a valid email',
                                       ),
-                                      style: const TextStyle(
-                                          fontSize: 15, fontWeight: FontWeight.w400),
+                                      style:  TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w400),maxLines: null,
+                                    ),
+                                  );
+                                }),
+                                const SizedBox(height: 20),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 25.0, vertical: 20),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors
+                                              .background), // Set border properties
+                                      borderRadius: BorderRadius.circular(
+                                          27), // Set border radius for rounded corners
+                                    ),
+                                    height: 50,
+                                    width: 300,
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        updateProfilePicture();
+                                      },
+                                      style: ButtonStyle(
+                                        elevation: MaterialStateProperty.all<
+                                                double>(
+                                            0), // Set elevation to 0 to remove shadow
+                                        backgroundColor: MaterialStateProperty
+                                            .all<Color>(Colors
+                                                .background), // Set your desired background color here
+                                      ),
+                                      child: const Text('Update',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 16)),
                                     ),
                                   ),
-                                );
-                              }
-                            ),
-                            const SizedBox(height: 20),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 25.0, vertical: 20),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: Colors
-                                          .background), // Set border properties
-                                  borderRadius: BorderRadius.circular(
-                                      27), // Set border radius for rounded corners
                                 ),
-                                height: 50,
-                                width: 300,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    updateProfilePicture();
-                                  },
-                                  style: ButtonStyle(
-                                    elevation: MaterialStateProperty.all<double>(
-                                        0), // Set elevation to 0 to remove shadow
-                                    backgroundColor:
-                                        MaterialStateProperty.all<Color>(Colors
-                                            .background), // Set your desired background color here
-                                  ),
-                                  child: const Text('Update',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 16)),
-                                ),
-                              ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-        ),
-
+              ),
+      ),
     );
   }
 
@@ -632,11 +696,6 @@ if( _emailController.text.isNotEmpty &&
     }
   }
 
-
-
-
-
-
   Future<void> updateProfilePicture() async {
     const String apiUrl =
         '${ApiProvider.baseUrl + ApiProvider.updateUserProfile}';
@@ -737,13 +796,16 @@ if( _emailController.text.isNotEmpty &&
           }
           _phoneController.text = jsonResponse['data']['phone_number'];
           _emailController.text = jsonResponse['data']['email'];
-          initialEmail=jsonResponse['data']['email'];
-          initialPhone=jsonResponse['data']['phone_number'];
-          if( jsonResponse['data']['image']!=null){
-          imageUrl1 = "${ApiProvider.baseUrl}" +
-              jsonResponse['data']['image'];}else{imageUrl1='';}
+          initialEmail = jsonResponse['data']['email'];
+          initialPhone = jsonResponse['data']['phone_number'];
+          if (jsonResponse['data']['image'] != null) {
+            imageUrl1 =
+                "${ApiProvider.baseUrl}" + jsonResponse['data']['image'];
+          } else {
+            imageUrl1 = '';
+          }
 
-          isLoading=false;//replace url
+          isLoading = false; //replace url
         });
         /** String imageData=data['profile_pic'];
 

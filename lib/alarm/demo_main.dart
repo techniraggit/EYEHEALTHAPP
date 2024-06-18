@@ -126,7 +126,7 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title:  Center(child: Text('Alarms Scheduled',style: TextStyle(fontWeight: FontWeight.w400,fontSize: 17,color: Colors.black),))),
+      appBar: AppBar(title:  const Center(child: Text('Alarms Scheduled',style: TextStyle(fontWeight: FontWeight.w400,fontSize: 17,color: Colors.black),))),
       // body: SafeArea(
       //   child:
       //   alarms.isNotEmpty
@@ -181,7 +181,7 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
       ),
 
       floatingActionButton: Padding(
-        padding:  EdgeInsets.fromLTRB(10,10,40,60),
+        padding:  const EdgeInsets.fromLTRB(10,10,40,60),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -294,6 +294,7 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
       notificationTitle: 'Test Reminder',
       notificationBody: 'Do your eye test',
       enableNotificationOnKill: Platform.isIOS,
+      notificationActionSettings: const NotificationActionSettings(hasSnoozeButton: true,hasStopButton: true,snoozeButtonText: "Snooze",stopButtonText: "Stop",snoozeDurationInSeconds: 300)
     );
     return alarmSettings;
   }
@@ -316,8 +317,8 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text("Notification permissions required"),
-                content: Text("Notification permissions are permanently denied. Please go to app settings to enable notification permissions."),
+                title: const Text("Notification permissions required"),
+                content: const Text("Notification permissions are permanently denied. Please go to app settings to enable notification permissions."),
                 actions: <Widget>[
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
@@ -328,7 +329,7 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
                       Navigator.pop(context); // Close the dialog
                       await openAppSettings();
                     },
-                    child: Text(
+                    child: const Text(
                       "OK",
                       style: TextStyle(
                         color: Colors.white,
@@ -393,7 +394,7 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 'Select Time Slot',style: TextStyle(color: Colors.black,fontSize: 16),
                 // style: Theme.of(context)
                 //     .textTheme
@@ -407,7 +408,7 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
                 ),
                 child: loading
                     ? const CircularProgressIndicator()
-                    : Text(
+                    : const Text(
                   'Done',
                     style:TextStyle(color: Colors.white,fontSize: 13)
                   // style: Theme.of(context)
@@ -429,7 +430,7 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
             onPressed: pickTime,
             fillColor: Colors.grey[200],
             child: Container(
-              margin:  EdgeInsets.all(30),
+              margin:  const EdgeInsets.all(30),
               child: Text(
                 TimeOfDay.fromDateTime(selectedDateTime).format(context),
                 style: Theme.of(context)
@@ -697,7 +698,7 @@ class ExampleAlarmTile extends StatelessWidget {
         height: 85, // Set height to 40
         child: Card(
           elevation: 0.4, // Adjust the elevation as needed
-          margin: EdgeInsets.symmetric(horizontal: 22, vertical: 8), // Adjust the margin as needed
+          margin: const EdgeInsets.symmetric(horizontal: 22, vertical: 8), // Adjust the margin as needed
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20), // Adjust the border radius as needed
           ),

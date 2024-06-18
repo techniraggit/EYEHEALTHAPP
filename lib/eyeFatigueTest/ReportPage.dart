@@ -28,13 +28,14 @@ import '../models/fatigueGraphModel.dart';
 import '../notification/notification_dashboard.dart';
 import '../sign_up.dart';
 import 'FatigueReportDetails.dart';
+import 'eyeFatigueTest.dart';
 
 class ReportPage extends StatefulWidget {
   @override
   ReportPageState createState() => ReportPageState();
 }
 class _ChartData {
-  _ChartData(this.x, this.y, this.y2, this.y3, this.y4);
+  _ChartData(this.x, this.y4, this.y2, this.y3, this.y);
   final String x;
   final double y;
   final double y2;
@@ -611,6 +612,19 @@ class _ReportOtherState extends State<_ReportOther> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
+            if(prescriptions==null||prescriptions.isEmpty)...{
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(18.0),
+                  child: Text(
+                    'No prescription is uploaded yet... upload new prescription to get points!', // Display formatted current date
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black),
+                  ),
+                ),
+              ),
+            },
             ListView.builder(
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
@@ -704,6 +718,7 @@ class _ReportOtherState extends State<_ReportOther> {
           ],
         ),
       ),
+
     );
   }
 
@@ -857,20 +872,20 @@ count=jsonData['no_of_fatigue_test'];
       print("fffffffffffffff$todaygraphData");
       setState(() {
         chartData = <_ChartData>[
-          _ChartData('6 AM', firstTestgraphData[0], idealTestgraphData[0],
-              populationTestgraphData[0], todaygraphData[0]),
-          _ChartData('9 AM', firstTestgraphData[1], idealTestgraphData[1],
-              populationTestgraphData[1], todaygraphData[1]),
-          _ChartData('12 PM', firstTestgraphData[2], idealTestgraphData[2],
-              populationTestgraphData[2], todaygraphData[2]),
-          _ChartData('3 PM', firstTestgraphData[3], idealTestgraphData[3],
-              populationTestgraphData[3], todaygraphData[3]),
-          _ChartData('6 PM', firstTestgraphData[4], idealTestgraphData[4],
-              populationTestgraphData[4], todaygraphData[4]),
-          _ChartData('9 PM', firstTestgraphData[5], idealTestgraphData[5],
-              populationTestgraphData[5], todaygraphData[5]),
-          _ChartData('12 AM', firstTestgraphData[6], idealTestgraphData[6],
-              populationTestgraphData[6], todaygraphData[6]),
+          _ChartData('6 AM', todaygraphData[0], idealTestgraphData[0],
+              populationTestgraphData[0], firstTestgraphData[0]),
+          _ChartData('9 AM', todaygraphData[1], idealTestgraphData[1],
+              populationTestgraphData[1], firstTestgraphData[1]),
+          _ChartData('12 PM', todaygraphData[2], idealTestgraphData[2],
+              populationTestgraphData[2], firstTestgraphData[2]),
+          _ChartData('3 PM', todaygraphData[3], idealTestgraphData[3],
+              populationTestgraphData[3], firstTestgraphData[3]),
+          _ChartData('6 PM', todaygraphData[4], idealTestgraphData[4],
+              populationTestgraphData[4], firstTestgraphData[4]),
+          _ChartData('9 PM', todaygraphData[5], idealTestgraphData[5],
+              populationTestgraphData[5], firstTestgraphData[5]),
+          _ChartData('12 AM', todaygraphData[6], idealTestgraphData[6],
+              populationTestgraphData[6], firstTestgraphData[6]),
 
 
         ];
@@ -941,7 +956,60 @@ count=jsonData['no_of_fatigue_test'];
                               _buildColorDescription(Colors.blue, 'User avg'),
                             ],
                           ),
-                        },
+
+
+
+    if(count==0)...{
+    SizedBox(height: 10),
+
+    Padding(
+    padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
+    child: Text(
+    'Get your first test done now and start tracking your eye health.', // Display formatted current date
+    style: TextStyle(
+    fontSize: 14,
+    color: Colors.black),
+    ),
+    ),
+    SizedBox(height: 9),
+    Center(
+    child: Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: ElevatedButton(
+    onPressed: () {
+    Navigator.push(
+    context,
+    MaterialPageRoute(
+    builder: (context) => EyeFatigueStartScreen()),
+    );
+    },
+    child: Text('Start Test Now'),
+    style: ElevatedButton.styleFrom(
+    minimumSize: Size(200, 45),
+    foregroundColor: Colors.white,
+    backgroundColor: Colors.bluebutton,
+    shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(25),
+    ),
+    ),
+    ),
+    ),
+    ),
+    SizedBox(height: 30),
+    Center(
+    child: Text(
+    'No Reports to show', // Display formatted current date
+    style: TextStyle(
+    fontSize: 14,
+    color: Colors.black),
+    ),
+    ),
+    SizedBox(height: 30),
+
+    },
+    },
+
+
                         SizedBox(height: 29),
                       ],
                     ),
@@ -1165,6 +1233,19 @@ class __ReportEyeTestState extends State<_ReportEyeTest> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
+                if( apiData?['data']==null|| apiData?['data'].isEmpty)...{
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: Text(
+                        'No prescription is uploaded yet... upload new prescription to get points!', // Display formatted current date
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black),
+                      ),
+                    ),
+                  ),
+                },
                 isLoading
                     ? Center(child: CircularProgressIndicator())
                     : ListView.builder(

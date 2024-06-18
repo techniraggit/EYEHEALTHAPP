@@ -11,6 +11,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_sms/flutter_sms.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 //import 'package:flutter_sms/flutter_sms.dart';
@@ -674,20 +675,7 @@ class _RewardsContactsSync extends State<RewardContact> {
 
 
 
-/*
-  Future<void> _sendSMS(List<String> recipients) async {
-    try {
-      String _result = await sendSMS(
-        message: 'Hi , I am using the Zukti eye health app to track my eye health. Why dont you join me and together we can work towards improving our eye health? Use my code to sign up and get a one-month subscription free.',
-        recipients: recipients,
-        sendDirect: sendDirect,
-      );
-      setState(() => _message = _result);
-    } catch (error) {
-      setState(() => _message = error.toString());
-    }
-  }
-*/
+
 
   Future<List<String>> _getContactNumbers() async {
     List<String> numbers = [];
@@ -717,15 +705,16 @@ class _RewardsContactsSync extends State<RewardContact> {
       status =  await Permission.sms.status;
       if (status == PermissionStatus.denied) {
         await [Permission.sms].request();
-        print("sms permissions are still denied");
+        print("Location permissions are still denied");
       } else if (status ==PermissionStatus.permanentlyDenied) {
-        print("sms permissions are permanently denied");
+        print("Location permissions are permanently denied");
+        // Prompt the user to open app settings to enable location permissions manually
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text("SMS permissions required"),
-              content: Text("SMS permissions are permanently denied. Please go to app settings to enable sms permissions."),
+              content: Text("SMS permissions are permanently denied. Please go to app settings to enable location permissions."),
               actions: <Widget>[
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -766,12 +755,13 @@ class _RewardsContactsSync extends State<RewardContact> {
       }
       else if (status1 ==PermissionStatus.permanentlyDenied) {
         print("contacts permissions are permanently denied");
+        // Prompt the user to open app settings to enable location permissions manually
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text("contacts permissions required"),
-              content: Text("contacts permissions are permanently denied. Please go to app settings to enable contacts permissions."),
+              content: Text("contacts permissions are permanently denied. Please go to app settings to enable location permissions."),
               actions: <Widget>[
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -809,18 +799,27 @@ class _RewardsContactsSync extends State<RewardContact> {
 
     }
   }
-
   Future<void> sendSMSToAllContacts() async {
     try {
       List<String> allContactNumbers = await _getContactNumbers();
-     // await _sendSMS(allContactNumbers);
+     await _sendSMS(allContactNumbers);
     } catch (error) {
       print("erooooorrrrrrrrrr"+error.toString());
     }
   }
 
-
-
+  Future<void> _sendSMS(List<String> recipients) async {
+    try {
+      String _result = await sendSMS(
+        message: 'Hi , I am using the Zukti eye health app to track my eye health. Why dont you join me and together we can work towards improving our eye health? Use my code to sign up and get a one-month subscription free.',
+        recipients: recipients,
+        sendDirect: sendDirect,
+      );
+      setState(() => _message = _result);
+    } catch (error) {
+      setState(() => _message = error.toString());
+    }
+  }
   Future _fetchContacts() async {
     await [Permission.contacts].request();
     // if (!await FlutterContacts.requestPermission(readonly: true)) {

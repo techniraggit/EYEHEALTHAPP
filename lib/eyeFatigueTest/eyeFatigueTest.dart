@@ -258,6 +258,13 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
   int _startIndex = 0;
   bool _firstTime = true; AnimationController? _timercontroller;double? progress ;
   Animation<Color?> ?_animation;
+
+
+
+  double _progressValue = 0.0;
+
+  int _secondsElapsed = 0;
+  int _totalSeconds = 30;
   @override
 
   void initState() {
@@ -272,10 +279,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
     startTimer();
     });
 
-    // Future.delayed(Duration(seconds: 1), () {
 
-      // startTimer();
-    // });
 
   isloading();
 
@@ -325,19 +329,30 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
     super.dispose();
   }
   void startTimer() {
-    _timercontroller = AnimationController(
-      vsync: this,
-      duration: Duration(seconds: 30),
-    )..addListener(() {
-      setState(() {});
+    const oneSec = const Duration(seconds: 1);
+    _timer = Timer.periodic(oneSec, (timer) {
+      setState(() {
+        if (_secondsElapsed < _totalSeconds) {
+          _secondsElapsed++;
+          _progressValue = _secondsElapsed / _totalSeconds;
+        } else {
+          timer.cancel();
+        }
+      });
     });
-
-    _animation = ColorTween(
-      begin: Colors.grey,
-      end: Colors.purple,
-    ).animate(_timercontroller!);
-
-    _timercontroller?.forward();
+    // _timercontroller = AnimationController(
+    //   vsync: this,
+    //   duration: Duration(seconds: 30),
+    // )..addListener(() {
+    //   setState(() {});
+    // });
+    //
+    // _animation = ColorTween(
+    //   begin: Colors.grey,
+    //   end: Colors.purple,
+    // ).animate(_timercontroller!);
+    //
+    // _timercontroller?.forward();
 
   }
 
@@ -593,49 +608,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
 
 
   }
-  // Future<void> disposeCamera() async {
-  //   await _controller?.dispose();
-  // }
-  // void _compressAndUploadVideo(String videoPath) async {
-  //   print("String videoPath=========$videoPath");
-  //
-  //   // try {
-  //
-  //     final String videoName = 'MyVideo-${DateTime.now().millisecondsSinceEpoch}.mp4';
-  //   print("String cccvideoPath=========$videoPath");
-  //
-  //   final Result response = await _lightCompressor.compressVideo(
-  //     path: videoPath,
-  //     videoQuality: VideoQuality.low,
-  //     isMinBitrateCheckEnabled: false,
-  //     android: AndroidConfig(isSharedStorage: true, saveAt: SaveAt.Movies),
-  //     ios: IOSConfig(saveInGallery: false),
-  //     video: Video(videoName: videoName),
-  //   );
-  //   print("String dddvideoPath=========$videoPath");
-  //     // Proceed with further operations only if compression succeeds
-  //     if (response is OnSuccess) {
-  //       final videoFile = File(response.destinationPath);
-  //       final videoSizeBytes = await videoFile.length();
-  //       print('Compressed Video size: ${videoSizeBytes / (1024 * 1024)} MB');
-  //       _uploadVideo(response.destinationPath);
-  //
-  //       print('Compressed video path: ${response.destinationPath}');
-  //     }
-  //
-  //     else {
-  //       print('Compression failed: ${response.toString()}');
-  //       Fluttertoast.showToast(msg: 'Video compression failed');
-  //       throw Exception('Failed to fetch data: ${response.toString()}');
-  //
-  //     }
-  //   // }
-  //   // catch (e, stackTrace) {
-  //     print('Compression error: $e');
-  //     // print('Stack trace: $stackTrace');
-  //     Fluttertoast.showToast(msg: 'Error occurred during compression');
-  //   // }
-  // }
+
   void _compressAndUploadVideo(String videoPath) async {
     try {
       final info = await VideoCompress.compressVideo(
@@ -860,124 +833,32 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
                   ),
 
                     Spacer(),
-    if (_timercontroller != null && _timercontroller!.value != null)... {
+    // if (_timercontroller != null && _timercontroller!.value != null)... {
 
     Builder(
                   builder: (context) {
                     progress = _timercontroller?.value;
 
-                    return Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * progress!,
-                        height: 10.0,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5.0),
-                          color: _animation?.value,
+
+                   return Column(
+                     children: [
+
+                       LinearProgressIndicator(
+                          value: _progressValue,
+                          minHeight: 10.0,
+                          backgroundColor: Colors.grey[300],
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
                         ),
-                      ),
-                    );
+                     ],
+                   );
                   }
-                ),},
+                ),
 
-
-
-                    // Padding(
-                    //   padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 25),
-                    //   child: Container(
-                    //     height: 13,color: Colors.background.withOpacity(0.8),
-                    //     width: MediaQuery.of(context).size.width,
-                    //
-                    //     child: Stack(
-                    //       children: [
-                    //         AnimatedPositioned(
-                    //           duration: Duration(seconds: 30),
-                    //           curve: Curves.linear,
-                    //           right: 0, // Start from the left
-                    //           left: MediaQuery.of(context).size.width * (1 - _position),
-                    //           child: Container(
-                    //             height: 13,
-                    //             color: Colors.grey.withOpacity(0.8),
-                    //
-                    //             width:  _position,//MediaQuery.of(context).size.width *
-                    //
-                    //           ),
-                    //         ),
-                    //       ],
-                    //     ),
-                    //   ),
-                    // ),
-                    // SizedBox(height: 40),
                     SizedBox(height: 50,),
                   ],
                 ),
               ),
-              // Visibility(
-              //   visible: cancel,
-              //   child: Padding(
-              //     padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-              //     child: Container(
-              //       color: Colors.lightBlue.shade300,
-              //       child: Row(
-              //         children: [
-              //           const Expanded(
-              //             child: Padding(
-              //               padding: EdgeInsets.all(8.0),
-              //               child: Text(
-              //                 'Read the ON Your screen and we have assessed your eye health based on reading ability',
-              //                 style: TextStyle(
-              //                   color: Colors.white,
-              //                   fontSize: 14,
-              //                 ),
-              //               ),
-              //             ),
-              //           ),
-              //           const SizedBox(width: 8),
-              //           // Add some space between the text and icon
-              //           IconButton(
-              //             icon: const Icon(
-              //               Icons.close,
-              //               size: 24,
-              //               color: Colors.white,
-              //             ),
-              //             onPressed: () {
-              //               setState(() {
-              //                 cancel=false;
-              //               });
-              //             },
-              //           ),
-              //         ],
-              //       ),
-              //     ),
-              //   ),
-              // ),
 
-              // Spacer to push the button to the bottom
-              // Padding(
-              //   padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-              //   child: ElevatedButton(
-              //     onPressed: isclose ? () {
-              //       Navigator.push(
-              //         context,
-              //         MaterialPageRoute(
-              //           builder: (context) => EyeFatigueThirdScreen(),
-              //         ),
-              //       );
-              //     } : null,
-              //
-              //     style: ElevatedButton.styleFrom(
-              //       foregroundColor: Colors.white,
-              //       backgroundColor:  isclose ? Colors.purple.shade300 : Colors.grey.shade300 ,
-              //
-              //       // backgroundColor: Colors.purple.shade300,
-              //       minimumSize: const Size(350, 50),
-              //       shape: RoundedRectangleBorder(
-              //         borderRadius: BorderRadius.circular(25),
-              //       ),
-              //     ),
-              //     child: const Text('Close'),
-              //   ),
-              // ),
 
             ],
           ),
