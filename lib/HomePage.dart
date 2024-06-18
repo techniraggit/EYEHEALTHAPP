@@ -1438,7 +1438,7 @@ class BottomDialog extends StatelessWidget {
 
           // Check if the context is still mounted before navigating
           if (context.mounted) {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => GiveInfo()),
             );

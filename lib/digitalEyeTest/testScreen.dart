@@ -11,7 +11,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:project_new/HomePage.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:convert' as convert;
@@ -48,6 +47,9 @@ class SelectQuestion extends State<GiveInfo> {
     });
   }
 
+  void _stopSpeaking() async {
+    await flutterTts.stop();
+  }
   @override
   void initState() {
     super.initState();
@@ -60,7 +62,7 @@ class SelectQuestion extends State<GiveInfo> {
   void dispose() {
     // Dispose of the progress dialog when the state is disposed
     _progressDialog?.hide();
-    flutterTts.stop();
+    _stopSpeaking();
     super.dispose();
   }
 
@@ -86,9 +88,11 @@ class SelectQuestion extends State<GiveInfo> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
+
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => HomePage()),
         );
+        _stopSpeaking();
         return false;
       },
       child: Scaffold(
@@ -1097,10 +1101,11 @@ class AlphabetTestState extends State<AlphabetTest> {
 
       currentTextSize = calculatedSize;
     }
-    if (currentIndex > 0 && currentIndex <= snellenFractions.length) {
+    if (currentIndex > 0 && currentIndex < snellenFractions.length) {
       int len = snellenFractions.length - 1;
-      if (currentIndex > 0) {
+      if (currentIndex > 0 ) {
         currentIndex--;
+      } else{
       }
 
       print("currentIndex pv ddd$currentIndex");
@@ -1245,14 +1250,13 @@ class Reading extends State<ReadingTest> {
   CameraController? _controller;
   late List<CameraDescription> _cameras;
   bool isLoadingRandomText = false;
-  int counter = 0;
+  int counter=0;
 
   @override
   void initState() {
     super.initState();
-    //_initializeCamera();
+    _initializeCamera();
     getReadingSnellFractionNew();
-
     _configureTts();
     _onReplayPressed();
   }
@@ -1429,11 +1433,11 @@ class Reading extends State<ReadingTest> {
         final parsedData = json.decode(response.body);
         print("readingdata${parsedData}");
 
-        currentTextSize = parsedData['data']['text_size'];
+       int currentText = parsedData['data']['text_size'];
         randomText = parsedData['data']['text'];
         nextFraction = parsedData['data']['initial_snellen_fraction'];
         print("readingdata${randomText}");
-
+        currentTextSize =currentText *1.65;
         setState(() {
           currentTextSize;
           randomText;
@@ -1485,12 +1489,6 @@ class Reading extends State<ReadingTest> {
           appBar: AppBar(
             title: Text("EYE TEST"),
             centerTitle: true,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-              onPressed: () {
-                // Add your back button functionality here
-              },
-            ),
           ),
           body: Stack(
             children: [
@@ -1772,16 +1770,24 @@ class Reading extends State<ReadingTest> {
       if (response.statusCode == 200) {
 
         final responseData = jsonDecode(responseBody);
+        print("nnnn${responseData['message']}");
+
+        if(responseData['message']=='data save successfully'){
+          Navigator.push(context,CupertinoPageRoute(builder: (context) => TestReport()));
+        }
+        else{}
         print('hhhhhhhhhh${responseData}');
         if (responseData.containsKey('data')) {
           // Handle the first type of response
           final data = responseData['data'];
+
+
           currentTextSize = data['text_size'];
           randomText = data['text'];
+          print("nnnn${data['message']}");
           print('Text Size: ${data['text_size']}');
           print('Text: ${data['text']}');
-          print(
-              'Initial Snellen Fraction: ${data['initial_snellen_fraction']}');
+          print('Initial Snellen Fraction: ${data['initial_snellen_fraction']}');
         } else {
           // Handle the second type of response
           print('Test: ${responseData['test']}');

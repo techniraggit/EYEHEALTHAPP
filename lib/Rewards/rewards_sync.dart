@@ -2196,8 +2196,6 @@ class PresUpload extends State<PrescriptionUpload> {
   @override
   void initState() {
     super.initState();
-
-
     getPrescriptionFiles();
   }
 
@@ -2240,8 +2238,6 @@ class PresUpload extends State<PrescriptionUpload> {
 
             String images = fileEntry['uploaded_file'];
             image.add(images);
-
-
             String prescription_id = fileEntry['prescription_id'];
 
             prescriptionNames.add(invoiceFile);

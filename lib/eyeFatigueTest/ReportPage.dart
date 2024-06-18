@@ -17,7 +17,6 @@ import 'package:project_new/HomePage.dart';
 import 'package:project_new/Rewards/rewards_sync.dart';
 import 'package:project_new/api/Api.dart';
 import 'package:project_new/digitalEyeTest/EyeTestReportDetail.dart';
-import 'package:project_new/digitalEyeTest/TestReport.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -145,7 +144,14 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin {
   @override
   Widget build(BuildContext context) {
     String formattedDate = DateFormat('dd MMMM').format(DateTime.now());
-    return isLoading
+    return  WillPopScope(
+        onWillPop: () async {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) =>   HomePage()),
+      );
+      return true; // Example: always allow back navigation
+    },child :isLoading
         ? Center(
       child: CircularProgressIndicator(
         color: Colors.black,
@@ -205,7 +211,7 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin {
                   ),
                   iconSize: 28, // Back button icon
                   onPressed: () {
-                    Navigator.pushReplacement(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => HomePage()),
                     );
@@ -553,7 +559,7 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin {
         ),
         bottomNavigationBar: CustomBottomAppBar(currentScreen: 'ReportPage',),
       ),
-    );
+    ) );
   }
 
 
@@ -565,56 +571,42 @@ class _ReportOther extends StatefulWidget {
 class _ReportOtherState extends State<_ReportOther> {
   @override
   void initState() {
-    super.initState();
     getPrescriptionFiles();
-  }
+    super.initState();
 
+  }
   List<Prescription> prescriptions = [];
   List<dynamic> itemsdata = [];
   List<dynamic> items = [];
   List<dynamic> ReportIds = [];
-  bool isLoading= false;
+  bool isLoading= true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      floatingActionButton: Stack(
-        alignment: Alignment.bottomRight,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PrescriptionUpload(),
-                  ),
-                );
-              },
-              backgroundColor: Colors.bluebutton,
-              // Set the background color of the FAB
-              child: Icon(Icons.camera_enhance_outlined,
-                  color: Colors.white), // Set the icon of the FAB
-            ),
-          ),
-          /*     Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Positioned(
-              bottom: 10,
-              right: 10,
-              child: Text(
-                'Upload Prescription',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),*/
-        ],
+      appBar: AppBar(
+        title: Text('Eye Test Report'),
+        backgroundColor: Colors.white,
       ),
-      body: SingleChildScrollView(
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PrescriptionUpload(),
+              ),
+            );
+          },
+          backgroundColor: Colors.bluebutton,
+          child: Icon(Icons.camera_enhance_outlined, color: Colors.white),
+        ),
+      ),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
@@ -629,14 +621,12 @@ class _ReportOtherState extends State<_ReportOther> {
                   margin: EdgeInsets.symmetric(horizontal: 10, vertical: 9),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(17.0),
-                    side: BorderSide(color: Colors.grey.shade400,
-                        width: 1.0), // Add this line to set the border color and width
+                    side: BorderSide(color: Colors.grey.shade400, width: 1.0),
                   ),
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 2, vertical: 11),
                     child: ListTile(
                       title: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
@@ -668,12 +658,8 @@ class _ReportOtherState extends State<_ReportOther> {
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(
-                                  prescription.createdOn.toLocal()
-                                      .toString()
-                                      .substring(0, 10),
-                                  style: TextStyle(
-                                    fontStyle: FontStyle.normal,
-                                  ),
+                                  prescription.createdOn.toLocal().toString().substring(0, 10),
+                                  style: TextStyle(fontStyle: FontStyle.normal),
                                 ),
                               ),
                               Expanded(
@@ -685,8 +671,7 @@ class _ReportOtherState extends State<_ReportOther> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              PrescriptionDetailPage(
-                                                  prescription: prescription),
+                                              PrescriptionDetailPage(prescription: prescription),
                                         ),
                                       );
                                     },
@@ -698,7 +683,6 @@ class _ReportOtherState extends State<_ReportOther> {
                                     ),
                                     child: Transform.rotate(
                                       angle: pi,
-                                      // Correct rotation angle to 180 degrees
                                       child: Transform.scale(
                                         scale: 0.6,
                                         child: Icon(Icons.arrow_back_ios_new),
@@ -723,76 +707,42 @@ class _ReportOtherState extends State<_ReportOther> {
   }
 
 
+
   List<dynamic> percentage = [];
-  Future getPrescriptionFiles() async {
+  Future<void> getPrescriptionFiles() async {
     var sharedPref = await SharedPreferences.getInstance();
     String userToken = sharedPref.getString("access_token") ?? '';
     try {
       Map<String, String> headers = {
-        'Authorization': 'Bearer $userToken', // Bearer token type
-        // 'Content-Type': 'application/json',
+        'Authorization': 'Bearer $userToken',
       };
-      // Make the API request to fetch project sites
-      var response = await Dio().get(
-          "${ApiProvider.baseUrl}${ApiProvider.uploadPrescription}",
-          options: Options(headers: headers));
-      dynamic logger = Logger();
 
+      var response = await Dio().get(
+        "${ApiProvider.baseUrl}${ApiProvider.uploadPrescription}",
+        options: Options(headers: headers),
+      );
+
+      dynamic logger = Logger();
       logger.d(response.data);
-      // Check the response status code
+
       if (response.statusCode == 200) {
         Map<String, dynamic> data = json.decode(response.toString());
-
-        prescriptions = (data['data'] as List)
-            .map((item) => Prescription.fromJson(item))
-            .toList();
-
-        /*  Map<String, dynamic> data = json.decode(response.toString());
-        List<dynamic> prescriptionFiles = data['data']; // Specify the file name
-        List<String> prescriptionNames = [];
-        isLoading = false;
-        for (var fileEntry in prescriptionFiles) {
-          String invoiceFile = fileEntry['file'];
-          String date = fileEntry['created_on'];
-          String status = fileEntry['status'];
-
-          String images = fileEntry['file'];
-         // image.add(images);
-
-
-          String prescription_id = fileEntry['prescription_id'];
-
-          prescriptionNames.add(invoiceFile);
-        //  dates.add(date);
-       //   statuses.add(status);
-        //  prescriptionid.add(prescription_id);
-        }
-        print('Purchase Orderdd: $prescriptionNames');
-        // Extract the invoice_file values and create PlatformFile objects
-        List<PlatformFile> platformFiles = [];
-        for (var fileEntry in prescriptionFiles) {
-          String invoiceFilePath = fileEntry['file'];
-          PlatformFile platformFile = PlatformFile(
-            name: invoiceFilePath.split('/').last,
-            size: 0, // Set appropriate file size
-            bytes: null, // Set appropriate file bytes
-          );
-          platformFiles.add(platformFile);
-        }
-      //  _files.addAll(platformFiles);
-
-        setState(() {});*/
+        setState(() {
+          prescriptions = (data['data'] as List)
+              .map((item) => Prescription.fromJson(item))
+              .toList();
+          isLoading = false;
+        });
       } else {
-        // If the request was not successful, throw an error
         throw Exception('Failed to load data: ${response.statusCode}');
       }
     } catch (e, stacktrace) {
-      // If an error occurs during the request, throw the error
-      throw Exception('Failed to load data: $e    $stacktrace');
+      setState(() {
+        isLoading = false;
+      });
+      throw Exception('Failed to load data: $e $stacktrace');
     }
   }
-
-
 }
 class _ReportFatigueTest extends StatefulWidget {
   @override
@@ -947,269 +897,153 @@ class __ReportFatigueTestState extends State<_ReportFatigueTest> {
 }
   List<dynamic> ReportIds = [];
   List<dynamic> items = [];
-Widget build(BuildContext context) {
-  AppBar(title: Text('Prescription Details'),backgroundColor: Colors.white,);
-  return SingleChildScrollView(
-    child: Column(
 
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        // const Padding(
-        //   padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
-        //   child: Text(
-        //     'EYE HEALTH GRAPH OVERVIEW', // Display formatted current date
-        //     style: TextStyle(
-        //       fontSize: 18,
-        //       fontWeight: FontWeight.bold,
-        //     ),
-        //   ),
-        // ),
-        Container(
-          color: Colors.white,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
-            child: Container(
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Eye Test Report'),
+        backgroundColor: Colors.white,
+      ),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Container(
               color: Colors.white,
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
-              child: Card(
-                color: Colors.white,
-                elevation: 0.1,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-
-                    // Padding(
-                    //   padding: EdgeInsets.all(1),
-                    //   child: ListTile(
-                    //     title: Text(
-                    //       'Right Eye Health',
-                    //       style: TextStyle(
-                    //         fontSize: 16.0,
-                    //         fontWeight: FontWeight.bold,
-                    //       ),
-                    //     ),
-                    //     subtitle: Text('April 30-May 30'),
-                    //   ),
-                    // ),
-                    if(chartData != null)...{
-                      Center(
-                        child: Container(
-                          color: Colors.white,
-                          child: _buildVerticalSplineChart(),
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      // Adjust spacing between chart and color descriptions
-
-                      // Color descriptions
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildColorDescription(Colors.black, 'First Test'),
-                          _buildColorDescription(Colors.green, 'Ideal'),
-                          _buildColorDescription(Colors.orange, 'Percentile'),
-                          _buildColorDescription(Colors.blue, 'User avg'),
-                        ],
-                      ),
-                    },
-                    SizedBox(height: 29),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            return Card(
-              color: Colors.white,
-              elevation: 0.4,
-              margin: EdgeInsets.symmetric(horizontal: 10, vertical: 9),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(17.0),
-                side: BorderSide(color: Colors.grey.shade400,
-                    width: 1.0), // Add this line to set the border color and width
-              ),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 2, vertical: 11),
-                child: ListTile(
-                  title: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'Date: ' + items[index].toString().substring(0, 10),
-                          style: TextStyle(fontStyle: FontStyle.normal),
-
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Text(
-                            'Test Result : ',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                            ),
-                          ),
-                          Builder(
-                            builder: (context) {
-                              if (percentage[index] > 5.0) {
-                                testResult = "Good";
-                              } else {
-                                testResult = "Bad";
-                              }
-                              return Text(
-                                testResult,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 16,
-                                  color: testResult == 'Good'
-                                      ? Colors.green
-                                      : Colors.red,
-                                ),
-                              );
-                            },
-                          ),
-                          Expanded(
-                            child: Align(
-                              alignment: Alignment.centerRight,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    CupertinoPageRoute(
-                                      builder: (context) =>
-                                          ReportDetails(
-                                            reportId: ReportIds[index],
-                                          ),
-                                    ),
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  backgroundColor: Colors.bluebutton,
-                                  shape: CircleBorder(),
-                                  minimumSize: Size(30, 30),
-                                ),
-                                child: Transform.rotate(
-                                  angle: -pi / 1,
-                                  child: Transform.scale(
-                                    scale: 0.6,
-                                    child: Icon(Icons.arrow_back_ios_new),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-
-            /*    return Card(
-                color: Colors.white,
-                elevation: 0.4,
-                margin: EdgeInsets.symmetric(horizontal: 10, vertical: 9),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(17.0),
-                ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 2, vertical: 11),
-                  child: ListTile(
-                    title: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                  color: Colors.white,
+                  width: MediaQuery.of(context).size.width,
+                  child: Card(
+                    color: Colors.white,
+                    elevation: 0.1,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Date: ' + items[index].toString().substring(0, 10),
-                            style: TextStyle(fontStyle: FontStyle.normal),
+                        if (chartData != null) ...{
+                          Center(
+                            child: Container(
+                              color: Colors.white,
+                              child: _buildVerticalSplineChart(),
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Text(
-                              'Test Result : ',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 16,
-                              ),
-                            ),
-                            Builder(
-                              builder: (context) {
-                                if (percentage[index] > 5.0) {
-                                  testResult = "Good";
-                                } else {
-                                  testResult = "Bad";
-                                }
-                                return Text(
-                                  testResult,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 16,
-                                    color: testResult == 'Good'
-                                        ? Colors.green
-                                        : Colors.red,
-                                  ),
-                                );
-                              },
-                            ),
-                            Expanded(
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      CupertinoPageRoute(
-                                        builder: (context) => ReportDetails(
-                                          reportId: ReportIds[index],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.white,
-                                    backgroundColor: Colors.bluebutton,
-                                    shape: CircleBorder(),
-                                    minimumSize: Size(30, 30),
-                                  ),
-                                  child: Transform.rotate(
-                                    angle: -pi / 1,
-                                    child: Transform.scale(
-                                      scale: 0.6,
-                                      child: Icon(Icons.arrow_back_ios_new),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
+                          SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              _buildColorDescription(Colors.black, 'First Test'),
+                              _buildColorDescription(Colors.green, 'Ideal'),
+                              _buildColorDescription(Colors.orange, 'Percentile'),
+                              _buildColorDescription(Colors.blue, 'User avg'),
+                            ],
+                          ),
+                        },
+                        SizedBox(height: 29),
                       ],
                     ),
                   ),
                 ),
-              );*/
-          },
+              ),
+            ),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                return Card(
+                  color: Colors.white,
+                  elevation: 0.4,
+                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(17.0),
+                    side: BorderSide(color: Colors.grey.shade400, width: 1.0),
+                  ),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 2, vertical: 11),
+                    child: ListTile(
+                      title: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Date: ' + items[index].toString().substring(0, 10),
+                              style: TextStyle(fontStyle: FontStyle.normal),
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Text(
+                                'Test Result : ',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              Builder(
+                                builder: (context) {
+                                  if (percentage[index] > 5.0) {
+                                    testResult = "Good";
+                                  } else {
+                                    testResult = "Bad";
+                                  }
+                                  return Text(
+                                    testResult,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 16,
+                                      color: testResult == 'Good' ? Colors.green : Colors.red,
+                                    ),
+                                  );
+                                },
+                              ),
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        CupertinoPageRoute(
+                                          builder: (context) => ReportDetails(reportId: ReportIds[index]),
+                                        ),
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.white,
+                                      backgroundColor: Colors.bluebutton,
+                                      shape: CircleBorder(),
+                                      minimumSize: Size(30, 30),
+                                    ),
+                                    child: Transform.rotate(
+                                      angle: -pi,
+                                      child: Transform.scale(
+                                        scale: 0.6,
+                                        child: Icon(Icons.arrow_back_ios_new),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
         ),
-      ],
-    ),
-  );
-}
+      ),
+    );
+  }
 
 Widget _buildColorDescription(Color color, String text) {
   return Row(
@@ -1320,106 +1154,115 @@ class __ReportEyeTestState extends State<_ReportEyeTest> {
   }
 
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          ListView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: apiData?['data'].length,
-            // Assuming apiData is your response object
-            itemBuilder: (context, index) {
-              final eyeTest = apiData?['data'][index];
-              return Card(
-                color: Colors.white,
-                elevation: 0.4,
-                margin: EdgeInsets.symmetric(horizontal: 10, vertical: 9),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(17.0),
-                  side: BorderSide(color: Colors.grey.shade400,
-                      width: 1.0), // Add this line to set the border color and width
-                ),
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 2, vertical: 11),
-                  child: ListTile(
-                    title: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Date: ' +
-                                eyeTest['created_on'].toString().substring(
-                                    0, 10),
-                            style: TextStyle(fontStyle: FontStyle.normal),
-                          ),
-                        ),
-                        SizedBox(height: 10),
-
-                        Row(
-                          children: [
-                            Text(
-                              'Name : ',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 16,
-                              ),
-                            ),
-                            Text(
-                              eyeTest['user_profile']['full_name'],
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                                color: eyeTest['test_result'] == 'Good'
-                                    ? Colors.green
-                                    : Colors.red,
-                              ),
-                            ),
-                            Expanded(
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      CupertinoPageRoute(
-                                        builder: (context) =>
-                                            EyeTestReport(
-                                              reportId: eyeTest['report_id'],
-                                            ),
-                                      ),
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.white,
-                                    backgroundColor: Colors.bluebutton,
-                                    shape: CircleBorder(),
-                                    minimumSize: Size(30, 30),
-                                  ),
-                                  child: Transform.rotate(
-                                    angle: -pi / 1,
-                                    child: Transform.scale(
-                                      scale: 0.6,
-                                      child: Icon(Icons.arrow_back_ios_new),
-                                    ),
-                                  ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text('Eye Test Report'),
+      ),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                isLoading
+                    ? Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: apiData?['data'].length ?? 0,
+                  itemBuilder: (context, index) {
+                    final eyeTest = apiData?['data'][index];
+                    return Card(
+                      color: Colors.white,
+                      elevation: 0.4,
+                      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(17.0),
+                        side: BorderSide(
+                            color: Colors.grey.shade400, width: 1.0), // Add this line to set the border color and width
+                      ),
+                      child: Container(
+                        height: 110,
+                        padding: EdgeInsets.symmetric(horizontal: 2, vertical: 11),
+                        child: ListTile(
+                          title: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  'Date: ' + eyeTest['created_on'].toString().substring(0, 10),
+                                  style: TextStyle(fontStyle: FontStyle.normal),
                                 ),
                               ),
-                            )
-                          ],
+                              SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  Text(
+                                    'Name : ',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  Text(
+                                    eyeTest['user_profile']['full_name'],
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 16,
+                                      color: eyeTest['test_result'] == 'Good'
+                                          ? Colors.green
+                                          : Colors.red,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                              builder: (context) => EyeTestReport(
+                                                reportId: eyeTest['report_id'],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          foregroundColor: Colors.white,
+                                          backgroundColor: Colors.bluebutton,
+                                          shape: CircleBorder(),
+                                          minimumSize: Size(30, 30),
+                                        ),
+                                        child: Transform.rotate(
+                                          angle: -pi / 1,
+                                          child: Transform.scale(
+                                            scale: 0.6,
+                                            child: Icon(Icons.arrow_back_ios_new),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
+              ],
+            ),
           ),
         ],
       ),
     );
   }
+
   Future<void> geteyeReports() async {
     try {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -1430,14 +1273,18 @@ class __ReportEyeTestState extends State<_ReportEyeTest> {
         'Authorization': 'Bearer $authToken',
       },
     );
+    print('ddddd${response.body}');
+
 
     if (response.statusCode ==  200) {
       final responseData = json.decode(response.body);
+
+      print('ddddd${responseData}');
+
       setState(() {
         isLoading = false;
-        dynamic logger = Logger();
 
-        logger.d('ddddd${responseData}');
+       // logger.d('ddddd${responseData}');
         apiData= responseData;
         /*   itemsdata = responseData['data'];
         for (int i = 0; i < itemsdata.length; i++) {
@@ -1457,7 +1304,9 @@ class __ReportEyeTestState extends State<_ReportEyeTest> {
         }  catch (e) {
       print("exception:$e");
     }
-  }}
+  }
+
+}
 
 class Prescription {
   final String prescriptionId;
