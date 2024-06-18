@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:html/parser.dart' as htmlParser;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -71,7 +72,16 @@ class MyPlanState extends State<MyPlan> {
                 itemCount: plans.length,
                 itemBuilder: (context, index) {
                   final plan = plans[index];
-                  final features = plan.description.split('.');
+
+                  // final features = plan.description.split('.');
+                  List<String> _parseHtml(String htmlString) {
+                    var document = htmlParser.parse(htmlString);
+                    var elements = document.querySelectorAll('li');
+                    return elements.map((element) => element.text).toList();
+                  }
+
+                  List<String> features = _parseHtml(plan.description);
+
                   bool isSelected = plan.id == selectedPlanId;
                   return Container(
                     decoration: BoxDecoration(
@@ -101,7 +111,7 @@ class MyPlanState extends State<MyPlan> {
                             child: Text(
                               plan.name,
                               style: const TextStyle(
-                                fontSize: 18,
+                                fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black,
                               ),
@@ -112,34 +122,59 @@ class MyPlanState extends State<MyPlan> {
                             child: Text(
                               '\₹${plan.price}/${plan.planType}',
                               style: const TextStyle(
-                                  fontSize: 20,
+                                  fontSize: 16,
                                   color: Colors.black,
                                   fontWeight: FontWeight.bold),
                             ),
                           ),
-                          ...features.map((feature) =>
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.check,
-                                    color: isSelected
-                                        ? Colors.bluebutton
-                                        : Colors.bluebutton,
-                                    size: 20,
-                                  ),
-                                  const SizedBox(width: 5),
-                                  Expanded(
-                                    child: Text(
-                                      feature,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.grey.shade700,
-                                        fontStyle: FontStyle.normal,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )),
+    for(int i=0;i<features.length;i++)...{
+    Padding(
+    padding: const EdgeInsets.symmetric(vertical: 5.0),
+    child: Row(
+    children: [
+    Icon(
+    Icons.check,
+    color: Colors.blue,
+    size: 20,
+    ),
+    const SizedBox(width: 5),
+    Expanded(
+    child: Text(
+    features[index],
+    style: TextStyle(
+    fontSize: 16,
+    color: Colors.grey.shade700,
+    fontStyle: FontStyle.normal,
+    ),
+    ),
+    ),
+    ],
+    ),
+    )},
+
+                          // ...features.map((feature) =>
+                          //     Row(
+                          //       children: [
+                          //         Icon(
+                          //           Icons.check,
+                          //           color: isSelected
+                          //               ? Colors.bluebutton
+                          //               : Colors.bluebutton,
+                          //           size: 20,
+                          //         ),
+                          //         const SizedBox(width: 5),
+                          //         Expanded(
+                          //           child: Text(
+                          //             feature,
+                          //             style: TextStyle(
+                          //               fontSize: 16,
+                          //               color: Colors.grey.shade700,
+                          //               fontStyle: FontStyle.normal,
+                          //             ),
+                          //           ),
+                          //         ),
+                          //       ],
+                          //     )),
                           const Spacer(),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 10),

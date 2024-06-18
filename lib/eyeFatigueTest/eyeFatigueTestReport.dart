@@ -18,6 +18,7 @@ import 'package:http/http.dart' as http;
 
 import '../api/config.dart';
 import '../notification/notification_dashboard.dart';
+import 'EyeFatigueSelfieScreen.dart';
 import 'eyeFatigueTest.dart'; // Import intl package
 
 class EyeFatigueTestReport extends StatefulWidget {
@@ -50,7 +51,8 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> with AutoCan
     isclose = false;
     uploaded = false;
     isLoading = false;
-    getReport(); getNotifactionCount();
+    getReport();
+    getNotifactionCount();
   }
   Future<void> getNotifactionCount() async {
     try{

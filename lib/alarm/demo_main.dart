@@ -289,7 +289,6 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
       dateTime: selectedDateTime,
       loopAudio: loopAudio,
       vibrate: vibrate,
-
       volume: volume,
       assetAudioPath: assetAudio,
       notificationTitle: 'Test Reminder',
