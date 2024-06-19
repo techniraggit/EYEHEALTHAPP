@@ -51,6 +51,7 @@ class SelectQuestion extends State<GiveInfo> {
   void _stopSpeaking() async {
     await flutterTts.stop();
   }
+
   @override
   void initState() {
     super.initState();
@@ -200,7 +201,6 @@ class SelectQuestion extends State<GiveInfo> {
                                   },
                                 ),
                               ],
-
                             ],
                           ),
                         ),
@@ -298,7 +298,7 @@ class SelectQuestion extends State<GiveInfo> {
         body: body,
       );
       print(headers);
-      print("kkkk"+response.body);
+      print("kkkk" + response.body);
 
       if (response.statusCode == 200) {
         // _progressDialog!.hide();
@@ -325,11 +325,11 @@ class SelectQuestion extends State<GiveInfo> {
       } else {
         // _progressDialog!.hide();
         Map<String, dynamic> parsedJson = json.decode(response.body);
-        String msg =parsedJson['message'];
+        String msg = parsedJson['message'];
 
         CustomAlertDialog.attractivepopupnodelay(context, msg);
 
-  /*      if(msg=='Please connect with a doctor!'){
+        /*      if(msg=='Please connect with a doctor!'){
           Future.delayed(Duration(seconds: 2), () {
             Navigator.pushReplacement(
               context,
@@ -338,7 +338,7 @@ class SelectQuestion extends State<GiveInfo> {
           });
       }*/
 
-      //  print(response.reasonPhrase);
+        //  print(response.reasonPhrase);
       }
     } catch (e) {
       // _progressDialog!.hide();
@@ -589,7 +589,6 @@ class AlphabetTestState extends State<AlphabetTest> {
     super.initState();
     _initializeCamera();
     getSnellFraction();
-    reverseSnellenFractions();
     _configureTts();
     _onReplayPressed();
   }
@@ -721,12 +720,12 @@ class AlphabetTestState extends State<AlphabetTest> {
         CustomAlertDialog.attractivepopup(
             context, 'poor internet connectivity , please try again later!');
       } else {
-        /* CustomAlertDialog.attractivepopup(
-            context, 'make sure you have proper light on your face ');*/
+         CustomAlertDialog.attractivepopup(
+            context, 'make sure you have proper light on your face ');
       }
 
 // If the server returns an error response, throw an exception
-      //throw Exception('Failed to send data');
+      throw Exception('Failed to send data');
     }
   }
 
@@ -756,26 +755,9 @@ class AlphabetTestState extends State<AlphabetTest> {
         print("hhhh${response.body}");
         //  getRandomTest();
         final parsedData = json.decode(response.body);
-// Process the parsed data here
+        // Process the parsed data here
         snellenFractions = List<Map<String, dynamic>>.from(parsedData['data']);
-        /*       snellenFractions = (parsedData['data'] as List).map((item) {
-          double fraction;
-          String fractionStr = item['snellen_fraction'];
-           if (fractionStr.contains('/')) {
-        //  if (fractionStr==) {
-             List<String> parts = fractionStr.split('/');
-             fraction = double.parse(parts[0]) / double.parse(parts[1]);
-            // Handle fractional string
-
-            fraction = 6/6;
-          } else {
-            // Handle decimal string
-            fraction = double.parse(fractionStr);
-          }
-          return {
-            "snellen_fraction": fraction,
-          };
-        }).toList();*/
+        reverseSnellenFractions();
         len = snellenFractions.length;
         print('Snellen Fractions: $snellenFractions' + "lenght: $len");
       } else {
@@ -977,7 +959,7 @@ class AlphabetTestState extends State<AlphabetTest> {
                             onPressed: () {
                               Myopia_or_HyperMyopiaTest(context);
                             },
-                            child:  Text(
+                            child: Text(
                               btnname ? 'Able to Read' : 'Not able to Read',
                               style: TextStyle(
                                 color: Colors.white,
@@ -1025,24 +1007,24 @@ class AlphabetTestState extends State<AlphabetTest> {
   }
 
   String? nextFraction;
-
-  // double nextFraction_new=0.0;
   double currentTextSize = 28.0; // Initial text size
   bool setkey = true; // Example initial value
-  bool btnname = true; // Example initial value
+  bool btnname = false; // Example initial value
 
-  /*void reverseSnellenFractions() {
+  void reverseSnellenFractions() {
     snellenFractions = snellenFractions.reversed.toList();
   }
 
   Future<void> increaseTextSize() async {
+    //for first time
     if (currentIndex == 0 && setkey) {
-      currentIndex++;
-      btnname = false;
-    } else if (currentIndex == snellenFractions.length - 1 && !setkey) {
-      setkey = true;
+
+    } else if (currentIndex == snellenFractions.length - 1 ) {
+      currentIndex--;
+      btnname=false;
     } else if (currentIndex > 0 && currentIndex < snellenFractions.length - 1) {
-      currentIndex++;
+      currentIndex--;
+      btnname=false;
     }
 
     nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
@@ -1051,18 +1033,20 @@ class AlphabetTestState extends State<AlphabetTest> {
   }
 
   Future<void> decreaseTextSize() async {
-    if (currentIndex == 0 && !setkey) {
-      currentIndex = snellenFractions.length - 1;
-      setkey = true;
-    } else if (currentIndex == 0 && setkey) {
-      btnname = true;
-    } else if (currentIndex > 0 && currentIndex < snellenFractions.length) {
-      currentIndex--;
-    }
+   // for first time
+    if (currentIndex == 0 && setkey) {
+      currentIndex++;
+      // for second time
+    }  else if (currentIndex > 0 && currentIndex < snellenFractions.length - 1) {
+      currentIndex++;
+      if(currentIndex == snellenFractions.length - 1)
+      {
+        btnname=true;
 
+      }
+    }
     nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
     currentTextSize = await calculateTextSize(nextFraction);
-    setState(() {});
   }
 
   Future<double> calculateTextSize(String? nextFraction) async {
@@ -1081,144 +1065,6 @@ class AlphabetTestState extends State<AlphabetTest> {
 
     return 20.0 * value;
   }
-*/
-  Future<void> increaseTextSize() async {
-    if (currentIndex == 0) {
-      print("currentIndex pv inc$currentIndex");
-      if(setkey== true) {
-        currentIndex++;
-        print("currentIndex inc$currentIndex");
-        btnname=false;
-
-
-       // setkey =true;
-      }
-      if(setkey== false) {
-        currentIndex = snellenFractions.length - 1;
-        setkey=true;
-      }
-    //  int len = snellenFractions.length - 1;
-      print("currentIndex pv inc${snellenFractions.length}");
-      nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
-      // Decrease index by 1 from its last index
-          nextFraction_new = snellenFractions[len]['snellen_fraction'];
-      print("nahi$nextFraction_new");
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String text = prefs.getString('test') ?? '';
-      double value = 0.0;
-      if (text == 'myopia') {
-        List<String>? parts = nextFraction?.split('/');
-        double numerator = double.parse(parts![0]);
-        double denominator = double.parse(parts[1]);
-        value = (numerator / denominator);
-      } else {
-        value = double.parse(nextFraction!);
-      }
-
-      double calculatedSize = 20.0 * value;
-      //double calculatedSize = 20.0 * nextFraction_new;
-
-      currentTextSize = calculatedSize;
-    }
-    if (currentIndex > 0 && currentIndex <= snellenFractions.length) {
-      int len = snellenFractions.length - 1;
-      if (currentIndex < len) {
-        currentIndex++;
-      }
-
-      print("currentIndex pv iii$currentIndex");
-      // Decrease index by 1 from its last index
-      nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
- //     print("nahi$nextFraction_new");
-
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String text = prefs.getString('test') ?? '';
-      double value = 0.0;
-      if (text == 'myopia') {
-        List<String>? parts = nextFraction?.split('/');
-        double numerator = double.parse(parts![0]);
-        double denominator = double.parse(parts[1]);
-        value = (numerator / denominator);
-      } else {
-        value = double.parse(nextFraction!);
-      }
-       List<String>? parts = nextFraction?.split('/');
-      double numerator = double.parse(parts![0]);
-      double denominator = double.parse(parts[1]);
-       value = 20.0 * (numerator / denominator);
-
-      double calculatedSize = 20.0 * value;
-
-      currentTextSize = calculatedSize;
-    }
-  }
-
-// Initial index// Initial text size
-  Future<void> decreaseTextSize() async {
-    if (currentIndex == 0) {
-      print("currentIndex pv dec $currentIndex");
-      if(setkey== false) {
-        currentIndex = snellenFractions.length - 1;
-        setkey =true;
-      }else{btnname=true;}
-
-      //currentIndex--;
-      // Decrease index by 1 from its last index
-      nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
-      print("nahi$nextFraction");
-
-           List<String>? parts = nextFraction?.split('/');
-      double numerator = double.parse(parts![0]);
-      double denominator = double.parse(parts[1]);
-      // double calculatedSize = 20.0 * nextFraction_new;
-
-      double calculatedSize = 20.0 * (numerator / denominator);
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String text = prefs.getString('test') ?? '';
-      double value = 0.0;
-      if (text == 'myopia') {
-        List<String>? parts = nextFraction?.split('/');
-        double numerator = double.parse(parts![0]);
-        double denominator = double.parse(parts[1]);
-        value = (numerator / denominator);
-      } else {
-        value = double.parse(nextFraction!);
-      }
-      double calculatedSize = 20.0 * value;
-
-      currentTextSize = calculatedSize;
-    }
-    if (currentIndex > 0 && currentIndex < snellenFractions.length) {
-      int len = snellenFractions.length - 1;
-      if (currentIndex > 0 ) {
-        currentIndex--;
-      } else{
-      }
-
-      print("currentIndex pv ddd$currentIndex");
-// Decrease index by 1 from its last index
-      nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
-      print("nahi$nextFraction");
-        List<String>? parts = nextFraction?.split('/');
-      double numerator = double.parse(parts![0]);
-      double denominator = double.parse(parts[1]);
-      double calculatedSize = 20.0 * (numerator / denominator);
-      // double calculatedSize = 20.0 * nextFraction_new;
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String text = prefs.getString('test') ?? '';
-      double value = 0.0;
-      if (text == 'myopia') {
-        List<String>? parts = nextFraction?.split('/');
-        double numerator = double.parse(parts![0]);
-        double denominator = double.parse(parts[1]);
-        value = (numerator / denominator);
-      } else {
-        value = double.parse(nextFraction!);
-      }
-      double calculatedSize = 20.0 * value;
-      currentTextSize = calculatedSize;
-    }
-  }
 
   Future<String?> getRandomTest() async {
     setState(() {
@@ -1234,7 +1080,6 @@ class AlphabetTestState extends State<AlphabetTest> {
       String CustomerId = prefs.getString('customer_id') ?? '';
 
       print('beebeb$id');
-//todo notworking
       print("nahi$nextFraction");
       var headers = {
         'Authorization': 'Bearer ${authToken}',
@@ -1252,16 +1097,13 @@ class AlphabetTestState extends State<AlphabetTest> {
       Map<String, dynamic> parsedJson = json.decode(responseBody);
       print(parsedJson.toString());
       if (response.statusCode == 200) {
-//String responseBody = await response.stream.bytesToString();
-// Map<String, dynamic> parsedJson = json.decode(responseBody);
-// Extract data from the parsed JSON
         String choose_astigmatism =
             parsedJson['data']['test_object']['choose_astigmatism'];
         currentTextSize = parsedJson['data']['textSize'];
         randomText = parsedJson['data']['random_text'];
         setState(() {
           isLoadingRandomText = false;
-// Assign fetched data to your variables
+          // Assign fetched data to your variables
           currentTextSize;
           randomText;
         });
@@ -1337,7 +1179,7 @@ class Reading extends State<ReadingTest> {
   CameraController? _controller;
   late List<CameraDescription> _cameras;
   bool isLoadingRandomText = false;
-  int counter=0;
+  int counter = 0;
 
   @override
   void initState() {
@@ -1499,7 +1341,6 @@ class Reading extends State<ReadingTest> {
   int currentIndex = 0;
   List<Map<String, dynamic>> snellenFractions = [];
 
-
   Future<void> getReadingSnellFractionNew() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -1524,7 +1365,7 @@ class Reading extends State<ReadingTest> {
         randomText = parsedData['data']['text'];
         nextFraction = parsedData['data']['initial_snellen_fraction'];
         print("readingdata${randomText}");
-        currentTextSize =currentTextSize *1.65;
+        currentTextSize = currentTextSize * 1.65;
         setState(() {
           currentTextSize;
           randomText;
@@ -1673,7 +1514,6 @@ class Reading extends State<ReadingTest> {
                                 getReadingRandomTestNew('read');
                                 counter++;
                                 // decreaseReadingTextSize();
-
                               },
                               child: Text(
                                 'Perfectly Visible',
@@ -1821,7 +1661,6 @@ class Reading extends State<ReadingTest> {
   String test_left = '0';
   late String subscriptionId;
 
-
   Future<String?> getReadingRandomTestNew(String button) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -1829,14 +1668,14 @@ class Reading extends State<ReadingTest> {
       String id = prefs.getString('test_id') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
 
-    print('beebeb$id');
+      print('beebeb$id');
 //todo notworking
       print("nahi$nextFraction");
       var headers = {
         'Authorization': 'Bearer $authToken',
         'Content-Type': 'application/json',
-      'Customer-Id': CustomerId
-    };
+        'Customer-Id': CustomerId
+      };
       var request = http.Request(
           'POST', Uri.parse('${Api.baseurl}/api/eye/random-word-Reading-test'));
       request.body = json.encode({
@@ -1848,33 +1687,31 @@ class Reading extends State<ReadingTest> {
       request.headers.addAll(headers);
       http.StreamedResponse response = await request.send();
       print(response.statusCode);
-     // print('hhhhhhhhhh${request.body}');
+      // print('hhhhhhhhhh${request.body}');
       String responseBody = await response.stream.bytesToString();
       Map<String, dynamic> parsedJson = json.decode(responseBody);
       print(parsedJson.toString());
 
-
       if (response.statusCode == 200) {
-
         final responseData = jsonDecode(responseBody);
         print("nnnn${responseData['message']}");
 
-        if(responseData['message']=='data save successfully'){
-          Navigator.push(context,CupertinoPageRoute(builder: (context) => TestReport()));
-        }
-        else{}
+        if (responseData['message'] == 'data save successfully') {
+          Navigator.push(
+              context, CupertinoPageRoute(builder: (context) => TestReport()));
+        } else {}
         print('hhhhhhhhhh${responseData}');
         if (responseData.containsKey('data')) {
           // Handle the first type of response
           final data = responseData['data'];
-
 
           currentTextSize = data['text_size'];
           randomText = data['text'];
           print("nnnn${data['message']}");
           print('Text Size: ${data['text_size']}');
           print('Text: ${data['text']}');
-          print('Initial Snellen Fraction: ${data['initial_snellen_fraction']}');
+          print(
+              'Initial Snellen Fraction: ${data['initial_snellen_fraction']}');
         } else {
           // Handle the second type of response
           print('Test: ${responseData['test']}');
@@ -3691,8 +3528,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
     String test_id = prefs.getString('test_id') ?? '';
     await prefs.setString('region', selectedPart);
 // Replace this URL with your PUT API endpoint
-    final String apiUrl =
-        '${Api.baseurl}/choose-astigmatism-api/';
+    final String apiUrl = '${Api.baseurl}/choose-astigmatism-api/';
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Content-Type': 'application/json',
@@ -6153,20 +5989,21 @@ class _CameraScreenState extends State<CameraS> {
         "Maintain the screen brightness at 50% throughout the eye test. Keep the device on a stable surface at the eye level. Keep the device at the recommended distance, for this follow the onscreen instructions throughout the eye test. Only move your face Move forward or backward till the time you see good to go sign on screen. Do not disturb or move the device from its position during the eye test. Are you ready? Let’s start the test. Please click on Start Eye Test Now.";
     _speak(replayText);
   }
-void requestPermission() async {
+
+  void requestPermission() async {
     PermissionStatus status = await Permission.camera.status;
     PermissionStatus status2 = await Permission.microphone.status;
 
-    if((status==PermissionStatus.granted&&status2==PermissionStatus.granted) ){
+    if ((status == PermissionStatus.granted &&
+        status2 == PermissionStatus.granted)) {
       setState(() {
         _initializeCamera();
       });
-
     }
-    if (!status.isGranted ) {
+    if (!status.isGranted) {
       status = await Permission.camera.request();
     }
-    if (!status2.isGranted ) {
+    if (!status2.isGranted) {
       status = await Permission.microphone.request();
     }
     if (status == PermissionStatus.denied ||
@@ -6174,18 +6011,19 @@ void requestPermission() async {
       await [Permission.camera].request();
 
       // Permissions are denied or denied forever, let's request it!
-      status =  await Permission.camera.status;
+      status = await Permission.camera.status;
       if (status == PermissionStatus.denied) {
         await [Permission.camera].request();
         print("camera permissions are still denied");
-      } else if (status ==PermissionStatus.permanentlyDenied) {
+      } else if (status == PermissionStatus.permanentlyDenied) {
         print("camera permissions are permanently denied");
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text("camera permissions required"),
-              content: Text("camera permissions are permanently denied. Please go to app settings to enable camera permissions."),
+              content: Text(
+                  "camera permissions are permanently denied. Please go to app settings to enable camera permissions."),
               actions: <Widget>[
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -6197,13 +6035,11 @@ void requestPermission() async {
                     Navigator.pop(context); // Close the dialog
                     await openAppSettings();
                   },
-                  child: Text("OK",
-
-                    style: TextStyle(
-                        color: Colors.white, fontSize: 16),
+                  child: Text(
+                    "OK",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
-
               ],
             );
           },
@@ -6216,18 +6052,20 @@ void requestPermission() async {
       await [Permission.microphone].request();
 
       // Permissions are denied or denied forever, let's request it!
-      status2 =  await Permission.microphone.status;
+      status2 = await Permission.microphone.status;
       if (status2 == PermissionStatus.denied) {
         await [Permission.microphone].request();
         print("microphone permissions are still denied");
-      }  if (status2 ==PermissionStatus.permanentlyDenied) {
+      }
+      if (status2 == PermissionStatus.permanentlyDenied) {
         print("microphone permissions are permanently denied");
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text("microphone permissions required"),
-              content: Text("microphone permissions are permanently denied. Please go to app settings to enable microphone permissions."),
+              content: Text(
+                  "microphone permissions are permanently denied. Please go to app settings to enable microphone permissions."),
               actions: <Widget>[
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -6239,28 +6077,23 @@ void requestPermission() async {
                     Navigator.pop(context); // Close the dialog
                     await openAppSettings();
                   },
-                  child: Text("OK",
-
-                    style: TextStyle(
-                        color: Colors.white, fontSize: 16),
+                  child: Text(
+                    "OK",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
-
               ],
             );
           },
         );
       }
     }
-
-
   }
+
   Future<void> _initializeCamera() async {
-    if(!_isCameraInitialized){
+    if (!_isCameraInitialized) {
       requestPermission();
     }
-
-
 
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
