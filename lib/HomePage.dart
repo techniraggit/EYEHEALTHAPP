@@ -74,7 +74,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
         switch (intent.action) {
           case 'actionMusicPlaying':
             setState(() {
-              // getNotifactionCount();
+              getNotifactionCount();
             });
             break;
         }
@@ -150,7 +150,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     const tenSeconds = Duration(seconds: 10);
     _timer = Timer.periodic(tenSeconds, (timer) {
       // Make your API call here
-      // getNotifactionCount();
+      getNotifactionCount();
     });
   }
 
@@ -177,14 +177,14 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
 
     subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
     Future.delayed(const Duration(seconds: 1), () {})
-        // .then((_) => getNotifactionCount())
+        .then((_) => getNotifactionCount())
         .then((_) {
       if (mounted) {
         setState(() {});
       }
-      // _timer = Timer.periodic(Duration(seconds: 10), (timer) {
-      //   getNotifactionCount();
-      // });
+      _timer = Timer.periodic(Duration(seconds: 10), (timer) {
+        getNotifactionCount();
+      });
     });
   }
 

@@ -32,7 +32,7 @@ class NotificationModel {
 }
 
 class NotificationData {
-  int? id;
+  String? id;
   String? title;
   String? message;
   String? created;

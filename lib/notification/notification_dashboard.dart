@@ -139,7 +139,7 @@ class _NotificationSideBarState extends State<NotificationSideBar> {
     );
   }
 
-  Future<void> updateNotificationStatus(int id, int position) async {
+  Future<void> updateNotificationStatus(String id, int position) async {
     print("kjhgfc" + id.toString());
     notificationModel!.data![position].isRead = true;
     setState(() {});
@@ -215,7 +215,7 @@ class _NotificationSideBarState extends State<NotificationSideBar> {
                   if(!notificationData.isRead!) {
 
                     widget.onNotificationUpdate();
-                    int id=notificationData.id!;
+                    String id=notificationData.id!;
                     print("JHGNVm${id}");
                     updateNotificationStatus(
                         id, position);
@@ -263,7 +263,7 @@ class _NotificationSideBarState extends State<NotificationSideBar> {
 
 
   Future<void> fetchData() async {
-    try {
+    // try {
       String userToken = '';
       var sharedPref = await SharedPreferences.getInstance();
       userToken = sharedPref.getString("access_token") ?? '';
@@ -275,13 +275,13 @@ class _NotificationSideBarState extends State<NotificationSideBar> {
         Uri.parse('${ApiProvider.baseUrl}${ApiProvider.get_notification}'),
         headers: headers,
       );
-      print("statusCode================${response.statusCode}");
+      print("statusCode================${response.body}");
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         notificationModel = NotificationModel.fromJson(responseData);
         isReadFalseCount1 = notificationModel?.isReadFalseCount;
 
-        print("kjuhygfcvbb" + isReadFalseCount1.toString());
+        // print("kjuhygfcvbb" + isReadFalseCount1.toString());
 
         setState(() {});
       }
@@ -295,26 +295,27 @@ class _NotificationSideBarState extends State<NotificationSideBar> {
       } else {
         throw Exception('Failed to load data');
       }
-    } on DioError catch (e) {
-      if (e.response != null || e.response!.statusCode == 401) {
-        // Handle 401 error
-
-        Fluttertoast.showToast(msg: "Session Expired");
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => SignIn()),
-        );
-      }
-
-      else {
-        // Handle other Dio errors
-        print("DioError: ${e.error}");
-      }
-    } catch (e) {
-      // Handle other exceptions
-      print("Exception---: $e");
     }
-  }
+  //   on DioError catch (e) {
+  //     if (e.response != null || e.response!.statusCode == 401) {
+  //       // Handle 401 error
+  //
+  //       Fluttertoast.showToast(msg: "Session Expired");
+  //       Navigator.pushReplacement(
+  //         context,
+  //         MaterialPageRoute(builder: (context) => SignIn()),
+  //       );
+  //     }
+  //
+  //     else {
+  //       // Handle other Dio errors
+  //       print("DioError: ${e.error}");
+  //     }
+  //   // } catch (e) {
+  //   //   // Handle other exceptions
+  //   //   print("Exception---: $e");
+  //   // }
+  // }
 
 
   Future<void> _makeAllRead() async {

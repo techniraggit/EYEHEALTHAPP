@@ -9,6 +9,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:project_new/HomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6078,8 +6079,115 @@ class _CameraScreenState extends State<CameraS> {
         "Maintain the screen brightness at 50% throughout the eye test. Keep the device on a stable surface at the eye level. Keep the device at the recommended distance, for this follow the onscreen instructions throughout the eye test. Only move your face Move forward or backward till the time you see good to go sign on screen. Do not disturb or move the device from its position during the eye test. Are you ready? Let’s start the test. Please click on Start Eye Test Now.";
     _speak(replayText);
   }
+void requestPermission() async {
+    PermissionStatus status = await Permission.camera.status;
+    PermissionStatus status2 = await Permission.microphone.status;
 
+    if((status==PermissionStatus.granted&&status2==PermissionStatus.granted) ){
+      setState(() {
+        _initializeCamera();
+      });
+
+    }
+    if (!status.isGranted ) {
+      status = await Permission.camera.request();
+    }
+    if (!status2.isGranted ) {
+      status = await Permission.microphone.request();
+    }
+    if (status == PermissionStatus.denied ||
+        status == PermissionStatus.permanentlyDenied) {
+      await [Permission.camera].request();
+
+      // Permissions are denied or denied forever, let's request it!
+      status =  await Permission.camera.status;
+      if (status == PermissionStatus.denied) {
+        await [Permission.camera].request();
+        print("camera permissions are still denied");
+      } else if (status ==PermissionStatus.permanentlyDenied) {
+        print("camera permissions are permanently denied");
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("camera permissions required"),
+              content: Text("camera permissions are permanently denied. Please go to app settings to enable camera permissions."),
+              actions: <Widget>[
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors
+                        .background, // Set your desired background color here
+                    // You can also customize other button properties here if needed
+                  ),
+                  onPressed: () async {
+                    Navigator.pop(context); // Close the dialog
+                    await openAppSettings();
+                  },
+                  child: Text("OK",
+
+                    style: TextStyle(
+                        color: Colors.white, fontSize: 16),
+                  ),
+                ),
+
+              ],
+            );
+          },
+        );
+      }
+    }
+
+    if (status2 == PermissionStatus.denied ||
+        status2 == PermissionStatus.permanentlyDenied) {
+      await [Permission.microphone].request();
+
+      // Permissions are denied or denied forever, let's request it!
+      status2 =  await Permission.microphone.status;
+      if (status2 == PermissionStatus.denied) {
+        await [Permission.microphone].request();
+        print("microphone permissions are still denied");
+      }  if (status2 ==PermissionStatus.permanentlyDenied) {
+        print("microphone permissions are permanently denied");
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("microphone permissions required"),
+              content: Text("microphone permissions are permanently denied. Please go to app settings to enable microphone permissions."),
+              actions: <Widget>[
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors
+                        .background, // Set your desired background color here
+                    // You can also customize other button properties here if needed
+                  ),
+                  onPressed: () async {
+                    Navigator.pop(context); // Close the dialog
+                    await openAppSettings();
+                  },
+                  child: Text("OK",
+
+                    style: TextStyle(
+                        color: Colors.white, fontSize: 16),
+                  ),
+                ),
+
+              ],
+            );
+          },
+        );
+      }
+    }
+
+
+  }
   Future<void> _initializeCamera() async {
+    if(!_isCameraInitialized){
+      requestPermission();
+    }
+
+
+
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
       (camera) => camera.lensDirection == CameraLensDirection.front,
