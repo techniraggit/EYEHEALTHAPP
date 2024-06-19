@@ -186,7 +186,7 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> with AutoCan
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SizedBox(
-                    height: 10, // Adjust height as needed
+                    height: 18, // Adjust height as needed
                   ),
                   Center(
                     child: Text(
@@ -591,7 +591,7 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> with AutoCan
                                         color: Colors.grey,
                                       ),
                                     ),
-                                    const SizedBox(width: 8.0),
+                                     SizedBox(width: 8.0),
                                     Expanded(
                                       child: Text(
                                         bullet,
@@ -605,7 +605,7 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> with AutoCan
                               ))
                           .toList(),
                     ),
-                    const SizedBox(
+                     SizedBox(
                       height: 30,
                     ),
                     Padding(
@@ -642,6 +642,7 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> with AutoCan
                         ),
                       ),
                     ),
+                    SizedBox(height: 20,),
                   ],
                 ),
               ),
