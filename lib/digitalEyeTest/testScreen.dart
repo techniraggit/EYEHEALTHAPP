@@ -88,11 +88,14 @@ class SelectQuestion extends State<GiveInfo> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-
+        if (flutterTts != null) {
+          flutterTts.stop();
+        }
+        // _stopSpeaking();
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => HomePage()),
         );
-        _stopSpeaking();
+
         return false;
       },
       child: Scaffold(
@@ -102,6 +105,9 @@ class SelectQuestion extends State<GiveInfo> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
             onPressed: () {
+              if (flutterTts != null) {
+                flutterTts.stop();
+              }
               Navigator.push(
                 context,
                 CupertinoPageRoute(builder: (context) => HomePage()),
@@ -193,6 +199,7 @@ class SelectQuestion extends State<GiveInfo> {
                                   },
                                 ),
                               ],
+
                             ],
                           ),
                         ),
@@ -780,6 +787,9 @@ class AlphabetTestState extends State<AlphabetTest> {
   void dispose() {
     if (_controller != null) {
       _controller!.dispose();
+    }
+    if (flutterTts != null) {
+      flutterTts.pause();
     }
     flutterTts.stop();
     super.dispose();
@@ -5220,6 +5230,9 @@ class redgreen extends State<RedGreenTest> {
           UpdateRedGreenTest();
         }
         if (testcancel == true) {
+          if (flutterTts != null) {
+            flutterTts.stop();
+          }
           Fluttertoast.showToast(
               msg:
                   'Please do the test again and follow the instructions carefully ... ');
@@ -6125,6 +6138,9 @@ class _CameraScreenState extends State<CameraS> {
     }
     return WillPopScope(
       onWillPop: () async {
+        if (flutterTts != null) {
+          flutterTts.pause();
+        }
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => GiveInfo()),
         );
@@ -6137,6 +6153,9 @@ class _CameraScreenState extends State<CameraS> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
             onPressed: () {
+              if (flutterTts != null) {
+                flutterTts.stop();
+              }
               // Add your back button functionality here
             },
           ),

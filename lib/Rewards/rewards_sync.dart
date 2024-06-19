@@ -2676,144 +2676,146 @@ class PresUpload extends State<PrescriptionUpload> {
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
-        builder: (context) => Padding(
-          padding: EdgeInsets.all(16
-              //  bottom: MediaQuery.of(context).viewInsets.bottom,
-              ),
-          child: Wrap(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Prescription Upload Feedback',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-              Divider(thickness: 1, color: Colors.grey.shade500),
-              Padding(
-                padding: EdgeInsets.all(4.0),
-                child: Text(
-                  "Please provide additional comments while uploading your prescription:",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.bluebutton,
+        builder: (context) => SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.only(
+                 bottom: MediaQuery.of(context).viewInsets.bottom,left: 16,right: 16,top: 16
+                ),
+            child: Wrap(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Prescription Upload Feedback',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+                Divider(thickness: 1, color: Colors.grey.shade500),
+                Padding(
+                  padding: EdgeInsets.all(4.0),
+                  child: Text(
+                    "Please provide additional comments while uploading your prescription:",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.bluebutton,
+                    ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 1.0),
-                child:
-                    Text("1.Kindly enter the name of the Doctor you visited. "),
-              ),
-              SizedBox(height: 10),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 5),
-                child: TextField(
-                  controller: _doctorController,
-                  decoration: InputDecoration(
-                    hintText: "Enter Doctor Name...",
-                    border: OutlineInputBorder(),
-                  ),
-                  maxLines: 3,
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 1.0),
+                  child:
+                      Text("1.Kindly enter the name of the Doctor you visited. "),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 1.0, vertical: 10),
-                child: Text("2.Kindly enter the date of your eye test."),
-              ),
-              SizedBox(height: 10),
-              SizedBox(
-                height: 55,
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 14.0, vertical: 1),
+                SizedBox(height: 10),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 5),
                   child: TextField(
-                    controller: _dateController,
-                    readOnly: true,
-                    // Make the TextField read-only
-                    onTap: () {
-                      _selectDate(
-                          context); // Show date picker when the TextField is tapped
-                    },
+                    controller: _doctorController,
                     decoration: InputDecoration(
-                      labelText: 'Visited Date',
-                      hintText: 'YYYY-MM-DD',
-                      labelStyle: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.background,
-                        fontWeight: FontWeight.w400,
-                      ),
-                      hintStyle: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.hinttext,
-                        fontWeight: FontWeight.w400,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(6.0), // Add circular border
-                      ),
-                      // Set floatingLabelBehavior to always display the label
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      hintText: "Enter Doctor Name...",
+                      border: OutlineInputBorder(),
                     ),
-                    style: const TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.w400),
+                    maxLines: 3,
                   ),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 1.0),
-                child: Text("3.Why you visited for the eyetest?"),
-              ),
-              SizedBox(height: 10),
-              Padding(
-                padding: EdgeInsets.all(16.0),
-                child: TextField(
-                  controller: _commentController,
-                  decoration: InputDecoration(
-                    hintText: "Type your problem here...",
-                    border: OutlineInputBorder(),
-                  ),
-                  maxLines: 3,
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 1.0, vertical: 10),
+                  child: Text("2.Kindly enter the date of your eye test."),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: SizedBox(
-                  width: MediaQuery.sizeOf(context).width,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Retrieve the user's comment
-                      String comment = _commentController.text;
-                      // You can do something with the comment here
-                      print("User comment: $comment");
-                      uploadPrescription(pickedFiles.files, comment);
-
-                      Navigator.of(context).pop(); // Close the dialog
-                    },
-                    style: ButtonStyle(
-                      elevation: MaterialStateProperty.all<double>(
-                          0), // Set elevation to 0 to remove shadow
-
-                      backgroundColor: MaterialStateProperty.all<Color>(Colors
-                          .background), // Set your desired background color here
+                SizedBox(height: 10),
+                SizedBox(
+                  height: 55,
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14.0, vertical: 1),
+                    child: TextField(
+                      controller: _dateController,
+                      readOnly: true,
+                      // Make the TextField read-only
+                      onTap: () {
+                        _selectDate(
+                            context); // Show date picker when the TextField is tapped
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Visited Date',
+                        hintText: 'YYYY-MM-DD',
+                        labelStyle: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.background,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        hintStyle: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.hinttext,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(6.0), // Add circular border
+                        ),
+                        // Set floatingLabelBehavior to always display the label
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                      style: const TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.w400),
                     ),
-                    child: const Text('Submit',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w400,
-                            fontSize: 16)),
                   ),
                 ),
-              ),
-            ],
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 1.0),
+                  child: Text("3.Why you visited for the eyetest?"),
+                ),
+                SizedBox(height: 10),
+                Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: TextField(
+                    controller: _commentController,
+                    decoration: InputDecoration(
+                      hintText: "Type your problem here...",
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: 3,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: SizedBox(
+                    width: MediaQuery.sizeOf(context).width,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Retrieve the user's comment
+                        String comment = _commentController.text;
+                        // You can do something with the comment here
+                        print("User comment: $comment");
+                        uploadPrescription(pickedFiles.files, comment);
+          
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                      style: ButtonStyle(
+                        elevation: MaterialStateProperty.all<double>(
+                            0), // Set elevation to 0 to remove shadow
+          
+                        backgroundColor: MaterialStateProperty.all<Color>(Colors
+                            .background), // Set your desired background color here
+                      ),
+                      child: const Text('Submit',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 16)),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       );
