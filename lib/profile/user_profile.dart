@@ -696,6 +696,11 @@ class ProfileDetails extends State<UserProfile> {
     }
   }
 
+
+
+
+
+
   Future<void> updateProfilePicture() async {
     const String apiUrl =
         '${ApiProvider.baseUrl + ApiProvider.updateUserProfile}';
