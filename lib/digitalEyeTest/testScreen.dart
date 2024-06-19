@@ -290,6 +290,7 @@ class SelectQuestion extends State<GiveInfo> {
         body: body,
       );
       print(headers);
+      print("kkkk"+response.body);
 
       if (response.statusCode == 200) {
         // _progressDialog!.hide();
@@ -315,11 +316,21 @@ class SelectQuestion extends State<GiveInfo> {
         );
       } else {
         // _progressDialog!.hide();
+        Map<String, dynamic> parsedJson = json.decode(response.body);
+        String msg =parsedJson['message'];
 
-        CustomAlertDialog.attractivepopupnodelay(
-            context, 'Please answer the questions carefully');
-// Map<String, dynamic> parsedJson = json.decode(response.body);
-        print(response.reasonPhrase);
+        CustomAlertDialog.attractivepopupnodelay(context, msg);
+
+  /*      if(msg=='Please connect with a doctor!'){
+          Future.delayed(Duration(seconds: 2), () {
+            Navigator.pushReplacement(
+              context,
+              CupertinoPageRoute(builder: (context) => HomePage()),
+            );
+          });
+      }*/
+
+      //  print(response.reasonPhrase);
       }
     } catch (e) {
       // _progressDialog!.hide();
@@ -329,7 +340,7 @@ class SelectQuestion extends State<GiveInfo> {
             context, 'poor internet connectivity , please try again later!');
       }
 
-// If the server returns an error response, throw an exception
+      // If the server returns an error response, throw an exception
       //  throw Exception('Failed to send data');
     } finally {
       //  _progressDialog!.hide();
@@ -570,6 +581,7 @@ class AlphabetTestState extends State<AlphabetTest> {
     super.initState();
     _initializeCamera();
     getSnellFraction();
+    reverseSnellenFractions();
     _configureTts();
     _onReplayPressed();
   }
@@ -715,7 +727,6 @@ class AlphabetTestState extends State<AlphabetTest> {
   String randomText = 'W';
   var len;
   List<Map<String, dynamic>> snellenFractions = [];
-  List<Map<String, dynamic>> oldsnellenFractions = [];
 
   Future<void> getSnellFraction() async {
     try {
@@ -955,8 +966,8 @@ class AlphabetTestState extends State<AlphabetTest> {
                             onPressed: () {
                               Myopia_or_HyperMyopiaTest(context);
                             },
-                            child: Text(
-                              'Not able to Read',
+                            child:  Text(
+                              btnname ? 'Able to Read' : 'Not able to Read',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -1006,19 +1017,81 @@ class AlphabetTestState extends State<AlphabetTest> {
 
   // double nextFraction_new=0.0;
   double currentTextSize = 28.0; // Initial text size
+  bool setkey = true; // Example initial value
+  bool btnname = true; // Example initial value
 
+  /*void reverseSnellenFractions() {
+    snellenFractions = snellenFractions.reversed.toList();
+  }
+
+  Future<void> increaseTextSize() async {
+    if (currentIndex == 0 && setkey) {
+      currentIndex++;
+      btnname = false;
+    } else if (currentIndex == snellenFractions.length - 1 && !setkey) {
+      setkey = true;
+    } else if (currentIndex > 0 && currentIndex < snellenFractions.length - 1) {
+      currentIndex++;
+    }
+
+    nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
+    currentTextSize = await calculateTextSize(nextFraction);
+    setState(() {});
+  }
+
+  Future<void> decreaseTextSize() async {
+    if (currentIndex == 0 && !setkey) {
+      currentIndex = snellenFractions.length - 1;
+      setkey = true;
+    } else if (currentIndex == 0 && setkey) {
+      btnname = true;
+    } else if (currentIndex > 0 && currentIndex < snellenFractions.length) {
+      currentIndex--;
+    }
+
+    nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
+    currentTextSize = await calculateTextSize(nextFraction);
+    setState(() {});
+  }
+
+  Future<double> calculateTextSize(String? nextFraction) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String text = prefs.getString('test') ?? '';
+    double value = 0.0;
+
+    if (text == 'myopia') {
+      List<String>? parts = nextFraction?.split('/');
+      double numerator = double.parse(parts![0]);
+      double denominator = double.parse(parts[1]);
+      value = numerator / denominator;
+    } else {
+      value = double.parse(nextFraction!);
+    }
+
+    return 20.0 * value;
+  }
+*/
   Future<void> increaseTextSize() async {
     if (currentIndex == 0) {
       print("currentIndex pv inc$currentIndex");
-      //currentIndex = snellenFractions.length-1 ;
+      if(setkey== true) {
+        currentIndex++;
+        print("currentIndex inc$currentIndex");
+        btnname=false;
 
-      //currentIndex--;
-      int len = snellenFractions.length - 1;
+
+       // setkey =true;
+      }
+      if(setkey== false) {
+        currentIndex = snellenFractions.length - 1;
+        setkey=true;
+      }
+    //  int len = snellenFractions.length - 1;
       print("currentIndex pv inc${snellenFractions.length}");
-      nextFraction = snellenFractions[len]['snellen_fraction'];
+      nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
       // Decrease index by 1 from its last index
-      /*    nextFraction_new = snellenFractions[len]['snellen_fraction'];
-      print("nahi$nextFraction_new");*/
+          nextFraction_new = snellenFractions[len]['snellen_fraction'];
+      print("nahi$nextFraction_new");
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String text = prefs.getString('test') ?? '';
       double value = 0.0;
@@ -1045,8 +1118,8 @@ class AlphabetTestState extends State<AlphabetTest> {
       print("currentIndex pv iii$currentIndex");
       // Decrease index by 1 from its last index
       nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
-/*      print("nahi$nextFraction_new");
- */
+ //     print("nahi$nextFraction_new");
+
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String text = prefs.getString('test') ?? '';
       double value = 0.0;
@@ -1058,10 +1131,10 @@ class AlphabetTestState extends State<AlphabetTest> {
       } else {
         value = double.parse(nextFraction!);
       }
-      /* List<String>? parts = nextFraction?.split('/');
+       List<String>? parts = nextFraction?.split('/');
       double numerator = double.parse(parts![0]);
       double denominator = double.parse(parts[1]);
-      double calculatedSize = 20.0 * (numerator / denominator);*/
+       value = 20.0 * (numerator / denominator);
 
       double calculatedSize = 20.0 * value;
 
@@ -1073,19 +1146,22 @@ class AlphabetTestState extends State<AlphabetTest> {
   Future<void> decreaseTextSize() async {
     if (currentIndex == 0) {
       print("currentIndex pv dec $currentIndex");
-      currentIndex = snellenFractions.length - 1;
+      if(setkey== false) {
+        currentIndex = snellenFractions.length - 1;
+        setkey =true;
+      }else{btnname=true;}
 
       //currentIndex--;
       // Decrease index by 1 from its last index
       nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
       print("nahi$nextFraction");
 
-      /*     List<String>? parts = nextFraction?.split('/');
+           List<String>? parts = nextFraction?.split('/');
       double numerator = double.parse(parts![0]);
       double denominator = double.parse(parts[1]);
       // double calculatedSize = 20.0 * nextFraction_new;
 
-      double calculatedSize = 20.0 * (numerator / denominator);*/
+      double calculatedSize = 20.0 * (numerator / denominator);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String text = prefs.getString('test') ?? '';
       double value = 0.0;
@@ -1112,10 +1188,10 @@ class AlphabetTestState extends State<AlphabetTest> {
 // Decrease index by 1 from its last index
       nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
       print("nahi$nextFraction");
-      /*  List<String>? parts = nextFraction?.split('/');
+        List<String>? parts = nextFraction?.split('/');
       double numerator = double.parse(parts![0]);
       double denominator = double.parse(parts[1]);
-      double calculatedSize = 20.0 * (numerator / denominator);*/
+      double calculatedSize = 20.0 * (numerator / denominator);
       // double calculatedSize = 20.0 * nextFraction_new;
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String text = prefs.getString('test') ?? '';
@@ -1433,11 +1509,11 @@ class Reading extends State<ReadingTest> {
         final parsedData = json.decode(response.body);
         print("readingdata${parsedData}");
 
-       int currentText = parsedData['data']['text_size'];
+        currentTextSize = parsedData['data']['text_size'];
         randomText = parsedData['data']['text'];
         nextFraction = parsedData['data']['initial_snellen_fraction'];
         print("readingdata${randomText}");
-        currentTextSize =currentText *1.65;
+        currentTextSize =currentTextSize *1.65;
         setState(() {
           currentTextSize;
           randomText;
@@ -2609,7 +2685,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       delayedAPICall();
     });
-    // delayedAPICall();
+    delayedAPICall();
     _initializeCamera();
     _configureTts();
     _onReplayPressed();
@@ -2673,9 +2749,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
   Future<void> fetchData() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String authToken =
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-          prefs.getString('access_token') ?? '';
+      String authToken = prefs.getString('access_token') ?? '';
       String test_id = prefs.getString('test_id') ?? '';
       String selectedRegion = prefs.getString('region') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
@@ -3607,7 +3681,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
     await prefs.setString('region', selectedPart);
 // Replace this URL with your PUT API endpoint
     final String apiUrl =
-        'https://testing1.zuktiapp.zuktiinnovations.com/choose-astigmatism-api/';
+        '${Api.baseurl}/choose-astigmatism-api/';
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Content-Type': 'application/json',
