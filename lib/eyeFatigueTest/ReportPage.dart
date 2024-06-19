@@ -176,30 +176,7 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin {
           },
         ),
         backgroundColor: Colors.white,
-        // appBar: AppBar(
-        //   backgroundColor: Colors.white,
-        //   title: const Text('Report and Statistics'),
-        //   bottom: TabBar(
-        //     tabs: [
-        //       Tab(text: 'Fatigue Report'),
-        //       Tab(text: 'Eye Test Report'),
-        //       Tab(text: 'Other'),
-        //     ],
-        //     labelColor: Colors.bluebutton,
-        //     unselectedLabelColor: Colors.black,
-        //     labelStyle:
-        //     TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-        //     unselectedLabelStyle: TextStyle(fontSize: 14),
-        //   ),
-        //   actions: <Widget>[
-        //     IconButton(
-        //       icon: Icon(Icons.notifications),
-        //       onPressed: () {
-        //         // Handle notification icon pressed
-        //       },
-        //     ),
-        //   ],
-        // ),
+
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(100),
           child: Stack(
@@ -917,7 +894,7 @@ count=jsonData['no_of_fatigue_test'];
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Eye Test Report'),
+        title: Text('Eye Fatigue Test Report'),
         backgroundColor: Colors.white,
       ),
       body: isLoading

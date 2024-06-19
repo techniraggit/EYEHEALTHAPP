@@ -49,6 +49,12 @@ class EyeFatiguereports extends State<ReportDetails>  with AutoCancelStreamMixin
     "Without confirmation from your eye doctor or Eye health optometrist, do not use this power to make glasses."
   ];
 
+
+
+  bool _saving = false; List<int> pdfBytes = [0x25, 0x50, 0x44, 0x46, ];
+  String _message = '';
+
+
   @override
   void initState() {
     super.initState();
@@ -153,27 +159,7 @@ class EyeFatiguereports extends State<ReportDetails>  with AutoCancelStreamMixin
       )
           : Scaffold(
         backgroundColor: Colors.white,
-        // appBar: AppBar(
-        //   leading: IconButton(
-        //     icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-        //     onPressed: () {
-        //       Navigator.pop(context);
-        //     },
-        //   ),
-        //   title: const Center(
-        //       child: Text(
-        //         'Eye Fatigue Test Report',
-        //         style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-        //       )),
-        //   actions: <Widget>[
-        //     IconButton(
-        //       icon: const Icon(Icons.notifications),
-        //       onPressed: () {
-        //         // Handle notification icon pressed
-        //       },
-        //     ),
-        //   ],
-        // ),
+
         key: _scafoldKey,
         endDrawer: NotificationSideBar(
           onNotificationUpdate: () {
@@ -602,9 +588,11 @@ class EyeFatiguereports extends State<ReportDetails>  with AutoCancelStreamMixin
               Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: ElevatedButton(
-                  onPressed: () {
-                    downloadReport();
+                    onPressed: () async {
+                      downloadReport();
+
                   },
+
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.deepPurple.shade400,
                     padding: const EdgeInsets.all(16),
@@ -703,8 +691,64 @@ class EyeFatiguereports extends State<ReportDetails>  with AutoCancelStreamMixin
       print("Exception---: $e");
     }
   }
+  void requestStoragePermission() async {
+    PermissionStatus status = await Permission.storage.status;
 
+    if (!status.isGranted ) {
+      status = await Permission.storage.request();
+    }
+
+
+    if (status == PermissionStatus.denied ||
+          status == PermissionStatus.permanentlyDenied) {
+        await [Permission.storage].request();
+
+        // Permissions are denied or denied forever, let's request it!
+        status =  await Permission.storage.status;
+        if (status == PermissionStatus.denied) {
+          await [Permission.storage].request();
+          print("storage permissions are still denied");
+        } else if (status ==PermissionStatus.permanentlyDenied) {
+          print("storage permissions are permanently denied");
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("storage permissions required"),
+                content: Text("storage permissions are permanently denied. Please go to app settings to enable files and media permissions."),
+                actions: <Widget>[
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors
+                          .background, // Set your desired background color here
+                      // You can also customize other button properties here if needed
+                    ),
+                    onPressed: () async {
+                      Navigator.pop(context); // Close the dialog
+                      await openAppSettings();
+                    },
+                    child: Text("OK",
+
+                      style: TextStyle(
+                          color: Colors.white, fontSize: 16),
+                    ),
+                  ),
+
+                ],
+              );
+            },
+          );
+        }
+      }
+
+     if( status.isGranted) {
+      print("storage permissions are granted ");
+      downloadReport();
+
+    }
+  }
   Future<String?> downloadReport() async {
+    String _filePath = '';
     try {
       var sharedPref = await SharedPreferences.getInstance();
       String userToken = sharedPref.getString("access_token") ?? '';
@@ -718,58 +762,41 @@ class EyeFatiguereports extends State<ReportDetails>  with AutoCancelStreamMixin
             '${ApiProvider.baseUrl}/api/fatigue/download-report?report_id=$report_id'), // Adjust the URL as needed
         headers: headers,
       );
+      var status = await Permission.storage.request();
+
       print('PDFreport_id $report_id');
+
+
+
       if (response.statusCode == 200) {
-        Fluttertoast.showToast(msg: "PDF downloaded successfully");
-        final directory = await getApplicationDocumentsDirectory();
-        List<String> paths = await ExternalPath.getExternalStorageDirectories();
-        String path;
+        Directory? downloadsDirectory = await getDownloadsDirectory();
 
-        path = await ExternalPath.getExternalStoragePublicDirectory(
-            ExternalPath.DIRECTORY_DOWNLOADS);
+        if (downloadsDirectory != null) {
+          File? pdfFile; String? pdfPath ;
+          // Create a file in the Downloads directory
 
-        setState(() {
-          print(path); // /storage/emulated/0/Download
-        });
+           pdfPath = '${downloadsDirectory.path}${report_id}/report.pdf';
+           pdfFile = File(pdfPath);
+          // Write the response content to the file
+          await pdfFile.writeAsBytes(response.bodyBytes);
 
-        String pdfPath = path + '/report.pdf';
-        File pdfFile = File(pdfPath);
-
-        await pdfFile.writeAsBytes(response.bodyBytes);
-
-        // Show a message or perform any further actions if needed
-        print('PDF downloaded successfully=====: $pdfFile.path');
-
-        // Return the path of the downloaded file
-        return pdfFile.path;
+          // Check if the file was successfully saved
+          if (await pdfFile.exists()) {
+            // Show a message or perform any further actions if needed
+            print('PDF downloaded successfully: $pdfPath');
+            Fluttertoast.showToast(msg: "PDF downloaded successfully");
+            return pdfPath;
+          } else {
+            Fluttertoast.showToast(msg: "Failed to save PDF");
+            return null;
+          }
+        }
+        else {
+          print('Downloads directory not found.');
+          Fluttertoast.showToast(msg: "Failed to save PDF");
+          return null;
+        }
       }
-
-      // if (response.statusCode == 200) {
-      //   Directory? downloadsDirectory = await getDownloadsDirectory();
-      //
-      //   if (downloadsDirectory != null) {
-      //     // Create a file in the Downloads directory
-      //     String pdfPath = '${downloadsDirectory.path}/report.pdf';
-      //     File pdfFile = File(pdfPath);
-      //     // Write the response content to the file
-      //     await pdfFile.writeAsBytes(response.bodyBytes);
-      //
-      //     // Check if the file was successfully saved
-      //     if (await pdfFile.exists()) {
-      //       // Show a message or perform any further actions if needed
-      //       print('PDF downloaded successfully: $pdfPath');
-      //       Fluttertoast.showToast(msg: "PDF downloaded successfully");
-      //       return pdfPath;
-      //     } else {
-      //       Fluttertoast.showToast(msg: "Failed to save PDF");
-      //       return null;
-      //     }
-      //   } else {
-      //     print('Downloads directory not found.');
-      //     Fluttertoast.showToast(msg: "Failed to save PDF");
-      //     return null;
-      //   }
-      // }
       else if (response.statusCode == 401) {
         Fluttertoast.showToast(msg: "Session Expired");
         Navigator.pushReplacement(
@@ -777,15 +804,16 @@ class EyeFatiguereports extends State<ReportDetails>  with AutoCancelStreamMixin
           MaterialPageRoute(builder: (context) => SignIn()),
         );
         return null;
-      } else {
+      }
+      else {
         print('Failed to download PDF: ${response.statusCode}');
 
         // Handle other error cases if necessary
         return null;
       }
-    } catch (e) {
+
+  }catch (e) {
       print("Exception: $e");
       return null;
     }
-  }
-}
+}}
