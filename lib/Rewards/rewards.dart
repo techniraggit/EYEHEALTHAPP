@@ -172,7 +172,7 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
         List jsonResponse = json.decode(response.body)['data'];
         print(response.body);
         Map<String, dynamic> data = jsonDecode(response.body);
-        int score = data['eye_health_score'];
+        dynamic score = data['eye_health_score'];
         print('jjjjj$score');
 
         // Update the state to display the score
