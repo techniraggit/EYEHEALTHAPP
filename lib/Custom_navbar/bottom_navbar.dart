@@ -40,7 +40,7 @@ class CustomBottomAppBar extends StatelessWidget {
                           onTap: () {
                         if (currentScreen != "ReportPage"){
 
-                           Navigator.pushReplacement(
+                           Navigator.push(
                               context, CupertinoPageRoute(
                               builder: (context) => ReportPage(
                               ),
@@ -67,9 +67,9 @@ class CustomBottomAppBar extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: () {
-    if (currentScreen != "EyeHealth"){
+                  if (currentScreen != "EyeHealth"){
 
-    Navigator.pushReplacement(
+                             Navigator.push(
                               context, CupertinoPageRoute(
                               builder: (context) => EyeHealthTrackDashboard(
                               ),
@@ -100,7 +100,7 @@ class CustomBottomAppBar extends StatelessWidget {
                         GestureDetector(
                           onTap: () {
                             if (currentScreen != "Rewards"){
-                            Navigator.pushReplacement(
+                            Navigator.push(
                               context,
                               CupertinoPageRoute(
                                   builder: (context) =>  RewardsScreen()),
@@ -125,7 +125,7 @@ class CustomBottomAppBar extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushReplacement(
+                            Navigator.push(
                               context,
                               CupertinoPageRoute(
                                   builder: (context) =>  UserDashboard()),

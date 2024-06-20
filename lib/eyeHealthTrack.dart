@@ -249,13 +249,14 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
             elevation: 4.0, // Shadow
             child: InkWell(
               onTap: () {
-                Navigator.push(
-                  context, CupertinoPageRoute(
-                  builder: (context) => HomePage(
-                  ),
-                ),
-
-                );
+                Navigator.of(context).pop();
+                // Navigator.push(
+                //   context, CupertinoPageRoute(
+                //   builder: (context) => HomePage(
+                //   ),
+                // ),
+                //
+                // );
               },
               child: SizedBox(
                 width: 53.0, // Width of the FloatingActionButton
@@ -309,10 +310,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                 ),
                 iconSize: 28, // Back button icon
                 onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => HomePage()),
-                  );                },
+                  Navigator.of(context).pop();              },
               ),
             ),
             Center(
