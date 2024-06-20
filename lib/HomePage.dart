@@ -317,7 +317,7 @@ if(edited==false){
       assetAudioPath: 'assets/marimba.mp3',
       notificationTitle: 'Test Reminder',
       notificationBody: 'Do your eye test',
-      enableNotificationOnKill: Platform.isIOS,
+      enableNotificationOnKill: Platform.isIOS,notificationActionSettings:NotificationActionSettings( hasSnoozeButton: true,hasStopButton: true,snoozeButtonText: "Snooze",stopButtonText: "Stop",snoozeDurationInSeconds: 300)
     );
     return alarmSettings;
   }

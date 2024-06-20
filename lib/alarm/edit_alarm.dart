@@ -90,15 +90,16 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
         : widget.alarmSettings!.id;
 
     final alarmSettings = AlarmSettings(
-      id: id,
-      dateTime: selectedDateTime,
-      loopAudio: loopAudio,
-      vibrate: vibrate,
-      volume: volume,
-      assetAudioPath: assetAudio,
-      notificationTitle: 'Test Reminder',
-      notificationBody: 'Do your eye test',
-      enableNotificationOnKill: Platform.isIOS,
+        id: id,
+        dateTime: selectedDateTime,
+        loopAudio: loopAudio,
+        vibrate: vibrate,
+        volume: volume,
+        assetAudioPath: assetAudio,
+        notificationTitle: 'Test Reminder',
+        notificationBody: 'Do your eye test',
+        enableNotificationOnKill: Platform.isIOS,
+        notificationActionSettings: const NotificationActionSettings(hasSnoozeButton: true,hasStopButton: true,snoozeButtonText: "Snooze",stopButtonText: "Stop",snoozeDurationInSeconds: 300)
     );
     return alarmSettings;
   }
