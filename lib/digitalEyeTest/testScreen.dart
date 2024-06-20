@@ -201,6 +201,7 @@ class SelectQuestion extends State<GiveInfo> {
                                   },
                                 ),
                               ],
+
                             ],
                           ),
                         ),
@@ -216,7 +217,13 @@ class SelectQuestion extends State<GiveInfo> {
                 padding: const EdgeInsets.fromLTRB(10, 10, 0, 10),
                 child: ElevatedButton(
                   onPressed: () {
-                    submitApi();
+                    requestPermission();
+
+
+
+
+
+                    // submitApi();
                   },
                   child: Text('Next'),
                   style: ElevatedButton.styleFrom(
@@ -235,6 +242,108 @@ class SelectQuestion extends State<GiveInfo> {
         ),
       ),
     );
+  }
+  void requestPermission() async {
+    PermissionStatus status = await Permission.camera.status;
+    PermissionStatus status2 = await Permission.microphone.status;
+
+    if((status==PermissionStatus.granted&&status2==PermissionStatus.granted) ){
+      setState(() {
+        submitApi();
+      });
+
+    }
+    if (!status.isGranted ) {
+      status = await Permission.camera.request();
+    }
+    if (!status2.isGranted ) {
+      status = await Permission.microphone.request();
+    }
+    if (status == PermissionStatus.denied ||
+        status == PermissionStatus.permanentlyDenied) {
+      await [Permission.camera].request();
+
+      // Permissions are denied or denied forever, let's request it!
+      status =  await Permission.camera.status;
+      if (status == PermissionStatus.denied) {
+        await [Permission.camera].request();
+        print("camera permissions are still denied");
+      } else if (status ==PermissionStatus.permanentlyDenied) {
+        print("camera permissions are permanently denied");
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("camera permissions required"),
+              content: Text("camera permissions are permanently denied. Please go to app settings to enable camera permissions."),
+              actions: <Widget>[
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors
+                        .background, // Set your desired background color here
+                    // You can also customize other button properties here if needed
+                  ),
+                  onPressed: () async {
+                    Navigator.pop(context); // Close the dialog
+                    await openAppSettings();
+                  },
+                  child: Text("OK",
+
+                    style: TextStyle(
+                        color: Colors.white, fontSize: 16),
+                  ),
+                ),
+
+              ],
+            );
+          },
+        );
+      }
+    }
+
+    if (status2 == PermissionStatus.denied ||
+        status2 == PermissionStatus.permanentlyDenied) {
+      await [Permission.microphone].request();
+
+      // Permissions are denied or denied forever, let's request it!
+      status2 =  await Permission.microphone.status;
+      if (status2 == PermissionStatus.denied) {
+        await [Permission.microphone].request();
+        print("microphone permissions are still denied");
+      }  if (status2 ==PermissionStatus.permanentlyDenied) {
+        print("microphone permissions are permanently denied");
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("microphone permissions required"),
+              content: Text("microphone permissions are permanently denied. Please go to app settings to enable microphone permissions."),
+              actions: <Widget>[
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors
+                        .background, // Set your desired background color here
+                    // You can also customize other button properties here if needed
+                  ),
+                  onPressed: () async {
+                    Navigator.pop(context); // Close the dialog
+                    await openAppSettings();
+                  },
+                  child: Text("OK",
+
+                    style: TextStyle(
+                        color: Colors.white, fontSize: 16),
+                  ),
+                ),
+
+              ],
+            );
+          },
+        );
+      }
+    }
+
+
   }
 
   Future<List<Question>> getQuestionApi() async {
@@ -1092,6 +1201,144 @@ class AlphabetTestState extends State<AlphabetTest> {
 
     return 20.0 * value;
   }
+*/
+  Future<void> increaseTextSize() async {
+    if (currentIndex == 0) {
+      print("currentIndex pv inc$currentIndex");
+      if(setkey== true) {
+        currentIndex++;
+        print("currentIndex inc$currentIndex");
+        btnname=false;
+
+
+       // setkey =true;
+      }
+      if(setkey== false) {
+        currentIndex = snellenFractions.length - 1;
+        setkey=true;
+      }
+    //  int len = snellenFractions.length - 1;
+      print("currentIndex pv inc${snellenFractions.length}");
+      nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
+      // Decrease index by 1 from its last index
+      //     nextFraction_new = snellenFractions[len]['snellen_fraction'];
+      // print("nahi$nextFraction_new");
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String text = prefs.getString('test') ?? '';
+      double value = 0.0;
+      if (text == 'myopia') {
+        List<String>? parts = nextFraction?.split('/');
+        double numerator = double.parse(parts![0]);
+        double denominator = double.parse(parts[1]);
+        value = (numerator / denominator);
+      } else {
+        value = double.parse(nextFraction!);
+      }
+
+      double calculatedSize = 20.0 * value;
+      //double calculatedSize = 20.0 * nextFraction_new;
+
+      currentTextSize = calculatedSize;
+    }
+    if (currentIndex > 0 && currentIndex <= snellenFractions.length) {
+      int len = snellenFractions.length - 1;
+      if (currentIndex < len) {
+        currentIndex++;
+      }
+
+      print("currentIndex pv iii$currentIndex");
+      // Decrease index by 1 from its last index
+      nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
+ //     print("nahi$nextFraction_new");
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String text = prefs.getString('test') ?? '';
+      double value = 0.0;
+      if (text == 'myopia') {
+        List<String>? parts = nextFraction?.split('/');
+        double numerator = double.parse(parts![0]);
+        double denominator = double.parse(parts[1]);
+        value = (numerator / denominator);
+      } else {
+        value = double.parse(nextFraction!);
+      }
+       List<String>? parts = nextFraction?.split('/');
+      double numerator = double.parse(parts![0]);
+      double denominator = double.parse(parts[1]);
+       value = 20.0 * (numerator / denominator);
+
+      double calculatedSize = 20.0 * value;
+
+      currentTextSize = calculatedSize;
+    }
+  }
+
+// Initial index// Initial text size
+  Future<void> decreaseTextSize() async {
+    if (currentIndex == 0) {
+      print("currentIndex pv dec $currentIndex");
+      if(setkey== false) {
+        currentIndex = snellenFractions.length - 1;
+        setkey =true;
+      }else{btnname=true;}
+
+      //currentIndex--;
+      // Decrease index by 1 from its last index
+      nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
+      print("nahi$nextFraction");
+
+           List<String>? parts = nextFraction?.split('/');
+      double numerator = double.parse(parts![0]);
+      double denominator = double.parse(parts[1]);
+      // double calculatedSize = 20.0 * nextFraction_new;
+
+      double calculatedSize = 20.0 * (numerator / denominator);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String text = prefs.getString('test') ?? '';
+      double value = 0.0;
+      if (text == 'myopia') {
+        List<String>? parts = nextFraction?.split('/');
+        double numerator = double.parse(parts![0]);
+        double denominator = double.parse(parts[1]);
+        value = (numerator / denominator);
+      } else {
+        value = double.parse(nextFraction!);
+      }
+      // double calculatedSize = 20.0 * value;
+
+      currentTextSize = calculatedSize;
+    }
+    if (currentIndex > 0 && currentIndex < snellenFractions.length) {
+      int len = snellenFractions.length - 1;
+      if (currentIndex > 0 ) {
+        currentIndex--;
+      } else{
+      }
+
+      print("currentIndex pv ddd$currentIndex");
+// Decrease index by 1 from its last index
+      nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
+      print("nahi$nextFraction");
+        List<String>? parts = nextFraction?.split('/');
+      double numerator = double.parse(parts![0]);
+      double denominator = double.parse(parts[1]);
+      double calculatedSize = 20.0 * (numerator / denominator);
+      // double calculatedSize = 20.0 * nextFraction_new;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String text = prefs.getString('test') ?? '';
+      double value = 0.0;
+      if (text == 'myopia') {
+        List<String>? parts = nextFraction?.split('/');
+        double numerator = double.parse(parts![0]);
+        double denominator = double.parse(parts[1]);
+        value = (numerator / denominator);
+      } else {
+        value = double.parse(nextFraction!);
+      }
+      // double calculatedSize = 20.0 * value;
+      currentTextSize = calculatedSize;
+    }
+  }
 
   Future<String?> getRandomTest() async {
     setState(() {
@@ -1371,6 +1618,7 @@ class Reading extends State<ReadingTest> {
   int currentIndex = 0;
   List<Map<String, dynamic>> snellenFractions = [];
 
+
   Future<void> getReadingSnellFractionNew() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -1396,7 +1644,7 @@ class Reading extends State<ReadingTest> {
         randomText = parsedData['data']['text'];
         nextFraction = parsedData['data']['initial_snellen_fraction'];
         print("readingdata${randomText}");
-        currentTextSize = currentTextSize * 1.65;
+        currentTextSize =currentTextSize *1.65;
         setState(() {
           currentTextSize;
           randomText;
@@ -5952,108 +6200,10 @@ class _CameraScreenState extends State<CameraS> {
         "Maintain the screen brightness at 50% throughout the eye test. Keep the device on a stable surface at the eye level. Keep the device at the recommended distance, for this follow the onscreen instructions throughout the eye test. Only move your face Move forward or backward till the time you see good to go sign on screen. Do not disturb or move the device from its position during the eye test. Are you ready? Let’s start the test. Please click on Start Eye Test Now.";
     _speak(replayText);
   }
-
-  void requestPermission() async {
-    PermissionStatus status = await Permission.camera.status;
-    PermissionStatus status2 = await Permission.microphone.status;
-
-    if ((status == PermissionStatus.granted &&
-        status2 == PermissionStatus.granted)) {
-      setState(() {
-        _initializeCamera();
-      });
-    }
-    if (!status.isGranted) {
-      status = await Permission.camera.request();
-    }
-    if (!status2.isGranted) {
-      status = await Permission.microphone.request();
-    }
-    if (status == PermissionStatus.denied ||
-        status == PermissionStatus.permanentlyDenied) {
-      await [Permission.camera].request();
-
-      // Permissions are denied or denied forever, let's request it!
-      status = await Permission.camera.status;
-      if (status == PermissionStatus.denied) {
-        await [Permission.camera].request();
-        print("camera permissions are still denied");
-      } else if (status == PermissionStatus.permanentlyDenied) {
-        print("camera permissions are permanently denied");
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text("camera permissions required"),
-              content: Text(
-                  "camera permissions are permanently denied. Please go to app settings to enable camera permissions."),
-              actions: <Widget>[
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors
-                        .background, // Set your desired background color here
-                    // You can also customize other button properties here if needed
-                  ),
-                  onPressed: () async {
-                    Navigator.pop(context); // Close the dialog
-                    await openAppSettings();
-                  },
-                  child: Text(
-                    "OK",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      }
-    }
-
-    if (status2 == PermissionStatus.denied ||
-        status2 == PermissionStatus.permanentlyDenied) {
-      await [Permission.microphone].request();
-
-      // Permissions are denied or denied forever, let's request it!
-      status2 = await Permission.microphone.status;
-      if (status2 == PermissionStatus.denied) {
-        await [Permission.microphone].request();
-        print("microphone permissions are still denied");
-      }
-      if (status2 == PermissionStatus.permanentlyDenied) {
-        print("microphone permissions are permanently denied");
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text("microphone permissions required"),
-              content: Text(
-                  "microphone permissions are permanently denied. Please go to app settings to enable microphone permissions."),
-              actions: <Widget>[
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors
-                        .background, // Set your desired background color here
-                    // You can also customize other button properties here if needed
-                  ),
-                  onPressed: () async {
-                    Navigator.pop(context); // Close the dialog
-                    await openAppSettings();
-                  },
-                  child: Text(
-                    "OK",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      }
-    }
-  }
-
   Future<void> _initializeCamera() async {
+    // if(!_isCameraInitialized){
+    //   requestPermission();
+    // }
     if (!_isCameraInitialized) {
       requestPermission();
     }
