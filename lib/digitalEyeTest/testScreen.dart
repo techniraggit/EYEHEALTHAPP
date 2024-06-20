@@ -591,6 +591,7 @@ class AlphabetTestState extends State<AlphabetTest> {
     getSnellFraction();
     _configureTts();
     _onReplayPressed();
+
   }
 
   final FlutterTts flutterTts = FlutterTts();
@@ -720,7 +721,7 @@ class AlphabetTestState extends State<AlphabetTest> {
         CustomAlertDialog.attractivepopup(
             context, 'poor internet connectivity , please try again later!');
       } else {
-         CustomAlertDialog.attractivepopup(
+        CustomAlertDialog.attractivepopup(
             context, 'make sure you have proper light on your face ');
       }
 
@@ -731,17 +732,25 @@ class AlphabetTestState extends State<AlphabetTest> {
 
   int currentIndex = 0;
   String alert = '';
-  String randomText = 'W';
+  String randomText = ' ';
   var len;
   List<Map<String, dynamic>> snellenFractions = [];
 
   Future<void> getSnellFraction() async {
+
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
           // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
           prefs.getString('access_token') ?? '';
       String testname = prefs.getString('test') ?? '';
+      if (testname == 'myopia') {
+        currentTextSize = 105;
+        randomText = 'W';
+      } else {
+        currentTextSize = 7.1 * 3.779527559055118;
+        randomText = 'There is a Cat';
+      }
       var headers = {
         'Authorization': 'Bearer ${authToken}',
       };
@@ -849,30 +858,38 @@ class AlphabetTestState extends State<AlphabetTest> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 70),
-                  Container(
-                    width: 150,
-                    height: 150,
-                    child: Center(
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Text(
-                            randomText,
-                            style: TextStyle(
-                              fontSize: currentTextSize,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Container(
+                      width: MediaQuery.sizeOf(context).width,
+                      height: 200,
+                      child: Center(
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Text(
+                              randomText,
+                              style: TextStyle(
+                                //fontFamily: 'sans-serif',
+                                fontFamilyFallback: [
+                                  'CourierPrime',
+                                  'sans-serif'
+                                ],
+                                fontSize: currentTextSize,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
                             ),
-                          ),
-                          Visibility(
-                            visible: isLoadingRandomText,
-                            child: CircularProgressIndicator(
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.grey),
+                            Visibility(
+                              visible: isLoadingRandomText,
+                              child: CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.grey),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -1007,7 +1024,7 @@ class AlphabetTestState extends State<AlphabetTest> {
   }
 
   String? nextFraction;
-  double currentTextSize = 28.0; // Initial text size
+  double currentTextSize = 105; //28.0*3.779527559055118; // Initial text size
   bool setkey = true; // Example initial value
   bool btnname = false; // Example initial value
 
@@ -1018,35 +1035,45 @@ class AlphabetTestState extends State<AlphabetTest> {
   Future<void> increaseTextSize() async {
     //for first time
     if (currentIndex == 0 && setkey) {
-
-    } else if (currentIndex == snellenFractions.length - 1 ) {
+    } else if (currentIndex == snellenFractions.length - 1) {
       currentIndex--;
-      btnname=false;
+      btnname = false;
     } else if (currentIndex > 0 && currentIndex < snellenFractions.length - 1) {
       currentIndex--;
-      btnname=false;
+      btnname = false;
     }
 
     nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
-    currentTextSize = await calculateTextSize(nextFraction);
-    setState(() {});
+    // currentTextSize = await calculateTextSize(nextFraction);
   }
 
   Future<void> decreaseTextSize() async {
-   // for first time
+    // for first time
     if (currentIndex == 0 && setkey) {
       currentIndex++;
       // for second time
-    }  else if (currentIndex > 0 && currentIndex < snellenFractions.length - 1) {
+    } else if (currentIndex > 0 && currentIndex < snellenFractions.length - 1) {
       currentIndex++;
-      if(currentIndex == snellenFractions.length - 1)
-      {
-        btnname=true;
-
+      if (currentIndex == snellenFractions.length - 1) {
+        btnname = true;
       }
     }
     nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
-    currentTextSize = await calculateTextSize(nextFraction);
+    // currentTextSize = await calculateTextSize(nextFraction);
+  }
+
+  /*double mmToPixels(BuildContext context, double mm) {
+  // Get the pixel density (devicePixelRatio)
+  double ppi = MediaQuery.of(context).devicePixelRatio * 160; // Approximate PPI
+
+  // Convert mm to inches
+  double inches = mm / 25.4;
+
+  // Convert inches to pixels
+  return inches * ppi;
+  }*/
+  double mmToPixels(BuildContext context, double mm) {
+    return mm * 3.779527559055118;
   }
 
   Future<double> calculateTextSize(String? nextFraction) async {
@@ -1078,6 +1105,7 @@ class AlphabetTestState extends State<AlphabetTest> {
           prefs.getString('access_token') ?? '';
       String id = prefs.getString('test_id') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
+      String test = prefs.getString('test') ?? '';
 
       print('beebeb$id');
       print("nahi$nextFraction");
@@ -1100,6 +1128,8 @@ class AlphabetTestState extends State<AlphabetTest> {
         String choose_astigmatism =
             parsedJson['data']['test_object']['choose_astigmatism'];
         currentTextSize = parsedJson['data']['textSize'];
+        currentTextSize = mmToPixels(context, currentTextSize);
+
         randomText = parsedJson['data']['random_text'];
         setState(() {
           isLoadingRandomText = false;
@@ -1347,6 +1377,7 @@ class Reading extends State<ReadingTest> {
       String authToken = prefs.getString('access_token') ?? '';
       String testname = prefs.getString('test') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
+      currentTextSize=currentTextSize*3.779527559055118;
 
       var headers = {
         'Authorization': 'Bearer $authToken',
@@ -1596,65 +1627,7 @@ class Reading extends State<ReadingTest> {
 
   String? nextFraction;
   double currentTextSize = 24.0; // Initial text size
-// Initial text size
 
-  void increaseReadingTextSize() {
-    if (currentIndex == 0 || currentIndex < snellenFractions.length - 1) {
-// currentIndex = snellenFractions.length;
-      currentIndex = currentIndex + 1;
-      print("currentIndex back$currentIndex");
-
-      // Decrease index by 1 from its last index
-      nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
-      print("nahi$nextFraction");
-      List<String>? parts = nextFraction?.split('/');
-      double numerator = double.parse(parts![0]);
-      double denominator = double.parse(parts[1]);
-      double calculatedSize = 20.0 * (numerator / denominator);
-      currentTextSize = calculatedSize;
-    } else {
-      print("currentIndex back$currentIndex");
-
-      // Decrease index by 1 from its last index
-      nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
-      print("nahi$nextFraction");
-      List<String>? parts = nextFraction?.split('/');
-      double numerator = double.parse(parts![0]);
-      double denominator = double.parse(parts[1]);
-      double calculatedSize = 20.0 * (numerator / denominator);
-      currentTextSize = calculatedSize;
-    }
-  }
-
-// Initial index// Initial text size
-  void decreaseReadingTextSize() {
-    if (currentIndex == 0) {
-      print("currentIndex pv $currentIndex");
-      currentIndex = snellenFractions.length - 1;
-
-      //currentIndex--;
-      // Decrease index by 1 from its last index
-      nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
-      print("nahi$nextFraction");
-      List<String>? parts = nextFraction?.split('/');
-      double numerator = double.parse(parts![0]);
-      double denominator = double.parse(parts[1]);
-      double calculatedSize = 20.0 * (numerator / denominator);
-      currentTextSize = calculatedSize;
-    }
-    if (currentIndex > 0 && currentIndex <= snellenFractions.length) {
-      currentIndex--;
-      print("currentIndex pv $currentIndex");
-// Decrease index by 1 from its last index
-      nextFraction = snellenFractions[currentIndex]['snellen_fraction'];
-      print("nahi$nextFraction");
-      List<String>? parts = nextFraction?.split('/');
-      double numerator = double.parse(parts![0]);
-      double denominator = double.parse(parts[1]);
-      double calculatedSize = 20.0 * (numerator / denominator);
-      currentTextSize = calculatedSize;
-    }
-  }
 
   Map<String, dynamic>? paymentIntent;
   String selectedPlan = 'a', expiry_date = 'b';
@@ -1668,9 +1641,6 @@ class Reading extends State<ReadingTest> {
       String id = prefs.getString('test_id') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
 
-      print('beebeb$id');
-//todo notworking
-      print("nahi$nextFraction");
       var headers = {
         'Authorization': 'Bearer $authToken',
         'Content-Type': 'application/json',
@@ -1694,31 +1664,23 @@ class Reading extends State<ReadingTest> {
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(responseBody);
-        print("nnnn${responseData['message']}");
 
         if (responseData['message'] == 'data save successfully') {
           Navigator.push(
               context, CupertinoPageRoute(builder: (context) => TestReport()));
         } else {}
-        print('hhhhhhhhhh${responseData}');
         if (responseData.containsKey('data')) {
           // Handle the first type of response
           final data = responseData['data'];
-
           currentTextSize = data['text_size'];
           randomText = data['text'];
-          print("nnnn${data['message']}");
-          print('Text Size: ${data['text_size']}');
-          print('Text: ${data['text']}');
-          print(
-              'Initial Snellen Fraction: ${data['initial_snellen_fraction']}');
+          currentTextSize=currentTextSize*3.779527559055118;
+
         } else {
-          // Handle the second type of response
-          print('Test: ${responseData['test']}');
-          print('Eye: ${responseData['eye']}');
+
         }
         setState(() {
-// Assign fetched data to your variables
+       // Assign fetched data to your variables
           currentTextSize;
           randomText;
         }); //remove for reading test update
@@ -1746,6 +1708,7 @@ class Reading extends State<ReadingTest> {
 // If the server returns an error response, throw an exception
       throw Exception('Failed to send data');
     }
+    return null;
   }
 
   void _stopSpeaking() async {
