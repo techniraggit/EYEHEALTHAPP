@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:project_new/Rewards/rewards_sync.dart';
 import 'package:project_new/api/config.dart';
 
@@ -19,6 +20,7 @@ import '../Custom_navbar/customDialog.dart';
 import '../HomePage.dart';
 import '../api/Api.dart';
 import '../digitalEyeTest/testScreen.dart';
+import '../eyeFatigueTest/EyeFatigueSelfieScreen.dart';
 import '../eyeFatigueTest/eyeFatigueTest.dart';
 import '../notification/notification_dashboard.dart';
 import '../sign_up.dart';
@@ -690,10 +692,12 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
                                               ),
                                               GestureDetector(
                                                 onTap: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(builder: (context) => EyeFatigueStartScreen()),
-                                                  );
+
+                                                  requestPermission();
+                                                  // Navigator.push(
+                                                  //   context,
+                                                  //   MaterialPageRoute(builder: (context) => EyeFatigueStartScreen()),
+                                                  // );
                                                 },
                                                 child: Image.asset(
                                                   'assets/eyeFatigueTest.png',
@@ -924,6 +928,116 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
       bottomNavigationBar:
       CustomBottomAppBar(currentScreen: "Rewards"),    );
   }
+
+
+
+  void requestPermission() async {
+    PermissionStatus status = await Permission.camera.status;
+    PermissionStatus status2 = await Permission.microphone.status;
+
+    if((status==PermissionStatus.granted&&status2==PermissionStatus.granted) ){
+      setState(() {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => EyeFatigueSelfieScreen()),
+        );
+      });
+
+    }
+    if (!status.isGranted ) {
+      status = await Permission.camera.request();
+    }
+    if (!status2.isGranted ) {
+      status = await Permission.microphone.request();
+    }
+    if (status == PermissionStatus.denied ||
+        status == PermissionStatus.permanentlyDenied) {
+      await [Permission.camera].request();
+
+      // Permissions are denied or denied forever, let's request it!
+      status =  await Permission.camera.status;
+      if (status == PermissionStatus.denied) {
+        await [Permission.camera].request();
+        print("camera permissions are still denied");
+      } else if (status ==PermissionStatus.permanentlyDenied) {
+        print("camera permissions are permanently denied");
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("camera permissions required"),
+              content: Text("camera permissions are permanently denied. Please go to app settings to enable camera permissions."),
+              actions: <Widget>[
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors
+                        .background, // Set your desired background color here
+                    // You can also customize other button properties here if needed
+                  ),
+                  onPressed: () async {
+                    Navigator.pop(context); // Close the dialog
+                    await openAppSettings();
+                  },
+                  child: Text("OK",
+
+                    style: TextStyle(
+                        color: Colors.white, fontSize: 16),
+                  ),
+                ),
+
+              ],
+            );
+          },
+        );
+      }
+    }
+
+    if (status2 == PermissionStatus.denied ||
+        status2 == PermissionStatus.permanentlyDenied) {
+      await [Permission.microphone].request();
+
+      // Permissions are denied or denied forever, let's request it!
+      status2 =  await Permission.microphone.status;
+      if (status2 == PermissionStatus.denied) {
+        await [Permission.microphone].request();
+        print("microphone permissions are still denied");
+      }  if (status2 ==PermissionStatus.permanentlyDenied) {
+        print("microphone permissions are permanently denied");
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("microphone permissions required"),
+              content: Text("microphone permissions are permanently denied. Please go to app settings to enable microphone permissions."),
+              actions: <Widget>[
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors
+                        .background, // Set your desired background color here
+                    // You can also customize other button properties here if needed
+                  ),
+                  onPressed: () async {
+                    Navigator.pop(context); // Close the dialog
+                    await openAppSettings();
+                  },
+                  child: Text("OK",
+
+                    style: TextStyle(
+                        color: Colors.white, fontSize: 16),
+                  ),
+                ),
+
+              ],
+            );
+          },
+        );
+      }
+    }
+
+
+  }
+
   Future<void> sendcustomerDetails( bool isSelf) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken = prefs.getString('access_token') ?? '';
