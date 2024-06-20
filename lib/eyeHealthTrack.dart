@@ -48,13 +48,13 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
     );
   }
   Future<void> getNotifactionCount() async {
-    try{
+    try {
       String userToken = '';
       var sharedPref = await SharedPreferences.getInstance();
       userToken = sharedPref.getString("access_token") ?? '';
-      String url = "'${ApiProvider.baseUrl}/api/helping/get-count";
+      String url = "${ApiProvider.baseUrl}/api/user_notification";
       print("URL: $url");
-
+      print("userToken: $userToken");
       Map<String, String> headers = {
         'Authorization': 'Bearer $userToken', // Bearer token type
         'Content-Type': 'application/json',
@@ -65,29 +65,22 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
       if (response.statusCode == 200) {
         final responseData = response.data;
         // Map<String, dynamic> responseData = json.decode(response.data);
-        int unreadNotificationCount = responseData['unread_notification_count'];
+        int unreadNotificationCount = responseData['is_read_false_count'];
         isReadFalseCount = unreadNotificationCount;
         print('Unread Notification Count: $unreadNotificationCount');
         print('Unread gfbt Count: $response');
-        if(mounted){
+        if (mounted) {
           setState(() {});
-
         }
-      }else if (response.statusCode == 401) {
-
+      }
+      else if (response.statusCode == 401) {
         Fluttertoast.showToast(msg: "Session Expired");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => SignIn()),
         );
-      }   else if (response.statusCode == 401) {
-
-        Fluttertoast.showToast(msg: "Session Expired");
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => SignIn()),
-        );
-      } else {
+      }
+      else {
         throw Exception('Failed to load data');
       }
     } on DioError catch (e) {
@@ -99,9 +92,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
           context,
           MaterialPageRoute(builder: (context) => SignIn()),
         );
-      }
-
-      else {
+      } else {
         // Handle other Dio errors
         print("DioError: ${e.error}");
       }

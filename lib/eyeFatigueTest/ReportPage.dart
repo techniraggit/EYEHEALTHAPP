@@ -89,9 +89,9 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin {
       String userToken = '';
       var sharedPref = await SharedPreferences.getInstance();
       userToken = sharedPref.getString("access_token") ?? '';
-      String url = "'${ApiProvider.baseUrl}/api/helping/get-count";
+      String url = "${ApiProvider.baseUrl}/api/user_notification";
       print("URL: $url");
-
+      print("userToken: $userToken");
       Map<String, String> headers = {
         'Authorization': 'Bearer $userToken', // Bearer token type
         'Content-Type': 'application/json',
@@ -102,26 +102,22 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin {
       if (response.statusCode == 200) {
         final responseData = response.data;
         // Map<String, dynamic> responseData = json.decode(response.data);
-        int unreadNotificationCount = responseData['unread_notification_count'];
+        int unreadNotificationCount = responseData['is_read_false_count'];
         isReadFalseCount = unreadNotificationCount;
         print('Unread Notification Count: $unreadNotificationCount');
         print('Unread gfbt Count: $response');
         if (mounted) {
           setState(() {});
         }
-      } else if (response.statusCode == 401) {
+      }
+      else if (response.statusCode == 401) {
         Fluttertoast.showToast(msg: "Session Expired");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => SignIn()),
         );
-      } else if (response.statusCode == 401) {
-        Fluttertoast.showToast(msg: "Session Expired");
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => SignIn()),
-        );
-      } else {
+      }
+      else {
         throw Exception('Failed to load data');
       }
     } on DioError catch (e) {
@@ -133,9 +129,7 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin {
           context,
           MaterialPageRoute(builder: (context) => SignIn()),
         );
-      }
-
-      else {
+      } else {
         // Handle other Dio errors
         print("DioError: ${e.error}");
       }
@@ -1326,7 +1320,7 @@ class __ReportEyeTestState extends State<_ReportEyeTest> {
                     child: Padding(
                       padding: const EdgeInsets.all(18.0),
                       child: Text(
-                        'No prescription is uploaded yet... upload new prescription to get points!', // Display formatted current date
+                        'No test is done yet... please do digital eye test first', // Display formatted current date
                         style: TextStyle(
                             fontSize: 16,
                             color: Colors.black),

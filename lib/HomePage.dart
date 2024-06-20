@@ -200,9 +200,9 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
       String userToken = '';
       var sharedPref = await SharedPreferences.getInstance();
       userToken = sharedPref.getString("access_token") ?? '';
-      String url = "'${ApiProvider.baseUrl}/api/helping/get-count";
+      String url = "${ApiProvider.baseUrl}/api/user_notification";
       print("URL: $url");
-
+      print("userToken: $userToken");
       Map<String, String> headers = {
         'Authorization': 'Bearer $userToken', // Bearer token type
         'Content-Type': 'application/json',
@@ -213,26 +213,22 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
       if (response.statusCode == 200) {
         final responseData = response.data;
         // Map<String, dynamic> responseData = json.decode(response.data);
-        int unreadNotificationCount = responseData['unread_notification_count'];
+        int unreadNotificationCount = responseData['is_read_false_count'];
         isReadFalseCount = unreadNotificationCount;
         print('Unread Notification Count: $unreadNotificationCount');
         print('Unread gfbt Count: $response');
         if (mounted) {
           setState(() {});
         }
-      } else if (response.statusCode == 401) {
+      }
+      else if (response.statusCode == 401) {
         Fluttertoast.showToast(msg: "Session Expired");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => SignIn()),
         );
-      } else if (response.statusCode == 401) {
-        Fluttertoast.showToast(msg: "Session Expired");
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => SignIn()),
-        );
-      } else {
+      }
+      else {
         throw Exception('Failed to load data');
       }
     } on DioError catch (e) {
@@ -573,18 +569,29 @@ if(edited==false){
                             'Your Eye Health Score',
                             style: TextStyle(color: Colors.white, fontSize: 18),
                           ),
-                          Text(
-                            eye_health_score,
-                            style: TextStyle(
-                              color: Colors.yellowAccent,
-                              fontSize: 28,
-                              // decoration: TextDecoration.combine(
-                              //   [TextDecoration.underline],
-                              // ),
-                              decorationColor: Colors
-                                  .yellow, // Set the underline color to yellow
+                          ShaderMask(
+                            shaderCallback: (Rect bounds) {
+                              return const RadialGradient(
+                                radius: 1.0,
+                                colors: [
+                                  Color(0xFFFFF400),
+                                  Color(0xFFFFE800),
+                                  Color(0xFFFFCA00),
+                                  Color(0xFFFF9A00),
+                                  Color(0xFFFF9800),
+                                ],
+                              ).createShader(bounds);
+                            },
+                            child: Text(
+                              eye_health_score,
+                              style: const TextStyle(
+                                  fontSize: 31,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
                             ),
                           ),
+
+
                         ],
                       ),
                     ],
