@@ -78,126 +78,118 @@ class ViewPlanM extends State<ViewPlan> {
 
   @override
   Widget build(BuildContext context) {
-    return   WillPopScope(
-        onWillPop: () async {
-
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => MyPlan()),
-            // (route) => route.isFirst, // Remove until the first route (Screen 1)
-          );
-          return false;
-        },child:Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/productsc.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Center(
-          child: Container(
-            margin: EdgeInsets.only(top: 220.0),
-            width: MediaQuery.of(context).size.width * 0.8,
-            child: Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: counters.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Container(
-                        margin: EdgeInsets.symmetric(vertical: 8.0),
-                        padding: EdgeInsets.all(16.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white70,
-                          borderRadius: BorderRadius.circular(8.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.1),
-                              spreadRadius: 2,
-                              blurRadius: 5,
-                              offset: Offset(0, 3),
-                            ),
-                          ],
+    return   Scaffold(
+          body: Container(
+    decoration: BoxDecoration(
+      image: DecorationImage(
+        image: AssetImage('assets/productsc.png'),
+        fit: BoxFit.cover,
+      ),
+    ),
+    child: Center(
+      child: Container(
+        margin: EdgeInsets.only(top: 220.0),
+        width: MediaQuery.of(context).size.width * 0.8,
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: counters.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                    margin: EdgeInsets.symmetric(vertical: 8.0),
+                    padding: EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white70,
+                      borderRadius: BorderRadius.circular(8.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.1),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: Offset(0, 3),
                         ),
-                        child: Row(
-                          children: [
-                            Radio(
-                              value: index,
-                              groupValue: selectedSubscriptionIndex,
-                              onChanged: (int? value) {
-                                setState(() {
-                                  selectedSubscriptionIndex = value!;
-                                  subscriptionId = counters[index].id;
-                                  plan_price =
-                                      calculateAmount(counters[index].price.toString());
-                                  // plan_price=counters[index].price;
-
-                                });
-                              },
-                            ),
-                            Expanded(
-                              child: ListTile(
-                                title: Text(counters[index].title),
-                                subtitle: Text(counters[index].description),
-                                onTap: () {
-                                  subscriptionId = counters[index].id;
-                                  String price =
-                                  calculateAmount(counters[index].price.toString());
-                                  print("price" + price);
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => PlanDetailPage(
-                                          planId: subscriptionId),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                SizedBox(height: 16.0), // Add some space between the list and the button
-                ElevatedButton(
-                  onPressed: () {
-                    if (selectedSubscriptionIndex != -1) {
-                      // Button action when a subscription is selected
-                      print("Selected Subscription ID: $subscriptionId");
-                      makePayment(plan_price);
-                    } else {
-                     /* CustomAlertDialog.attractivepopup(
-                        context,
-                        'No subscription selected',
-                      );*/
-
-                      // Handle the case when no subscription is selected
-                      print("No subscription selected");
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: Colors.indigo,
-                    // Background color
-                    // Text color
-                    padding: EdgeInsets.all(16),
-                    minimumSize: Size(300, 40),
-                    // Button padding
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      // Button border radius
+                      ],
                     ),
-                  ),
-                  child: Text('PROCEED'),
-                ),
-                SizedBox(height: 16.0),
-              ],
+                    child: Row(
+                      children: [
+                        Radio(
+                          value: index,
+                          groupValue: selectedSubscriptionIndex,
+                          onChanged: (int? value) {
+                            setState(() {
+                              selectedSubscriptionIndex = value!;
+                              subscriptionId = counters[index].id;
+                              plan_price =
+                                  calculateAmount(counters[index].price.toString());
+                              // plan_price=counters[index].price;
+
+                            });
+                          },
+                        ),
+                        Expanded(
+                          child: ListTile(
+                            title: Text(counters[index].title),
+                            subtitle: Text(counters[index].description),
+                            onTap: () {
+                              subscriptionId = counters[index].id;
+                              String price =
+                              calculateAmount(counters[index].price.toString());
+                              print("price" + price);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PlanDetailPage(
+                                      planId: subscriptionId),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
+            SizedBox(height: 16.0), // Add some space between the list and the button
+            ElevatedButton(
+              onPressed: () {
+                if (selectedSubscriptionIndex != -1) {
+                  // Button action when a subscription is selected
+                  print("Selected Subscription ID: $subscriptionId");
+                  makePayment(plan_price);
+                } else {
+                 /* CustomAlertDialog.attractivepopup(
+                    context,
+                    'No subscription selected',
+                  );*/
+
+                  // Handle the case when no subscription is selected
+                  print("No subscription selected");
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white, backgroundColor: Colors.indigo,
+                // Background color
+                // Text color
+                padding: EdgeInsets.all(16),
+                minimumSize: Size(300, 40),
+                // Button padding
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  // Button border radius
+                ),
+              ),
+              child: Text('PROCEED'),
+            ),
+            SizedBox(height: 16.0),
+          ],
         ),
       ),
-    )  );
+    ),
+          ),
+        );
   }
   late String stripePublicKey;
   late String SecretKey;

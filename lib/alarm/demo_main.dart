@@ -127,33 +127,7 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title:  const Center(child: Text('Alarms Scheduled',style: TextStyle(fontWeight: FontWeight.w400,fontSize: 17,color: Colors.black),))),
-      // body: SafeArea(
-      //   child:
-      //   alarms.isNotEmpty
-      //       ? ListView.separated(
-      //     itemCount: alarms.length,
-      //     separatorBuilder: (context, index) => const Divider(height: 0.0),
-      //     itemBuilder: (context, index) {
-      //       return ExampleAlarmTile(
-      //         key: Key(alarms[index].id.toString()),
-      //         title: TimeOfDay(
-      //           hour: alarms[index].dateTime.hour,
-      //           minute: alarms[index].dateTime.minute,
-      //         ).format(context),
-      //         onPressed: () => navigateToAlarmScreen(alarms[index]),
-      //         onDismissed: () {
-      //           Alarm.stop(alarms[index].id).then((_) => loadAlarms());
-      //         },
-      //       );
-      //     },
-      //   )
-      //       : Center(
-      //     child: Text(
-      //       'No alarm set',
-      //       style: Theme.of(context).textTheme.titleMedium,
-      //     ),
-      //   ),
-      // ),
+
       body: SafeArea(
         child: alarms.isNotEmpty
             ? ListView.builder(
@@ -294,7 +268,7 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
       notificationTitle: 'Test Reminder',
       notificationBody: 'Do your eye test',
       enableNotificationOnKill: Platform.isIOS,
-      notificationActionSettings: const NotificationActionSettings(hasSnoozeButton: true,hasStopButton: true,snoozeButtonText: "Snooze",stopButtonText: "Stop",snoozeDurationInSeconds: 300)
+      // notificationActionSettings: const NotificationActionSettings(hasSnoozeButton: true,hasStopButton: true,snoozeButtonText: "Snooze",stopButtonText: "Stop",snoozeDurationInSeconds: 300)
     );
     return alarmSettings;
   }

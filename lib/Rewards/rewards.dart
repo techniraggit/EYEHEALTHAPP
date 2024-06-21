@@ -257,10 +257,7 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
                 iconSize: 28, // Back button icon
                 onPressed: () {
                   Navigator.of(context).pop();
-                  // Navigator.pushReplacement(
-                  //   context,
-                  //   MaterialPageRoute(builder: (context) => HomePage()),
-                  // );
+
                 },
               ),
             ),
@@ -475,27 +472,6 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
                                 ),
                               ),
                             ),
-                        /*    Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => RewardSpecs(offer_id: offer.offerId)),
-                                  );
-                                },
-                                child: Text('Explore More'),
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  backgroundColor: Colors.deepPurple, // Text color
-                                  padding: EdgeInsets.all(10),
-                                  minimumSize: Size(100, 20), // Button padding
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30), // Button border radius
-                                  ),
-                                ),
-                              ),
-                            ),*/
                           ],
                         ),
                       ),
@@ -508,108 +484,6 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
         },
       ),
     ),
-        /* Padding(
-              padding:  EdgeInsets.all(8.0),
-              child: FutureBuilder<List<Offer>>(
-                future: futureOffers,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(child: Text('No offers found'));
-                  } else {
-                    return SizedBox(
-                      height: MediaQuery.of(context).size.height/2.3, // Set a fixed height or any height you deem appropriate
-                      child: ListView.builder(
-                        itemCount: snapshot.data!.length,
-                        itemBuilder: (context, index) {
-                          final offer = snapshot.data![index];
-                          return Padding(
-                            padding:  EdgeInsets.all(8.0),
-                            child: Card(
-                           color: Colors.white,
-                              child: Row(
-                                children: [
-                                  // Image on the left side
-                                  Padding(
-                                    padding: const EdgeInsets.all(6.0),
-                                    child: Image.network(
-                                      '${ApiProvider.baseUrl}${offer.image}',
-                                      width: 80, // Set the desired width
-                                      height: 80, // Set the desired height
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                  // Columns on the right side
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                          padding:  EdgeInsets.symmetric(
-                                              vertical: 4.0, horizontal: 8.0),
-                                          child: Text(
-                                            offer.title,
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding:  EdgeInsets.symmetric(
-                                              vertical: 4.0, horizontal: 8.0),
-                                          child: Text(
-                                            offer.description,
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.grey,
-                                            ),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding:  EdgeInsets.all(2.0),
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(builder: (context) => RewardSpecs(offer_id:offer.offerId)),
-                                              );
-
-                                            },
-                                            child: Text('Explore More'),
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor: Colors.white, backgroundColor: Colors.deepPurple,
-                                              // Text color
-                                              padding: EdgeInsets.all(10),
-                                              minimumSize: Size(100, 20),
-                                              // Button padding
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(26),
-                                                // Button border radius
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  }
-                },
-              ),
-
-            ),*/
             Padding(
               padding: EdgeInsets.fromLTRB(16.0, 0, 0, 10),
               child: Text(

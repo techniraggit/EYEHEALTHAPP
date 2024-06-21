@@ -280,23 +280,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
 
 
 
-      // appBar: AppBar(
-      //   backgroundColor: Colors.white,
-      //   title: const Text('Eye Health Track'),
-      //   actions: <Widget>[
-      //
-      //     IconButton(
-      //       icon: const Icon(Icons.notifications),
-      //       onPressed: () async {
-      //         print("asdklaskldjaskldasjkdjlkas");
-      //         // navigateToAlarmScreen(null);
-      //
-      //
-      //
-      //       },
-      //     ),
-      //   ],
-      // ),
+
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(50),
         child: Stack(

@@ -112,7 +112,7 @@ class RedeemSuccess extends State<RedeemSuccessPage> {
                       child: ElevatedButton(
                         onPressed: () {
 
-                          Navigator.pushReplacement(
+                          Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => RewardStatusScreen()),
                           );

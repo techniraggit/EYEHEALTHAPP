@@ -46,354 +46,311 @@ class UserProfiledash extends State<UserDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        // Navigator.of(context).pushReplacement(
-        //   MaterialPageRoute(builder: (context) => HomePage()),
-        //   // (route) => route.isFirst, // Remove until the first route (Screen 1)
-        // );
-
-        return true;
-      },
-      child: MaterialApp(
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
+    return MaterialApp(
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home:  isLoading
+          ? const Center(
+        child: CircularProgressIndicator(
+          color: Colors.black,
         ),
-        home:  isLoading
-            ? const Center(
-          child: CircularProgressIndicator(
-            color: Colors.black,
-          ),
-        )
-            :
-       Scaffold(
+      )
+          :
+     Scaffold(
 
-            backgroundColor: Colors.background,
-            body: Column(
-              children: [
-                SizedBox(height: 40,),
+          backgroundColor: Colors.background,
+          body: Column(
+            children: [
+              SizedBox(height: 40,),
 
-                Container(
+              Container(
 
-                  alignment: Alignment.topLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(29,3,20,20),
-                    child: Text(
-                      "Profile", // Your title text
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white, // Adjust the text color as needed
-                      ),
-                    ),
-                  ),
-                ),
-                //             Image.asset(
-                // height: 30,
-                //               'assets/profileline.png', // Replace this with your image path
-                //             ),
-                ClipOval(
-                  child: SizedBox(
-                    width: 86.0,height: 86,
-                    // height: 80.0,
-                    child: imageUrl1 != ""
-                        ? Image.network(
-                      imageUrl1,
-                      fit: BoxFit.cover,
-                    )
-                        : _imageFile == null && imageUrl1 == ""
-                        ? Image.asset(
-                      'assets/profile_pic.png',
-                      width: 50,
-                      fit: BoxFit.cover,
-                    )
-                        : Image.file(
-                      _imageFile!,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                               SizedBox(height: 20,),
-
-                ShaderMask(
-                  shaderCallback: (Rect bounds) {
-                    return const RadialGradient(
-                      radius: 1.0,
-                      colors: [
-                        Color(0xFFFFF400),
-                        Color(0xFFFFE800),
-                        Color(0xFFFFCA00),
-                        Color(0xFFFF9A00),
-                        Color(0xFFFF9800),
-                      ],
-                    ).createShader(bounds);
-                  },
+                alignment: Alignment.topLeft,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(29,3,20,20),
                   child: Text(
-                    '${points_.text}',
-                    style: const TextStyle(
-                        fontSize: 28,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold),
+                    "Profile", // Your title text
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white, // Adjust the text color as needed
+                    ),
                   ),
                 ),
-
-
-
-
-                const SizedBox(
-                  height: 10,
+              ),
+              //             Image.asset(
+              // height: 30,
+              //               'assets/profileline.png', // Replace this with your image path
+              //             ),
+              ClipOval(
+                child: SizedBox(
+                  width: 86.0,height: 86,
+                  // height: 80.0,
+                  child: imageUrl1 != ""
+                      ? Image.network(
+                    imageUrl1,
+                    fit: BoxFit.cover,
+                  )
+                      : _imageFile == null && imageUrl1 == ""
+                      ? Image.asset(
+                    'assets/profile_pic.png',
+                    width: 50,
+                    fit: BoxFit.cover,
+                  )
+                      : Image.file(
+                    _imageFile!,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-                Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
+              ),
+                             SizedBox(height: 20,),
+
+              ShaderMask(
+                shaderCallback: (Rect bounds) {
+                  return const RadialGradient(
+                    radius: 1.0,
+                    colors: [
+                      Color(0xFFFFF400),
+                      Color(0xFFFFE800),
+                      Color(0xFFFFCA00),
+                      Color(0xFFFF9A00),
+                      Color(0xFFFF9800),
+                    ],
+                  ).createShader(bounds);
+                },
+                child: Text(
+                  '${points_.text}',
+                  style: const TextStyle(
+                      fontSize: 28,
                       color: Colors.white,
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-                    ),
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.all(25),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
 
 
 
-                            GestureDetector(
-                              onTap: (){
-                                Navigator.push(
-                                  context,
-                                  CupertinoPageRoute(
-                                      builder: (context) =>
-                                          UserProfile()),
-                                );
-                              },
-                              child: Container(
-                                width: MediaQuery.of(context).size.width/1.3,
-                                height: 60,
 
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(22), // Half of the height for oval shape
-                                  color: Colors.grey.withOpacity(0.3),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
+              const SizedBox(
+                height: 10,
+              ),
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+                  ),
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(25),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
 
-                                    Padding(
-                                      padding: const EdgeInsets.all(12.0),
-                                      child: Text(
-                                        'Personal Details',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 15,
-                                        ),
-                                      ),
-                                    ),
-                                    IconButton(
-                                      icon: Icon(Icons.arrow_forward_ios_outlined),
-                                      color: Colors.black,iconSize: 14,
-                                      onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    CupertinoPageRoute(
-                                        builder: (context) =>
-                                             UserProfile()),
-                                  );                                },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                           SizedBox(height: 30,),
-                            GestureDetector(
-                              onTap: (){
-                                Navigator.push(
-                                    context,
-                                    CupertinoPageRoute(
+
+
+                          GestureDetector(
+                            onTap: (){
+                              Navigator.push(
+                                context,
+                                CupertinoPageRoute(
                                     builder: (context) =>
-                                    RewardStatusScreen()));
-                              },
-                              child: Container(
-                                width: MediaQuery.of(context).size.width/1.3,
-                                height: 60,
+                                        UserProfile()),
+                              );
+                            },
+                            child: Container(
+                              width: MediaQuery.of(context).size.width/1.3,
+                              height: 60,
 
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(22), // Half of the height for oval shape
-                                  color: Colors.grey.withOpacity(0.3),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(22), // Half of the height for oval shape
+                                color: Colors.grey.withOpacity(0.3),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
 
-                                    Padding(
-                                      padding: const EdgeInsets.all(12.0),
-                                      child: Text(
-                                        'Reward Details',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 15,
-                                        ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Text(
+                                      'Personal Details',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 15,
                                       ),
                                     ),
-                                    IconButton(
-                                      icon: Icon(Icons.arrow_forward_ios_outlined),
-                                      color: Colors.black,iconSize: 14,
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          CupertinoPageRoute(
-                                              builder: (context) =>
-                                                  RewardStatusScreen()),
-                                        );
-                                        // Navigate to next screen
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            // SizedBox(height: 30,),
-                            // Container(
-                            //   width: MediaQuery.of(context).size.width/1.3,
-                            //   height: 60,
-                            //
-                            //   decoration: BoxDecoration(
-                            //     borderRadius: BorderRadius.circular(22), // Half of the height for oval shape
-                            //     color: Colors.grey.withOpacity(0.3),
-                            //   ),
-                            //   child: Row(
-                            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            //     children: [
-                            //
-                            //       Padding(
-                            //         padding: const EdgeInsets.all(12.0),
-                            //         child: Text(
-                            //           'Payment Methods',
-                            //           style: TextStyle(
-                            //             color: Colors.black,
-                            //             fontSize: 15,
-                            //           ),
-                            //         ),
-                            //       ),
-                            //       IconButton(
-                            //         icon: Icon(Icons.arrow_forward_ios_outlined),
-                            //         color: Colors.black,iconSize: 14,
-                            //         onPressed: () {
-                            //           // Navigate to next screen
-                            //         },
-                            //       ),
-                            //     ],
-                            //   ),
-                            // ),
-                            SizedBox(height: 30,),
-                            GestureDetector(
-                              onTap: (){
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.arrow_forward_ios_outlined),
+                                    color: Colors.black,iconSize: 14,
+                                    onPressed: () {
                                 Navigator.push(
                                   context,
                                   CupertinoPageRoute(
                                       builder: (context) =>
-                                          MyPlan()),
-                                );
-                              },
-                              child: Container(
-                                width: MediaQuery.of(context).size.width/1.3,
-                                height: 60,
-
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(22), // Half of the height for oval shape
-                                  color: Colors.grey.withOpacity(0.3),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-
-                                    Padding(
-                                      padding: const EdgeInsets.all(12.0),
-                                      child: Text(
-                                        'Plans',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 15,
-                                        ),
-                                      ),
-                                    ),
-                                    IconButton(
-                                      icon: Icon(Icons.arrow_forward_ios_outlined),
-                                      color: Colors.black,iconSize: 14,
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          CupertinoPageRoute(
-                                              builder: (context) =>
-                                                  MyPlan()),
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                ),
+                                           UserProfile()),
+                                );                                },
+                                  ),
+                                ],
                               ),
                             ),
-                            SizedBox(height: 20,),
+                          ),
+                         SizedBox(height: 30,),
+                          GestureDetector(
+                            onTap: (){
+                              Navigator.push(
+                                  context,
+                                  CupertinoPageRoute(
+                                  builder: (context) =>
+                                  RewardStatusScreen()));
+                            },
+                            child: Container(
+                              width: MediaQuery.of(context).size.width/1.3,
+                              height: 60,
 
-                            GestureDetector(
-                              onTap: (){
-                                Logout();
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(22), // Half of the height for oval shape
+                                color: Colors.grey.withOpacity(0.3),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
 
-                              },
-                              child: Container(
-                                width: MediaQuery.of(context).size.width/1.3,
-                                height: 60,
-
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(22), // Half of the height for oval shape
-                                  color: Colors.grey.withOpacity(0.3),
-                                ),
-                                child: Row(
-                                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    IconButton(
-                                      icon: Icon(Icons.logout_rounded),
-                                      color: Colors.background,iconSize: 14,
-                                      onPressed: () {
-
-                                        Logout();
-
-                                      },
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 3.0,vertical: 12),
-                                      child: Text(
-                                        'Sign Out',
-                                        style: TextStyle(
-                                          color: Colors.background,
-                                          fontSize: 15,
-                                        ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Text(
+                                      'Reward Details',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 15,
                                       ),
                                     ),
-
-                                  ],
-                                ),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.arrow_forward_ios_outlined),
+                                    color: Colors.black,iconSize: 14,
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        CupertinoPageRoute(
+                                            builder: (context) =>
+                                                RewardStatusScreen()),
+                                      );
+                                      // Navigate to next screen
+                                    },
+                                  ),
+                                ],
                               ),
                             ),
-                            SizedBox(height: 20,),
+                          ),
+
+                          SizedBox(height: 30,),
+                          GestureDetector(
+                            onTap: (){
+                              Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                    builder: (context) =>
+                                        MyPlan()),
+                              );
+                            },
+                            child: Container(
+                              width: MediaQuery.of(context).size.width/1.3,
+                              height: 60,
+
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(22), // Half of the height for oval shape
+                                color: Colors.grey.withOpacity(0.3),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+
+                                  Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Text(
+                                      'Plans',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.arrow_forward_ios_outlined),
+                                    color: Colors.black,iconSize: 14,
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        CupertinoPageRoute(
+                                            builder: (context) =>
+                                                MyPlan()),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 20,),
+
+                          GestureDetector(
+                            onTap: (){
+                              Logout();
+
+                            },
+                            child: Container(
+                              width: MediaQuery.of(context).size.width/1.3,
+                              height: 60,
+
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(22), // Half of the height for oval shape
+                                color: Colors.grey.withOpacity(0.3),
+                              ),
+                              child: Row(
+                                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(Icons.logout_rounded),
+                                    color: Colors.background,iconSize: 14,
+                                    onPressed: () {
+
+                                      Logout();
+
+                                    },
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 3.0,vertical: 12),
+                                    child: Text(
+                                      'Sign Out',
+                                      style: TextStyle(
+                                        color: Colors.background,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ),
+
+                                ],
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 20,),
 
 
 
 
-                          ],
-                        ),
+                        ],
                       ),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-
-    );
+      );
   }
 
 

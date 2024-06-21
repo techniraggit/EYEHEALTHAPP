@@ -654,9 +654,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
     return WillPopScope(
       onWillPop: () async {
 
-        // Handle back button press here
-        // Return true to allow back navigation, false to prevent it
-        return false; // Set to false to prevent back navigation
+        return false;
       },
       child: MaterialApp(
         home: Scaffold(
@@ -833,9 +831,9 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
                   ),
 
                     Spacer(),
-    // if (_timercontroller != null && _timercontroller!.value != null)... {
+          // if (_timercontroller != null && _timercontroller!.value != null)... {
 
-    Builder(
+          Builder(
                   builder: (context) {
                     progress = _timercontroller?.value;
 
@@ -915,11 +913,10 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return   WillPopScope(
+    return  WillPopScope(
       onWillPop: () async {
-        // Handle back button press here
-        // Return true to allow back navigation, false to prevent it
-        return false; // Set to false to prevent back navigation
+
+        return false;
       },
       child: MaterialApp(
 
