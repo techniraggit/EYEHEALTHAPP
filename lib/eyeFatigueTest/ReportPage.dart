@@ -144,10 +144,10 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin {
     String formattedDate = DateFormat('dd MMMM').format(DateTime.now());
     return  WillPopScope(
         onWillPop: () async {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) =>   HomePage()),
-      );
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(builder: (context) =>   HomePage()),
+      // );
       return true; // Example: always allow back navigation
     },child :isLoading
         ? Center(
@@ -507,12 +507,13 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin {
               elevation: 1.0, // Shadow
               child: InkWell(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    CupertinoPageRoute(
-                      builder: (context) => HomePage(),
-                    ),
-                  );
+                  Navigator.of(context).pop();
+                  // Navigator.push(
+                  //   context,
+                  //   CupertinoPageRoute(
+                  //     builder: (context) => HomePage(),
+                  //   ),
+                  // );
                 },
                 child: SizedBox(
                   width: 53.0, // Width of the FloatingActionButton

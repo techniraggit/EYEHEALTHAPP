@@ -48,12 +48,12 @@ class UserProfiledash extends State<UserDashboard> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => HomePage()),
-          // (route) => route.isFirst, // Remove until the first route (Screen 1)
-        );
+        // Navigator.of(context).pushReplacement(
+        //   MaterialPageRoute(builder: (context) => HomePage()),
+        //   // (route) => route.isFirst, // Remove until the first route (Screen 1)
+        // );
 
-        return false;
+        return true;
       },
       child: MaterialApp(
         theme: ThemeData(
