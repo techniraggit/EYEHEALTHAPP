@@ -168,7 +168,7 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> with AutoCan
                   ),
                   iconSize: 28, // Back button icon
                   onPressed: () {
-                    Navigator.pushReplacement(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => HomePage()),
                     );                  },

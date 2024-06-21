@@ -278,12 +278,7 @@ class SignInScreen extends State<SignIn> {
 
                                     getVerifyLoginOtp();
 
-                                    // Navigator.push(
-                                    //   context,
-                                    //   CupertinoPageRoute(
-                                    //       builder: (context) =>
-                                    //           const OtpVerificationScreen()),
-                                    // );
+
                                   },
                                   child: const Text(
                                     'Get Otp',
@@ -694,10 +689,9 @@ class SignInScreen extends State<SignIn> {
           prefs.setString('user_id', data['data']['id']);
           Navigator.of(context).pop();
           //  print("Otp Sent${ data['data']['id']}${data['data']['stripe_customer_id']}");
-          Navigator.push(
-            context,
-            CupertinoPageRoute(builder: (context) => HomePage()),
-          );
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => HomePage()),
+                  (Route<dynamic> route) => false);
         }
         else {
           Map<String, dynamic> data = json.decode(response.body);
@@ -2937,10 +2931,9 @@ class SignUpScreen extends State<SignUp> {
           prefs.setString('user_id', data['data']['id']);
           Navigator.of(context).pop();
           //  print("Otp Sent${ data['data']['id']}${data['data']['stripe_customer_id']}");
-          Navigator.push(
-            context,
-            CupertinoPageRoute(builder: (context) => HomePage()),
-          );
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => HomePage()),
+                  (Route<dynamic> route) => false);
         }
         else {
           Map<String, dynamic> data = json.decode(response.body);

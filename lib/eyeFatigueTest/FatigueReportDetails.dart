@@ -135,486 +135,477 @@ class EyeFatiguereports extends State<ReportDetails>  with AutoCancelStreamMixin
   @override
   Widget build(BuildContext context) {
     String formattedDate = DateFormat('dd MMMM').format(DateTime.now());
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomePage()),
-                (Route<dynamic> route) => false);
+    return isLoading
+        ? const Center(
+      child: CircularProgressIndicator(
+        color: Colors.blue,
+      ),
+    )
+        : Scaffold(
+      backgroundColor: Colors.white,
 
-        return false;
-      },
-      child: isLoading
-          ? const Center(
-        child: CircularProgressIndicator(
-          color: Colors.blue,
-        ),
-      )
-          : Scaffold(
-        backgroundColor: Colors.white,
-
-        key: _scafoldKey,
-        endDrawer: NotificationSideBar(
-          onNotificationUpdate: () {
-            setState(() {
-              if (isReadFalseCount != null) {
-                if (isReadFalseCount! > 0) {
-                  isReadFalseCount = isReadFalseCount! - 1;
-                }
+      key: _scafoldKey,
+      endDrawer: NotificationSideBar(
+        onNotificationUpdate: () {
+          setState(() {
+            if (isReadFalseCount != null) {
+              if (isReadFalseCount! > 0) {
+                isReadFalseCount = isReadFalseCount! - 1;
               }
-            });
-          },
-        ),
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: Stack(
-            children: [
-              Align(
-                alignment: Alignment.topLeft,
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.black,
-                  ),
-                  iconSize: 28, // Back button icon
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
+            }
+          });
+        },
+      ),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60),
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.topLeft,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.black,
                 ),
+                iconSize: 28, // Back button icon
+                onPressed: () {
+                  Navigator.pop(context);
+                },
               ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    height: 10, // Adjust height as needed
-                  ),
-                  Center(
-                    child: Text(
-                      'Eye Fatigue Test Report',
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                        // Adjust size as needed
-                        // Add other styling properties as needed
-                      ),
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: 10, // Adjust height as needed
+                ),
+                Center(
+                  child: Text(
+                    'Eye Fatigue Test Report',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      // Adjust size as needed
+                      // Add other styling properties as needed
                     ),
                   ),
-                  SizedBox(
-                    height: 10,
-                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
 
-                ],
-              ),
-              Positioned(
-                right: 16,
-                top: 16,
-                child: GestureDetector(
-                  onTap: () {
-                    _scafoldKey.currentState!.openEndDrawer();
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: const Color(0xffF9F9FA),
-                          borderRadius: BorderRadius.circular(17.0),
+              ],
+            ),
+            Positioned(
+              right: 16,
+              top: 16,
+              child: GestureDetector(
+                onTap: () {
+                  _scafoldKey.currentState!.openEndDrawer();
+                },
+                child: Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xffF9F9FA),
+                        borderRadius: BorderRadius.circular(17.0),
+                      ),
+                      height: 40,
+                      width: 40,
+                      child: Center(
+                        child: Icon(
+                          Icons.notifications,
+                          color: Colors.black,
                         ),
-                        height: 40,
-                        width: 40,
-                        child: Center(
-                          child: Icon(
-                            Icons.notifications,
-                            color: Colors.black,
+                      ),
+                    ),
+                    Positioned(
+                      right: 0,
+                      top: -1, // Adjust this value to position the text properly
+                      child: Container(
+                        padding: EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.red,
+                        ),
+                        child: Text(
+                          '${isReadFalseCount}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-                      Positioned(
-                        right: 0,
-                        top: -1, // Adjust this value to position the text properly
-                        child: Container(
-                          padding: EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.red,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Center(
+              child: Text(
+                created_on ?? "",
+                // 'Today $formattedDate', // Display formatted current date
+                style: const TextStyle(
+                  fontStyle: FontStyle.normal,
+                  color: Colors.grey,
+                ),
+              ),
+            ),
+            const Padding(
+              padding:
+              EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+              child: Text(
+                "Patient's Details",
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepPurple,
+                ),
+              ),
+            ),
+            Padding(
+                padding:
+                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
+                child: Card(
+                    child: ListTile(
+                        title: Column(children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text('Full Name', style:  TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w300,
+                                  ),),
+                                  Text(
+                                    '${firstname} ${lastname}',
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  const Text('Age', style:  TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w300,
+                              ),),
+                                  Text(
+                                    age ?? "",
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                          child: Text(
-                            '${isReadFalseCount}',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          const SizedBox(height: 16),
+                        ])))),
+            Padding(
+              padding:
+              const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
+              child: Card(
+                child: ListTile(
+                  title: Column(
+                    children: [
+                      // Add spacing between the row and the additional columns
+                      Row(
+                        mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                            children: [
+                              const Text('Eye Fatigue in Left',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 15)),
+                              Center(
+                                child: is_fatigue_left
+                                    ? const Text(
+                                  'Yes',
+                                  style: TextStyle(
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 15),
+                                )
+                                    : const Text('No',
+                                    style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 13)),
+                              ),
+                              // Text('Yes',style: TextStyle(
+                              //   fontSize: 16,
+                              //   fontWeight: FontWeight.bold,
+                              // ),),
+                            ],
                           ),
-                        ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Column(
+                            crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                            children: [
+                              const Text('Eye Fatigue in Right',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 15)),
+                              Center(
+                                child: is_fatigue_right
+                                    ? const Text(
+                                  'Yes',
+                                  style: TextStyle(
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 15),
+                                )
+                                    : const Text('No',
+                                    style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 13)),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                          height:
+                          16), // Add spacing between the row and the additional columns
+                      Row(
+                        mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                            children: [
+                              const Text('Tiredness in Left',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 15)),
+                              Center(
+                                child: is_mild_tiredness_left
+                                    ? const Text(
+                                  'Yes',
+                                  style: TextStyle(
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 15),
+                                )
+                                    : const Text('No',
+                                    style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 13)),
+                              ),
+                              // Text('Yes',style: TextStyle(
+                              //   fontSize: 16,
+                              //   fontWeight: FontWeight.bold,
+                              // ),),
+                            ],
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Column(
+                            crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                            children: [
+                              const Text('Tiredness in in Right',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 15)),
+                              Center(
+                                child: is_mild_tiredness_right
+                                    ? const Text(
+                                  'Yes',
+                                  style: TextStyle(
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 15),
+                                )
+                                    : const Text('No',
+                                    style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 13)),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
               ),
-            ],
-          ),
-        ),
-
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Center(
-                child: Text(
-                  created_on ?? "",
-                  // 'Today $formattedDate', // Display formatted current date
-                  style: const TextStyle(
-                    fontStyle: FontStyle.normal,
-                    color: Colors.grey,
-                  ),
+            ),
+            const Padding(
+              padding:
+              EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+              child: Text(
+                "Patient's Description",
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepPurple,
                 ),
               ),
-              const Padding(
-                padding:
-                EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-                child: Text(
-                  "Patient's Details",
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple,
-                  ),
-                ),
-              ),
-              Padding(
-                  padding:
-                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
-                  child: Card(
-                      child: ListTile(
-                          title: Column(children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text('Full Name', style:  TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w300,
-                                    ),),
-                                    Text(
-                                      '${firstname} ${lastname}',
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    const Text('Age', style:  TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w300,
-                                ),),
-                                    Text(
-                                      age ?? "",
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                          ])))),
-              Padding(
-                padding:
-                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
-                child: Card(
-                  child: ListTile(
-                    title: Column(
+            ),
+            Padding(
+              padding:
+              const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+              child: Card(
+                child: ListTile(
+                  title: Container(
+                    alignment: Alignment.centerLeft,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Add spacing between the row and the additional columns
-                        Row(
-                          mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                              children: [
-                                const Text('Eye Fatigue in Left',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 15)),
-                                Center(
-                                  child: is_fatigue_left
-                                      ? const Text(
-                                    'Yes',
-                                    style: TextStyle(
-                                        color: Colors.green,
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 15),
-                                  )
-                                      : const Text('No',
-                                      style: TextStyle(
-                                          color: Colors.red,
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 13)),
-                                ),
-                                // Text('Yes',style: TextStyle(
-                                //   fontSize: 16,
-                                //   fontWeight: FontWeight.bold,
-                                // ),),
-                              ],
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                              children: [
-                                const Text('Eye Fatigue in Right',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 15)),
-                                Center(
-                                  child: is_fatigue_right
-                                      ? const Text(
-                                    'Yes',
-                                    style: TextStyle(
-                                        color: Colors.green,
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 15),
-                                  )
-                                      : const Text('No',
-                                      style: TextStyle(
-                                          color: Colors.red,
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 13)),
-                                ),
-                              ],
-                            ),
-                          ],
+                        const Text(
+                          'Test Results',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(
-                            height:
-                            16), // Add spacing between the row and the additional columns
-                        Row(
-                          mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
+                          height: 10,
+                        ),
+                    Column(
+                      // crossAxisAlignment: CrossAxisAlignment.start,
+                      children: testresult
+                          .split('\n')
+                          .map(
+                            (line) => Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                              children: [
-                                const Text('Tiredness in Left',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 15)),
-                                Center(
-                                  child: is_mild_tiredness_left
-                                      ? const Text(
-                                    'Yes',
-                                    style: TextStyle(
-                                        color: Colors.green,
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 15),
-                                  )
-                                      : const Text('No',
-                                      style: TextStyle(
-                                          color: Colors.red,
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 13)),
-                                ),
-                                // Text('Yes',style: TextStyle(
-                                //   fontSize: 16,
-                                //   fontWeight: FontWeight.bold,
-                                // ),),
-                              ],
+                            Icon(Icons.circle, size: 7),
+                            SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                line,
+                                style: TextStyle(fontSize: 14),
+                              ),
                             ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                              children: [
-                                const Text('Tiredness in in Right',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 15)),
-                                Center(
-                                  child: is_mild_tiredness_right
-                                      ? const Text(
-                                    'Yes',
-                                    style: TextStyle(
-                                        color: Colors.green,
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 15),
-                                  )
-                                      : const Text('No',
-                                      style: TextStyle(
-                                          color: Colors.red,
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 13)),
-                                ),
-                              ],
-                            ),
+                            SizedBox(height: 8),
+
                           ],
                         ),
+                      )
+                          .toList(),
+                    ),
+
+
                       ],
                     ),
                   ),
                 ),
               ),
-              const Padding(
-                padding:
-                EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-                child: Text(
-                  "Patient's Description",
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple,
-                  ),
+            ),
+            const Padding(
+              padding:
+              EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+              child: Text(
+                'Suggestion Test',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-              Padding(
-                padding:
-                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-                child: Card(
-                  child: ListTile(
-                    title: Container(
-                      alignment: Alignment.centerLeft,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Test Results',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                      Column(
-                        // crossAxisAlignment: CrossAxisAlignment.start,
-                        children: testresult
-                            .split('\n')
-                            .map(
-                              (line) => Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Icon(Icons.circle, size: 7),
-                              SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  line,
-                                  style: TextStyle(fontSize: 14),
-                                ),
-                              ),
-                              SizedBox(height: 8),
-
-                            ],
-                          ),
-                        )
-                            .toList(),
-                      ),
-
-
-                        ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: bulletPoints
+                  .map((bullet) => Padding(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 8.0, horizontal: 16.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding:
+                      EdgeInsets.only(top: 4.0, left: 8),
+                      child: Icon(
+                        Icons.circle,
+                        size: 11,
+                        color: Colors.grey,
                       ),
                     ),
-                  ),
-                ),
-              ),
-              const Padding(
-                padding:
-                EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-                child: Text(
-                  'Suggestion Test',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: bulletPoints
-                    .map((bullet) => Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 8.0, horizontal: 16.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Padding(
-                        padding:
-                        EdgeInsets.only(top: 4.0, left: 8),
-                        child: Icon(
-                          Icons.circle,
-                          size: 11,
-                          color: Colors.grey,
-                        ),
+                    const SizedBox(width: 8.0),
+                    Expanded(
+                      child: Text(
+                        bullet,
+                        style: const TextStyle(
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.w400),
                       ),
-                      const SizedBox(width: 8.0),
-                      Expanded(
-                        child: Text(
-                          bullet,
-                          style: const TextStyle(
-                              fontSize: 14.0,
-                              fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                    ],
-                  ),
-                ))
-                    .toList(),
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: ElevatedButton(
-                    onPressed: () async {
-                      downloadReport();
-
-                  },
-
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple.shade400,
-                    padding: const EdgeInsets.all(16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(26),
                     ),
-                  ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                          width:
-                          8), // Add spacing between the icon and text
-                      Text(
-                        'Download Report',
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
-                      ),
-                      Icon(
-                        Icons.picture_as_pdf,
-                        color: Colors.white,
-                      ),
-                    ],
+                  ],
+                ),
+              ))
+                  .toList(),
+            ),
+            const SizedBox(
+              height: 30,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: ElevatedButton(
+                  onPressed: () async {
+                    downloadReport();
+
+                },
+
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepPurple.shade400,
+                  padding: const EdgeInsets.all(16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(26),
                   ),
                 ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                        width:
+                        8), // Add spacing between the icon and text
+                    Text(
+                      'Download Report',
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
+                    ),
+                    Icon(
+                      Icons.picture_as_pdf,
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

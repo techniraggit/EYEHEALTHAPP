@@ -798,15 +798,11 @@ class AddADressSCreen extends State<NewAddressScreen> {
           Map<String, dynamic> data = json.decode(response.body);
           Fluttertoast.showToast(msg: data['message']);
 
-          Navigator.pushReplacement(
+          Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => RewardSpecs(offer_id: offer_id)),
           );
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(
-          //       builder: (context) => RewardSpecs()),
-          // );
+
           print("Email verified $data");
 
         } else {

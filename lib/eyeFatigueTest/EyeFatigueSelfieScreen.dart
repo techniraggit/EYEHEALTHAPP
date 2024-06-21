@@ -156,122 +156,116 @@ class EyeFatigueTestSelfieState extends State<EyeFatigueSelfieScreen> {
     if (!_controller!.value.isInitialized) {
       return Container();
     }
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.pop(context);
-        return false;
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("Eye Fatigue Test"),
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Eye Fatigue Test"),
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
-        body: Column(
-          children: [
-            Expanded(
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 50.0), // Adjust this value as needed
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Text('Look straight ahead, position your face inside the box, '
-                            'and click capture button!',style: TextStyle(fontWeight: FontWeight.w400,color: Colors.black,fontSize: 16),),
-                      ),
-                      SizedBox(height: 11),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 50.0), // Adjust this value as needed
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Text('Look straight ahead, position your face inside the box, '
+                          'and click capture button!',style: TextStyle(fontWeight: FontWeight.w400,color: Colors.black,fontSize: 16),),
+                    ),
+                    SizedBox(height: 11),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
 
 
-                          SizedBox(height: 20),
-                           Container(
-                             child: ClipRect(
-                              child: FittedBox(
-                                fit: BoxFit.cover,
-                                key: _cameraPreviewKey1,
+                        SizedBox(height: 20),
+                         Container(
+                           child: ClipRect(
+                            child: FittedBox(
+                              fit: BoxFit.cover,
+                              key: _cameraPreviewKey1,
 
-                                child: SizedBox(
-                                  width: (_controller?.value.previewSize?.height ?? 0) / 2,
-                                  height: (_controller?.value.previewSize?.width??0)/2,
+                              child: SizedBox(
+                                width: (_controller?.value.previewSize?.height ?? 0) / 2,
+                                height: (_controller?.value.previewSize?.width??0)/2,
 
-                                  child: CameraPreview(_controller!),
-                                ),
+                                child: CameraPreview(_controller!),
                               ),
-                                                       ),
-                           ),
-                          SizedBox(height: 90),
-                          // Container(
-                          //   margin: EdgeInsets.all(20),
-                          //   child: ElevatedButton(
-                          //     onPressed: selfieloader ? null : () {
-                          //       _captureImage();
-                          //     },
-                          //     style: ElevatedButton.styleFrom(
-                          //       foregroundColor: Colors.white,
-                          //       backgroundColor: Colors.bluebutton,
-                          //       padding: EdgeInsets.all(16),
-                          //       minimumSize: Size(300, 30),
-                          //       shape: RoundedRectangleBorder(
-                          //         borderRadius: BorderRadius.circular(22),
-                          //       ),
-                          //     ),
-                          //     child: Text('Take Selfie'),
-                          //   ),
-                          // ),
-      Container(
-        margin: EdgeInsets.all(20),
-        child: Stack(
-          children: [
-            ElevatedButton(
-              onPressed: selfieloader ? null : () {
-                setState(() {
-                  selfieloader=true;
-                });
-                _captureImage();
-              },
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.blue, // Assuming you have defined Colors.bluebutton somewhere
-                padding: EdgeInsets.all(16),
-                minimumSize: Size(300, 30),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(22),
-                ),
-              ),
-              child: Text('Take Selfie'),
-            ),
-            if (selfieloader)
-              Positioned.fill(
-                child: Center(
-                  child: CircularProgressIndicator(), // Replace with your desired loader widget
-                ),
-              ),
-          ],
-        ),
-      )
-
-      ],
-                      ),
-                    ],
-                  ),
-                ),
+                            ),
+                                                     ),
+                         ),
+                        SizedBox(height: 90),
+                        // Container(
+                        //   margin: EdgeInsets.all(20),
+                        //   child: ElevatedButton(
+                        //     onPressed: selfieloader ? null : () {
+                        //       _captureImage();
+                        //     },
+                        //     style: ElevatedButton.styleFrom(
+                        //       foregroundColor: Colors.white,
+                        //       backgroundColor: Colors.bluebutton,
+                        //       padding: EdgeInsets.all(16),
+                        //       minimumSize: Size(300, 30),
+                        //       shape: RoundedRectangleBorder(
+                        //         borderRadius: BorderRadius.circular(22),
+                        //       ),
+                        //     ),
+                        //     child: Text('Take Selfie'),
+                        //   ),
+                        // ),
+    Container(
+      margin: EdgeInsets.all(20),
+      child: Stack(
+        children: [
+          ElevatedButton(
+            onPressed: selfieloader ? null : () {
+              setState(() {
+                selfieloader=true;
+              });
+              _captureImage();
+            },
+            style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.blue, // Assuming you have defined Colors.bluebutton somewhere
+              padding: EdgeInsets.all(16),
+              minimumSize: Size(300, 30),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(22),
               ),
             ),
-            // Replay audio button below app bar
+            child: Text('Take Selfie'),
+          ),
+          if (selfieloader)
+            Positioned.fill(
+              child: Center(
+                child: CircularProgressIndicator(), // Replace with your desired loader widget
+              ),
+            ),
+        ],
+      ),
+    )
 
-          ],
-        ),
+    ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Replay audio button below app bar
+
+        ],
       ),
     );
   }
