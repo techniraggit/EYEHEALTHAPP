@@ -4212,9 +4212,9 @@ class redgreen extends State<RedGreenTest> {
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
+          (camera) => camera.lensDirection == CameraLensDirection.front,
       orElse: () =>
-          _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
+      _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
     );
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
@@ -4253,7 +4253,8 @@ class redgreen extends State<RedGreenTest> {
 
   Future<void> sendDistanceRequest(String image) async {
     var apiUrl =
-        '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
+        '${Api
+        .baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     var distanceType;
@@ -4276,8 +4277,8 @@ class redgreen extends State<RedGreenTest> {
       });
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-          prefs.getString('access_token') ?? '';
+      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+      prefs.getString('access_token') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
 
       var response = await http.post(
@@ -4346,7 +4347,8 @@ class redgreen extends State<RedGreenTest> {
   String alert = '';
   Map<String, dynamic> _data = {};
   static String action = "";
-  String snellenFraction = '0', randomText = 'W';
+  String snellenFraction = '0',
+      randomText = 'W';
   double textSize = 10 * 3.779527559055118;
   late bool isComplete;
   late bool testcancel;
@@ -4354,15 +4356,16 @@ class redgreen extends State<RedGreenTest> {
   Future<void> fetchData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     String CustomerId = prefs.getString('customer_id') ?? '';
 
     String test_id = prefs.getString('test_id') ?? '';
     print('mytestid$test_id');
 
     final String apiUrl =
-        '${Api.baseurl}/api/eye/snellen-fraction-red-green-test?test_id=$test_id';
+        '${Api
+        .baseurl}/api/eye/snellen-fraction-red-green-test?test_id=$test_id';
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Content-Type': 'application/json',
@@ -4405,15 +4408,16 @@ class redgreen extends State<RedGreenTest> {
 
   //double imageSize = 200.0; // Initial image size
   Map<String, dynamic>? paymentIntent;
-  String selectedPlan = 'a', expiry_date = 'b';
+  String selectedPlan = 'a',
+      expiry_date = 'b';
   String test_left = '0';
   late String subscriptionId;
 
   Future<void> _callAPI() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
 // Replace this URL with your PUT API endpoint
     String test_id = prefs.getString('test_id') ?? '';
     String CustomerId = prefs.getString('customer_id') ?? '';
@@ -4470,7 +4474,7 @@ class redgreen extends State<RedGreenTest> {
           }
           Fluttertoast.showToast(
               msg:
-                  'Please do the test again and follow the instructions carefully ... ');
+              'Please do the test again and follow the instructions carefully ... ');
           /*    CustomAlertDialog.attractivepopup(context,
               'Please do the test again and follow the instructions carefully ... ');*/
           Navigator.push(
@@ -4495,8 +4499,8 @@ class redgreen extends State<RedGreenTest> {
   Future<void> UpdateRedGreenTest() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-        prefs.getString('access_token') ?? '';
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+    prefs.getString('access_token') ?? '';
     String test_id = prefs.getString('test_id') ?? '';
     String CustomerId = prefs.getString('customer_id') ?? '';
 
@@ -4590,10 +4594,8 @@ class redgreen extends State<RedGreenTest> {
 
   @override
   Widget build(BuildContext context) {
-    return  WillPopScope(
+    return WillPopScope(
       onWillPop: () async {
-
-
         return false;
       },
       child: Scaffold(
@@ -4633,7 +4635,7 @@ class redgreen extends State<RedGreenTest> {
                         onTap: _onReplayPressed,
                         child: Container(
                           padding:
-                              EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(25),
                           ),
@@ -4669,7 +4671,10 @@ class redgreen extends State<RedGreenTest> {
                           _callAPI();
                         },
                         child: Container(
-                          width: MediaQuery.of(context).size.width,
+                          width: MediaQuery
+                              .of(context)
+                              .size
+                              .width,
                           height: 150,
                           color: Colors.red.shade700,
                           child: Center(
@@ -4694,7 +4699,10 @@ class redgreen extends State<RedGreenTest> {
                           _callAPI();
                         },
                         child: Container(
-                          width: MediaQuery.of(context).size.width,
+                          width: MediaQuery
+                              .of(context)
+                              .size
+                              .width,
                           height: 150,
                           color: Colors.green.shade700,
                           child: Center(
@@ -4719,7 +4727,7 @@ class redgreen extends State<RedGreenTest> {
                         style: TextStyle(
                           fontSize: 20,
                           color:
-                              alert == 'Good to go' ? Colors.green : Colors.red,
+                          alert == 'Good to go' ? Colors.green : Colors.red,
                           fontWeight: FontWeight.normal,
                         ),
                       ),
@@ -4778,192 +4786,9 @@ class redgreen extends State<RedGreenTest> {
             ),
           ],
         ),
-    return WillPopScope(
-      onWillPop: () async {
-        /*Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => GiveInfo()),
-        );*/
-        return false;
-      },/**/
-      child: MaterialApp(
-        home: Scaffold(
-        appBar: AppBar(
-        title: Text("EYE TEST"),
-    centerTitle: true,
-    ),
-      body: Stack(
-        children: <Widget>[
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 100.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: Text(
-                      'Red/Green Test',
-                      style: TextStyle(
-                        fontSize: 24.0,
-                        color: Color(0xFF1E3777),
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: GestureDetector(
-                      onTap: _onReplayPressed,
-                      child: Container(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(top: 4.0),
-                              child: Image.asset(
-                                'assets/play_circle_fill.png',
-                                width: 50,
-                                height: 40,
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            Text(
-                              'Replay Audio',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
-                    child: InkWell(
-                      onTap: () {
-                        action = "red";
-                        _callAPI();
-                      },
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 150,
-                        color: Colors.red.shade700,
-                        child: Center(
-                          child: Text(
-                            randomText,
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: textSize,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10.0),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
-                    child: InkWell(
-                      onTap: () {
-                        action = "green";
-                        _callAPI();
-                      },
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 150,
-                        color: Colors.green.shade700,
-                        child: Center(
-                          child: Text(
-                            randomText,
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: textSize,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 10, height: 10),
-                  Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text(
-                      alert,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 20,
-                        color:
-                            alert == 'Good to go' ? Colors.green : Colors.red,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 60),
-                  // Add some space to avoid overlap with the button
-                ],
-              ),
-            ),
-          ),
-          Positioned(
-            right: 10,
-            child: Visibility(
-              visible: _isCameraVisible,
-              child: Container(
-                width: 100.0,
-                height: 150.0,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                ),
-                child: InteractiveViewer(
-                  minScale: 0.1,
-                  maxScale: 1.5,
-                  child: _controller != null
-                      ? CameraPreview(_controller!)
-                      : Container(),
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 0,
-            left: 10,
-            right: 10,
-            child: Container(
-              height: 50.0,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.bluebutton, // Change to your desired color
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: MaterialButton(
-                onPressed: () {
-                  // Call your function here
-                  UpdateRedGreenTest();
-                },
-                child: Text(
-                  'Next',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14.0,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-        ),),);}}
-
+      ),);
+  }
+}
 class RightEye extends StatefulWidget {
 //for Red Green Test Screen
   @override
