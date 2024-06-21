@@ -324,7 +324,7 @@ class ProfileDetails extends State<UserProfile> {
                                 //   print("_phoneController=======${_phoneController.text}========initialPhone$initialPhone");
                                 //   if( _phoneController.text.isNotEmpty &&
                                 //       _phoneController.text.trim() != initialPhone)
-                                //   {
+                                  //   {
                                 //     isVerifiedphone=false;
                                 //
                                 //   }
@@ -696,11 +696,6 @@ class ProfileDetails extends State<UserProfile> {
     }
   }
 
-
-
-
-
-
   Future<void> updateProfilePicture() async {
     const String apiUrl =
         '${ApiProvider.baseUrl + ApiProvider.updateUserProfile}';
@@ -722,7 +717,7 @@ class ProfileDetails extends State<UserProfile> {
         'Bearer $authToken'; // Replace $authToken with your actual token
     request.fields['id'] = user_id;
     request.fields['email'] = _emailController.text;
-    request.fields['phone_number'] = _phoneController.text;
+    request.fields['phone_number'] = '+91${_phoneController.text}';
     request.fields['last_name'] = _lastNmeController.text;
     request.fields['first_name'] = _firstNameController.text;
     request.fields['dob'] = '1982-12-11';
@@ -839,7 +834,7 @@ class ProfileDetails extends State<UserProfile> {
         Response response = await post(
           Uri.parse('${ApiProvider.baseUrl + ApiProvider.verifyEmailOtp}'),
           body: {
-            "username": _phoneController.text.trim(),
+            "username":'+91'+ _phoneController.text.trim(),
           },
           // headers: {
           //   'Authorization': 'Bearer $accessToken',
@@ -1061,7 +1056,7 @@ class ProfileDetails extends State<UserProfile> {
         Response response = await post(
           Uri.parse('${ApiProvider.baseUrl + ApiProvider.verifyEmailOtp}'),
           body: {
-            "username": _emailController.text.trim(),
+            "username":_emailController.text.trim(),
           },
           // headers: {
           //   'Authorization': 'Bearer $accessToken',

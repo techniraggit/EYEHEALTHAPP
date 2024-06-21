@@ -201,7 +201,6 @@ class SelectQuestion extends State<GiveInfo> {
                                   },
                                 ),
                               ],
-
                             ],
                           ),
                         ),
@@ -218,11 +217,6 @@ class SelectQuestion extends State<GiveInfo> {
                 child: ElevatedButton(
                   onPressed: () {
                     requestPermission();
-
-
-
-
-
                     // submitApi();
                   },
                   child: Text('Next'),
@@ -243,20 +237,21 @@ class SelectQuestion extends State<GiveInfo> {
       ),
     );
   }
+
   void requestPermission() async {
     PermissionStatus status = await Permission.camera.status;
     PermissionStatus status2 = await Permission.microphone.status;
 
-    if((status==PermissionStatus.granted&&status2==PermissionStatus.granted) ){
+    if ((status == PermissionStatus.granted &&
+        status2 == PermissionStatus.granted)) {
       setState(() {
         submitApi();
       });
-
     }
-    if (!status.isGranted ) {
+    if (!status.isGranted) {
       status = await Permission.camera.request();
     }
-    if (!status2.isGranted ) {
+    if (!status2.isGranted) {
       status = await Permission.microphone.request();
     }
     if (status == PermissionStatus.denied ||
@@ -264,18 +259,19 @@ class SelectQuestion extends State<GiveInfo> {
       await [Permission.camera].request();
 
       // Permissions are denied or denied forever, let's request it!
-      status =  await Permission.camera.status;
+      status = await Permission.camera.status;
       if (status == PermissionStatus.denied) {
         await [Permission.camera].request();
         print("camera permissions are still denied");
-      } else if (status ==PermissionStatus.permanentlyDenied) {
+      } else if (status == PermissionStatus.permanentlyDenied) {
         print("camera permissions are permanently denied");
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text("camera permissions required"),
-              content: Text("camera permissions are permanently denied. Please go to app settings to enable camera permissions."),
+              content: Text(
+                  "camera permissions are permanently denied. Please go to app settings to enable camera permissions."),
               actions: <Widget>[
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -287,13 +283,11 @@ class SelectQuestion extends State<GiveInfo> {
                     Navigator.pop(context); // Close the dialog
                     await openAppSettings();
                   },
-                  child: Text("OK",
-
-                    style: TextStyle(
-                        color: Colors.white, fontSize: 16),
+                  child: Text(
+                    "OK",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
-
               ],
             );
           },
@@ -306,18 +300,20 @@ class SelectQuestion extends State<GiveInfo> {
       await [Permission.microphone].request();
 
       // Permissions are denied or denied forever, let's request it!
-      status2 =  await Permission.microphone.status;
+      status2 = await Permission.microphone.status;
       if (status2 == PermissionStatus.denied) {
         await [Permission.microphone].request();
         print("microphone permissions are still denied");
-      }  if (status2 ==PermissionStatus.permanentlyDenied) {
+      }
+      if (status2 == PermissionStatus.permanentlyDenied) {
         print("microphone permissions are permanently denied");
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text("microphone permissions required"),
-              content: Text("microphone permissions are permanently denied. Please go to app settings to enable microphone permissions."),
+              content: Text(
+                  "microphone permissions are permanently denied. Please go to app settings to enable microphone permissions."),
               actions: <Widget>[
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -329,21 +325,17 @@ class SelectQuestion extends State<GiveInfo> {
                     Navigator.pop(context); // Close the dialog
                     await openAppSettings();
                   },
-                  child: Text("OK",
-
-                    style: TextStyle(
-                        color: Colors.white, fontSize: 16),
+                  child: Text(
+                    "OK",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
-
               ],
             );
           },
         );
       }
     }
-
-
   }
 
   Future<List<Question>> getQuestionApi() async {
@@ -700,7 +692,6 @@ class AlphabetTestState extends State<AlphabetTest> {
     getSnellFraction();
     _configureTts();
     _onReplayPressed();
-
   }
 
   final FlutterTts flutterTts = FlutterTts();
@@ -846,7 +837,6 @@ class AlphabetTestState extends State<AlphabetTest> {
   List<Map<String, dynamic>> snellenFractions = [];
 
   Future<void> getSnellFraction() async {
-
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
@@ -1171,16 +1161,6 @@ class AlphabetTestState extends State<AlphabetTest> {
     // currentTextSize = await calculateTextSize(nextFraction);
   }
 
-  /*double mmToPixels(BuildContext context, double mm) {
-  // Get the pixel density (devicePixelRatio)
-  double ppi = MediaQuery.of(context).devicePixelRatio * 160; // Approximate PPI
-
-  // Convert mm to inches
-  double inches = mm / 25.4;
-
-  // Convert inches to pixels
-  return inches * ppi;
-  }*/
   double mmToPixels(BuildContext context, double mm) {
     return mm * 3.779527559055118;
   }
@@ -1201,7 +1181,6 @@ class AlphabetTestState extends State<AlphabetTest> {
 
     return 20.0 * value;
   }
-
 
   Future<String?> getRandomTest() async {
     setState(() {
@@ -1481,14 +1460,13 @@ class Reading extends State<ReadingTest> {
   int currentIndex = 0;
   List<Map<String, dynamic>> snellenFractions = [];
 
-
   Future<void> getReadingSnellFractionNew() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken = prefs.getString('access_token') ?? '';
       String testname = prefs.getString('test') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
-      currentTextSize=currentTextSize*3.779527559055118;
+      currentTextSize = currentTextSize * 3.779527559055118;
 
       var headers = {
         'Authorization': 'Bearer $authToken',
@@ -1507,7 +1485,7 @@ class Reading extends State<ReadingTest> {
         randomText = parsedData['data']['text'];
         nextFraction = parsedData['data']['initial_snellen_fraction'];
         print("readingdata${randomText}");
-        currentTextSize =currentTextSize *1.65;
+        currentTextSize = currentTextSize * 1.65;
         setState(() {
           currentTextSize;
           randomText;
@@ -1739,7 +1717,6 @@ class Reading extends State<ReadingTest> {
   String? nextFraction;
   double currentTextSize = 24.0; // Initial text size
 
-
   Map<String, dynamic>? paymentIntent;
   String selectedPlan = 'a', expiry_date = 'b';
   String test_left = '0';
@@ -1785,13 +1762,10 @@ class Reading extends State<ReadingTest> {
           final data = responseData['data'];
           currentTextSize = data['text_size'];
           randomText = data['text'];
-          currentTextSize=currentTextSize*3.779527559055118;
-
-        } else {
-
-        }
+          currentTextSize = currentTextSize * 3.779527559055118;
+        } else {}
         setState(() {
-       // Assign fetched data to your variables
+          // Assign fetched data to your variables
           currentTextSize;
           randomText;
         }); //remove for reading test update
@@ -5097,7 +5071,7 @@ class redgreen extends State<RedGreenTest> {
   Map<String, dynamic> _data = {};
   static String action = "";
   String snellenFraction = '0', randomText = 'W';
-  double textSize = 10;
+  double textSize = 10 * 3.779527559055118;
   late bool isComplete;
   late bool testcancel;
 
@@ -5113,27 +5087,28 @@ class redgreen extends State<RedGreenTest> {
 
     final String apiUrl =
         '${Api.baseurl}/api/eye/snellen-fraction-red-green-test?test_id=$test_id';
-// Replace these headers with your required headers
+  // Replace these headers with your required headers
     Map<String, String> headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $authToken',
       'Customer-Id': CustomerId
     };
-// Replace this with your PUT request body
+   // Replace this with your PUT request body
 
     try {
       final response = await http.get(
         Uri.parse(apiUrl),
         headers: headers,
-//body: jsonEncode(body),
+ //body: jsonEncode(body),
       );
       if (response.statusCode == 200) {
         print('success with get Red/green Test: ${response.body}');
-// If the call to the server was successful, parse the JSON
+ // If the call to the server was successful, parse the JSON
         _data = json.decode(response.body);
         snellenFraction = _data['snellen_fraction'];
         textSize = _data['text_size'];
         print('Red/green Test: $snellenFraction');
+        textSize = textSize * 3.779527559055118;
         snellenFraction;
         setState(() {
           textSize;
@@ -5340,17 +5315,19 @@ class redgreen extends State<RedGreenTest> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
+    return WillPopScope(
+      onWillPop: () async {
+        /*Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => GiveInfo()),
+        );*/
+        return false;
+      },/**/
+      child: MaterialApp(
+        home: Scaffold(
+        appBar: AppBar(
         title: Text("EYE TEST"),
-        centerTitle: true,
-        // leading: IconButton(
-        //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-        //   onPressed: () {
-        //     // Add your back button functionality here
-        //   },
-        // ),
-      ),
+    centerTitle: true,
+    ),
       body: Stack(
         children: <Widget>[
           SingleChildScrollView(
@@ -5522,9 +5499,7 @@ class redgreen extends State<RedGreenTest> {
           ),
         ],
       ),
-    );
-  }
-}
+        ),),);}}
 
 class RightEye extends StatefulWidget {
 //for Red Green Test Screen
@@ -6063,7 +6038,14 @@ class _CameraScreenState extends State<CameraS> {
         "Maintain the screen brightness at 50% throughout the eye test. Keep the device on a stable surface at the eye level. Keep the device at the recommended distance, for this follow the onscreen instructions throughout the eye test. Only move your face Move forward or backward till the time you see good to go sign on screen. Do not disturb or move the device from its position during the eye test. Are you ready? Let’s start the test. Please click on Start Eye Test Now.";
     _speak(replayText);
   }
+
   Future<void> _initializeCamera() async {
+    // if(!_isCameraInitialized){
+    //   requestPermission();
+    // }
+    if (!_isCameraInitialized) {
+      // requestPermission();
+    }
 
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(

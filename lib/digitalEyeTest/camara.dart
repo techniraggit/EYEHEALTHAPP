@@ -114,12 +114,12 @@ class _CameraScreenState extends State<CameraS> {
         appBar: AppBar(
           title: Text("EYE TEST"),
           centerTitle: true,
-          leading: IconButton(
+         /* leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
             onPressed: () {
               // Add your back button functionality here
             },
-          ),
+          ),*/
         ),
         body: Column(
           children: [

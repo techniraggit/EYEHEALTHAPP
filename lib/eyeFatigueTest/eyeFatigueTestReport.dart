@@ -504,13 +504,17 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> with AutoCan
                                 ),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children:testresult
                                       .split('\n')
                                       .map(
                                         (line) => Row(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Icon(Icons.circle, size: 10),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                          child: Icon(Icons.circle, size: 10),
+                                        ),
                                         SizedBox(width: 8),
                                         Flexible(
                                           child: Text(

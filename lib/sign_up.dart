@@ -407,7 +407,7 @@ class SignInScreen extends State<SignIn> {
         Response response = await post(
           Uri.parse('${ApiProvider.baseUrl + ApiProvider.sendLoginOtp}'),
           body: {
-            "username": _phoneController.text.trim(),
+            "username": '+91'+_phoneController.text.trim(),
           },
           // headers: {
           //   'Authorization': 'Bearer $accessToken',
@@ -665,7 +665,7 @@ class SignInScreen extends State<SignIn> {
         Response response = await post(
           Uri.parse('${ApiProvider.baseUrl + ApiProvider.verifyLoginOtp}'),
           body: {
-            "username": _phoneController.text.trim(),
+            "username": '+91'+_phoneController.text.trim(),
             "otp": pincode,
             "device_type": device_type,
             "device_token": device_token,
@@ -1770,7 +1770,7 @@ class SignUpScreen extends State<SignUp> {
         Response response = await post(
           Uri.parse('${ApiProvider.baseUrl + ApiProvider.verifyEmailOtp}'),
           body: {
-            "username": _phoneController.text.trim(),
+            "username":'+91${_phoneController.text.trim()}',
           },
           // headers: {
           //   'Authorization': 'Bearer $accessToken',
@@ -2298,7 +2298,7 @@ class SignUpScreen extends State<SignUp> {
         Response response = await patch(
           Uri.parse('${ApiProvider.baseUrl + ApiProvider.verifyEmailOtp}'),
           body: {
-            "username": _phoneController.text.trim(),
+            "username": '+91${_phoneController.text.trim()}',
             "otp": pincode // _otpController.text.trim(),
           },
           // headers: {
@@ -2416,7 +2416,7 @@ class SignUpScreen extends State<SignUp> {
         Map<String, dynamic> requestBody = {
           "first_name": _firstNameController.text.trim(),
           "last_name": LastName,
-          "phone_number": _phoneController.text.trim(),
+          "phone_number":'+91${_phoneController.text.trim()}',
           "email": _emailController.text.trim(),
           "latitude": Latitude,
           "longitude": Longitude,
@@ -2629,7 +2629,7 @@ class SignUpScreen extends State<SignUp> {
         Response response = await post(
           Uri.parse('${ApiProvider.baseUrl + ApiProvider.sendLoginOtp}'),
           body: {
-            "username": _phoneController.text.trim(),
+            "username": '+91${_phoneController.text.trim()}',
           },
           // headers: {
           //   'Authorization': 'Bearer $accessToken',
@@ -2909,7 +2909,7 @@ class SignUpScreen extends State<SignUp> {
         Response response = await post(
           Uri.parse('${ApiProvider.baseUrl + ApiProvider.verifyLoginOtp}'),
           body: {
-            "username": _phoneController.text.trim(),
+            "username": '+91${_phoneController.text.trim()}',
             "otp": pincode,
             "device_type": device_type,
             "device_token": device_token,
