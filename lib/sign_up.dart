@@ -864,7 +864,15 @@ class SignUpScreen extends State<SignUp> {
       height: 20,
       width: 80,
       child: ElevatedButton(
-        onPressed: getVerifyPhoneOtp,
+        onPressed:(){
+          if (_phoneController.text.trim().isEmpty ||
+              _phoneController.text.trim().length!=10 ) {
+
+            Fluttertoast.showToast(msg: 'please enter a valid phone no..');
+
+          }else{
+
+          getVerifyPhoneOtp();}},
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.bluebutton, // Use a color of your choice
         ),
@@ -1647,11 +1655,12 @@ class SignUpScreen extends State<SignUp> {
     return emailRegex.hasMatch(email);
   }
 
-  bool checkValidationForVerifyPhone(String phone) {
-    // Simple email validation regex pattern
-    final RegExp phoneRegex = RegExp(r'^\d{10}$');
-    return phoneRegex.hasMatch(phone);
-  }
+  // bool checkValidationForVerifyPhone(String phone) {
+  //   // Simple email validation regex pattern
+  //   final RegExp phoneRegex = RegExp(r'^\d{10}$');
+  //
+  //   return phoneRegex.hasMatch(phone);
+  // }
 
 
 
@@ -1704,7 +1713,7 @@ class SignUpScreen extends State<SignUp> {
   void resendPhoneOtp() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
    String username = prefs.getString('username')!;
-    if (checkValidationForVerifyPhone(username)) {
+    // if (checkValidationForVerifyPhone(username)) {
       EasyLoading.show();
       try {
 
@@ -1747,7 +1756,7 @@ class SignUpScreen extends State<SignUp> {
         }
       }
     }
-  }
+  // }
 
 
 
@@ -1758,7 +1767,8 @@ class SignUpScreen extends State<SignUp> {
 
 
   void getVerifyPhoneOtp() async {
-    if (checkValidationForVerifyPhone(_phoneController.text)) {
+
+    // if (checkValidationForVerifyPhone(_phoneController.text)) {
       EasyLoading.show();
       try {
         Response response = await post(
@@ -1895,7 +1905,13 @@ class SignUpScreen extends State<SignUp> {
                               GestureDetector(
                                 onTap: () {
                                   print("verify1----");
-                                  resendPhoneOtp();                                },
+                                  if (_phoneController.text.trim().isEmpty ||
+                                      _phoneController.text.trim().length!=10 ) {
+
+                                    Fluttertoast.showToast(msg: 'please enter a valid phone no.');
+
+                                  }else{
+                                  resendPhoneOtp();        }                        },
                                 child: Container(
                                   alignment: Alignment.center,
                                   // padding: const EdgeInsets.fromLTRB(150, 14, 30, 20),
@@ -1993,7 +2009,7 @@ class SignUpScreen extends State<SignUp> {
         }
       }
     }
-  }
+  // }
 
   void getVerifyEmailOtp() async {
     if (checkValidationForVerifyEmail(_emailController.text)) {
@@ -2403,6 +2419,12 @@ class SignUpScreen extends State<SignUp> {
         ReferralCode = "";
       } else {
         ReferralCode = referalController.text.trim();
+      }
+      if (_phoneController.text.trim().isEmpty ||
+          _phoneController.text.trim().length!=10 ) {
+
+        Fluttertoast.showToast(msg: 'please enter a valid phone no..');
+
       }
 
       EasyLoading.show();

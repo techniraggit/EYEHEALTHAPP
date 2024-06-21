@@ -2580,7 +2580,32 @@ class PresUpload extends State<PrescriptionUpload> {
                           SizedBox(
                             height: 15,
                           ),
-
+                          _files == null || _files.isEmpty
+                              ? Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(18.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    'assets/error.png', // Replace with your image path
+                                    width: 200, // Adjust width as needed
+                                    height: 200, // Adjust height as needed
+                                  ),
+                                  SizedBox(height: 20), // Adjust spacing between image and text
+                                  Text(
+                                    'No prescription is uploaded yet... upload new prescription to get points!',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                              :
                           Expanded(
                             child: ListView.builder(
                               shrinkWrap: true,

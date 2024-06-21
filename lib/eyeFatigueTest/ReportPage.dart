@@ -587,17 +587,32 @@ class _ReportOtherState extends State<_ReportOther> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             if(prescriptions==null||prescriptions.isEmpty)...{
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: Text(
-                    'No prescription is uploaded yet... upload new prescription to get points!', // Display formatted current date
-                    style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black),
-                  ),
-                ),
-              ),
+            Center(
+            child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(height: 30),
+            Image.asset(
+            'assets/error.png', // Replace with your image path
+            width: 200, // Adjust width as needed
+            height: 250, // Adjust height as needed
+            ),
+            SizedBox(height: 20), // Adjust spacing between image and text
+
+            Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Text(
+            'No prescription is uploaded yet... upload new prescription to get points!',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+            fontSize: 16,
+            color: Colors.black,
+            ),
+            ),
+            ),
+            ],
+            ),
+            ),
             },
             ListView.builder(
               shrinkWrap: true,
@@ -973,14 +988,32 @@ count=jsonData['no_of_fatigue_test'];
     ),
     ),
     SizedBox(height: 30),
-    Center(
-    child: Text(
-    'No Reports to show', // Display formatted current date
-    style: TextStyle(
-    fontSize: 14,
-    color: Colors.black),
-    ),
-    ),
+      Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(height: 30),
+            Image.asset(
+              'assets/error.png', // Replace with your image path
+              width: 200, // Adjust width as needed
+              height: 250, // Adjust height as needed
+            ),
+            SizedBox(height: 20), // Adjust spacing between image and text
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Text(
+                'No Reports to Show',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     SizedBox(height: 30),
 
     },
@@ -1318,14 +1351,27 @@ class __ReportEyeTestState extends State<_ReportEyeTest> {
               children: <Widget>[
                 if( apiData?['data']==null|| apiData?['data'].isEmpty)...{
                   Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(18.0),
-                      child: Text(
-                        'No test is done yet... please do digital eye test first', // Display formatted current date
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.black),
-                      ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        SizedBox(height: 30),
+                        Image.asset(
+                          'assets/error.png', // Replace with your image path
+                          width: 200, // Adjust width as needed
+                          height: 250, // Adjust height as needed
+                        ),
+                        SizedBox(height: 20), // Adjust spacing between image and text
+
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Text(
+                            'No test is done yet... please do digital eye test first', // Display formatted current date
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 },
