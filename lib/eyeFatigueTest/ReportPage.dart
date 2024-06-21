@@ -384,7 +384,7 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin {
                                     horizontal: 8.0,
                                   ),
                                   child: Text(
-                                    'Eye Test Report',
+                                    'Eye Test Reports',
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.normal,
@@ -562,7 +562,7 @@ class _ReportOtherState extends State<_ReportOther> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Eye Test Report'),
+        title: Text('My Prescriptions'),
         backgroundColor: Colors.white,
       ),
       floatingActionButton: Padding(
