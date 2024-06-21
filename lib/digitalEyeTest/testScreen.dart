@@ -29,21 +29,38 @@ class SelectQuestion extends State<GiveInfo> {
   ProgressDialog? _progressDialog;
   late Future<List<Question>> _questionsFuture;
 
-  List<int> idList = [];
   List<int> selectedIds = [];
+  List<int> allQuestionIds = []; // This should hold all question IDs you are displaying
+
   String message = "";
   late final http.Client client;
 
+
   void _onCheckboxChanged(bool? value, int questionId) {
     setState(() {
+      if(!selectedIds.contains(questionId)){
+        allQuestionIds.add(questionId);
+      }
+
       if (value == true) {
+
+
         // Add the ID to the selected IDs list if it's not already present
         if (!selectedIds.contains(questionId)) {
+
+
           selectedIds.add(questionId);
         }
       } else {
-        // Remove the ID from the selected IDs list if it's present
-        selectedIds.remove(questionId);
+        if (!selectedIds.contains(questionId)) {
+          selectedIds.remove(questionId);
+
+
+          // Remove the ID from the selected IDs list if it's present
+        }
+
+
+
       }
     });
   }
@@ -197,7 +214,8 @@ class SelectQuestion extends State<GiveInfo> {
                                   questionId: question.id,
                                   questionText: question.questionText,
                                   onChanged: (bool? value) {
-                                    _onCheckboxChanged(value, question.id);
+                                     setState(() {
+                                    _onCheckboxChanged(value, question.id);});
                                   },
                                 ),
                               ],
@@ -249,7 +267,20 @@ class SelectQuestion extends State<GiveInfo> {
 
     if((status==PermissionStatus.granted&&status2==PermissionStatus.granted) ){
       setState(() {
-        submitApi();
+        print("allQuestionIds-----${allQuestionIds.length}");
+        if (allQuestionIds.length == 5) {
+          submitApi();
+        } else {
+          Fluttertoast.showToast(
+            msg:
+            'Please answer all questions',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+          );
+          // showToast('Please answer all questions');
+        }
       });
 
     }
@@ -1471,7 +1502,9 @@ class Reading extends State<ReadingTest> {
     if (_controller != null) {
       _controller!.dispose();
     }
-    flutterTts.stop();
+    if (flutterTts != null) {
+      flutterTts.pause();
+    }
     super.dispose();
   }
 

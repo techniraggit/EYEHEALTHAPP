@@ -694,7 +694,7 @@ class SignInScreen extends State<SignIn> {
           prefs.setString('user_id', data['data']['id']);
           Navigator.of(context).pop();
           //  print("Otp Sent${ data['data']['id']}${data['data']['stripe_customer_id']}");
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             CupertinoPageRoute(builder: (context) => HomePage()),
           );
@@ -1490,7 +1490,7 @@ class SignUpScreen extends State<SignUp> {
                             width: 300,
                             child: ElevatedButton(
                               onPressed: () {
-                                Navigator.push(
+                                Navigator.pushReplacement(
                                   context,
                                   CupertinoPageRoute(
                                       builder: (context) => SignIn()),
@@ -2937,7 +2937,7 @@ class SignUpScreen extends State<SignUp> {
           prefs.setString('user_id', data['data']['id']);
           Navigator.of(context).pop();
           //  print("Otp Sent${ data['data']['id']}${data['data']['stripe_customer_id']}");
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             CupertinoPageRoute(builder: (context) => HomePage()),
           );
