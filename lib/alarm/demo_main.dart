@@ -2,11 +2,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:alarm/model/alarm_settings.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,18 +12,18 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  await Alarm.init();
+//  await Alarm.init();
 
   runApp(
     MaterialApp(
       theme: ThemeData(useMaterial3: false),
-      home: const ExampleAlarmHomeScreen(),
+    //  home: const ExampleAlarmHomeScreen(),
     ),
   );
 }
 
 
-class ExampleAlarmHomeScreen extends StatefulWidget {
+/*class ExampleAlarmHomeScreen extends StatefulWidget {
   const ExampleAlarmHomeScreen({super.key});
 
   @override
@@ -127,7 +125,33 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title:  const Center(child: Text('Alarms Scheduled',style: TextStyle(fontWeight: FontWeight.w400,fontSize: 17,color: Colors.black),))),
-
+      // body: SafeArea(
+      //   child:
+      //   alarms.isNotEmpty
+      //       ? ListView.separated(
+      //     itemCount: alarms.length,
+      //     separatorBuilder: (context, index) => const Divider(height: 0.0),
+      //     itemBuilder: (context, index) {
+      //       return ExampleAlarmTile(
+      //         key: Key(alarms[index].id.toString()),
+      //         title: TimeOfDay(
+      //           hour: alarms[index].dateTime.hour,
+      //           minute: alarms[index].dateTime.minute,
+      //         ).format(context),
+      //         onPressed: () => navigateToAlarmScreen(alarms[index]),
+      //         onDismissed: () {
+      //           Alarm.stop(alarms[index].id).then((_) => loadAlarms());
+      //         },
+      //       );
+      //     },
+      //   )
+      //       : Center(
+      //     child: Text(
+      //       'No alarm set',
+      //       style: Theme.of(context).textTheme.titleMedium,
+      //     ),
+      //   ),
+      // ),
       body: SafeArea(
         child: alarms.isNotEmpty
             ? ListView.builder(
@@ -271,7 +295,7 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
       notificationTitle: 'Test Reminder',
       notificationBody: 'Do your eye test',
       enableNotificationOnKill: Platform.isIOS,
-      // notificationActionSettings: const NotificationActionSettings(hasSnoozeButton: true,hasStopButton: true,snoozeButtonText: "Snooze",stopButtonText: "Stop",snoozeDurationInSeconds: 300)
+      notificationActionSettings: const NotificationActionSettings(hasSnoozeButton: true,hasStopButton: true,snoozeButtonText: "Snooze",stopButtonText: "Stop",snoozeDurationInSeconds: 300)
     );
     return alarmSettings;
   }
@@ -608,7 +632,7 @@ class ExampleAlarmRingScreen extends StatelessWidget {
       ),
     );
   }
-}
+}*/
 
 
 
@@ -621,7 +645,7 @@ class ExampleAlarmRingScreen extends StatelessWidget {
 
 
 
-class ExampleAlarmHomeShortcutButton extends StatefulWidget {
+/*class ExampleAlarmHomeShortcutButton extends StatefulWidget {
   const ExampleAlarmHomeShortcutButton({
     required this.refreshAlarms,
     super.key,
@@ -748,4 +772,4 @@ class ExampleAlarmTile extends StatelessWidget {
       ),
     );
   }
-}
+}*/
