@@ -351,8 +351,36 @@ class RewardsStatusScreenState extends State<RewardStatusScreen> with AutoCancel
           return Center(child: Text('Error: ${snapshot.error}'));
           }
           else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(child: Text('No offers found'));
-          }
+          return
+            // Center(child: Text('No offers found'));
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  SizedBox(height: 30),
+                  Image.asset(
+                    'assets/error.png', // Replace with your image path
+                    width: 200, // Adjust width as needed
+                    height: 250, // Adjust height as needed
+                  ),
+                  SizedBox(height: 20), // Adjust spacing between image and text
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Text(
+' No rewards earned yet...start performing eye tests and eye fatigue tests to earn rewards. '   ,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+
+            }
           else {
           return Builder(
             builder: (context) {
