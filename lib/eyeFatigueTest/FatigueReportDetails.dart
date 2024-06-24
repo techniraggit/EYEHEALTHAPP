@@ -500,7 +500,10 @@ class EyeFatiguereports extends State<ReportDetails>  with AutoCancelStreamMixin
                             (line) => Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(Icons.circle, size: 7),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Icon(Icons.circle, size: 10),
+                            ),
                             SizedBox(width: 8),
                             Expanded(
                               child: Text(
