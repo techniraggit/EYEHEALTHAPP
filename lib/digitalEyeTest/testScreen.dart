@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:project_new/HomePage.dart';
+import 'package:rename/platform_file_editors/abs_platform_file_editor.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:convert' as convert;
@@ -42,7 +43,7 @@ class SelectQuestion extends State<GiveInfo> {
       if (!allQuestionIds.contains(questionId)) {
 
       allQuestionIds.add(questionId);}
-print("allQuestionIds-------4$allQuestionIds");
+       print("allQuestionIds-------4$allQuestionIds");
       if (value == true) {
         // Add the ID to the selected IDs list if it's not already present
         if (!selectedIds.contains(questionId)) {
@@ -71,7 +72,6 @@ print("allQuestionIds-------4$allQuestionIds");
   void initState() {
     super.initState();
     allQuestionIds.clear();
-
     _questionsFuture = getQuestionApi();
     _configureTts();
     _onReplayPressed();
@@ -79,7 +79,6 @@ print("allQuestionIds-------4$allQuestionIds");
 
   @override
   void dispose() {
-    // Dispose of the progress dialog when the state is disposed
     _progressDialog?.hide();
     _stopSpeaking();
     super.dispose();allQuestionIds.clear();
@@ -110,11 +109,6 @@ print("allQuestionIds-------4$allQuestionIds");
         if (flutterTts != null) {
           flutterTts.stop();
         }
-        // _stopSpeaking();
-        // Navigator.of(context).pushReplacement(
-        //   MaterialPageRoute(builder: (context) => HomePage()),
-        // );
-
         return false;
       },
       child: Scaffold(
@@ -194,17 +188,6 @@ print("allQuestionIds-------4$allQuestionIds");
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.bluebutton,
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 40),
-                                child: Text(
-                                  'Are you wearing Eyeglasses or Contact Lenses for Vision Correction Faces, or Sightseeing?',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.black,
-                                  ),
-                                  textAlign: TextAlign.center,
                                 ),
                               ),
                               SizedBox(height: 10),
@@ -394,7 +377,7 @@ print("allQuestionIds-------4$allQuestionIds");
         Uri.parse('${Api.baseurl}/api/eye/get-question-details'),
         headers: headers,
       );
-
+print("response---questions${response.body}");
       if (response.statusCode == 200) {
         final parsed = jsonDecode(response.body);
         final List<dynamic> data = parsed['data'];
@@ -541,7 +524,8 @@ class LeftEyeTestState extends State<LeftEyeTest> {
       child: Scaffold(
         appBar: AppBar(
           title: Text("EYE TEST"),
-          centerTitle: true,
+          centerTitle: true,          leading: Container(),
+
           // leading: IconButton(
           //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
           //   onPressed: () {
@@ -732,7 +716,11 @@ class AlphabetTest extends StatefulWidget {
 class AlphabetTestState extends State<AlphabetTest> {
   CameraController? _controller;
   late List<CameraDescription> _cameras;
-
+  int currentIndex = 0;
+  String alert = '';
+  String randomText = ' ';
+  var len;
+  List<Map<String, dynamic>> snellenFractions = [];
   @override
   void initState() {
     super.initState();
@@ -760,7 +748,6 @@ class AlphabetTestState extends State<AlphabetTest> {
         "Please read the letters on the screen. If you are able to read clearly click green button. Keep clicking on green button until you are unable to see or letters are blurred. If letters are blurred click on black button. If you are unable to read the letters click on red button.";
     _speak(replayText);
   }
-
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
@@ -780,10 +767,9 @@ class AlphabetTestState extends State<AlphabetTest> {
     // Start capturing images per second
     _captureImagePerSecond();
   }
-
   void _captureImagePerSecond() async {
-    // Capture an image every second
-    while (true) {
+print("CAPTURE--ALFABATICTEST");
+while (true) {
       XFile? image = await _controller
           ?.takePicture(); // Process the captured image as needed
       print('Image captured: ${image?.path}');
@@ -793,17 +779,14 @@ class AlphabetTestState extends State<AlphabetTest> {
       // regpatient1(image);
     }
   }
-
   void capturePhoto(XFile photo) async {
-    // Note: `controller` being initialized as shown in readme
-    // https://pub.dev/packages/camera#example
-
     List<int> photoAsBytes = await photo.readAsBytes();
     String photoAsBase64 = convert.base64Encode(photoAsBytes);
     sendDistanceRequest(photoAsBase64);
   }
-
   Future<void> sendDistanceRequest(String image) async {
+    print("CAPTURE--ALFABATICTEST========DISTANCE");
+
     var apiUrl =
         '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -842,29 +825,14 @@ class AlphabetTestState extends State<AlphabetTest> {
         body: requestBody,
       );
       print("frameData: " + frameData);
-      // print("test_distance :" + distanceType);
-      print("response-camera${response.body}");
-      if (response.statusCode == 200) {
-        Map<String, dynamic> data = jsonDecode(response.body);
+      print("response-camera11${response.body}");
+      Map<String, dynamic> data = jsonDecode(response.body);
 
-        String alertMessage = data['alert'];
-        setState(() {
-          alert = alertMessage;
-        });
-      } else {
-        Map<String, dynamic> data = jsonDecode(response.body);
-
+      setState(() {
         String alertMessage = data['alert'];
         alert = alertMessage;
-        //   print('Request failed with status: ${response.statusCode}');
-        //   print('Request failed with status: ${response.body}');
-        setState(() {
-          alert = alertMessage;
-          print("alert$alertMessage");
-        });
+      });
 
-        // Handle error response
-      }
     } catch (e) {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
@@ -878,13 +846,6 @@ class AlphabetTestState extends State<AlphabetTest> {
       throw Exception('Failed to send data');
     }
   }
-
-  int currentIndex = 0;
-  String alert = '';
-  String randomText = ' ';
-  var len;
-  List<Map<String, dynamic>> snellenFractions = [];
-
   Future<void> getSnellFraction() async {
 
     try {
@@ -1469,28 +1430,12 @@ class Reading extends State<ReadingTest> {
       );
       print("frameData: " + frameData);
       // print("test_distance :" + distanceType);
-      print("response-camera${response.body}");
-      if (response.statusCode == 200) {
-        Map<String, dynamic> data = jsonDecode(response.body);
-
-        String alertMessage = data['alert'];
-        setState(() {
-          alert = alertMessage;
-        });
-      } else {
-        Map<String, dynamic> data = jsonDecode(response.body);
-
+      print("response-camera55${response.body}");
+      Map<String, dynamic> data = jsonDecode(response.body);
+      setState(() {
         String alertMessage = data['alert'];
         alert = alertMessage;
-        //   print('Request failed with status: ${response.statusCode}');
-        //   print('Request failed with status: ${response.body}');
-        setState(() {
-          alert = alertMessage;
-          print("alert$alertMessage");
-        });
-
-        // Handle error response
-      }
+      });
     } catch (e) {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
@@ -2133,34 +2078,15 @@ class AstigmationTest1 extends State<AstigmationTest> {
       );
       print("frameData: " + frameData);
       // print("test_distance :" + distanceType);
-      print("response-camera${response.body}");
-      if (response.statusCode == 200) {
-        Map<String, dynamic> data = jsonDecode(response.body);
-
-        String alertMessage = data['alert'];
-
-        // print(alertMessage);
-        // Handle the response data here
-        //   print('Request sucxsss with status: ${response.body}');
-
-        //  print("alert$alertMessage");
-        setState(() {
-          alert = alertMessage;
-        });
-      } else {
-        Map<String, dynamic> data = jsonDecode(response.body);
-
+      print("response-camera44${response.body}");
+      Map<String, dynamic> data = jsonDecode(response.body);
+      setState(() {
         String alertMessage = data['alert'];
         alert = alertMessage;
-        //   print('Request failed with status: ${response.statusCode}');
-        //   print('Request failed with status: ${response.body}');
-        setState(() {
-          alert = alertMessage;
-          print("alert$alertMessage");
-        });
+      });
 
-        // Handle error response
-      }
+
+
     } catch (e) {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
@@ -2202,7 +2128,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
   }
 
   Future<void> ChoseAstigmation() async {
-    try {
+    // try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
           // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
@@ -2230,28 +2156,27 @@ class AstigmationTest1 extends State<AstigmationTest> {
         print("choseastigmation_response${response.body}");
       }
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        // final jsonData = json.decode(response.body);
         Navigator.push(
           context,
           CupertinoPageRoute(builder: (context) => AstigmationTest2()),
         );
-        final List<dynamic> data = jsonData['data'];
-        dataList = List<int>.from(data);
+
 
         setState(() {});
       }
       if (response.statusCode == 400) {
         // showCustomToast(context, "Get In Range");
       }
-    } catch (e) {
-      if (e is SocketException) {
-        CustomAlertDialog.eyetstcomplete(
-            context, 'poor internet connectivity , please try again later!');
-      }
-
-// If the server returns an error response, throw an exception
-      throw Exception('Failed to send data');
-    }
+//     } catch (e) {
+//       if (e is SocketException) {
+//         CustomAlertDialog.eyetstcomplete(
+//             context, 'poor internet connectivity , please try again later!');
+//       }
+//
+// // If the server returns an error response, throw an exception
+//       throw Exception('Failed to send data');
+//     }
   }
 
   Color containerColor = Colors.bluebutton;
@@ -2602,34 +2527,13 @@ class Astigmationtest2 extends State<AstigmationTest2> {
       );
       print("frameData: " + frameData);
       // print("test_distance :" + distanceType);
-      print("response-camera${response.body}");
-      if (response.statusCode == 200) {
-        Map<String, dynamic> data = jsonDecode(response.body);
-
-        String alertMessage = data['alert'];
-
-        // print(alertMessage);
-        // Handle the response data here
-        //   print('Request sucxsss with status: ${response.body}');
-
-        //  print("alert$alertMessage");
-        setState(() {
+      print("response-camera33${response.body}");
+      Map<String, dynamic> data = jsonDecode(response.body);
+      setState(() {
+      String alertMessage = data['alert'];
           alert = alertMessage;
-        });
-      } else {
-        Map<String, dynamic> data = jsonDecode(response.body);
+      });
 
-        String alertMessage = data['alert'];
-        alert = alertMessage;
-        //   print('Request failed with status: ${response.statusCode}');
-        //   print('Request failed with status: ${response.body}');
-        setState(() {
-          alert = alertMessage;
-          print("alert$alertMessage");
-        });
-
-        // Handle error response
-      }
     } catch (e) {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
@@ -2649,11 +2553,10 @@ class Astigmationtest2 extends State<AstigmationTest2> {
   void initState() {
     super.initState();
     startTimer();
-    //fetchData();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       delayedAPICall();
     });
-    delayedAPICall();
+    // delayedAPICall();
     _initializeCamera();
     _configureTts();
     _onReplayPressed();
@@ -2673,7 +2576,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
 
   void _onReplayPressed() {
     const String replayText =
-        "Focus on the black dot for 10 second. After 10 second look at the lines and click on the region which is more darker than others. Region A, Region B, Region C or Region D. If unable to see the lines clearly, click on Increase or click on decrease till you see any one region darker than others. If you are able to see all regions equally darker then click on option None. Once you select the region, click next";
+    "Focus on the black dot for 10 second. After 10 second look at the lines and click on the degree option which is more darker than others. If unable to see the lines clearly, click on Increase or click on decrease till you see any one line darker than others. Once you select the degree, click next";
     _speak(replayText);
   }
 
@@ -2705,17 +2608,17 @@ class Astigmationtest2 extends State<AstigmationTest2> {
 
   Future<void> delayedAPICall() async {
     // Simulating a delayed API call after 3 seconds
-    print('API call will be made after 3 seconds...');
+    print('API call will be made after 1 seconds...');
 
     // Delay the API call for 3 seconds
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(Duration(seconds: 1));
 
     // After the delay, make the API call
     fetchData();
   }
 
   Future<void> fetchData() async {
-    try {
+    // try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken = prefs.getString('access_token') ?? '';
       String test_id = prefs.getString('test_id') ?? '';
@@ -2758,23 +2661,25 @@ class Astigmationtest2 extends State<AstigmationTest2> {
       setState(() {
         currentImage;
       });
-    } catch (e) {
-      if (e is SocketException) {
-        CustomAlertDialog.attractivepopup(
-            context, 'poor internet connectivity , please try again later!');
-      } else {
-        CustomAlertDialog.attractivepopup(context, "please try to be in range");
-      }
-
-// If the server returns an error response, throw an exception
-      throw Exception('Failed to send data');
-    }
+    // }
+//     catch (e) {
+//       if (e is SocketException) {
+//         Fluttertoast.showToast(msg: "poor internet connectivity , please try again later!");
+//
+//
+//       } else {
+//         Fluttertoast.showToast(msg: "please try to be in range");
+//       }
+//
+// // If the server returns an error response, throw an exception
+//       throw Exception('Failed to send data');
+//     }
   }
 
   int Degree = 500;
 
   Future<void> ChoseAstigmation(int value) async {
-    try {
+    // try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
           // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
@@ -2799,25 +2704,22 @@ class Astigmationtest2 extends State<AstigmationTest2> {
       print("degree_choosssssssssen$response");
       print("choseastigmation_response" + response.body);
       if (response.statusCode == 200) {
-        /**Navigator.push(
-            context,
-            CupertinoPageRoute(builder: (context) => ShadowTest2()),
-            );**/
-        final jsonData = json.decode(response.body);
 
-        final List<dynamic> data = jsonData['data'];
-
-        dataList = List<int>.from(data);
+        // final jsonData = json.decode(response.body);
+        //
+        // final List<dynamic> data = jsonData['data'];
+        //
+        // dataList = List<int>.from(data);
       }
-    } catch (e) {
-      if (e is SocketException) {
-        CustomAlertDialog.attractivepopup(
-            context, 'poor internet connectivity , please try again later!');
-      }
-
-// If the server returns an error response, throw an exception
-      throw Exception('Failed to send data');
-    }
+//     } catch (e) {
+//       if (e is SocketException) {
+//         CustomAlertDialog.attractivepopup(
+//             context, 'poor internet connectivity , please try again later!');
+//       }
+//
+// // If the server returns an error response, throw an exception
+//       throw Exception('Failed to send data');
+//     }
   }
 
   void increaseSize() {
@@ -3030,11 +2932,11 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                           alert,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              fontSize: 22,
+                              fontSize: 18,
                               color: alert == 'Good to go'
                                   ? Colors.green
                                   : Colors.red,
-                              fontWeight: FontWeight.normal),
+                             ),
                         ),
                       ),
                     ],
@@ -3274,34 +3176,12 @@ class AstigmationTestNone extends State<AstigmationTest3> {
       );
       print("frameData: " + frameData);
       // print("test_distance :" + distanceType);
-      print("response-camera${response.body}");
-      if (response.statusCode == 200) {
-        Map<String, dynamic> data = jsonDecode(response.body);
-
-        String alertMessage = data['alert'];
-
-        // print(alertMessage);
-        // Handle the response data here
-        //   print('Request sucxsss with status: ${response.body}');
-
-        //  print("alert$alertMessage");
-        setState(() {
-          alert = alertMessage;
-        });
-      } else {
-        Map<String, dynamic> data = jsonDecode(response.body);
-
+      print("response-camera22${response.body}");
+      Map<String, dynamic> data = jsonDecode(response.body);
+      setState(() {
         String alertMessage = data['alert'];
         alert = alertMessage;
-        //   print('Request failed with status: ${response.statusCode}');
-        //   print('Request failed with status: ${response.body}');
-        setState(() {
-          alert = alertMessage;
-          print("alert$alertMessage");
-        });
-
-        // Handle error response
-      }
+      });
     } catch (e) {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
@@ -3384,18 +3264,21 @@ class AstigmationTestNone extends State<AstigmationTest3> {
     }
   }
 
-  Future<void> ChoseAstigmation() async {
-    try {
+  Future<void> ChoseAstigmation(String selectedpart) async {
+    // try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken = prefs.getString('access_token') ?? '';
       String test_id = prefs.getString('test_id') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
       print("choseastigmation_res$CustomerId");
+      print("choseastigmation_selectedpart$selectedpart");
+      print("choseastigmation_test_id$test_id");
 
-      final String apiUrl = '${Api.baseurl}/api/eye/choose-astigmatism-api/';
+      final String apiUrl = '${Api.baseurl}/api/eye/choose-astigmatism';
       Map<String, dynamic> body1 = {
+        'choose_astigmatism': selectedpart,
+
         'test_id': test_id,
-        'choose_astigmatism': selectedPart,
       };
       final response = await http.put(
         Uri.parse(apiUrl),
@@ -3406,64 +3289,22 @@ class AstigmationTestNone extends State<AstigmationTest3> {
         },
         body: jsonEncode(body1),
       );
-      print("choseastigmation_response" + response.body);
-      if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
-        final List<dynamic> data = jsonData['data'];
-        dataList = List<int>.from(data);
-        setState(() {});
-      }
-    } catch (e) {
-      if (e is SocketException) {
-        CustomAlertDialog.attractivepopup(
-            context, 'poor internet connectivity , please try again later!');
-      }
+      logger.d("choseastigmation_response${response.body}");
 
-// If the server returns an error response, throw an exception
-      throw Exception('Failed to send data');
-    }
-  }
-
-  Future<void> fetchData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken = prefs.getString('access_token') ?? '';
-    String test_id = prefs.getString('test_id') ?? '';
-    await prefs.setString('region', selectedPart);
-// Replace this URL with your PUT API endpoint
-    final String apiUrl = '${Api.baseurl}/choose-astigmatism-api/';
-// Replace these headers with your required headers
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $authToken',
-    };
-// Replace this with your PUT request body
-    Map<String, dynamic> body = {
-      'test_id': test_id,
-      'choose_astigmatism': selectedPart,
-    };
-    try {
-      final response = await http.put(
-        Uri.parse(apiUrl),
-        headers: headers,
-        body: jsonEncode(body),
-      );
       if (response.statusCode == 200) {
-        print('success with status choose astigmation: ${response.body}');
-// If the call to the server was successful, parse the JSON
+
         setState(() {
-          // _data = json.decode(response.body);
+          Navigator.push(
+          context,
+          CupertinoPageRoute(builder: (context) => AstigmationTest2()),
+        );
+
         });
       }
-    } catch (e) {
-      if (e is SocketException) {
-        CustomAlertDialog.attractivepopup(
-            context, 'poor internet connectivity , please try again later!');
-      }
 
-// If the server returns an error response, throw an exception
-      throw Exception('Failed to send data');
-    }
   }
+
+
 
   Color containerColor = Colors.bluebutton;
   Color containerColor2 = Colors.bluebutton;
@@ -3585,16 +3426,17 @@ class AstigmationTestNone extends State<AstigmationTest3> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
                                   children: <Widget>[
+
                                     _buildOptionButton(
-                                        'A', Colors.bluebutton, 0),
+                                        'A', containerColor, 0),
                                     _buildOptionButton(
-                                        'B', Colors.bluebutton, 1),
+                                        'B', containerColor2, 1),
                                     _buildOptionButton(
-                                        'C', Colors.bluebutton, 2),
+                                        'C', containerColor3, 2),
                                     _buildOptionButton(
-                                        'D', Colors.bluebutton, 3),
+                                        'D', containerColor4, 3),
                                     _buildOptionButton(
-                                        'None', Colors.bluebutton, 4),
+                                        'None', containerColor5, 4),
                                   ],
                                 ),
                               ),
@@ -3607,7 +3449,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
                                   alert,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    fontSize: 22,
+                                    fontSize: 18,
                                     color: alert == 'Good to go'
                                         ? Colors.green
                                         : Colors.red,
@@ -3697,39 +3539,63 @@ class AstigmationTestNone extends State<AstigmationTest3> {
         onPressed: () {
           setState(() {
             if (index == 0) {
-              containerColor4 = Colors.lightBlueAccent;
-              containerColor2 = Colors.bluebutton;
-              containerColor3 = Colors.bluebutton;
-              containerColor5 = Colors.bluebutton;
-              containerColor = Colors.bluebutton;
+              setState(() {
+                containerColor = Colors.lightBlueAccent;
+                containerColor2 = Colors.bluebutton;
+                containerColor3 = Colors.bluebutton;
+                containerColor4 = Colors.bluebutton;
+                containerColor5 = Colors.bluebutton;
+              });
+
               selectedPart = 'a';
-            } else if (index == 1) {
-              containerColor2 = Colors.lightBlueAccent;
-              containerColor = Colors.bluebutton;
-              containerColor3 = Colors.bluebutton;
-              containerColor4 = Colors.bluebutton;
-              containerColor5 = Colors.bluebutton;
+              print("selected region $selectedPart");
+              ChoseAstigmation(selectedPart);
+
+            }
+            else if (index == 1) {
+              setState(() {
+                containerColor2 = Colors.lightBlueAccent;
+                containerColor = Colors.bluebutton;
+                containerColor3 = Colors.bluebutton;
+                containerColor4 = Colors.bluebutton;
+                containerColor5 = Colors.bluebutton;
+              });
               selectedPart = 'b';
-            } else if (index == 2) {
-              containerColor3 = Colors.lightBlueAccent;
-              containerColor2 = Colors.bluebutton;
-              containerColor = Colors.bluebutton;
-              containerColor4 = Colors.bluebutton;
-              containerColor5 = Colors.bluebutton;
+              ChoseAstigmation(selectedPart);
+
+            }
+            else if (index == 2) {
+              setState(() {
+                containerColor3 = Colors.lightBlueAccent;
+                containerColor = Colors.bluebutton;
+                containerColor2 = Colors.bluebutton;
+                containerColor4 = Colors.bluebutton;
+                containerColor5 = Colors.bluebutton;
+              });
               selectedPart = 'c';
-            } else if (index == 3) {
-              containerColor4 = Colors.lightBlueAccent;
-              containerColor2 = Colors.bluebutton;
-              containerColor3 = Colors.bluebutton;
-              containerColor5 = Colors.bluebutton;
-              containerColor = Colors.bluebutton;
+              ChoseAstigmation(selectedPart);
+
+            }
+            else if (index == 3) {
+              setState(() {
+                containerColor4 = Colors.lightBlueAccent;
+                containerColor2 = Colors.bluebutton;
+                containerColor = Colors.bluebutton;
+                containerColor3 = Colors.bluebutton;
+                containerColor5 = Colors.bluebutton;
+              });
               selectedPart = 'd';
-            } else {
-              containerColor5 = Colors.lightBlueAccent;
-              containerColor2 = Colors.bluebutton;
-              containerColor3 = Colors.bluebutton;
-              containerColor4 = Colors.bluebutton;
-              containerColor = Colors.bluebutton;
+              ChoseAstigmation(selectedPart);
+
+            }
+            else {
+              setState(() {
+                containerColor5 = Colors.lightBlueAccent;
+                containerColor2 = Colors.bluebutton;
+                containerColor3 = Colors.bluebutton;
+                containerColor4 = Colors.bluebutton;
+                containerColor5 = Colors.bluebutton;
+              });
               CounterApi();
               showCustomToast(context, 'Operation Successfully');
               Navigator.push(
@@ -3738,12 +3604,8 @@ class AstigmationTestNone extends State<AstigmationTest3> {
               );
               return;
             }
-            ChoseAstigmation();
-            fetchData();
-            Navigator.push(
-              context,
-              CupertinoPageRoute(builder: (context) => AstigmationTest2()),
-            );
+
+
           });
         },
       ),
@@ -3868,34 +3730,12 @@ class _ShadowTestState extends State<ShadowTest> {
       );
       print("frameData: " + frameData);
       // print("test_distance :" + distanceType);
-      print("response-camera${response.body}");
-      if (response.statusCode == 200) {
-        Map<String, dynamic> data = jsonDecode(response.body);
-
-        String alertMessage = data['alert'];
-
-        // print(alertMessage);
-        // Handle the response data here
-        //   print('Request sucxsss with status: ${response.body}');
-
-        //  print("alert$alertMessage");
-        setState(() {
-          alert = alertMessage;
-        });
-      } else {
-        Map<String, dynamic> data = jsonDecode(response.body);
-
+      print("response-camera00${response.body}");
+      Map<String, dynamic> data = jsonDecode(response.body);
+      setState(() {
         String alertMessage = data['alert'];
         alert = alertMessage;
-        //   print('Request failed with status: ${response.statusCode}');
-        //   print('Request failed with status: ${response.body}');
-        setState(() {
-          alert = alertMessage;
-          print("alert$alertMessage");
-        });
-
-        // Handle error response
-      }
+      });
     } catch (e) {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
@@ -4301,33 +4141,11 @@ class redgreen extends State<RedGreenTest> {
       print("frameData: " + frameData);
       // print("test_distance :" + distanceType);
       print("response-camera==${response.body}");
-      if (response.statusCode == 200) {
-        Map<String, dynamic> data = jsonDecode(response.body);
-
-        String alertMessage = data['alert'];
-
-        // print(alertMessage);
-        // Handle the response data here
-        //   print('Request sucxsss with status: ${response.body}');
-
-        //  print("alert$alertMessage");
-        setState(() {
-          alert = alertMessage;
-        });
-      } else {
-        Map<String, dynamic> data = jsonDecode(response.body);
-
+      Map<String, dynamic> data = jsonDecode(response.body);
+      setState(() {
         String alertMessage = data['alert'];
         alert = alertMessage;
-        //   print('Request failed with status: ${response.statusCode}');
-        //   print('Request failed with status: ${response.body}');
-        setState(() {
-          alert = alertMessage;
-          print("alert$alertMessage");
-        });
-
-        // Handle error response
-      }
+      });
     } catch (e) {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
@@ -4611,7 +4429,7 @@ class redgreen extends State<RedGreenTest> {
         appBar: AppBar(
           title: Text("EYE TEST"),
           centerTitle: true,
-          // leading: IconButton(
+          leading: Container(),
           //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
           //   onPressed: () {
           //     // Add your back button functionality here
@@ -4734,7 +4552,7 @@ class redgreen extends State<RedGreenTest> {
                         alert,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                           color:
                           alert == 'Good to go' ? Colors.green : Colors.red,
                           fontWeight: FontWeight.normal,
@@ -4843,7 +4661,7 @@ class RightEyeState extends State<RightEye> {
         appBar: AppBar(
           title: Text("EYE TEST"),
           centerTitle: true,
-          // leading: IconButton(
+          leading: Container(),
           //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
           //   onPressed: () {
           //     // Add your back button functionality here
@@ -5384,10 +5202,8 @@ class _CameraScreenState extends State<CameraS> {
 
   @override
   void dispose() {
-    if (_controller != null) {
-      _controller!.dispose();
-    }
-    flutterTts.stop();
+    _controller.dispose();
+      flutterTts.stop();
     super.dispose();
   }
 
@@ -5413,16 +5229,6 @@ class _CameraScreenState extends State<CameraS> {
           title: Text("EYE TEST"),
           centerTitle: true,
           leading: Container(),
-
-          // leading: IconButton(
-          //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-          //   onPressed: () {
-          //     if (flutterTts != null) {
-          //       flutterTts.stop();
-          //     }
-          //     // Add your back button functionality here
-          //   },
-          // ),
         ),
         body: Column(
           children: [
@@ -5514,6 +5320,10 @@ class _CameraScreenState extends State<CameraS> {
                             margin: EdgeInsets.all(20),
                             child: ElevatedButton(
                               onPressed: () {
+                                setState(() {
+                                  _isCameraInitialized=false;
+
+                                });
                                 Navigator.push(
                                   context,
                                   CupertinoPageRoute(
@@ -5547,9 +5357,6 @@ class _CameraScreenState extends State<CameraS> {
   }
 
   void capturePhoto(XFile photo) async {
-    // Note: `controller` being initialized as shown in readme
-    // https://pub.dev/packages/camera#example
-
     List<int> photoAsBytes = await photo.readAsBytes();
     String photoAsBase64 = convert.base64Encode(photoAsBytes);
     sendDistanceRequest(photoAsBase64);
@@ -5565,27 +5372,20 @@ class _CameraScreenState extends State<CameraS> {
     print("testTypecam:--" + text);
     if (text == 'myopia') {
       distanceType = 'fardistance';
-    } else if (text == 'hyperopia') {
+    }
+    else if (text == 'hyperopia') {
       distanceType = 'neardistance';
-    } //print('image$image');
-
+    }
     try {
-      var frameData =
-          image; // Replace this with your frame data as a base64 string
-      // var distanceType = testname//'neardistance'; // Replace this with the distance type
-
+      var frameData = image;
       var requestBody = jsonEncode({
         'frameData': frameData,
         'test_distance': distanceType,
       });
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String authToken =
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-          prefs.getString('access_token') ?? '';
+      String authToken = prefs.getString('access_token') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
-
-      var response = await http.post(
-        Uri.parse(apiUrl),
+      var response = await http.post(Uri.parse(apiUrl),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${authToken} ',
@@ -5593,36 +5393,15 @@ class _CameraScreenState extends State<CameraS> {
         },
         body: requestBody,
       );
+
       print("frameData: " + frameData);
-      // print("test_distance :" + distanceType);
-      print("response-camera${response.body}");
-      if (response.statusCode == 200) {
-        Map<String, dynamic> data = jsonDecode(response.body);
+      print("response-camera66${response.body}");
 
-        String alertMessage = data['alert'];
-
-        // print(alertMessage);
-        // Handle the response data here
-        //   print('Request sucxsss with status: ${response.body}');
-
-        //  print("alert$alertMessage");
-        setState(() {
-          alert = alertMessage;
-        });
-      } else {
-        Map<String, dynamic> data = jsonDecode(response.body);
-
+      Map<String, dynamic> data = jsonDecode(response.body);
+      setState(() {
         String alertMessage = data['alert'];
         alert = alertMessage;
-        //   print('Request failed with status: ${response.statusCode}');
-        //   print('Request failed with status: ${response.body}');
-        setState(() {
-          alert = alertMessage;
-          print("alert$alertMessage");
-        });
-
-        // Handle error response
-      }
+      });
     } catch (e) {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(

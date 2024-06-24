@@ -2,9 +2,11 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:alarm/model/alarm_settings.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,18 +14,18 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-//  await Alarm.init();
+  await Alarm.init();
 
   runApp(
     MaterialApp(
       theme: ThemeData(useMaterial3: false),
-    //  home: const ExampleAlarmHomeScreen(),
+      home: const ExampleAlarmHomeScreen(),
     ),
   );
 }
 
 
-/*class ExampleAlarmHomeScreen extends StatefulWidget {
+class ExampleAlarmHomeScreen extends StatefulWidget {
   const ExampleAlarmHomeScreen({super.key});
 
   @override
@@ -125,33 +127,7 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title:  const Center(child: Text('Alarms Scheduled',style: TextStyle(fontWeight: FontWeight.w400,fontSize: 17,color: Colors.black),))),
-      // body: SafeArea(
-      //   child:
-      //   alarms.isNotEmpty
-      //       ? ListView.separated(
-      //     itemCount: alarms.length,
-      //     separatorBuilder: (context, index) => const Divider(height: 0.0),
-      //     itemBuilder: (context, index) {
-      //       return ExampleAlarmTile(
-      //         key: Key(alarms[index].id.toString()),
-      //         title: TimeOfDay(
-      //           hour: alarms[index].dateTime.hour,
-      //           minute: alarms[index].dateTime.minute,
-      //         ).format(context),
-      //         onPressed: () => navigateToAlarmScreen(alarms[index]),
-      //         onDismissed: () {
-      //           Alarm.stop(alarms[index].id).then((_) => loadAlarms());
-      //         },
-      //       );
-      //     },
-      //   )
-      //       : Center(
-      //     child: Text(
-      //       'No alarm set',
-      //       style: Theme.of(context).textTheme.titleMedium,
-      //     ),
-      //   ),
-      // ),
+
       body: SafeArea(
         child: alarms.isNotEmpty
             ? ListView.builder(
@@ -208,7 +184,7 @@ class ExampleAlarmEditScreen extends StatefulWidget {
 
 class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
   bool loading = false;
- late bool isSwitched = true;
+  late bool isSwitched = true;
 
   late bool creating;
   late DateTime selectedDateTime;
@@ -295,65 +271,65 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
       notificationTitle: 'Test Reminder',
       notificationBody: 'Do your eye test',
       enableNotificationOnKill: Platform.isIOS,
-      notificationActionSettings: const NotificationActionSettings(hasSnoozeButton: true,hasStopButton: true,snoozeButtonText: "Snooze",stopButtonText: "Stop",snoozeDurationInSeconds: 300)
+      // notificationActionSettings: const NotificationActionSettings(hasSnoozeButton: true,hasStopButton: true,snoozeButtonText: "Snooze",stopButtonText: "Stop",snoozeDurationInSeconds: 300)
     );
     return alarmSettings;
   }
   void requestAlarmNotiPermission() async {
-      PermissionStatus permission = await Permission.notification.status;
+    PermissionStatus permission = await Permission.notification.status;
 
-      if (permission.isDenied || permission.isPermanentlyDenied) {
+    if (permission.isDenied || permission.isPermanentlyDenied) {
+      await Permission.notification.request();
+
+      // Permissions are denied or denied forever, let's request it!
+      permission = await Permission.notification.status;
+      if (permission.isDenied) {
         await Permission.notification.request();
-
-        // Permissions are denied or denied forever, let's request it!
-        permission = await Permission.notification.status;
-        if (permission.isDenied) {
-          await Permission.notification.request();
-          print("Notification permissions are still denied");
-        }
-        else if (permission.isPermanentlyDenied) {
-          print("Notification permissions are permanently denied");
-          // Prompt the user to open app settings to enable notification permissions manually
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: const Text("Notification permissions required"),
-                content: const Text("Notification permissions are permanently denied. Please go to app settings to enable notification permissions."),
-                actions: <Widget>[
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue, // Set your desired background color here
-                      // You can also customize other button properties here if needed
-                    ),
-                    onPressed: () async {
-                      Navigator.pop(context); // Close the dialog
-                      await openAppSettings();
-                    },
-                    child: const Text(
-                      "OK",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
+        print("Notification permissions are still denied");
+      }
+      else if (permission.isPermanentlyDenied) {
+        print("Notification permissions are permanently denied");
+        // Prompt the user to open app settings to enable notification permissions manually
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("Notification permissions required"),
+              content: const Text("Notification permissions are permanently denied. Please go to app settings to enable notification permissions."),
+              actions: <Widget>[
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue, // Set your desired background color here
+                    // You can also customize other button properties here if needed
+                  ),
+                  onPressed: () async {
+                    Navigator.pop(context); // Close the dialog
+                    await openAppSettings();
+                  },
+                  child: const Text(
+                    "OK",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
                     ),
                   ),
-                ],
-              );
-            },
-          );
-        }
-        else {
-          saveAlarm();
-          // Permissions are granted.
-          print("Notification permissions are granted");
-        }
+                ),
+              ],
+            );
+          },
+        );
       }
       else {
         saveAlarm();
-        print("Notification permissions are already granted");
+        // Permissions are granted.
+        print("Notification permissions are granted");
       }
     }
+    else {
+      saveAlarm();
+      print("Notification permissions are already granted");
+    }
+  }
 
 
 
@@ -388,7 +364,7 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
   Future<void> toggleSwitch(bool value) async {
     var sharedPref = await SharedPreferences.getInstance();
 
-    if (isSwitched !=true) {
+    if (isSwitched ==true) {
 
       setState(() {
         isSwitched = value;
@@ -440,7 +416,7 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
                 child: loading
                     ? const CircularProgressIndicator()
                     : const Text(
-                  'Done',
+                    'Done',
                     style:TextStyle(color: Colors.white,fontSize: 13)
                   // style: Theme.of(context)
                   //     .textTheme
@@ -513,24 +489,24 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
               ),
             ],
           ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(
-            'Alarm status: ${isSwitched ? 'ON' : 'OFF'}',
-            style: Theme.of(context).textTheme.titleMedium,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                'Alarm status: ${isSwitched ? 'ON' : 'OFF'}',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              SizedBox(height: 20),
+              Switch(
+                value: isSwitched,
+                onChanged: toggleSwitch,
+                activeColor: Colors.white,
+                activeTrackColor: Colors.background,
+                inactiveThumbColor: Colors.grey,
+                inactiveTrackColor: Colors.grey[300],
+              ),
+            ],
           ),
-          SizedBox(height: 20),
-          Switch(
-            value: isSwitched,
-            onChanged: toggleSwitch,
-            activeColor: Colors.white,
-            activeTrackColor: Colors.background,
-            inactiveThumbColor: Colors.grey,
-            inactiveTrackColor: Colors.grey[300],
-          ),
-        ],
-      ),
           SizedBox(
             height: 30,
             child: volume != null
@@ -632,7 +608,7 @@ class ExampleAlarmRingScreen extends StatelessWidget {
       ),
     );
   }
-}*/
+}
 
 
 
@@ -645,7 +621,7 @@ class ExampleAlarmRingScreen extends StatelessWidget {
 
 
 
-/*class ExampleAlarmHomeShortcutButton extends StatefulWidget {
+class ExampleAlarmHomeShortcutButton extends StatefulWidget {
   const ExampleAlarmHomeShortcutButton({
     required this.refreshAlarms,
     super.key,
@@ -772,4 +748,4 @@ class ExampleAlarmTile extends StatelessWidget {
       ),
     );
   }
-}*/
+}

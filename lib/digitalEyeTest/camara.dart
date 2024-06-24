@@ -105,21 +105,16 @@ class _CameraScreenState extends State<CameraS> {
     }
     return WillPopScope(
       onWillPop: () async {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => GiveInfo()),
-        );
+
         return false;
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("EYE TEST"),
+          title: Text("EYEs TEST"),
+          leading: Container(),
           centerTitle: true,
-         /* leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-            onPressed: () {
-              // Add your back button functionality here
-            },
-          ),*/
+            automaticallyImplyLeading:false
+
         ),
         body: Column(
           children: [
