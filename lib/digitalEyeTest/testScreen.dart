@@ -1522,13 +1522,20 @@ class Reading extends State<ReadingTest> {
 
 
   Future<void> getReadingSnellFractionNew() async {
+
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken = prefs.getString('access_token') ?? '';
       String testname = prefs.getString('test') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
       currentTextSize=currentTextSize*3.779527559055118;
-
+      if (testname == 'myopia') {
+        currentTextSize = 105;
+        randomText = 'W';
+      } else {
+        currentTextSize = 7.1 * 3.779527559055118;
+        randomText = 'There is a Cat';
+      }
       var headers = {
         'Authorization': 'Bearer $authToken',
         'Customer-Id': CustomerId
@@ -1546,7 +1553,7 @@ class Reading extends State<ReadingTest> {
         randomText = parsedData['data']['text'];
         nextFraction = parsedData['data']['initial_snellen_fraction'];
         print("readingdata${randomText}");
-        currentTextSize =currentTextSize *1.65;
+        currentTextSize =currentTextSize * 3.779527559055118;
         setState(() {
           currentTextSize;
           randomText;
