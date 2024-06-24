@@ -541,7 +541,8 @@ class LeftEyeTestState extends State<LeftEyeTest> {
       child: Scaffold(
         appBar: AppBar(
           title: Text("EYE TEST"),
-          centerTitle: true,
+          centerTitle: true,          leading: Container(),
+
           // leading: IconButton(
           //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
           //   onPressed: () {
@@ -4843,7 +4844,7 @@ class RightEyeState extends State<RightEye> {
         appBar: AppBar(
           title: Text("EYE TEST"),
           centerTitle: true,
-          // leading: IconButton(
+          leading: Container(),
           //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
           //   onPressed: () {
           //     // Add your back button functionality here
