@@ -4459,6 +4459,7 @@ class redgreen extends State<RedGreenTest> {
         print('Red/green Test: $snellenFraction');
         print('Red/green Test: $randomText');
         print('Red/green Test: $textSize');
+        textSize = textSize*3.779527559055118;
         setState(() {
           snellenFraction;
           textSize;
