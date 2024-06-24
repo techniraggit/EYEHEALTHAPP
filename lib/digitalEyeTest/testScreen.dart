@@ -4253,8 +4253,7 @@ class redgreen extends State<RedGreenTest> {
 
   Future<void> sendDistanceRequest(String image) async {
     var apiUrl =
-        '${Api
-        .baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
+        '${Api.baseurl}/api/eye/calculate-distance'; // Replace with your API endpoint
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     var distanceType;
