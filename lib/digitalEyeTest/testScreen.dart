@@ -32,27 +32,25 @@ class SelectQuestion extends State<GiveInfo> {
   List<int> selectedIds = [];
   List<int> allQuestionIds = []; // This should hold all question IDs you are displaying
 
+
   String message = "";
   late final http.Client client;
 
 
   void _onCheckboxChanged(bool? value, int questionId) {
     setState(() {
-      if(!selectedIds.contains(questionId)){
-        allQuestionIds.add(questionId);
-      }
+      if (!allQuestionIds.contains(questionId)) {
 
+      allQuestionIds.add(questionId);}
+print("allQuestionIds-------4$allQuestionIds");
       if (value == true) {
-
-
         // Add the ID to the selected IDs list if it's not already present
         if (!selectedIds.contains(questionId)) {
-
-
           selectedIds.add(questionId);
         }
-      } else {
-        if (!selectedIds.contains(questionId)) {
+      }
+      else {
+        if (selectedIds.contains(questionId)) {
           selectedIds.remove(questionId);
 
 
@@ -72,6 +70,8 @@ class SelectQuestion extends State<GiveInfo> {
   @override
   void initState() {
     super.initState();
+    allQuestionIds.clear();
+
     _questionsFuture = getQuestionApi();
     _configureTts();
     _onReplayPressed();
@@ -82,7 +82,7 @@ class SelectQuestion extends State<GiveInfo> {
     // Dispose of the progress dialog when the state is disposed
     _progressDialog?.hide();
     _stopSpeaking();
-    super.dispose();
+    super.dispose();allQuestionIds.clear();
   }
 
   final FlutterTts flutterTts = FlutterTts();
@@ -438,7 +438,8 @@ class SelectQuestion extends State<GiveInfo> {
         body: body,
       );
       print(headers);
-      print("kkkk" + response.body);
+      print("kkkk" + response.body);      print("kkkk00000" + selectedIds.toString());
+
 
       if (response.statusCode == 200) {
         // _progressDialog!.hide();
@@ -508,6 +509,7 @@ class LeftEyeTestState extends State<LeftEyeTest> {
     super.initState();
     _configureTts();
     _onReplayPressed();
+
   }
 
   final FlutterTts flutterTts = FlutterTts();
@@ -4291,7 +4293,7 @@ class redgreen extends State<RedGreenTest> {
       );
       print("frameData: " + frameData);
       // print("test_distance :" + distanceType);
-      print("response-camera${response.body}");
+      print("response-camera==${response.body}");
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
 
@@ -5403,15 +5405,17 @@ class _CameraScreenState extends State<CameraS> {
         appBar: AppBar(
           title: Text("EYE TEST"),
           centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-            onPressed: () {
-              if (flutterTts != null) {
-                flutterTts.stop();
-              }
-              // Add your back button functionality here
-            },
-          ),
+          leading: Container(),
+
+          // leading: IconButton(
+          //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+          //   onPressed: () {
+          //     if (flutterTts != null) {
+          //       flutterTts.stop();
+          //     }
+          //     // Add your back button functionality here
+          //   },
+          // ),
         ),
         body: Column(
           children: [

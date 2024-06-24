@@ -423,27 +423,33 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
                                 fit: BoxFit.fill,
                               ),
                             ),
+
                             // Title
                             Padding(
-                              padding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 10.0),
-                              child: Text(
-                                offer.title,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                              padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                              child: Center(
+                                child: Text(
+                                  offer.title,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
                                 ),
                               ),
                             ),
+
                             // Description
                             Padding(
-                              padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-                              child: Text(
-                                offer.description,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey,
+                              padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 8.0),
+                              child: Center(
+                                child: Text(
+                                  offer.description,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey,
+                                  ),
                                 ),
                               ),
                             ),

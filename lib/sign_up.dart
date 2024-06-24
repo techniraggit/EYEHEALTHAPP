@@ -13,7 +13,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geocoding/geocoding.dart' hide Location;
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart';
-import 'package:location/location.dart' hide LocationAccuracy;
+import 'package:location/location.dart' hide LocationAccuracy, PermissionStatus;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:platform_device_id_v2/platform_device_id_v2.dart';
@@ -58,6 +58,62 @@ class SignInScreen extends State<SignIn> {
 
     await prefs.setString('device_token', fcmToken!);
     print("FCM token $fcmToken");
+  }
+  void requestNotificationPermission() async {
+
+    PermissionStatus status = await Permission.notification.status;
+
+    if((status==PermissionStatus.granted) ){
+      getVerifyLoginOtp();
+
+    }
+    if (!status.isGranted ) {
+      status = await Permission.notification.request();
+    }
+    if (status == PermissionStatus.denied ||
+        status == PermissionStatus.permanentlyDenied) {
+      await [Permission.notification].request();
+
+      // Permissions are denied or denied forever, let's request it!
+      status =  await Permission.notification.status;
+      if (status == PermissionStatus.denied) {
+        await [Permission.notification].request();
+        print("notification permissions are still denied");
+      } else if (status ==PermissionStatus.permanentlyDenied) {
+        print("notification permissions are permanently denied");
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("notification permissions required"),
+              content: Text("notification permissions are permanently denied. Please go to app settings to enable notification permissions."),
+              actions: <Widget>[
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors
+                        .background, // Set your desired background color here
+                    // You can also customize other button properties here if needed
+                  ),
+                  onPressed: () async {
+                    Navigator.pop(context); // Close the dialog
+                    await openAppSettings();
+                  },
+                  child: Text("OK",
+
+                    style: TextStyle(
+                        color: Colors.white, fontSize: 16),
+                  ),
+                ),
+
+              ],
+            );
+          },
+        );
+      }
+    }
+
+
+
   }
 
   String deviceId = '';
@@ -275,8 +331,9 @@ class SignInScreen extends State<SignIn> {
                                   ),
                                   onPressed: () {
                                     initPlatformState();
+                                    requestNotificationPermission();
 
-                                    getVerifyLoginOtp();
+
 
 
                                   },

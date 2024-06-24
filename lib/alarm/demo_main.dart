@@ -184,6 +184,7 @@ class ExampleAlarmEditScreen extends StatefulWidget {
 
 class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
   bool loading = false;
+ late bool isSwitched = true;
 
   late bool creating;
   late DateTime selectedDateTime;
@@ -202,12 +203,14 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
       selectedDateTime = selectedDateTime.copyWith(second: 0, millisecond: 0);
       loopAudio = true;
       vibrate = true;
+      // isSwitched=true;
       volume = null;
       assetAudio = 'assets/marimba.mp3';
     } else {
       selectedDateTime = widget.alarmSettings!.dateTime;
       loopAudio = widget.alarmSettings!.loopAudio;
       vibrate = widget.alarmSettings!.vibrate;
+      // isSwitched=widget.alarmSettings!.alarmStatus;
       volume = widget.alarmSettings!.volume;
       assetAudio = widget.alarmSettings!.assetAudioPath;
     }
@@ -358,6 +361,36 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
     await prefs.setBool('edited', true);
   }
 
+  Future<void> toggleSwitch(bool value) async {
+    var sharedPref = await SharedPreferences.getInstance();
+
+    if (isSwitched !=true) {
+
+      setState(() {
+        isSwitched = value;
+
+        Alarm.set(
+          alarmSettings: widget.alarmSettings!.copyWith(
+            dateTime: DateTime(
+              selectedDateTime.year,
+              selectedDateTime.month,
+              selectedDateTime.day,
+              selectedDateTime.hour,
+              selectedDateTime.minute,
+            ).add(const Duration(minutes: 1)),
+          ),
+        );
+      });
+    }else{
+      setState(() {
+
+        isSwitched = false;
+        Alarm.stop(widget.alarmSettings!.id);
+      });
+    }
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('edited', true);
+  }
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -427,6 +460,7 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
               ),
             ],
           ),
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -455,6 +489,24 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
               ),
             ],
           ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Text(
+            'Alarm status: ${isSwitched ? 'ON' : 'OFF'}',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          SizedBox(height: 20),
+          Switch(
+            value: isSwitched,
+            onChanged: toggleSwitch,
+            activeColor: Colors.white,
+            activeTrackColor: Colors.background,
+            inactiveThumbColor: Colors.grey,
+            inactiveTrackColor: Colors.grey[300],
+          ),
+        ],
+      ),
           SizedBox(
             height: 30,
             child: volume != null

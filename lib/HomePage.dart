@@ -254,6 +254,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
 
     var sharedPref = await SharedPreferences.getInstance();
     edited = sharedPref.getBool("edited") ?? false;
+
     setState(() {
       alarms = Alarm.getAlarms();
       alarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
