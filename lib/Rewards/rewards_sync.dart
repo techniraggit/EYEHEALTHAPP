@@ -858,41 +858,38 @@ class _RewardsContactsSync extends State<RewardContact> {
 
       int phoneCount = 1;
       Map<String, String> phoneNumbersMap =
-          {}; // Change the type to Map<String, String>
-      if (contact.phones != null) {
-        for (var phone in contact.phones!) {
-          String phoneType =
-              phone.label ?? "Phone"; // Default to "Phone" if label is null
-          String phoneNumber = phone.value!.replaceAll(" ", '');
-          phoneNumbersMap["$phoneType$phoneCount"] = phoneNumber;
-          phoneCount++;
+          {};
+      for (var contact in _contacts) {
+        if (contact.displayName == null) continue; // Skip contacts without a display name
+
+        if (contact.phones != null && contact.phones!.isNotEmpty) {
+          for (var phone in contact.phones!) {
+            Map<String, dynamic> singleContactData = {
+              "name": contact.displayName!,
+              "phone_number": phone.value!.replaceAll(" ", ''),
+            };
+
+            // Convert emails list to a comma-separated string
+            if (contact.emails != null && contact.emails!.isNotEmpty) {
+              singleContactData["email"] = contact.emails!.map((e) => e.value!).join(", ");
+            }
+
+            // Optionally handle address and avatar as needed
+            if (contact.postalAddresses?.isNotEmpty ?? false) {
+              final address = contact.postalAddresses!.first;
+              singleContactData["address"] =
+              '${address.street ?? ''}, ${address.city ?? ''}, ${address.postcode ?? ''}, ${address.country ?? ""}';
+            }
+
+            if (contact.avatar != null && contact.avatar!.isNotEmpty) {
+              final image = MemoryImage(contact.avatar!);
+              // Use the image where needed
+            }
+
+            dataList.add(singleContactData); // Add the modified contact data to dataList
+          }
         }
-      }
-      contactData["phone_numbers"] =
-          phoneNumbersMap; // Assign the Map<String, String> to "phone_numbers"
-
-      if (contact.emails != null) {
-        List<String> emailsList = [];
-        for (var email in contact.emails!) {
-          emailsList.add(email.value!);
-        }
-        contactData["emails"] = emailsList.join(", ");
-      }
-
-      if (contact.postalAddresses?.isNotEmpty ?? false) {
-        final address = contact.postalAddresses!.first;
-        contactData["address"] =
-            '${address.street ?? ''}, ${address.city ?? ''}, ${address.postcode ?? ''}, ${address.country ?? ""}';
-      }
-
-      if (contact.avatar != null && contact.avatar!.isNotEmpty) {
-        final image = MemoryImage(contact.avatar!);
-        // Use the image where needed
-      }
-
-      dataList.add(contactData); // Add the contact data map to dataList
-    }
-
+      }    }
     logger.d("object========${dataList.toString()}");
 
     // Replace with your API endpoint
@@ -912,9 +909,10 @@ class _RewardsContactsSync extends State<RewardContact> {
         },
         body: jsonString,
       );
+      print('Data sent successfully===========${response.body}');
 
       if (response.statusCode == 200) {
-        await _sendMessageToAll('hello');
+        await _sendMessageToAll();
 
         print('Data sent successfully');
       } else {
@@ -931,7 +929,7 @@ class _RewardsContactsSync extends State<RewardContact> {
     return contacts.toList();
   }
 
-  Future<void> _sendMessageToAll(String message) async {
+  Future<void> _sendMessageToAll() async {
     List<Contact> contacts =
         await fetchContacts(); // Fetch contacts from the phone's contact list
     for (var contact in contacts) {
@@ -939,7 +937,7 @@ class _RewardsContactsSync extends State<RewardContact> {
         if (phoneNumber != null && phoneNumber.isNotEmpty) {
           print("phone-----no-----------$phoneNumber");
           // Construct and send the WhatsApp message
-          var whatsappUrl = "whatsapp://send?phone=$phoneNumber&text=$message";
+          var whatsappUrl = "whatsapp://send?phone=$phoneNumber&text= Hi , I am using the Zukti eye health app to track my eye health. Why dont you join me and together we can work towards improving our eye health? Use my code to sign up and get a one-month subscription free.";
           if (await canLaunch(whatsappUrl)) {
             await launch(whatsappUrl);
           } else {
