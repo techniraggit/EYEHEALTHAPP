@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:http/http.dart' as http;
@@ -21,6 +22,7 @@ import 'package:project_new/Rewards/rewards_sync.dart';
 import 'package:project_new/sign_up.dart';
 import 'package:project_new/profile/user_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../Custom_navbar/bottom_navbar.dart';
 import '../api/config.dart';
 
 class UserDashboard extends StatefulWidget {
@@ -58,17 +60,65 @@ class UserProfiledash extends State<UserDashboard> {
             )
           : Scaffold(
               backgroundColor: Colors.background,
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.all(8.0), // Add padding
+          child: ClipOval(
+            child: Material(
+              color: Colors.white70.withOpacity(0.9), // Background color
+              elevation: 4.0, // Shadow
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context, CupertinoPageRoute(
+                    builder: (context) => HomePage(
+                    ),
+                  ),
+
+                  );
+                },
+                child: SizedBox(
+                  width: 53.0, // Width of the FloatingActionButton
+                  height: 50.0, // Height of the FloatingActionButton
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0), // Add padding for the icon
+                      child: Image.asset(
+                        "assets/home_icon.png",
+                        width: 20,
+                        // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
+                        // color: Colors.grey, // Uncomment if you want to apply a color to the image
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
               body: Column(
                 children: [
                   SizedBox(
-                    height: 40,
+                    height: 20,
                   ),
 
-                  Container(
-                    alignment: Alignment.topLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(29, 3, 20, 20),
-                      child: Text(
+                  Row(
+                    children: [
+                      SizedBox(width: 10,),
+                      GestureDetector(
+                        onTap: (){
+                          Navigator.of(context).pop();
+                        },
+                        child: Icon(
+                          Icons.arrow_back, // Replace with your icon
+                          color: Colors.white,
+                          size: 30,// Adjust icon color as needed
+                        ),
+                      ),
+                      SizedBox(width: MediaQuery.of(context).size.width/3), // Adjust the width as needed for the space between Icon and Text
+
+
+                      Text(
                         "Profile", // Your title text
                         style: TextStyle(
                           fontSize: 18,
@@ -77,8 +127,26 @@ class UserProfiledash extends State<UserDashboard> {
                               Colors.white, // Adjust the text color as needed
                         ),
                       ),
-                    ),
+                      SizedBox(width: MediaQuery.of(context).size.width/4), // Adjust the width as needed for the space between Icon and Text
+
+                      GestureDetector(
+                        onTap: () {
+                          Logout();
+                        },
+                        child: IconButton(
+                          icon: Icon(Icons.logout_rounded),
+                          color: Colors.white,
+                          iconSize: 28,
+                          onPressed: () {
+                            Logout();
+                          },
+                        ),
+                      ),
+
+                    ],
                   ),
+                  SizedBox(height: 16,),
+
                   //             Image.asset(
                   // height: 30,
                   //               'assets/profileline.png', // Replace this with your image path
@@ -410,11 +478,11 @@ class UserProfiledash extends State<UserDashboard> {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  Logout();
+                                 deleteUser();
                                 },
                                 child: Container(
                                   width:
-                                      MediaQuery.of(context).size.width / 1.3,
+                                  MediaQuery.of(context).size.width / 1.3,
                                   height: 60,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(22),
@@ -422,31 +490,80 @@ class UserProfiledash extends State<UserDashboard> {
                                     color: Colors.grey.withOpacity(0.3),
                                   ),
                                   child: Row(
-                                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                     children: [
-                                      IconButton(
-                                        icon: Icon(Icons.logout_rounded),
-                                        color: Colors.background,
-                                        iconSize: 14,
-                                        onPressed: () {
-                                          Logout();
-                                        },
-                                      ),
                                       Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 3.0, vertical: 12),
+                                        padding: const EdgeInsets.all(12.0),
                                         child: Text(
-                                          'Sign Out',
+                                          'Delete Account',
                                           style: TextStyle(
-                                            color: Colors.background,
+                                            color: Colors.black,
                                             fontSize: 15,
                                           ),
                                         ),
+                                      ),
+                                      IconButton(
+                                        icon: Icon(
+                                            Icons.arrow_forward_ios_outlined),
+                                        color: Colors.black,
+                                        iconSize: 14,
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                                builder: (context) =>
+                                                    PrivacyScreen()),
+                                          );
+                                          // Navigate to next screen
+                                        },
                                       ),
                                     ],
                                   ),
                                 ),
                               ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              // GestureDetector(
+                              //   onTap: () {
+                              //     Logout();
+                              //   },
+                              //   child: Container(
+                              //     width:
+                              //         MediaQuery.of(context).size.width / 1.3,
+                              //     height: 60,
+                              //     decoration: BoxDecoration(
+                              //       borderRadius: BorderRadius.circular(22),
+                              //       // Half of the height for oval shape
+                              //       color: Colors.grey.withOpacity(0.3),
+                              //     ),
+                              //     child: Row(
+                              //       // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              //       children: [
+                              //         IconButton(
+                              //           icon: Icon(Icons.logout_rounded),
+                              //           color: Colors.background,
+                              //           iconSize: 14,
+                              //           onPressed: () {
+                              //             Logout();
+                              //           },
+                              //         ),
+                              //         Padding(
+                              //           padding: const EdgeInsets.symmetric(
+                              //               horizontal: 3.0, vertical: 12),
+                              //           child: Text(
+                              //             'Sign Out',
+                              //             style: TextStyle(
+                              //               color: Colors.background,
+                              //               fontSize: 15,
+                              //             ),
+                              //           ),
+                              //         ),
+                              //       ],
+                              //     ),
+                              //   ),
+                              // ),
                             ],
                           ),
                         ),
@@ -455,6 +572,9 @@ class UserProfiledash extends State<UserDashboard> {
                   ),
                 ],
               ),
+        bottomNavigationBar: CustomBottomAppBar(
+          currentScreen: 'ProfileDashboard',
+        ),
             ),
     );
   }
@@ -499,6 +619,39 @@ class UserProfiledash extends State<UserDashboard> {
         print("responseviewprofile:${response.body}");
 
         return json.decode(response.body);
+      } else {
+        // _progressDialog!.hide();
+
+        print(response.body);
+      }
+    } catch (e) {
+      // _progressDialog!.hide();
+
+      print("exception:$e");
+    }
+    throw Exception('');
+  }
+
+  Future<Map<String, dynamic>> deleteUser() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String userId = prefs.getString('id') ?? '';
+      String token = prefs.getString('access_token') ?? '';
+      print("id :$userId");
+      final response = await http.get(
+        Uri.parse('${ApiProvider.baseUrl + ApiProvider.deleteUser}'),
+        headers: <String, String>{
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print("response--------${response.body}");
+        Fluttertoast.showToast(msg: "User Account Deleted Succesfully!!");
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => SignIn()),
+              (Route<dynamic> route) => false,
+        );
       } else {
         // _progressDialog!.hide();
 

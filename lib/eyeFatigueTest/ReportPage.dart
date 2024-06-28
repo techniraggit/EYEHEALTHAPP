@@ -503,7 +503,7 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin {
           padding: const EdgeInsets.all(8.0), // Add padding
           child: ClipOval(
             child: Material(
-              color: Colors.white, // Background color
+              color: Colors.white70.withOpacity(0.9), // Background color
               elevation: 1.0, // Shadow
               child: InkWell(
                 onTap: () {
@@ -566,7 +566,7 @@ class _ReportOtherState extends State<_ReportOther> {
         backgroundColor: Colors.white,
       ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 1),
         child: FloatingActionButton(
           onPressed: () {
             Navigator.push(
@@ -614,95 +614,98 @@ class _ReportOtherState extends State<_ReportOther> {
             ),
             ),
             },
-            ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: prescriptions.length,
-              itemBuilder: (context, index) {
-                final prescription = prescriptions[index];
-                return Card(
-                  color: Colors.white,
-                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 9),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(17.0),
-                    side: BorderSide(color: Colors.grey.shade400, width: 1.0),
-                  ),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 2, vertical: 11),
-                    child: ListTile(
-                      title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
-                            child: Text(
-                              prescription.problemFaced,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 12,
-                                color: Colors.greytext,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0,0,0,50),
+              child: ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: prescriptions.length,
+                itemBuilder: (context, index) {
+                  final prescription = prescriptions[index];
+                  return Card(
+                    color: Colors.white,
+                    margin: EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(17.0),
+                      side: BorderSide(color: Colors.grey.shade400, width: 1.0),
+                    ),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 2, vertical: 11),
+                      child: ListTile(
+                        title: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                prescription.problemFaced,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                  color: Colors.greytext,
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(height: 10),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Date: ',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 16,
+                            SizedBox(height: 10),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    'Date: ',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  prescription.createdOn.toLocal().toString().substring(0, 10),
-                                  style: TextStyle(fontStyle: FontStyle.normal),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    prescription.createdOn.toLocal().toString().substring(0, 10),
+                                    style: TextStyle(fontStyle: FontStyle.normal),
+                                  ),
                                 ),
-                              ),
-                              Expanded(
-                                child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              PrescriptionDetailPage(prescription: prescription),
+                                Expanded(
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                PrescriptionDetailPage(prescription: prescription),
+                                          ),
+                                        );
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        foregroundColor: Colors.white,
+                                        backgroundColor: Colors.bluebutton,
+                                        shape: CircleBorder(),
+                                        minimumSize: Size(30, 30),
+                                      ),
+                                      child: Transform.rotate(
+                                        angle: pi,
+                                        child: Transform.scale(
+                                          scale: 0.6,
+                                          child: Icon(Icons.arrow_back_ios_new),
                                         ),
-                                      );
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      foregroundColor: Colors.white,
-                                      backgroundColor: Colors.bluebutton,
-                                      shape: CircleBorder(),
-                                      minimumSize: Size(30, 30),
-                                    ),
-                                    child: Transform.rotate(
-                                      angle: pi,
-                                      child: Transform.scale(
-                                        scale: 0.6,
-                                        child: Icon(Icons.arrow_back_ios_new),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ],
         ),
@@ -1057,7 +1060,7 @@ count=jsonData['no_of_fatigue_test'];
                           Row(
                             children: [
                               Text(
-                                'Test Result : ',
+                                'Test Score : ',
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 16,
@@ -1065,13 +1068,16 @@ count=jsonData['no_of_fatigue_test'];
                               ),
                               Builder(
                                 builder: (context) {
+                                  int score=0;
+                                  score=percentage[index];
                                   if (percentage[index] > 5.0) {
-                                    testResult = "Good";
+                                    testResult = 'Good';
+
                                   } else {
                                     testResult = "Bad";
                                   }
                                   return Text(
-                                    testResult,
+                                    score.toString(),
                                     style: TextStyle(
                                       fontWeight: FontWeight.w500,
                                       fontSize: 16,
@@ -1590,6 +1596,7 @@ class PrescriptionDetailPage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 10),
+              if( prescription.rejectionNotes.isNotEmpty)
               Text(
                 'Rejection Notes: ${prescription.rejectionNotes}',
                 style: TextStyle(fontSize: 16),

@@ -17,7 +17,7 @@ class CustomBottomAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 65.0, // Adjust the height here
+      height: 75.0, // Adjust the height here
       color: Colors.white70, // Set the background color
       child: BottomAppBar(
         color: Colors.white.withOpacity(0.9), // Make the BottomAppBar transparent
@@ -125,6 +125,8 @@ class CustomBottomAppBar extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: () {
+
+                            if (currentScreen != "ProfileDashboard")
                             Navigator.push(
                               context,
                               CupertinoPageRoute(

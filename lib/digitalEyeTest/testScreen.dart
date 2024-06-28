@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -14,7 +15,10 @@ import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:project_new/HomePage.dart';
 import 'package:rename/platform_file_editors/abs_platform_file_editor.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:typed_data';
+import 'package:image/image.dart' as img; // Import image package for decoding image dimensions
 
+import 'package:image_picker/image_picker.dart';
 import 'dart:convert' as convert;
 
 import '../Custom_navbar/customDialog.dart';
@@ -524,9 +528,50 @@ class LeftEyeTestState extends State<LeftEyeTest> {
       child: Scaffold(
         appBar: AppBar(
           title: Text("EYE TEST"),
-          centerTitle: true,          leading: Container(),
+          centerTitle: true,
+          leading: GestureDetector(
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  contentPadding: EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
 
-          // leading: IconButton(
+                  title: Text("Are you sure to exit test?", style: TextStyle(fontSize: 18), ),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text("Yes",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                        Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(builder: (context) => HomePage()),
+                                (Route<dynamic> route) => false);
+                        // Navigate back (in this example)
+                      },
+                    ),
+                    TextButton(
+                      child: Text("No",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                      ),
+                      onPressed: () {
+                        // Handle 'No' button tap
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+          child: Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+            size: 30,
+          ),
+        ),
+
+
+        // leading: IconButton(
           //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
           //   onPressed: () {
           //     // Add your back button functionality here
@@ -758,8 +803,16 @@ class AlphabetTestState extends State<AlphabetTest> {
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
 
-    await _controller?.initialize();
-    // _controller?.setZoomLevel(-2.5);
+    await _controller?.initialize().then((_) {
+
+      // _controller?.setZoomLevel(1.614);
+
+      // Start streaming the camera
+      if (!mounted) return;
+      setState(() {
+        // Update UI or perform any additional tasks
+      });
+    });
 
     if (mounted) {
       setState(() {});
@@ -768,8 +821,8 @@ class AlphabetTestState extends State<AlphabetTest> {
     _captureImagePerSecond();
   }
   void _captureImagePerSecond() async {
-print("CAPTURE--ALFABATICTEST");
-while (true) {
+     print("CAPTURE--ALFABATICTEST");
+     while (true) {
       XFile? image = await _controller
           ?.takePicture(); // Process the captured image as needed
       print('Image captured: ${image?.path}');
@@ -780,9 +833,56 @@ while (true) {
     }
   }
   void capturePhoto(XFile photo) async {
-    List<int> photoAsBytes = await photo.readAsBytes();
-    String photoAsBase64 = convert.base64Encode(photoAsBytes);
-    sendDistanceRequest(photoAsBase64);
+    img.Image originalImage = img.decodeImage(await photo.readAsBytes())!;
+    int originalWidth = originalImage.width!;
+    int originalHeight = originalImage.height!;
+
+    print('Original width: $originalWidth, height: $originalHeight');
+
+
+    int targetWidth = 672;
+    int targetHeight = 896;
+
+    Uint8List resizedBytes = await FlutterImageCompress.compressWithList(
+      await photo.readAsBytes(),
+      minWidth: targetWidth,
+      quality: 100, // Adjust quality as needed
+    );
+
+    img.Image resizedImage = img.decodeImage(resizedBytes)!;
+
+    // Crop or scale the resized image to exact dimensions
+    img.Image finalImage = img.copyResize(resizedImage,
+      width: targetWidth,
+      height: targetHeight,
+    );
+
+    // Convert final image to bytes
+    List<int> finalBytes = img.encodePng(finalImage); // or encodeJpg for JPEG format
+
+    // Convert resized photo to base64
+    print('Resized width: ${finalImage.width}, height: ${finalImage.height}');
+
+    String photoBase64 = convert.base64Encode(finalBytes);
+    sendDistanceRequest(photoBase64 );//photoAsBase64
+
+
+
+    // Uint8List photoBytes = await photo.readAsBytes();
+    // Uint8List resizedBytes = await FlutterImageCompress.compressWithList(
+    //   photoBytes,
+    //   minHeight: 896,
+    //   minWidth: 672,
+    //   quality: 100, // Adjust quality as needed
+    // );
+    //
+    // // Convert resized photo to base64
+    // String photoBase64 = convert.base64Encode(resizedBytes);
+
+
+    // List<int> photoAsBytes = await photo.readAsBytes();
+    // String photoAsBase64 = convert.base64Encode(photoAsBytes);
+
   }
   Future<void> sendDistanceRequest(String image) async {
     print("CAPTURE--ALFABATICTEST========DISTANCE");
@@ -796,15 +896,14 @@ while (true) {
     print("testTypecam:--" + text);
     if (text == 'myopia') {
       distanceType = 'fardistance';
-    } else if (text == 'hyperopia') {
+    }
+    else if (text == 'hyperopia')
+    {
       distanceType = 'neardistance';
     } //print('image$image');
 
     try {
-      var frameData =
-          image; // Replace this with your frame data as a base64 string
-      // var distanceType = testname//'neardistance'; // Replace this with the distance type
-
+      var frameData = image;
       var requestBody = jsonEncode({
         'frameData': frameData,
         'test_distance': distanceType,
@@ -847,7 +946,6 @@ while (true) {
     }
   }
   Future<void> getSnellFraction() async {
-
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
@@ -921,12 +1019,47 @@ while (true) {
           appBar: AppBar(
             title: Text("EYE TEST"),
             centerTitle: true,
-            // leading: IconButton(
-            //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-            //   onPressed: () {
-            //     // Add your back button functionality here
-            //   },
-            // ),
+            leading: GestureDetector(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      contentPadding: EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
+
+                      title: Text("Are you sure to exit test?", style: TextStyle(fontSize: 18), ),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text("Yes",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(builder: (context) => HomePage()),
+                                    (Route<dynamic> route) => false);
+                            // Navigate back (in this example)
+                          },
+                        ),
+                        TextButton(
+                          child: Text("No",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                          ),
+                          onPressed: () {
+                            // Handle 'No' button tap
+                            Navigator.of(context).pop(); // Close the dialog
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              child: Icon(
+                Icons.arrow_back,
+                color: Colors.black,
+                size: 30,
+              ),
+            ),
+
           ),
           body: Stack(
             children: [
@@ -977,17 +1110,19 @@ while (true) {
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
-                            Text(
-                              randomText,
-                              style: TextStyle(
-                                //fontFamily: 'sans-serif',
-                                fontFamilyFallback: [
-                                  'CourierPrime',
-                                  'sans-serif'
-                                ],
-                                fontSize: currentTextSize,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                            Center(
+                              child: Text(
+                                randomText,
+                                style: TextStyle(
+                                  //fontFamily: 'sans-serif',
+                                  fontFamilyFallback: [
+                                    'CourierPrime',
+                                    'sans-serif'
+                                  ],
+                                  fontSize: currentTextSize,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
                               ),
                             ),
                             Visibility(
@@ -1356,10 +1491,18 @@ class Reading extends State<ReadingTest> {
           _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
     );
 
-    _controller = CameraController(frontCamera, ResolutionPreset.medium);
+    _controller = CameraController(frontCamera, ResolutionPreset.medium);//high
 
-    await _controller?.initialize();
-    // _controller?.setZoomLevel(-2.5);
+    await _controller?.initialize().then((_) {
+
+      // _controller?.setZoomLevel(1.614);
+
+      // Start streaming the camera
+      if (!mounted) return;
+      setState(() {
+        // Update UI or perform any additional tasks
+      });
+    });
 
     if (mounted) {
       setState(() {});
@@ -1382,12 +1525,56 @@ class Reading extends State<ReadingTest> {
   }
 
   void capturePhoto(XFile photo) async {
-    // Note: `controller` being initialized as shown in readme
-    // https://pub.dev/packages/camera#example
+    img.Image originalImage = img.decodeImage(await photo.readAsBytes())!;
+    int originalWidth = originalImage.width!;
+    int originalHeight = originalImage.height!;
 
-    List<int> photoAsBytes = await photo.readAsBytes();
-    String photoAsBase64 = convert.base64Encode(photoAsBytes);
-    sendDistanceRequest(photoAsBase64);
+    print('Original width: $originalWidth, height: $originalHeight');
+
+
+    int targetWidth = 672;
+    int targetHeight = 896;
+
+    Uint8List resizedBytes = await FlutterImageCompress.compressWithList(
+      await photo.readAsBytes(),
+      minWidth: targetWidth,
+      quality: 100, // Adjust quality as needed
+    );
+
+    img.Image resizedImage = img.decodeImage(resizedBytes)!;
+
+    // Crop or scale the resized image to exact dimensions
+    img.Image finalImage = img.copyResize(resizedImage,
+      width: targetWidth,
+      height: targetHeight,
+    );
+
+    // Convert final image to bytes
+    List<int> finalBytes = img.encodePng(finalImage); // or encodeJpg for JPEG format
+
+    // Convert resized photo to base64
+    print('Resized width: ${finalImage.width}, height: ${finalImage.height}');
+
+    String photoBase64 = convert.base64Encode(finalBytes);
+    sendDistanceRequest(photoBase64 );//photoAsBase64
+
+
+
+    // Uint8List photoBytes = await photo.readAsBytes();
+    // Uint8List resizedBytes = await FlutterImageCompress.compressWithList(
+    //   photoBytes,
+    //   minHeight: 896,
+    //   minWidth: 672,
+    //   quality: 100, // Adjust quality as needed
+    // );
+    //
+    // // Convert resized photo to base64
+    // String photoBase64 = convert.base64Encode(resizedBytes);
+
+
+    // List<int> photoAsBytes = await photo.readAsBytes();
+    // String photoAsBase64 = convert.base64Encode(photoAsBytes);
+
   }
 
   Future<void> sendDistanceRequest(String image) async {
@@ -2006,8 +2193,16 @@ class AstigmationTest1 extends State<AstigmationTest> {
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
 
-    await _controller?.initialize();
-    // _controller?.setZoomLevel(-2.5);
+    await _controller?.initialize().then((_) {
+
+      // _controller?.setZoomLevel(1.614);
+
+      // Start streaming the camera
+      if (!mounted) return;
+      setState(() {
+        // Update UI or perform any additional tasks
+      });
+    });
 
     if (mounted) {
       setState(() {});
@@ -2030,12 +2225,56 @@ class AstigmationTest1 extends State<AstigmationTest> {
   }
 
   void capturePhoto(XFile photo) async {
-    // Note: `controller` being initialized as shown in readme
-    // https://pub.dev/packages/camera#example
+    img.Image originalImage = img.decodeImage(await photo.readAsBytes())!;
+    int originalWidth = originalImage.width!;
+    int originalHeight = originalImage.height!;
 
-    List<int> photoAsBytes = await photo.readAsBytes();
-    String photoAsBase64 = convert.base64Encode(photoAsBytes);
-    sendDistanceRequest(photoAsBase64);
+    print('Original width: $originalWidth, height: $originalHeight');
+
+
+    int targetWidth = 672;
+    int targetHeight = 896;
+
+    Uint8List resizedBytes = await FlutterImageCompress.compressWithList(
+      await photo.readAsBytes(),
+      minWidth: targetWidth,
+      quality: 100, // Adjust quality as needed
+    );
+
+    img.Image resizedImage = img.decodeImage(resizedBytes)!;
+
+    // Crop or scale the resized image to exact dimensions
+    img.Image finalImage = img.copyResize(resizedImage,
+      width: targetWidth,
+      height: targetHeight,
+    );
+
+    // Convert final image to bytes
+    List<int> finalBytes = img.encodePng(finalImage); // or encodeJpg for JPEG format
+
+    // Convert resized photo to base64
+    print('Resized width: ${finalImage.width}, height: ${finalImage.height}');
+
+    String photoBase64 = convert.base64Encode(finalBytes);
+    sendDistanceRequest(photoBase64 );//photoAsBase64
+
+
+
+    // Uint8List photoBytes = await photo.readAsBytes();
+    // Uint8List resizedBytes = await FlutterImageCompress.compressWithList(
+    //   photoBytes,
+    //   minHeight: 896,
+    //   minWidth: 672,
+    //   quality: 100, // Adjust quality as needed
+    // );
+    //
+    // // Convert resized photo to base64
+    // String photoBase64 = convert.base64Encode(resizedBytes);
+
+
+    // List<int> photoAsBytes = await photo.readAsBytes();
+    // String photoAsBase64 = convert.base64Encode(photoAsBytes);
+
   }
 
   Future<void> sendDistanceRequest(String image) async {
@@ -2207,12 +2446,47 @@ class AstigmationTest1 extends State<AstigmationTest> {
           appBar: AppBar(
             title: Text("EYE TEST"),
             centerTitle: true,
-            // leading: IconButton(
-            //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-            //   onPressed: () {
-            //     // Add your back button functionality here
-            //   },
-            // ),
+            leading: GestureDetector(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      contentPadding: EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
+
+                      title: Text("Are you sure to exit test?", style: TextStyle(fontSize: 18), ),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text("Yes",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(builder: (context) => HomePage()),
+                                    (Route<dynamic> route) => false);
+                            // Navigate back (in this example)
+                          },
+                        ),
+                        TextButton(
+                          child: Text("No",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                          ),
+                          onPressed: () {
+                            // Handle 'No' button tap
+                            Navigator.of(context).pop(); // Close the dialog
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              child: Icon(
+                Icons.arrow_back,
+                color: Colors.black,
+                size: 30,
+              ),
+            ),
+
           ),
           body: Stack(
             fit: StackFit.expand,
@@ -2455,8 +2729,16 @@ class Astigmationtest2 extends State<AstigmationTest2> {
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
 
-    await _controller?.initialize();
-    // _controller?.setZoomLevel(-2.5);
+    await _controller?.initialize().then((_) {
+
+      // _controller?.setZoomLevel(1.614);
+
+      // Start streaming the camera
+      if (!mounted) return;
+      setState(() {
+        // Update UI or perform any additional tasks
+      });
+    });
 
     if (mounted) {
       setState(() {});
@@ -2479,12 +2761,56 @@ class Astigmationtest2 extends State<AstigmationTest2> {
   }
 
   void capturePhoto(XFile photo) async {
-    // Note: `controller` being initialized as shown in readme
-    // https://pub.dev/packages/camera#example
+    img.Image originalImage = img.decodeImage(await photo.readAsBytes())!;
+    int originalWidth = originalImage.width!;
+    int originalHeight = originalImage.height!;
 
-    List<int> photoAsBytes = await photo.readAsBytes();
-    String photoAsBase64 = convert.base64Encode(photoAsBytes);
-    sendDistanceRequest(photoAsBase64);
+    print('Original width: $originalWidth, height: $originalHeight');
+
+
+    int targetWidth = 672;
+    int targetHeight = 896;
+
+    Uint8List resizedBytes = await FlutterImageCompress.compressWithList(
+      await photo.readAsBytes(),
+      minWidth: targetWidth,
+      quality: 100, // Adjust quality as needed
+    );
+
+    img.Image resizedImage = img.decodeImage(resizedBytes)!;
+
+    // Crop or scale the resized image to exact dimensions
+    img.Image finalImage = img.copyResize(resizedImage,
+      width: targetWidth,
+      height: targetHeight,
+    );
+
+    // Convert final image to bytes
+    List<int> finalBytes = img.encodePng(finalImage); // or encodeJpg for JPEG format
+
+    // Convert resized photo to base64
+    print('Resized width: ${finalImage.width}, height: ${finalImage.height}');
+
+    String photoBase64 = convert.base64Encode(finalBytes);
+    sendDistanceRequest(photoBase64 );//photoAsBase64
+
+
+
+    // Uint8List photoBytes = await photo.readAsBytes();
+    // Uint8List resizedBytes = await FlutterImageCompress.compressWithList(
+    //   photoBytes,
+    //   minHeight: 896,
+    //   minWidth: 672,
+    //   quality: 100, // Adjust quality as needed
+    // );
+    //
+    // // Convert resized photo to base64
+    // String photoBase64 = convert.base64Encode(resizedBytes);
+
+
+    // List<int> photoAsBytes = await photo.readAsBytes();
+    // String photoAsBase64 = convert.base64Encode(photoAsBytes);
+
   }
 
   Future<void> sendDistanceRequest(String image) async {
@@ -2556,7 +2882,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       delayedAPICall();
     });
-    // delayedAPICall();
+    delayedAPICall();
     _initializeCamera();
     _configureTts();
     _onReplayPressed();
@@ -2772,12 +3098,47 @@ class Astigmationtest2 extends State<AstigmationTest2> {
           appBar: AppBar(
             title: Text("EYE TEST"),
             centerTitle: true,
-            // leading: IconButton(
-            //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-            //   onPressed: () {
-            //     // Add your back button functionality here
-            //   },
-            // ),
+            leading: GestureDetector(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      contentPadding: EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
+
+                      title: Text("Are you sure to exit test?", style: TextStyle(fontSize: 18), ),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text("Yes",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(builder: (context) => HomePage()),
+                                    (Route<dynamic> route) => false);
+                            // Navigate back (in this example)
+                          },
+                        ),
+                        TextButton(
+                          child: Text("No",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                          ),
+                          onPressed: () {
+                            // Handle 'No' button tap
+                            Navigator.of(context).pop(); // Close the dialog
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              child: Icon(
+                Icons.arrow_back,
+                color: Colors.black,
+                size: 30,
+              ),
+            ),
+
           ),
           body: Stack(
             children: <Widget>[
@@ -3104,8 +3465,16 @@ class AstigmationTestNone extends State<AstigmationTest3> {
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
 
-    await _controller?.initialize();
-    // _controller?.setZoomLevel(-2.5);
+    await _controller?.initialize().then((_) {
+
+      // _controller?.setZoomLevel(1.614);
+
+      // Start streaming the camera
+      if (!mounted) return;
+      setState(() {
+        // Update UI or perform any additional tasks
+      });
+    });
 
     if (mounted) {
       setState(() {});
@@ -3128,12 +3497,56 @@ class AstigmationTestNone extends State<AstigmationTest3> {
   }
 
   void capturePhoto(XFile photo) async {
-    // Note: `controller` being initialized as shown in readme
-    // https://pub.dev/packages/camera#example
+    img.Image originalImage = img.decodeImage(await photo.readAsBytes())!;
+    int originalWidth = originalImage.width!;
+    int originalHeight = originalImage.height!;
 
-    List<int> photoAsBytes = await photo.readAsBytes();
-    String photoAsBase64 = convert.base64Encode(photoAsBytes);
-    sendDistanceRequest(photoAsBase64);
+    print('Original width: $originalWidth, height: $originalHeight');
+
+
+    int targetWidth = 672;
+    int targetHeight = 896;
+
+    Uint8List resizedBytes = await FlutterImageCompress.compressWithList(
+      await photo.readAsBytes(),
+      minWidth: targetWidth,
+      quality: 100, // Adjust quality as needed
+    );
+
+    img.Image resizedImage = img.decodeImage(resizedBytes)!;
+
+    // Crop or scale the resized image to exact dimensions
+    img.Image finalImage = img.copyResize(resizedImage,
+      width: targetWidth,
+      height: targetHeight,
+    );
+
+    // Convert final image to bytes
+    List<int> finalBytes = img.encodePng(finalImage); // or encodeJpg for JPEG format
+
+    // Convert resized photo to base64
+    print('Resized width: ${finalImage.width}, height: ${finalImage.height}');
+
+    String photoBase64 = convert.base64Encode(finalBytes);
+    sendDistanceRequest(photoBase64 );//photoAsBase64
+
+
+
+    // Uint8List photoBytes = await photo.readAsBytes();
+    // Uint8List resizedBytes = await FlutterImageCompress.compressWithList(
+    //   photoBytes,
+    //   minHeight: 896,
+    //   minWidth: 672,
+    //   quality: 100, // Adjust quality as needed
+    // );
+    //
+    // // Convert resized photo to base64
+    // String photoBase64 = convert.base64Encode(resizedBytes);
+
+
+    // List<int> photoAsBytes = await photo.readAsBytes();
+    // String photoAsBase64 = convert.base64Encode(photoAsBytes);
+
   }
 
   Future<void> sendDistanceRequest(String image) async {
@@ -3336,12 +3749,47 @@ class AstigmationTestNone extends State<AstigmationTest3> {
           appBar: AppBar(
             title: Text("EYE TEST"),
             centerTitle: true,
-            // leading: IconButton(
-            //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-            //   onPressed: () {
-            //     // Add your back button functionality here
-            //   },
-            // ),
+            leading: GestureDetector(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      contentPadding: EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
+
+                      title: Text("Are you sure to exit test?", style: TextStyle(fontSize: 18), ),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text("Yes",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(builder: (context) => HomePage()),
+                                    (Route<dynamic> route) => false);
+                            // Navigate back (in this example)
+                          },
+                        ),
+                        TextButton(
+                          child: Text("No",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                          ),
+                          onPressed: () {
+                            // Handle 'No' button tap
+                            Navigator.of(context).pop(); // Close the dialog
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              child: Icon(
+                Icons.arrow_back,
+                color: Colors.black,
+                size: 30,
+              ),
+            ),
+
           ),
           body: Stack(
             children: <Widget>[
@@ -3658,8 +4106,16 @@ class _ShadowTestState extends State<ShadowTest> {
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
 
-    await _controller?.initialize();
-    // _controller?.setZoomLevel(-2.5);
+    await _controller?.initialize().then((_) {
+
+      // _controller?.setZoomLevel(1.614);
+
+      // Start streaming the camera
+      if (!mounted) return;
+      setState(() {
+        // Update UI or perform any additional tasks
+      });
+    });
 
     if (mounted) {
       setState(() {});
@@ -3682,12 +4138,56 @@ class _ShadowTestState extends State<ShadowTest> {
   }
 
   void capturePhoto(XFile photo) async {
-    // Note: `controller` being initialized as shown in readme
-    // https://pub.dev/packages/camera#example
+    img.Image originalImage = img.decodeImage(await photo.readAsBytes())!;
+    int originalWidth = originalImage.width!;
+    int originalHeight = originalImage.height!;
 
-    List<int> photoAsBytes = await photo.readAsBytes();
-    String photoAsBase64 = convert.base64Encode(photoAsBytes);
-    sendDistanceRequest(photoAsBase64);
+    print('Original width: $originalWidth, height: $originalHeight');
+
+
+    int targetWidth = 672;
+    int targetHeight = 896;
+
+    Uint8List resizedBytes = await FlutterImageCompress.compressWithList(
+      await photo.readAsBytes(),
+      minWidth: targetWidth,
+      quality: 100, // Adjust quality as needed
+    );
+
+    img.Image resizedImage = img.decodeImage(resizedBytes)!;
+
+    // Crop or scale the resized image to exact dimensions
+    img.Image finalImage = img.copyResize(resizedImage,
+      width: targetWidth,
+      height: targetHeight,
+    );
+
+    // Convert final image to bytes
+    List<int> finalBytes = img.encodePng(finalImage); // or encodeJpg for JPEG format
+
+    // Convert resized photo to base64
+    print('Resized width: ${finalImage.width}, height: ${finalImage.height}');
+
+    String photoBase64 = convert.base64Encode(finalBytes);
+    sendDistanceRequest(photoBase64 );//photoAsBase64
+
+
+
+    // Uint8List photoBytes = await photo.readAsBytes();
+    // Uint8List resizedBytes = await FlutterImageCompress.compressWithList(
+    //   photoBytes,
+    //   minHeight: 896,
+    //   minWidth: 672,
+    //   quality: 100, // Adjust quality as needed
+    // );
+    //
+    // // Convert resized photo to base64
+    // String photoBase64 = convert.base64Encode(resizedBytes);
+
+
+    // List<int> photoAsBytes = await photo.readAsBytes();
+    // String photoAsBase64 = convert.base64Encode(photoAsBytes);
+
   }
 
   Future<void> sendDistanceRequest(String image) async {
@@ -3803,12 +4303,47 @@ class _ShadowTestState extends State<ShadowTest> {
           appBar: AppBar(
             title: Text("EYE TEST"),
             centerTitle: true,
-            // leading: IconButton(
-            //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-            //   onPressed: () {
-            //     // Add your back button functionality here
-            //   },
-            // ),
+            leading: GestureDetector(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      contentPadding: EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
+
+                      title: Text("Are you sure to exit test?", style: TextStyle(fontSize: 18), ),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text("Yes",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(builder: (context) => HomePage()),
+                                    (Route<dynamic> route) => false);
+                            // Navigate back (in this example)
+                          },
+                        ),
+                        TextButton(
+                          child: Text("No",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                          ),
+                          onPressed: () {
+                            // Handle 'No' button tap
+                            Navigator.of(context).pop(); // Close the dialog
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              child: Icon(
+                Icons.arrow_back,
+                color: Colors.black,
+                size: 30,
+              ),
+            ),
+
           ),
           body: Stack(
             fit: StackFit.expand,
@@ -4066,11 +4601,18 @@ class redgreen extends State<RedGreenTest> {
       _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
     );
 
-    _controller = CameraController(frontCamera, ResolutionPreset.medium);
+    _controller = CameraController(frontCamera, ResolutionPreset.high);
 
-    await _controller?.initialize();
-    //  _controller?.setZoomLevel(-2.5);
+    await _controller?.initialize().then((_) {
 
+      // _controller?.setZoomLevel(1.614);
+
+      // Start streaming the camera
+      if (!mounted) return;
+      setState(() {
+        // Update UI or perform any additional tasks
+      });
+    });
     if (mounted) {
       setState(() {});
     }
@@ -4092,12 +4634,56 @@ class redgreen extends State<RedGreenTest> {
   }
 
   void capturePhoto(XFile photo) async {
-    // Note: `controller` being initialized as shown in readme
-    // https://pub.dev/packages/camera#example
+    img.Image originalImage = img.decodeImage(await photo.readAsBytes())!;
+    int originalWidth = originalImage.width!;
+    int originalHeight = originalImage.height!;
 
-    List<int> photoAsBytes = await photo.readAsBytes();
-    String photoAsBase64 = convert.base64Encode(photoAsBytes);
-    sendDistanceRequest(photoAsBase64);
+    print('Original width: $originalWidth, height: $originalHeight');
+
+
+    int targetWidth = 672;
+    int targetHeight = 896;
+
+    Uint8List resizedBytes = await FlutterImageCompress.compressWithList(
+      await photo.readAsBytes(),
+      minWidth: targetWidth,
+      quality: 100, // Adjust quality as needed
+    );
+
+    img.Image resizedImage = img.decodeImage(resizedBytes)!;
+
+    // Crop or scale the resized image to exact dimensions
+    img.Image finalImage = img.copyResize(resizedImage,
+      width: targetWidth,
+      height: targetHeight,
+    );
+
+    // Convert final image to bytes
+    List<int> finalBytes = img.encodePng(finalImage); // or encodeJpg for JPEG format
+
+    // Convert resized photo to base64
+    print('Resized width: ${finalImage.width}, height: ${finalImage.height}');
+
+    String photoBase64 = convert.base64Encode(finalBytes);
+    sendDistanceRequest(photoBase64 );//photoAsBase64
+
+
+
+    // Uint8List photoBytes = await photo.readAsBytes();
+    // Uint8List resizedBytes = await FlutterImageCompress.compressWithList(
+    //   photoBytes,
+    //   minHeight: 896,
+    //   minWidth: 672,
+    //   quality: 100, // Adjust quality as needed
+    // );
+    //
+    // // Convert resized photo to base64
+    // String photoBase64 = convert.base64Encode(resizedBytes);
+
+
+    // List<int> photoAsBytes = await photo.readAsBytes();
+    // String photoAsBase64 = convert.base64Encode(photoAsBytes);
+
   }
 
   Future<void> sendDistanceRequest(String image) async {
@@ -4304,7 +4890,7 @@ class redgreen extends State<RedGreenTest> {
               'Please do the test again and follow the instructions carefully ... ');
           /*    CustomAlertDialog.attractivepopup(context,
               'Please do the test again and follow the instructions carefully ... ');*/
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             CupertinoPageRoute(builder: (context) => HomePage()),
           );
@@ -4429,12 +5015,47 @@ class redgreen extends State<RedGreenTest> {
         appBar: AppBar(
           title: Text("EYE TEST"),
           centerTitle: true,
-          leading: Container(),
-          //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-          //   onPressed: () {
-          //     // Add your back button functionality here
-          //   },
-          // ),
+          leading: GestureDetector(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    contentPadding: EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
+
+                    title: Text("Are you sure to exit test?", style: TextStyle(fontSize: 18), ),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text("Yes",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                          Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (context) => HomePage()),
+                                  (Route<dynamic> route) => false);
+                          // Navigate back (in this example)
+                        },
+                      ),
+                      TextButton(
+                        child: Text("No",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                        ),
+                        onPressed: () {
+                          // Handle 'No' button tap
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            child: Icon(
+              Icons.arrow_back,
+              color: Colors.black,
+              size: 30,
+            ),
+          ),
+
         ),
         body: Stack(
           children: <Widget>[
@@ -4661,12 +5282,47 @@ class RightEyeState extends State<RightEye> {
         appBar: AppBar(
           title: Text("EYE TEST"),
           centerTitle: true,
-          leading: Container(),
-          //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
-          //   onPressed: () {
-          //     // Add your back button functionality here
-          //   },
-          // ),
+          leading: GestureDetector(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    contentPadding: EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
+
+                    title: Text("Are you sure to exit test?", style: TextStyle(fontSize: 18), ),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text("Yes",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                          Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (context) => HomePage()),
+                                  (Route<dynamic> route) => false);
+                          // Navigate back (in this example)
+                        },
+                      ),
+                      TextButton(
+                        child: Text("No",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                        ),
+                        onPressed: () {
+                          // Handle 'No' button tap
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            child: Icon(
+              Icons.arrow_back,
+              color: Colors.black,
+              size: 30,
+            ),
+          ),
+
         ),
         body: Stack(
           children: [
@@ -5163,6 +5819,7 @@ class _CameraScreenState extends State<CameraS> {
   Future<void> _initializeCamera() async {
 
     _cameras = await availableCameras();
+
     CameraDescription? frontCamera = _cameras.firstWhere(
       (camera) => camera.lensDirection == CameraLensDirection.front,
       orElse: () =>
@@ -5171,6 +5828,7 @@ class _CameraScreenState extends State<CameraS> {
 
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
     await _controller.initialize();
+    // _controller?.setZoomLevel(1.614);
 
     if (mounted) {
       setState(() {
@@ -5228,9 +5886,49 @@ class _CameraScreenState extends State<CameraS> {
         appBar: AppBar(
           title: Text("EYE TEST"),
           centerTitle: true,
-          leading: Container(),
+    leading: GestureDetector(
+    onTap: () {
+    showDialog(
+    context: context,
+    builder: (BuildContext context) {
+    return AlertDialog(
+    contentPadding: EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
+
+    title: Text("Are you sure to exit test?", style: TextStyle(fontSize: 18), ),
+    actions: <Widget>[
+    TextButton(
+    child: Text("Yes",                          style: TextStyle(fontSize: 16), // Adjust button text size
+    ),
+    onPressed: () {
+    Navigator.of(context).pop(); // Close the dialog
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => HomePage()),
+            (Route<dynamic> route) => false);
+      // Navigate back (in this example)
+    },
+    ),
+    TextButton(
+    child: Text("No",                          style: TextStyle(fontSize: 16), // Adjust button text size
+    ),
+    onPressed: () {
+    // Handle 'No' button tap
+    Navigator.of(context).pop(); // Close the dialog
+    },
+    ),
+    ],
+    );
+    },
+    );
+    },
+    child: Icon(
+    Icons.arrow_back,
+    color: Colors.black,
+    size: 30,
+    ),
+    ),
         ),
-        body: Column(
+
+    body: Column(
           children: [
             GestureDetector(
               onTap: _onReplayPressed,
@@ -5357,9 +6055,56 @@ class _CameraScreenState extends State<CameraS> {
   }
 
   void capturePhoto(XFile photo) async {
-    List<int> photoAsBytes = await photo.readAsBytes();
-    String photoAsBase64 = convert.base64Encode(photoAsBytes);
-    sendDistanceRequest(photoAsBase64);
+    img.Image originalImage = img.decodeImage(await photo.readAsBytes())!;
+    int originalWidth = originalImage.width!;
+    int originalHeight = originalImage.height!;
+
+    print('Original width: $originalWidth, height: $originalHeight');
+
+
+    int targetWidth = 672;
+    int targetHeight = 896;
+
+    Uint8List resizedBytes = await FlutterImageCompress.compressWithList(
+      await photo.readAsBytes(),
+      minWidth: targetWidth,
+      quality: 100, // Adjust quality as needed
+    );
+
+    img.Image resizedImage = img.decodeImage(resizedBytes)!;
+
+    // Crop or scale the resized image to exact dimensions
+    img.Image finalImage = img.copyResize(resizedImage,
+      width: targetWidth,
+      height: targetHeight,
+    );
+
+    // Convert final image to bytes
+    List<int> finalBytes = img.encodePng(finalImage); // or encodeJpg for JPEG format
+
+    // Convert resized photo to base64
+    print('Resized width: ${finalImage.width}, height: ${finalImage.height}');
+
+    String photoBase64 = convert.base64Encode(finalBytes);
+    sendDistanceRequest(photoBase64 );//photoAsBase64
+
+
+
+    // Uint8List photoBytes = await photo.readAsBytes();
+    // Uint8List resizedBytes = await FlutterImageCompress.compressWithList(
+    //   photoBytes,
+    //   minHeight: 896,
+    //   minWidth: 672,
+    //   quality: 100, // Adjust quality as needed
+    // );
+    //
+    // // Convert resized photo to base64
+    // String photoBase64 = convert.base64Encode(resizedBytes);
+
+
+    // List<int> photoAsBytes = await photo.readAsBytes();
+    // String photoAsBase64 = convert.base64Encode(photoAsBytes);
+
   }
 
   Future<void> sendDistanceRequest(String image) async {

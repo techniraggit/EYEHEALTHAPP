@@ -210,7 +210,7 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
         padding: const EdgeInsets.all(8.0), // Add padding
         child: ClipOval(
           child: Material(
-            color: Colors.white, // Background color
+            color: Colors.white70.withOpacity(0.9), // Background color
             elevation: 4.0, // Shadow
             child: InkWell(
               onTap: () {
@@ -505,12 +505,16 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
               padding: EdgeInsets.all(8.0),
               child: Card(
                 color: Colors.white,
+                elevation: 0.6,
                 child: Row(
                   children: [
                     // Image on the left side
-                    Image.asset(
-                      'assets/eyetest.png',
-                      // Add any additional properties to style the image
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.asset(
+                        'assets/eyetesticon.png',
+                        // Add any additional properties to style the image
+                      ),
                     ),
                     // Columns on the right side
                     Flexible(
@@ -630,7 +634,8 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
-              child: Card(color: Colors.white,
+              child: Card(color: Colors.white,                elevation: 0.6,
+
                 child: Row(
                   children: [
 
@@ -724,7 +729,8 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Card(
-                color: Colors.white ,
+                color: Colors.white ,                elevation: 0.6,
+
                 child: Row(
                   children: [
                     // Image on the left side

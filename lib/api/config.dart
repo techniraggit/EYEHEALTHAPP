@@ -21,6 +21,7 @@ class ApiProvider{
   static const verifyuser= '/api/is_already_verified?username=';
   static const isActivePlan='/api/is-active-plan';
   static const isAgreement='/api/agreement';
+  static const deleteUser='/api/delete-account';
 
 
 

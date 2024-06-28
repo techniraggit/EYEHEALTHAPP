@@ -93,6 +93,7 @@ dependencies:
     path: flutter_sms-master
   flutter_native_image: ^0.0.6+1
   video_compress: ^3.1.2
+  flutter_image_compress: ^2.3.0
 
 dev_dependencies:
   flutter_test:

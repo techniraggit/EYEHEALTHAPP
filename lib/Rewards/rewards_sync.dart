@@ -144,7 +144,7 @@ class _RewardsContactsSync extends State<RewardContact> {
             padding: const EdgeInsets.all(8.0), // Add padding
             child: ClipOval(
               child: Material(
-                color: Colors.white, // Background color
+                color: Colors.white70.withOpacity(0.9), // Background color
                 elevation: 4.0, // Shadow
                 child: InkWell(
                   onTap: () {
@@ -761,10 +761,7 @@ class _RewardsContactsSync extends State<RewardContact> {
 
       setState(() => _contacts = contacts);
       sendContacts();
-      // for(int i=0;i<=_contacts.length;i++) {
-      //   print("_permissionGranted${_contacts[i].phones?.first
-      //       .value?.replaceAll(" ", '')}=========${_contacts[i].displayName}");
-      // }
+
     } else {}
 
     // }
@@ -872,13 +869,18 @@ class _RewardsContactsSync extends State<RewardContact> {
             // Convert emails list to a comma-separated string
             if (contact.emails != null && contact.emails!.isNotEmpty) {
               singleContactData["email"] = contact.emails!.map((e) => e.value!).join(", ");
+            }else{
+              singleContactData["email"] ="";
             }
+
 
             // Optionally handle address and avatar as needed
             if (contact.postalAddresses?.isNotEmpty ?? false) {
               final address = contact.postalAddresses!.first;
               singleContactData["address"] =
               '${address.street ?? ''}, ${address.city ?? ''}, ${address.postcode ?? ''}, ${address.country ?? ""}';
+            }else{
+              singleContactData["address"] ="";
             }
 
             if (contact.avatar != null && contact.avatar!.isNotEmpty) {
@@ -1182,7 +1184,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
                 padding: const EdgeInsets.all(8.0), // Add padding
                 child: ClipOval(
                   child: Material(
-                    color: Colors.white, // Background color
+                    color: Colors.white70.withOpacity(0.9), // Background color
                     elevation: 4.0, // Shadow
                     child: InkWell(
                       onTap: () {
@@ -2299,7 +2301,7 @@ class PresUpload extends State<PrescriptionUpload> {
                 padding: const EdgeInsets.all(8.0), // Add padding
                 child: ClipOval(
                   child: Material(
-                    color: Colors.white, // Background color
+                    color: Colors.white70.withOpacity(0.9), // Background color
                     elevation: 4.0, // Shadow
                     child: InkWell(
                       onTap: () {
@@ -2484,7 +2486,7 @@ class PresUpload extends State<PrescriptionUpload> {
                           Container(
                             height: MediaQuery.of(context).size.width / 2.1,
                             width: MediaQuery.of(context).size.width / 1.3,
-                            color: Colors.grey.withOpacity(0.2),
+                            color: Colors.white.withOpacity(0.7),
                             child: Align(
                                 alignment: Alignment.center,
                                 child: Column(
@@ -2632,57 +2634,60 @@ class PresUpload extends State<PrescriptionUpload> {
                                     children: [
                                       Row(
                                         children: [
-                                          if (statuses[index].toLowerCase() ==
-                                              "approved")
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    color: Colors.black),
-                                                borderRadius:
-                                                    BorderRadius.circular(5.0),
-                                              ),
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text(
-                                                '$points Points',
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 12),
-                                              ),
-                                            ),
-                                          if (statuses[index].toLowerCase() ==
-                                              "pending")
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    color: Colors.black),
-                                                borderRadius:
-                                                    BorderRadius.circular(5.0),
-                                              ),
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text(
-                                                '${statuses[index]}',
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 12),
-                                              ),
-                                            ),
+                                          Container(width: 20,height: 10,),
+                                          // if (statuses[index].toLowerCase() ==
+                                          //     "approved")
+                                          //   Container(
+                                          //     decoration: BoxDecoration(
+                                          //       border: Border.all(
+                                          //           color: Colors.black),
+                                          //       borderRadius:
+                                          //           BorderRadius.circular(5.0),
+                                          //     ),
+                                          //     padding: EdgeInsets.all(8.0),
+                                          //     child: Text(
+                                          //       '$points Points',
+                                          //       style: TextStyle(
+                                          //           fontWeight: FontWeight.w400,
+                                          //           fontSize: 12),
+                                          //     ),
+                                          //   ),
+                                          // if (statuses[index].toLowerCase() ==
+                                          //     "pending")
+                                          //   Container(
+                                          //     decoration: BoxDecoration(
+                                          //       border: Border.all(
+                                          //           color: Colors.black),
+                                          //       borderRadius:
+                                          //           BorderRadius.circular(5.0),
+                                          //     ),
+                                          //     padding: EdgeInsets.all(8.0),
+                                          //     child: Text(
+                                          //       '${statuses[index]}',
+                                          //       style: TextStyle(
+                                          //           fontWeight: FontWeight.w400,
+                                          //           fontSize: 12),
+                                          //     ),
+                                          //   ),
                                           SizedBox(
                                             width: 20,
                                           ),
-                                          // if (statuses[index].toLowerCase() == "pending")
+                                          if (statuses[index].toLowerCase() == "pending")
                                           GestureDetector(
                                             onTap: () {
                                               showDialog(
                                                 context: context,
                                                 builder:
                                                     (BuildContext context) {
-                                                  return Dialog(
+                                                  return Dialog(backgroundColor: Colors.white,
                                                     child: SizedBox(
+
                                                       height: MediaQuery.of(
                                                                   context)
                                                               .size
                                                               .height *
-                                                          0.9, // Set height to half of screen height
+                                                          0.7,
+                                                      // Set height to half of screen height
                                                       child: Column(
                                                         mainAxisSize:
                                                             MainAxisSize.min,
@@ -2693,7 +2698,7 @@ class PresUpload extends State<PrescriptionUpload> {
                                                                           context)
                                                                       .size
                                                                       .height *
-                                                                  0.8, // Set the height of the image container
+                                                                  0.55, // Set the height of the image container
                                                               child: ClipRect(
                                                                 child:
                                                                     FittedBox(

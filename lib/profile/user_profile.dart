@@ -24,6 +24,7 @@ class UserProfile extends StatefulWidget {
 }
 
 class ProfileDetails extends State<UserProfile> {
+
   bool isMobileValid = true;
   String initialEmail = '';
   String initialPhone = '';
@@ -62,7 +63,6 @@ class ProfileDetails extends State<UserProfile> {
       });
     }
   }
-
   @override
   void initState() {
     super.initState();
@@ -107,31 +107,65 @@ class ProfileDetails extends State<UserProfile> {
                 color: Colors.blue,
               ),
             )
-          : Scaffold(
+          :
+      Scaffold(
               backgroundColor: Colors.background,
               body: Column(
                 children: [
                   SizedBox(
-                    height: 40,
+                    height: 20,
+                  ),
+
+
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 7,
+                      ),
+                      GestureDetector(
+                        onTap: (){
+                          Navigator.of(context).pop();
+                        },
+                        child: Icon(
+                          Icons.arrow_back, // Replace with your icon
+                          color: Colors.white,
+                          size: 30,// Adjust icon color as needed
+                        ),
+                      ),
+                      SizedBox(width: MediaQuery.of(context).size.width/3), // Adjust the width as needed for the space between Icon and Text
+
+
+                      Text(
+                        "Profile", // Your title text
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          color:
+                          Colors.white, // Adjust the text color as needed
+                        ),
+                      ),
+                    ],
                   ),
                   Stack(
                     children: [
+
+                      SizedBox(height: 16,),
                       Container(
                         width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.width / 3,
                         alignment: Alignment.topLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(29, 3, 20, 20),
-                          child: Text(
-                            "Profile", // Your title text
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                              color: Colors
-                                  .white, // Adjust the text color as needed
-                            ),
-                          ),
-                        ),
+                        // child: Padding(
+                        //   padding: const EdgeInsets.fromLTRB(29, 3, 20, 20),
+                        //   child: Text(
+                        //     "Profile", // Your title text
+                        //     style: TextStyle(
+                        //       fontSize: 18,
+                        //       fontWeight: FontWeight.w500,
+                        //       color: Colors
+                        //           .white, // Adjust the text color as needed
+                        //     ),
+                        //   ),
+                        // ),
                       ),
                       Positioned(
                         // top: MediaQuery.of(context).size.width / 3, // Adjust the top position as needed
@@ -685,11 +719,6 @@ class ProfileDetails extends State<UserProfile> {
       // await updateProfilePicture();
     }
   }
-
-
-
-
-
 
   Future<void> updateProfilePicture() async {
     const String apiUrl =

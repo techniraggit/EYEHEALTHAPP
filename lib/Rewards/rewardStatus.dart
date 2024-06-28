@@ -196,7 +196,7 @@ class RewardsStatusScreenState extends State<RewardStatusScreen> with AutoCancel
         padding:  EdgeInsets.all(8.0), // Add padding
         child: ClipOval(
           child: Material(
-            color: Colors.white, // Background color
+            color: Colors.white70.withOpacity(0.9), // Background color
             elevation: 4.0, // Shadow
             child: InkWell(
               onTap: () {
