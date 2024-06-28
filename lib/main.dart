@@ -22,6 +22,7 @@ import 'package:project_new/digitalEyeTest/testScreen.dart';
 import 'package:project_new/eyeFatigueTest/ReportPage.dart';
 import 'package:project_new/sign_up.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:upgrader/upgrader.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'FirebaseOptions/FirebaseApi.dart';
 import 'Rewards/rewards_sync.dart';
@@ -50,6 +51,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message)async {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Upgrader.clearSavedSettings(); // REMOVE this for release builds
 
   // FlutterAlarmBackgroundTrigger.initialize();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
