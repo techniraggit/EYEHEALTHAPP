@@ -4890,10 +4890,9 @@ class redgreen extends State<RedGreenTest> {
               'Please do the test again and follow the instructions carefully ... ');
           /*    CustomAlertDialog.attractivepopup(context,
               'Please do the test again and follow the instructions carefully ... ');*/
-          Navigator.pushReplacement(
-            context,
-            CupertinoPageRoute(builder: (context) => HomePage()),
-          );
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => HomePage()),
+                  (Route<dynamic> route) => false);
         }
       }
 // If the server did not return a 200 OK response,

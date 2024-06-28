@@ -55,7 +55,7 @@ Future<void> main() async {
 
   // FlutterAlarmBackgroundTrigger.initialize();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  await dotenv.load(fileName: ".env");
+  // await dotenv.load(fileName: ".env");
 
 //  await Alarm.init();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);

@@ -2686,11 +2686,11 @@ class PresUpload extends State<PrescriptionUpload> {
                                                                   context)
                                                               .size
                                                               .height *
-                                                          0.7,
+                                                          0.75,
                                                       // Set height to half of screen height
                                                       child: Column(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
+                                                        // mainAxisSize:
+                                                        //     MainAxisSize.min,
                                                         children: [
                                                           Center(
                                                             child: Container(
@@ -2707,11 +2707,14 @@ class PresUpload extends State<PrescriptionUpload> {
                                                                   alignment:
                                                                       Alignment
                                                                           .center,
-                                                                  child: Image
-                                                                      .network(
-                                                                    "https://eyehealth.backend.zuktiinnovations.com" +
-                                                                        image[
-                                                                            index],
+                                                                  child: Padding(
+                                                                    padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 19),
+                                                                    child: Image
+                                                                        .network(
+                                                                      "https://eyehealth.backend.zuktiinnovations.com" +
+                                                                          image[
+                                                                              index],
+                                                                    ),
                                                                   ),
                                                                 ),
                                                               ),
