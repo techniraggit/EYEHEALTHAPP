@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:alarm/alarm.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -478,7 +479,8 @@ class UserProfiledash extends State<UserDashboard> {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                 deleteUser();
+                                  _showConfirmationDialog();
+                                 // deleteUser();
                                 },
                                 child: Container(
                                   width:
@@ -578,10 +580,42 @@ class UserProfiledash extends State<UserDashboard> {
             ),
     );
   }
-
+  void _showConfirmationDialog() {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: Text("Confirm"),
+          content: Text("Are you sure you want to delete your account?"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            TextButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text(
+                "Delete",
+                style: TextStyle(color: Colors.red),
+              ),
+              onPressed: () {
+                // Perform delete operation
+                deleteUser();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );}
   void Logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String access_token = prefs.getString('access_token') ?? '';
+    // Alarm.stopAll();
     prefs.remove("isLoggedIn");
     prefs.remove("access_token");
     await prefs.clear();
@@ -646,8 +680,13 @@ class UserProfiledash extends State<UserDashboard> {
       );
 
       if (response.statusCode == 200) {
-        print("response--------${response.body}");
         Fluttertoast.showToast(msg: "User Account Deleted Succesfully!!");
+
+        // Alarm.stopAll();
+        prefs.remove("isLoggedIn");
+        prefs.remove("access_token");
+        await prefs.clear();
+        print("response--------${response.body}");
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => SignIn()),
               (Route<dynamic> route) => false,

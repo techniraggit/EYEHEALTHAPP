@@ -50,7 +50,7 @@ class SignInScreen extends State<SignIn> {
 
   Future<void> getFirebaseLoginToken() async {
     await [Permission.notification].request();
-    await [Permission.contacts].request();
+    // await [Permission.contacts].request();
     await [Permission.location].request();
 
     final fcmToken = await FirebaseMessaging.instance.getToken();
