@@ -22,6 +22,90 @@ import 'eyeFatigueTest/EyeFatigueSelfieScreen.dart';
 import 'eyeFatigueTest/eyeFatigueTest.dart';
 import 'models/fatigueGraphModel.dart';
 import 'notification/notification_dashboard.dart';
+class DotWithLabel extends StatelessWidget {
+  // final Color color;
+  final int index;
+
+  final String label;
+  final int point;
+
+  const DotWithLabel({
+    Key? key,
+    // required this.color,
+    required this.index,
+
+    required this.label,
+    required this.point,
+
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    return Container(
+      width: screenWidth, // Ensure the container spans the full width of the screen
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      child: Builder(
+          builder: (context) {
+            Color textColor = _getTextColor(index);
+
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                // Container(
+                //   width: 14.0,
+                //   height: 15.0,
+                //   decoration: BoxDecoration(
+                //     shape: BoxShape.circle,
+                //     color: color,
+                //   ),
+                // ),
+                //
+                // SizedBox(width: MediaQuery.of(context).size.width/4), // Adjust spacing as needed
+                Expanded(
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 20), // Adjust spacing as needed
+                Text(
+                  '$point',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: textColor,
+                    fontWeight: FontWeight.w600,
+
+                  ),
+                ),
+              ],
+            );
+          }
+      ),
+    );
+  }
+
+
+  Color _getTextColor(int index) {
+    // Define your logic to determine text color based on point value
+    if (index == 0) {
+      return Colors.green; // Example condition for green color
+    } else if (index == 1) {
+      return Colors.orange; // Example condition for orange color
+    }
+    else if (index == 2) {
+      return Colors.blue; // Example condition for orange color
+    }else {
+      return Colors.background; // Example condition for red color
+    }
+  }
+}
 
 class EyeHealthTrackDashboard extends StatefulWidget {
   @override
@@ -380,7 +464,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
             const Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
               child: Text(
-                'EYE HEALTH GRAPH OVERVIEW', // Display formatted current date
+                'EYE HEALTH OVERVIEW', // Display formatted current date
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -397,7 +481,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
 
                   width: MediaQuery.of(context).size.width,
                   child: Card(
-                    elevation: 0.1,
+                    elevation: 0.5,
                     color: Colors.white,
                     child: Column(
 
@@ -409,7 +493,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                                       Center(
 
                     child: Container(
-                    color: Colors.white,
+                    // color: Colors.white,
 
                         child:isLoading1
                             ? const Center(
@@ -417,23 +501,123 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                             color: Colors.blue,
                           ),
                         )
-                            : _buildVerticalSplineChart(),
+                            :                             Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              DotWithLabel(index: 0, label: 'Ideal Score',point:8),
+                              Divider(
+                                height: 20,
+                                thickness: 0.5,
+                                color: Colors.grey[400],
+                                indent: 20,
+                                endIndent: 20,
+                              ),
+                              SizedBox(height: 7,),
+                              DotWithLabel(index: 1, label: 'Percentile Score of the population',point:6),
+                              Divider(
+                                height: 20,
+                                thickness: 0.5,
+                                color: Colors.grey[400],
+                                indent: 20,
+                                endIndent: 20,
+                              ),
+                              SizedBox(height: 7,),
+
+                              DotWithLabel( index:2,label: 'Your Avg. Score',point:5),
+                              Divider(
+                                height: 20,
+                                thickness: 0.5,
+                                color: Colors.grey[400],
+                                indent: 20,
+                                endIndent: 20,
+                              ),
+                              SizedBox(height: 7,),
+
+                              DotWithLabel(index: 3, label: 'Your First Score',point:4),//color: Colors.black,
+                            ],
+                          ),
+                        ),
+
+                      // _buildVerticalSplineChart(),
 
 
                     ),
                                       ),
-                        SizedBox(height: 10), // Adjust spacing between chart and color descriptions
+                                    SizedBox(height: 20,),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(5.0),
+                                            child: Container(
+                                              width: 10,
+                                              height: 10,
+                                              decoration: BoxDecoration(
+                                                color: Colors.background, // Adjust color as needed
+                                                shape: BoxShape.circle,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(width: 8),
+                                          Expanded(
+                                            child: Text(
+                                              'Score 10 indicates - You have Perfect Eyes',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.background, // Adjust text color as needed
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
 
+                                    SizedBox(height: 10,),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(6.0),
+                                            child: Container(
+                                              width: 10,
+                                              height: 10,
+                                              decoration: BoxDecoration(
+                                                color: Colors.redAccent, // Adjust color as needed
+                                                shape: BoxShape.circle,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(width: 8),
+                                          Expanded(
+                                            child: Text(
+                                              'Score 3 indicates - Your eyes need Urgent attention',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.redAccent, // Adjust text color as needed
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                         // Color descriptions
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            // _buildColorDescription(Colors.black, 'First Test'),
-                            _buildColorDescription(Colors.green, 'Ideal'),
-                            // _buildColorDescription(Colors.orange, 'Percentile'),
-                            _buildColorDescription(Colors.blue, 'User avg'),
-                          ],
-                        ),},
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        //   children: [
+                        //     // _buildColorDescription(Colors.black, 'First Test'),
+                        //     _buildColorDescription(Colors.green, 'Ideal'),
+                        //     // _buildColorDescription(Colors.orange, 'Percentile'),
+                        //     _buildColorDescription(Colors.blue, 'User avg'),
+                        //   ],
+                        // ),
+                                  },
 
 
 

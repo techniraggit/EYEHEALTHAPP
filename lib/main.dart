@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:alarm/alarm.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -22,6 +23,7 @@ import 'package:project_new/digitalEyeTest/testScreen.dart';
 import 'package:project_new/eyeFatigueTest/ReportPage.dart';
 import 'package:project_new/sign_up.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:upgrader/upgrader.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'FirebaseOptions/FirebaseApi.dart';
 import 'Rewards/rewards_sync.dart';
@@ -50,12 +52,13 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message)async {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Upgrader.clearSavedSettings(); // REMOVE this for release builds
 
   // FlutterAlarmBackgroundTrigger.initialize();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  await dotenv.load(fileName: ".env");
+  // await dotenv.load(fileName: ".env");
 
-//  await Alarm.init();
+ await Alarm.init();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await FirebaseMessaging.instance.setAutoInitEnabled(true);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);

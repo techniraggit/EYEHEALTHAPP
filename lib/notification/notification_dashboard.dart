@@ -54,20 +54,20 @@ class _NotificationSideBarState extends State<NotificationSideBar> {
                       style: TextStyle(fontSize: 13,fontWeight: FontWeight.bold,color: Colors.background),
                     ),
                   ),
-                  // Padding(
-                  //   padding: EdgeInsets.fromLTRB(2.0,30,2,2),
-                  //   child: ElevatedButton(
-                  //     onPressed: _makeAllRead, // Call _makeAPICall function when button is pressed
-                  //     style: ElevatedButton.styleFrom(
-                  //       padding: EdgeInsets.all(1.0), // Adjust padding as needed
-                  //       shape: RoundedRectangleBorder(
-                  //         borderRadius: BorderRadius.circular(8.0), // Adjust border radius as needed
-                  //       ),
-                  //     ),
-                  //     child: Text('Read all'),
-                  //   ),
-                  // )
-                  // ,
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(2.0,30,2,2),
+                    child: ElevatedButton(
+                      onPressed: _makeAllRead, // Call _makeAPICall function when button is pressed
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.all(1.0), // Adjust padding as needed
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0), // Adjust border radius as needed
+                        ),
+                      ),
+                      child: Text('Read all'),
+                    ),
+                  )
+                  ,
                   Padding(
                     padding: const EdgeInsets.fromLTRB(2.0,30,2,2),
                     child: IconButton(
@@ -331,7 +331,7 @@ class _NotificationSideBarState extends State<NotificationSideBar> {
     var url = Uri.parse('${ApiProvider.baseUrl}${ApiProvider.update_notification_status}');
 
     // Make GET request
-    var response = await http.get(url,headers: headers);
+    var response = await http.patch(url,headers: headers);
 
     // Check if request was successful
     if (response.statusCode == 200) {
