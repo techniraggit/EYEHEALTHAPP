@@ -3,8 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:action_broadcast/action_broadcast.dart';
-import 'package:alarm/alarm.dart';
-import 'package:alarm/model/alarm_settings.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -25,11 +24,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'Custom_navbar/bottom_navbar.dart';
-import 'alarm/SharedPref.dart';
 import 'api/Api.dart';
 import 'api/config.dart';
-
-import 'eyeFatigueTest/eyeFatigueTest.dart';
 import 'models/fatigueGraphModel.dart';
 import 'notification/notification_dashboard.dart';
 
@@ -124,9 +120,9 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   // Define selectedDate within the _CalendarButtonState class
   final GlobalKey<ScaffoldState> _scafoldKey = GlobalKey();
 
-  late List<AlarmSettings> alarms;
+ // late List<AlarmSettings> alarms;
   List<Map<String, dynamic>>? _datagraph;
-  static StreamSubscription<AlarmSettings>? subscription;
+ // static StreamSubscription<AlarmSettings>? subscription;
   late DateTime _fromDate;
   late DateTime _toDate;
 
@@ -159,7 +155,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   @override
   void dispose() {
     _timer?.cancel();
-    subscription?.cancel();
+    //subscription?.cancel();
     super.dispose();
   }
 
@@ -167,15 +163,15 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   void initState() {
     super.initState();
 
-    if (Alarm.android) {
+ /*   if (Alarm.android) {
       checkAndroidNotificationPermission();
       checkAndroidScheduleExactAlarmPermission();
     }
     loadAlarms();
     getGraph();
-    _startTimer();
+    _startTimer();*/
 
-    subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
+   // subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
     Future.delayed(const Duration(seconds: 1), () {})
         .then((_) => getNotifactionCount())
         .then((_) {
@@ -248,6 +244,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     }
   }
 
+/*
   Future<void> loadAlarms() async {
     var sharedPref = await SharedPreferences.getInstance();
     edited = sharedPref.getBool("edited") ?? false;
@@ -297,7 +294,9 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
       }
     }
   }
+*/
 
+/*
   AlarmSettings buildAlarmSettings(int i, DateTime duration) {
     final id = DateTime.now().millisecondsSinceEpoch % 10000 + i;
     final alarmSettings = AlarmSettings(
@@ -312,8 +311,9 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
         isAlarmOn: true);
     return alarmSettings;
   }
+*/
 
-  Future<void> saveAlarm(int i, DateTime duration) async {
+ /* Future<void> saveAlarm(int i, DateTime duration) async {
     await Alarm.set(alarmSettings: buildAlarmSettings(i, duration));
     alarms = Alarm.getAlarms();
     alarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
@@ -330,7 +330,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     );
     loadAlarms();
   }
-
+*/
   Future<void> checkAndroidExternalStoragePermission() async {
     final status = await Permission.storage.status;
     if (status.isDenied) {
@@ -345,6 +345,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     }
   }
 
+/*
   Future<void> navigateToAlarmScreen(AlarmSettings? settings) async {
     final res = await showModalBottomSheet<bool?>(
       context: context,
@@ -362,6 +363,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
 
     if (res != null && res == true) loadAlarms();
   }
+*/
 
   @override
   Widget build(BuildContext context) {
@@ -538,14 +540,90 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
           ],
         ),
       ),
-
-
-
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CarouselSlider(
+                items: [
+                  //1st Image of Slider
+                  Container(
+                    margin: EdgeInsets.all(6.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      image: DecorationImage(
+                        image: AssetImage('assets/slider1.png'),//NetworkImage("ADD IMAGE URL HERE"),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+
+                  //2nd Image of Slider
+                  Container(
+                    margin: EdgeInsets.all(6.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      image: DecorationImage(
+                        image: AssetImage('assets/slider2.png'),//NetworkImage("ADD IMAGE URL HERE"),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+
+                  //3rd Image of Slider
+                  Container(
+                    margin: EdgeInsets.all(6.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      image: DecorationImage(
+                        image: AssetImage('assets/slider3.png'),//NetworkImage("ADD IMAGE URL HERE"),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+
+                  //4th Image of Slider
+                  Container(
+                    margin: EdgeInsets.all(6.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      image: DecorationImage(
+                        image: AssetImage('assets/slider1.png'),//NetworkImage("ADD IMAGE URL HERE"),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+
+                  //5th Image of Slider
+                  Container(
+                    margin: EdgeInsets.all(6.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      image: DecorationImage(
+                        image: AssetImage('assets/slider2.png'),//NetworkImage("ADD IMAGE URL HERE"),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+
+                ],
+
+                //Slider Container properties
+                options: CarouselOptions(
+                  height: 180.0,
+                  enlargeCenterPage: true,
+                  autoPlay: true,
+                  aspectRatio: 16 / 9,
+                  autoPlayCurve: Curves.fastOutSlowIn,
+                  enableInfiniteScroll: true,
+                  autoPlayAnimationDuration: Duration(milliseconds: 800),
+                  viewportFraction: 0.8,
+                ),
+              ),
+            ),
+    Padding(
               padding: const EdgeInsets.all(15.0),
               child: GestureDetector(
                 onTap: () {
@@ -586,12 +664,12 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                 ),
                 GestureDetector(
                     onTap: () {
-                      Navigator.push(
+                     /* Navigator.push(
                         context,
                         MaterialPageRoute<void>(
                           builder: (context) => const ExampleAlarmHomeScreen(),
                         ),
-                      );
+                      );*/
                     },
                     child:Icon(
                       Icons.alarm, // Replace with the alarm icon from Icons class
@@ -1712,10 +1790,11 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
   }
 }
 
+/*
 class ExampleAlarmRingScreen extends StatelessWidget {
   const ExampleAlarmRingScreen({required this.alarmSettings, super.key});
 
-  final AlarmSettings alarmSettings;
+ // final AlarmSettings alarmSettings;
 //TODO Data Change Alarm Design
   @override
   Widget build(BuildContext context) {
@@ -1770,3 +1849,4 @@ class ExampleAlarmRingScreen extends StatelessWidget {
     );
   }
 }
+*/
