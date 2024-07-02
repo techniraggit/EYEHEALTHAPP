@@ -2546,7 +2546,7 @@ class SignUpScreen extends State<SignUp> {
             context,
             CupertinoPageRoute(builder: (context) => SignIn()),
           );
-          print("Email verified $data");
+          // print("Email verified $data");
         } else {
           Map<String, dynamic> responseMap = json.decode(response.body);
 
