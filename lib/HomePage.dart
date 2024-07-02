@@ -99,6 +99,8 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   List<FlSpot> _value = [];
   List<_ChartData>? chartData;
   List<_ChartData2>? chartData2;
+  double first_day_data=0.0;double current_day_data=0.0;double get_percentile_graph=0.0;double get_ideal_graph=0.0;
+
 
   List<FlSpot> _spots = [FlSpot(0, 0)]; // Initialize _spots as needed
   bool fatigue_left = false;
@@ -682,67 +684,270 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                 ),
               ],
             ),
+            // Container(
+            //   color: Colors.white,
+            //   child: Padding(
+            //     padding:
+            //     const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
+            //     child: Container(
+            //       color: Colors.white,
+            //       width: MediaQuery.of(context).size.width,
+            //       child: Column(
+            //         crossAxisAlignment: CrossAxisAlignment.start,
+            //         children: [
+            //           if (chartData != null) ...{
+            //             Center(
+            //               child: Card(
+            //                 color: Colors.white,
+            //                 elevation: 0.5,
+            //                 child: isLoading1
+            //                     ? const Center(
+            //                   child: CircularProgressIndicator(
+            //                     color: Colors.blue,
+            //                   ),
+            //                 )
+            //                     :
+            //                 Center(
+            //                   child: Column(
+            //                     mainAxisAlignment: MainAxisAlignment.center,
+            //                     children: <Widget>[
+            //                       DotWithLabel(index: 0, label: 'Ideal Score',point:8),
+            //                       Divider(
+            //                         height: 5,
+            //                         thickness: 0.5,
+            //                         color: Colors.grey[400],
+            //                         indent: 20,
+            //                         endIndent: 20,
+            //                       ),
+            //                       SizedBox(height: 5,),
+            //                       DotWithLabel(index: 1, label: 'Percentile Score of the population',point:6),
+            //                       Divider(
+            //                         height: 5,
+            //                         thickness: 0.5,
+            //                         color: Colors.grey[400],
+            //                         indent: 20,
+            //                         endIndent: 20,
+            //                       ),
+            //                       SizedBox(height: 5,),
+            //
+            //                       DotWithLabel( index:2,label: 'Your Avg. Score',point:5),
+            //                       Divider(
+            //                         height: 5,
+            //                         thickness: 0.5,
+            //                         color: Colors.grey[400],
+            //                         indent: 20,
+            //                         endIndent: 20,
+            //                       ),
+            //                       SizedBox(height: 5,),
+            //
+            //                       DotWithLabel(index: 3, label: 'Your First Score',point:4),//color: Colors.black,
+            //                     ],
+            //                   ),
+            //                 ),
+            //                 // _buildVerticalSplineChart(),
+            //               ),
+            //             ),
+            //             SizedBox(height: 20,),
+            //             Padding(
+            //               padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
+            //               child: Row(
+            //                 crossAxisAlignment: CrossAxisAlignment.start,
+            //                 children: [
+            //                   Padding(
+            //                     padding: const EdgeInsets.all(5.0),
+            //                     child: Container(
+            //                       width: 10,
+            //                       height: 10,
+            //                       decoration: BoxDecoration(
+            //                         color: Colors.background, // Adjust color as needed
+            //                         shape: BoxShape.circle,
+            //                       ),
+            //                     ),
+            //                   ),
+            //                   SizedBox(width: 8),
+            //                   Expanded(
+            //                     child: Text(
+            //                       'Score 10 indicates - You have Perfect Eyes',
+            //                       style: TextStyle(
+            //                         fontSize: 12,
+            //                         fontWeight: FontWeight.w600,
+            //                         color: Colors.background, // Adjust text color as needed
+            //                       ),
+            //                     ),
+            //                   ),
+            //                 ],
+            //               ),
+            //             ),
+            //
+            //             SizedBox(height: 10,),
+            //             Padding(
+            //               padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
+            //               child: Row(
+            //                 crossAxisAlignment: CrossAxisAlignment.start,
+            //                 children: [
+            //                   Padding(
+            //                     padding: const EdgeInsets.all(6.0),
+            //                     child: Container(
+            //                       width: 10,
+            //                       height: 10,
+            //                       decoration: BoxDecoration(
+            //                         color: Colors.redAccent, // Adjust color as needed
+            //                         shape: BoxShape.circle,
+            //                       ),
+            //                     ),
+            //                   ),
+            //                   SizedBox(width: 8),
+            //                   Expanded(
+            //                     child: Text(
+            //                       'Score 3 indicates - Your eyes need Urgent attention',
+            //                       style: TextStyle(
+            //                         fontSize: 12,
+            //                         fontWeight: FontWeight.w600,
+            //                         color: Colors.redAccent, // Adjust text color as needed
+            //                       ),
+            //                     ),
+            //                   ),
+            //                 ],
+            //               ),
+            //             ),
+            //
+            //
+            //
+            //
+            //
+            //
+            //
+            //             // const SizedBox(
+            //             //     height:
+            //             //     10), // Adjust spacing between chart and color descriptions
+            //
+            //             // Color descriptions
+            //             // Center(
+            //             //   child: SingleChildScrollView(
+            //             //     scrollDirection: Axis.horizontal,
+            //             //     child: Row(
+            //             //       children: [
+            //             //         const SizedBox(width: 9),
+            //             //         _buildColorDescription(
+            //             //             Colors.green, 'Ideal Score'),
+            //             //         const SizedBox(width: 9),
+            //             //         _buildColorDescription(
+            //             //             Colors.blue, 'User Average Score'),
+            //             //         const SizedBox(width: 9),
+            //             //       ],
+            //             //     ),
+            //             //   ),
+            //             // )
+            //           },
+            //           if (count == 0 && isLoading1 == false) ...{
+            //             const SizedBox(height: 10),
+            //             const Padding(
+            //               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
+            //               child: Text(
+            //                 'Get your first test done now and start tracking your eye health.',
+            //                 // Display formatted current date
+            //                 style:
+            //                 TextStyle(fontSize: 14, color: Colors.black),
+            //               ),
+            //             ),
+            //             const SizedBox(height: 9),
+            //             Center(
+            //               child: Padding(
+            //                 padding: const EdgeInsets.all(8.0),
+            //                 child: ElevatedButton(
+            //                   onPressed: () {
+            //                     requestPermission();
+            //                     // Navigator.push(
+            //                     //   context,
+            //                     //   MaterialPageRoute(
+            //                     //       builder: (context) =>
+            //                     //           EyeFatigueSelfieScreen()),
+            //                     // );
+            //                   },
+            //                   child: const Text('Start Test Now'),
+            //                   style: ElevatedButton.styleFrom(
+            //                     minimumSize: const Size(200, 45),
+            //                     foregroundColor: Colors.white,
+            //                     backgroundColor: Colors.bluebutton,
+            //                     shape: RoundedRectangleBorder(
+            //                       borderRadius: BorderRadius.circular(25),
+            //                     ),
+            //                   ),
+            //                 ),
+            //               ),
+            //             ),
+            //           },
+            //           const SizedBox(height: 19),
+            //         ],
+            //       ),
+            //     ),
+            //   ),
+            // ),
             Container(
               color: Colors.white,
               child: Padding(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
+                padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
                 child: Container(
-                  color: Colors.white,
+                  // color: Colors.white,
                   width: MediaQuery.of(context).size.width,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (chartData != null) ...{
+                  child: Card(
+                    color: Colors.white,
+                    elevation: 0.2,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // if (chartData != null) ...{
+                        // Center(
+                        //   child: Container(
+                        //     color: Colors.white,
+                        //     child: _buildVerticalSplineChart(),
+                        //   ),
+                        // ),
+                        // SizedBox(height: 10),
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        //   children: [
+                        //     _buildColorDescription(Colors.black, 'First Test'),
+                        //     _buildColorDescription(Colors.green, 'Ideal'),
+                        //     _buildColorDescription(Colors.orange, 'Percentile'),
+                        //     _buildColorDescription(Colors.blue, 'User avg'),
+                        //   ],
+                        // ),
                         Center(
-                          child: Card(
-                            color: Colors.white,
-                            elevation: 0.5,
-                            child: isLoading1
-                                ? const Center(
-                              child: CircularProgressIndicator(
-                                color: Colors.blue,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              DotWithLabel(index: 0, label: 'Ideal Score',point:get_ideal_graph.toDouble(), ),
+                              Divider(
+                                height: 5,
+                                thickness: 0.5,
+                                color: Colors.grey[400],
+                                indent: 20,
+                                endIndent: 20,
                               ),
-                            )
-                                :
-                            Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  DotWithLabel(index: 0, label: 'Ideal Score',point:8),
-                                  Divider(
-                                    height: 5,
-                                    thickness: 0.5,
-                                    color: Colors.grey[400],
-                                    indent: 20,
-                                    endIndent: 20,
-                                  ),
-                                  SizedBox(height: 5,),
-                                  DotWithLabel(index: 1, label: 'Percentile Score of the population',point:6),
-                                  Divider(
-                                    height: 5,
-                                    thickness: 0.5,
-                                    color: Colors.grey[400],
-                                    indent: 20,
-                                    endIndent: 20,
-                                  ),
-                                  SizedBox(height: 5,),
-
-                                  DotWithLabel( index:2,label: 'Your Avg. Score',point:5),
-                                  Divider(
-                                    height: 5,
-                                    thickness: 0.5,
-                                    color: Colors.grey[400],
-                                    indent: 20,
-                                    endIndent: 20,
-                                  ),
-                                  SizedBox(height: 5,),
-
-                                  DotWithLabel(index: 3, label: 'Your First Score',point:4),//color: Colors.black,
-                                ],
+                              SizedBox(height: 7,),
+                              DotWithLabel(index: 1, label: 'Percentile Score of the population',point:get_percentile_graph.toDouble(),),
+                              Divider(
+                                height: 5,
+                                thickness: 0.5,
+                                color: Colors.grey[400],
+                                indent: 20,
+                                endIndent: 20,
                               ),
-                            ),
-                            // _buildVerticalSplineChart(),
+                              SizedBox(height: 7,),
+
+                              DotWithLabel( index:2,label: 'Your Avg. Score',point:current_day_data.toDouble(),),
+                              Divider(
+                                height: 5,
+                                thickness: 0.5,
+                                color: Colors.grey[400],
+                                indent: 20,
+                                endIndent: 20,
+                              ),
+                              SizedBox(height: 7,),
+
+                              DotWithLabel(index: 3, label: 'Your First Score',point:first_day_data.toDouble(),),//color: Colors.black,
+                            ],
                           ),
                         ),
                         SizedBox(height: 20,),
@@ -815,72 +1020,90 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
 
 
 
-                        // const SizedBox(
-                        //     height:
-                        //     10), // Adjust spacing between chart and color descriptions
 
-                        // Color descriptions
-                        // Center(
-                        //   child: SingleChildScrollView(
-                        //     scrollDirection: Axis.horizontal,
-                        //     child: Row(
-                        //       children: [
-                        //         const SizedBox(width: 9),
-                        //         _buildColorDescription(
-                        //             Colors.green, 'Ideal Score'),
-                        //         const SizedBox(width: 9),
-                        //         _buildColorDescription(
-                        //             Colors.blue, 'User Average Score'),
-                        //         const SizedBox(width: 9),
-                        //       ],
-                        //     ),
-                        //   ),
-                        // )
-                      },
-                      if (count == 0 && isLoading1 == false) ...{
-                        const SizedBox(height: 10),
-                        const Padding(
-                          padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
-                          child: Text(
-                            'Get your first test done now and start tracking your eye health.',
-                            // Display formatted current date
-                            style:
-                            TextStyle(fontSize: 14, color: Colors.black),
+                        if   (count==0)...{
+                          SizedBox(height: 10),
+
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
+                            child: Text(
+                              'Get your first test done now and start tracking your eye health.', // Display formatted current date
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 9),
-                        Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                requestPermission();
-                                // Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //       builder: (context) =>
-                                //           EyeFatigueSelfieScreen()),
-                                // );
-                              },
-                              child: const Text('Start Test Now'),
-                              style: ElevatedButton.styleFrom(
-                                minimumSize: const Size(200, 45),
-                                foregroundColor: Colors.white,
-                                backgroundColor: Colors.bluebutton,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25),
+                          SizedBox(height: 9),
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ElevatedButton(
+                                onPressed: () {
+
+                                  requestPermission();
+
+                                  // Navigator.push(
+                                  // context,
+                                  // MaterialPageRoute(
+                                  // builder: (context) => EyeFatigueSelfieScreen()),
+                                  // );
+                                },
+                                child: Text('Start Test Now'),
+                                style: ElevatedButton.styleFrom(
+                                  minimumSize: Size(200, 45),
+                                  foregroundColor: Colors.white,
+                                  backgroundColor: Colors.bluebutton,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      },
-                      const SizedBox(height: 19),
-                    ],
+                          // SizedBox(height: 30),
+                          // Center(
+                          //   child: Column(
+                          //     mainAxisAlignment: MainAxisAlignment.center,
+                          //     children: <Widget>[
+                          //       SizedBox(height: 30),
+                          //       Image.asset(
+                          //         'assets/error.png', // Replace with your image path
+                          //         width: 200, // Adjust width as needed
+                          //         height: 250, // Adjust height as needed
+                          //       ),
+                          //       SizedBox(height: 20), // Adjust spacing between image and text
+                          //
+                          //       Padding(
+                          //         padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          //         child: Text(
+                          //           'No Reports to Show',
+                          //           textAlign: TextAlign.center,
+                          //           style: TextStyle(
+                          //             fontSize: 16,
+                          //             color: Colors.black,
+                          //           ),
+                          //         ),
+                          //       ),
+                          //     ],
+                          //   ),
+                          // ),
+                          // SizedBox(height: 30),
+
+                        },
+
+
+                        // },
+
+
+                        SizedBox(height: 29),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),      SizedBox(
+            ),
+
+            SizedBox(
               height: 8,),
 
              Padding(
@@ -1365,79 +1588,84 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
       int no_of_eye_ = jsonData['no_of_eye_test'];
       dynamic eye_hscore = jsonData['eye_health_score'];
       setState(() {
+        first_day_data=jsonData['first_day_data'].toDouble();
+        current_day_data=jsonData['current_day_data'].toDouble();
+        get_percentile_graph=jsonData['get_percentile_graph'].toDouble();
+        get_ideal_graph=jsonData['get_ideal_graph'].toDouble();
         // _datagraph = List<Map<String, dynamic>>.from(jsonData['data']);
         no_of_fatigue_test = no_of_fatigue.toString();
         no_of_eye_test = no_of_eye_.toString();
         eye_health_score = eye_hscore.toString();
       });
-      if (responseData.containsKey('status') && responseData['status']) {
-        if (responseData.containsKey('first_day_data') &&
-            responseData['first_day_data'].containsKey('value')) {
-          List<dynamic> firstDayValue = responseData['first_day_data']['value'];
-          firstTestgraphData
-              .addAll(firstDayValue.map((value) => value.toDouble()));
-        }
-        if (responseData.containsKey('current_day_data') &&
-            responseData['current_day_data'].containsKey('value')) {
-          List<dynamic> currentDayValue =
-          responseData['current_day_data']['value'];
-          todaygraphData
-              .addAll(currentDayValue.map((value) => value.toDouble()));
-        }
-        if (responseData.containsKey('get_percentile_graph')) {
-          List<dynamic> population =
-          List<dynamic>.from(jsonData['get_percentile_graph']);
 
-          populationTestgraphData
-              .addAll(population.map((value) => value.toDouble()));
-        }
-        if (responseData.containsKey('get_ideal_graph')) {
-          List<dynamic> ideal = List<dynamic>.from(jsonData['get_ideal_graph']);
-
-          idealTestgraphData.addAll(ideal.map((value) => value.toDouble()));
-        }
-      }
+      // if (responseData.containsKey('status') && responseData['status']) {
+      //   if (responseData.containsKey('first_day_data') &&
+      //       responseData['first_day_data'].containsKey('value')) {
+      //     List<dynamic> firstDayValue = responseData['first_day_data']['value'];
+      //     firstTestgraphData
+      //         .addAll(firstDayValue.map((value) => value.toDouble()));
+      //   }
+      //   if (responseData.containsKey('current_day_data') &&
+      //       responseData['current_day_data'].containsKey('value')) {
+      //     List<dynamic> currentDayValue =
+      //     responseData['current_day_data']['value'];
+      //     todaygraphData
+      //         .addAll(currentDayValue.map((value) => value.toDouble()));
+      //   }
+      //   if (responseData.containsKey('get_percentile_graph')) {
+      //     List<dynamic> population =
+      //     List<dynamic>.from(jsonData['get_percentile_graph']);
+      //
+      //     populationTestgraphData
+      //         .addAll(population.map((value) => value.toDouble()));
+      //   }
+      //   if (responseData.containsKey('get_ideal_graph')) {
+      //     List<dynamic> ideal = List<dynamic>.from(jsonData['get_ideal_graph']);
+      //
+      //     idealTestgraphData.addAll(ideal.map((value) => value.toDouble()));
+      //   }
+      // }
       print("fffffffffffffff$todaygraphData");
-      setState(() {
-        if (firstTestgraphData.isNotEmpty) {
-          chartData = <_ChartData>[
-            _ChartData('6 AM', firstTestgraphData[0], idealTestgraphData[0],
-                populationTestgraphData[0], todaygraphData[0]),
-            _ChartData('9 AM', firstTestgraphData[1], idealTestgraphData[1],
-                populationTestgraphData[1], todaygraphData[1]),
-            _ChartData('12 PM', firstTestgraphData[2], idealTestgraphData[2],
-                populationTestgraphData[2], todaygraphData[2]),
-            _ChartData('3 PM', firstTestgraphData[3], idealTestgraphData[3],
-                populationTestgraphData[3], todaygraphData[3]),
-            _ChartData('6 PM', firstTestgraphData[4], idealTestgraphData[4],
-                populationTestgraphData[4], todaygraphData[4]),
-            _ChartData('9 PM', firstTestgraphData[5], idealTestgraphData[5],
-                populationTestgraphData[5], todaygraphData[5]),
-            _ChartData('12 AM', firstTestgraphData[6], idealTestgraphData[6],
-                populationTestgraphData[6], todaygraphData[6]),
-          ];
-        } else {
-          chartData2 = <_ChartData2>[
-            _ChartData2(
-                '6 AM', idealTestgraphData[0], populationTestgraphData[0]),
-            _ChartData2(
-                '9 AM', idealTestgraphData[1], populationTestgraphData[1]),
-            _ChartData2(
-                '12 PM', idealTestgraphData[2], populationTestgraphData[2]),
-            _ChartData2(
-                '3 PM', idealTestgraphData[3], populationTestgraphData[3]),
-            _ChartData2(
-              '6 PM',
-              idealTestgraphData[4],
-              populationTestgraphData[4],
-            ),
-            _ChartData2(
-                '9 PM', idealTestgraphData[5], populationTestgraphData[5]),
-            _ChartData2(
-                '12 AM', idealTestgraphData[6], populationTestgraphData[6])
-          ];
-        }
-      });
+      // setState(() {
+      //   if (firstTestgraphData.isNotEmpty) {
+      //     chartData = <_ChartData>[
+      //       _ChartData('6 AM', firstTestgraphData[0], idealTestgraphData[0],
+      //           populationTestgraphData[0], todaygraphData[0]),
+      //       _ChartData('9 AM', firstTestgraphData[1], idealTestgraphData[1],
+      //           populationTestgraphData[1], todaygraphData[1]),
+      //       _ChartData('12 PM', firstTestgraphData[2], idealTestgraphData[2],
+      //           populationTestgraphData[2], todaygraphData[2]),
+      //       _ChartData('3 PM', firstTestgraphData[3], idealTestgraphData[3],
+      //           populationTestgraphData[3], todaygraphData[3]),
+      //       _ChartData('6 PM', firstTestgraphData[4], idealTestgraphData[4],
+      //           populationTestgraphData[4], todaygraphData[4]),
+      //       _ChartData('9 PM', firstTestgraphData[5], idealTestgraphData[5],
+      //           populationTestgraphData[5], todaygraphData[5]),
+      //       _ChartData('12 AM', firstTestgraphData[6], idealTestgraphData[6],
+      //           populationTestgraphData[6], todaygraphData[6]),
+      //     ];
+      //   } else {
+      //     chartData2 = <_ChartData2>[
+      //       _ChartData2(
+      //           '6 AM', idealTestgraphData[0], populationTestgraphData[0]),
+      //       _ChartData2(
+      //           '9 AM', idealTestgraphData[1], populationTestgraphData[1]),
+      //       _ChartData2(
+      //           '12 PM', idealTestgraphData[2], populationTestgraphData[2]),
+      //       _ChartData2(
+      //           '3 PM', idealTestgraphData[3], populationTestgraphData[3]),
+      //       _ChartData2(
+      //         '6 PM',
+      //         idealTestgraphData[4],
+      //         populationTestgraphData[4],
+      //       ),
+      //       _ChartData2(
+      //           '9 PM', idealTestgraphData[5], populationTestgraphData[5]),
+      //       _ChartData2(
+      //           '12 AM', idealTestgraphData[6], populationTestgraphData[6])
+      //     ];
+      //   }
+      // });
 
       count = jsonData['no_of_eye_test'];
       isLoading1 = false;

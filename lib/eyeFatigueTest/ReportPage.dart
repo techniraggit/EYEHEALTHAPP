@@ -764,7 +764,8 @@ class __ReportFatigueTestState extends State<_ReportFatigueTest> {
   List<dynamic> percentage = [];
 
   String testResult = 'Good';
-  int count = 0;double first_day_data=0.0;double current_day_data=0.0;double get_percentile_graph=0.0;double get_ideal_graph=0.0;
+  int count = 0;
+  double first_day_data=0.0;double current_day_data=0.0;double get_percentile_graph=0.0;double get_ideal_graph=0.0;
   List<Prescription> prescriptions = [];
   fatigueGraph? fatigueGraphData;
   bool midtiredness_right = false;
@@ -936,7 +937,7 @@ class __ReportFatigueTestState extends State<_ReportFatigueTest> {
                   width: MediaQuery.of(context).size.width,
                   child: Card(
                     color: Colors.white,
-                    elevation: 0.5,
+                    elevation: 0.2,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -957,9 +958,7 @@ class __ReportFatigueTestState extends State<_ReportFatigueTest> {
                           //     _buildColorDescription(Colors.blue, 'User avg'),
                           //   ],
                           // ),
-
-
-                                                   Center(
+                      Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[

@@ -214,14 +214,14 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
             elevation: 4.0, // Shadow
             child: InkWell(
               onTap: () {
-                Navigator.of(context).pop();
-                // Navigator.push(
-                //   context, CupertinoPageRoute(
-                //   builder: (context) => HomePage(
-                //   ),
-                // ),
-                //
-                // );
+                // Navigator.of(context).pop();
+                Navigator.push(
+                  context, CupertinoPageRoute(
+                  builder: (context) => HomePage(
+                  ),
+                ),
+
+                );
               },
               child: SizedBox(
                 width: 53.0, // Width of the FloatingActionButton
