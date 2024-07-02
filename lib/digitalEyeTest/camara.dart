@@ -227,7 +227,6 @@ class _CameraScreenState extends State<CameraS> {
               ),
             ),
             // Replay audio button below app bar
-
           ],
         ),
       ),

@@ -361,12 +361,8 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
           ),
         ),
       ),
-
-
-
-
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(50),
+        preferredSize: const Size.fromHeight(52),
         child: Stack(
           children: [
             Align(
@@ -387,7 +383,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                 style: TextStyle(
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: Colors.black87,
                   // Adjust size as needed
                   // Add other styling properties as needed
                 ),
@@ -395,7 +391,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
             ),
             Positioned(
               right: 16,
-              top: 16,
+              top: 10,
               child: GestureDetector(
                 onTap: () async {
                   _scafoldKey.currentState!.openEndDrawer();
@@ -404,14 +400,18 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                        color: const Color(0xffF9F9FA),
-                        borderRadius: BorderRadius.circular(17.0),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20.0),
+                        border: Border.all(
+                          color: Colors.grey, // Border color
+                          width: 1.0, // Border width
+                        ),
                       ),
-                      height: 40,
-                      width: 40,
+                      height: 35,
+                      width: 35,
                       child: Center(
                         child: Icon(
-                          Icons.notifications,
+                          Icons.notifications_none,
                           color: Colors.black,
                         ),
                       ),
@@ -453,13 +453,69 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                 'Today $formattedDate', // Display formatted current date
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
+                  color: Colors.black45
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Image.asset('assets/banner1.png'),
+            Stack(
+              children: [
+                // Image
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Image.asset('assets/banner1.png'),
+                ),
+                // Positioned text - Eye health score
+                Positioned.fill(
+                  left: MediaQuery.of(context).size.width * 0.37,
+                  top: MediaQuery.of(context).size.height * 0.15, // Adjust this fraction as needed
+// Adjust this fraction as needed
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: Text(
+                      'Your eye health score',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                // Positioned text - Eye health score value with gradient
+                Positioned.fill(
+                  left: MediaQuery.of(context).size.width * 0.35, // Adjust this fraction as needed
+                  top: MediaQuery.of(context).size.height * 0.2, // Adjust this fraction as needed
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: ShaderMask(
+                      shaderCallback: (Rect bounds) {
+                        return const RadialGradient(
+                          radius: 1.0,
+                          colors: [
+                            Color(0xFFFFF400),
+                            Color(0xFFFFE800),
+                            Color(0xFFFFCA00),
+                            Color(0xFFFF9A00),
+                            Color(0xFFFF9800),
+                          ],
+                        ).createShader(bounds);
+                      },
+                      child: Text(
+                        eye_health_score,
+                        style: TextStyle(
+                          fontSize: 31,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
+
+
 
             const Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),

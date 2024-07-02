@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:action_broadcast/action_broadcast.dart';
-import 'package:alarm/alarm.dart';
-import 'package:alarm/model/alarm_settings.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -12,6 +10,7 @@ import 'package:flutter/material.dart';
 
 import 'package:fl_chart/fl_chart.dart' hide AxisTitle;
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -26,7 +25,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'Custom_navbar/bottom_navbar.dart';
-import 'alarm/SharedPref.dart';
 import 'api/Api.dart';
 import 'api/config.dart';
 import 'models/fatigueGraphModel.dart';
@@ -70,7 +68,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   @override
   Iterable<StreamSubscription> get registerSubscriptions sync* {
     yield registerReceiver(['actionMusicPlaying']).listen(
-          (intent) {
+      (intent) {
         switch (intent.action) {
           case 'actionMusicPlaying':
             setState(() {
@@ -86,6 +84,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   List<String>? dates;
   int i = 0;
   bool edited = false;
+
   // List<Feature>? features;
   List<String>? labelX;
   int count = 0;
@@ -120,12 +119,14 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   bool isLoading1 = true;
   int? isReadFalseCount = 0;
   late Timer? _timer;
+
   // Define selectedDate within the _CalendarButtonState class
   final GlobalKey<ScaffoldState> _scafoldKey = GlobalKey();
 
-  late List<AlarmSettings> alarms;
+  // late List<AlarmSettings> alarms;
   List<Map<String, dynamic>>? _datagraph;
-  static StreamSubscription<AlarmSettings>? subscription;
+
+  // static StreamSubscription<AlarmSettings>? subscription;
   late DateTime _fromDate;
   late DateTime _toDate;
 
@@ -158,23 +159,23 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   @override
   void dispose() {
     _timer?.cancel();
-    subscription?.cancel();
+    //subscription?.cancel();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
-
-    if (Alarm.android) {
+    getGraph();
+    /*   if (Alarm.android) {
       checkAndroidNotificationPermission();
       checkAndroidScheduleExactAlarmPermission();
     }
     loadAlarms();
     getGraph();
-    _startTimer();
+    _startTimer();*/
 
-    subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
+    // subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
     Future.delayed(const Duration(seconds: 1), () {})
         .then((_) => getNotifactionCount())
         .then((_) {
@@ -247,6 +248,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     }
   }
 
+/*
   Future<void> loadAlarms() async {
     var sharedPref = await SharedPreferences.getInstance();
     edited = sharedPref.getBool("edited") ?? false;
@@ -296,7 +298,9 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
       }
     }
   }
+*/
 
+/*
   AlarmSettings buildAlarmSettings(int i, DateTime duration) {
     final id = DateTime.now().millisecondsSinceEpoch % 10000 + i;
     final alarmSettings = AlarmSettings(
@@ -311,8 +315,9 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
         isAlarmOn: true);
     return alarmSettings;
   }
+*/
 
-  Future<void> saveAlarm(int i, DateTime duration) async {
+  /* Future<void> saveAlarm(int i, DateTime duration) async {
     await Alarm.set(alarmSettings: buildAlarmSettings(i, duration));
     alarms = Alarm.getAlarms();
     alarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
@@ -329,7 +334,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     );
     loadAlarms();
   }
-
+*/
   Future<void> checkAndroidExternalStoragePermission() async {
     final status = await Permission.storage.status;
     if (status.isDenied) {
@@ -344,6 +349,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     }
   }
 
+/*
   Future<void> navigateToAlarmScreen(AlarmSettings? settings) async {
     final res = await showModalBottomSheet<bool?>(
       context: context,
@@ -361,6 +367,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
 
     if (res != null && res == true) loadAlarms();
   }
+*/
 
   @override
   Widget build(BuildContext context) {
@@ -393,7 +400,6 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
         padding: const EdgeInsets.all(8.0), // Add padding
         child: ClipOval(
           child: Material(
-            // color: Colors.background,
             color: Colors.white70.withOpacity(0.9), // Background color
             elevation: 4.0, // Shadow
             child: InkWell(
@@ -404,7 +410,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                 child: Center(
                   child: Padding(
                     padding:
-                    const EdgeInsets.all(8.0), // Add padding for the icon
+                        const EdgeInsets.all(8.0), // Add padding for the icon
                     child: Image.asset(
                       "assets/home_icon.jpeg",
                       width: 27,
@@ -443,22 +449,27 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                             salutation,
                             style: const TextStyle(
                                 color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500),
+                                fontSize: 15,
+                                fontWeight: FontWeight.w400),
                           ),
                         ],
                       ),
                       Text(
                         fullname,
                         style: const TextStyle(
-                            color: Colors.lightBlueAccent, fontSize: 18),
+                            color: Colors.lightBlueAccent,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text(
                             'Your Eye Health Score',
-                            style: TextStyle(color: Colors.white, fontSize: 18),
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500),
                           ),
                           ShaderMask(
                             shaderCallback: (Rect bounds) {
@@ -500,13 +511,13 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                     Container(
                       decoration: BoxDecoration(
                         color: const Color(0xffF9F9FA),
-                        borderRadius: BorderRadius.circular(17.0),
+                        borderRadius: BorderRadius.circular(20.0),
                       ),
                       height: 40,
                       width: 40,
                       child: Center(
                         child: Icon(
-                          Icons.notifications,
+                          Icons.notifications_none,
                           color: Colors.black,
                         ),
                       ),
@@ -514,7 +525,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                     Positioned(
                       right: 0,
                       top:
-                      -1, // Adjust this value to position the text properly
+                          -1, // Adjust this value to position the text properly
                       child: Container(
                         padding: const EdgeInsets.all(2),
                         decoration: const BoxDecoration(
@@ -538,15 +549,12 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
           ],
         ),
       ),
-
-
-
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(5.0),
               child: CarouselSlider(
                 items: [
                   //1st Image of Slider
@@ -555,7 +563,8 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8.0),
                       image: DecorationImage(
-                        image: AssetImage('assets/slider1.png'),//NetworkImage("ADD IMAGE URL HERE"),
+                        image: AssetImage('assets/slider1.png'),
+                        //NetworkImage("ADD IMAGE URL HERE"),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -567,7 +576,8 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8.0),
                       image: DecorationImage(
-                        image: AssetImage('assets/slider2.png'),//NetworkImage("ADD IMAGE URL HERE"),
+                        image: AssetImage('assets/slider2.png'),
+                        //NetworkImage("ADD IMAGE URL HERE"),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -579,7 +589,8 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8.0),
                       image: DecorationImage(
-                        image: AssetImage('assets/slider3.png'),//NetworkImage("ADD IMAGE URL HERE"),
+                        image: AssetImage('assets/slider3.png'),
+                        //NetworkImage("ADD IMAGE URL HERE"),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -591,7 +602,8 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8.0),
                       image: DecorationImage(
-                        image: AssetImage('assets/slider1.png'),//NetworkImage("ADD IMAGE URL HERE"),
+                        image: AssetImage('assets/slider1.png'),
+                        //NetworkImage("ADD IMAGE URL HERE"),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -603,17 +615,17 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8.0),
                       image: DecorationImage(
-                        image: AssetImage('assets/slider2.png'),//NetworkImage("ADD IMAGE URL HERE"),
+                        image: AssetImage('assets/slider2.png'),
+                        //NetworkImage("ADD IMAGE URL HERE"),
                         fit: BoxFit.cover,
                       ),
                     ),
                   ),
-
                 ],
 
                 //Slider Container properties
                 options: CarouselOptions(
-                  height: 180.0,
+                  height: 190.0,
                   enlargeCenterPage: true,
                   autoPlay: true,
                   aspectRatio: 16 / 9,
@@ -624,32 +636,33 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                 ),
               ),
             ),
-    SizedBox(height: 10,),
-    Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 5),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
               child: GestureDetector(
                 onTap: () {
-                  checkActivePlan('eyeTest');
-                  /*   Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => AddCustomerPage()),
-                  );*/
+                 // checkActivePlan('eyeTest');
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) => BottomDialog(),
+                  );
                 },
-                child: Image.asset('assets/digital_eye_exam.png',),
+                child: Image.asset(
+                  'assets/digital_eye_exam.png',
+                ),
               ),
             ),
             Padding(
               padding:
-              const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
               child: GestureDetector(
                 onTap: () {
-                  // sendcustomerDetails(context);
-                  checkActivePlan('fatigue');
+                  requestPermission();
+                 // checkActivePlan('fatigue');
                 },
                 child: Image.asset('assets/eyeFatigueTest.png'),
               ),
             ),
-            SizedBox(height: 10,),
             Row(
               children: [
                 const Padding(
@@ -662,23 +675,26 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                     ),
                   ),
                 ),
-               Spacer(),
+                Spacer(),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 18.0),
                   child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
+                    onTap: () {
+                      /* Navigator.push(
                           context,
                           MaterialPageRoute<void>(
                             builder: (context) => const ExampleAlarmHomeScreen(),
                           ),
-                        );
-                      },
-                      child:Icon(
-                        Icons.alarm, // Replace with the alarm icon from Icons class
-                        size: 33, // Adjust the size of the icon as needed
-                        color: Colors.blue, // Adjust the color of the icon as needed
-                      ),),
+                        );*/
+                    },
+                    child: Icon(
+                      Icons.alarm,
+                      // Replace with the alarm icon from Icons class
+                      size: 33, // Adjust the size of the icon as needed
+                      color:
+                          Colors.blue, // Adjust the color of the icon as needed
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -686,7 +702,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
               color: Colors.white,
               child: Padding(
                 padding:
-                const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
                 child: Container(
                   color: Colors.white,
                   width: MediaQuery.of(context).size.width,
@@ -700,54 +716,76 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                             elevation: 0.5,
                             child: isLoading1
                                 ? const Center(
-                              child: CircularProgressIndicator(
-                                color: Colors.blue,
-                              ),
-                            )
-                                :
-                            Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  DotWithLabel(index: 0, label: 'Ideal Score',point:8),
-                                  Divider(
-                                    height: 5,
-                                    thickness: 0.5,
-                                    color: Colors.grey[400],
-                                    indent: 20,
-                                    endIndent: 20,
-                                  ),
-                                  SizedBox(height: 5,),
-                                  DotWithLabel(index: 1, label: 'Percentile Score of the population',point:6),
-                                  Divider(
-                                    height: 5,
-                                    thickness: 0.5,
-                                    color: Colors.grey[400],
-                                    indent: 20,
-                                    endIndent: 20,
-                                  ),
-                                  SizedBox(height: 5,),
+                                    child: CircularProgressIndicator(
+                                      color: Colors.blue,
+                                    ),
+                                  )
+                                : Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        DotWithLabel(
+                                            index: 0,
+                                            label: 'Ideal Score',
+                                            point: 8),
+                                        Divider(
+                                          height: 5,
+                                          thickness: 0.5,
+                                          color: Colors.grey[400],
+                                          indent: 20,
+                                          endIndent: 20,
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        DotWithLabel(
+                                            index: 1,
+                                            label:
+                                                'Percentile Score of the population',
+                                            point: 6),
+                                        Divider(
+                                          height: 5,
+                                          thickness: 0.5,
+                                          color: Colors.grey[400],
+                                          indent: 20,
+                                          endIndent: 20,
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
 
-                                  DotWithLabel( index:2,label: 'Your Avg. Score',point:5),
-                                  Divider(
-                                    height: 5,
-                                    thickness: 0.5,
-                                    color: Colors.grey[400],
-                                    indent: 20,
-                                    endIndent: 20,
-                                  ),
-                                  SizedBox(height: 5,),
+                                        DotWithLabel(
+                                            index: 2,
+                                            label: 'Your Avg. Score',
+                                            point: 5),
+                                        Divider(
+                                          height: 5,
+                                          thickness: 0.5,
+                                          color: Colors.grey[400],
+                                          indent: 20,
+                                          endIndent: 20,
+                                        ),
+                                        SizedBox(
+                                          height: 7,
+                                        ),
 
-                                  DotWithLabel(index: 3, label: 'Your First Score',point:4),//color: Colors.black,
-                                ],
-                              ),
-                            ),
+                                        DotWithLabel(
+                                            index: 3,
+                                            label: 'Your First Score',
+                                            point: 4), //color: Colors.black,
+                                      ],
+                                    ),
+                                  ),
                             // _buildVerticalSplineChart(),
                           ),
                         ),
-                        SizedBox(height: 20,),
+                        SizedBox(
+                          height: 20,
+                        ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 1),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -757,7 +795,8 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                                   width: 10,
                                   height: 10,
                                   decoration: BoxDecoration(
-                                    color: Colors.background, // Adjust color as needed
+                                    color: Colors.background,
+                                    // Adjust color as needed
                                     shape: BoxShape.circle,
                                   ),
                                 ),
@@ -769,7 +808,8 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
-                                    color: Colors.background, // Adjust text color as needed
+                                    color: Colors
+                                        .background, // Adjust text color as needed
                                   ),
                                 ),
                               ),
@@ -777,9 +817,12 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                           ),
                         ),
 
-                        SizedBox(height: 10,),
+                        SizedBox(
+                          height: 10,
+                        ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 1),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -789,7 +832,8 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                                   width: 10,
                                   height: 10,
                                   decoration: BoxDecoration(
-                                    color: Colors.redAccent, // Adjust color as needed
+                                    color: Colors.redAccent,
+                                    // Adjust color as needed
                                     shape: BoxShape.circle,
                                   ),
                                 ),
@@ -801,19 +845,14 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
-                                    color: Colors.redAccent, // Adjust text color as needed
+                                    color: Colors
+                                        .redAccent, // Adjust text color as needed
                                   ),
                                 ),
                               ),
                             ],
                           ),
                         ),
-
-
-
-
-
-
 
                         // const SizedBox(
                         //     height:
@@ -844,8 +883,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                           child: Text(
                             'Get your first test done now and start tracking your eye health.',
                             // Display formatted current date
-                            style:
-                            TextStyle(fontSize: 14, color: Colors.black),
+                            style: TextStyle(fontSize: 14, color: Colors.black),
                           ),
                         ),
                         const SizedBox(height: 9),
@@ -880,115 +918,118 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                   ),
                 ),
               ),
-            ),      SizedBox(
-              height: 8,),
-
-             Padding(
+            ),
+            SizedBox(height: 8),
+            Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
               child: Text(
-                'YOU HAVE TESTED SO FAR', // Display formatted current date
+                'You’ve Tested soo far ', // Display formatted current date
                 style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black),
+                    fontWeight: FontWeight.w500,
+                    fontStyle: FontStyle.normal,
+                    color: Colors.black87),
               ),
             ),
-      SizedBox(
-         height: 24,),
+            SizedBox(
+              height: 8,
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+              child: SizedBox(
+                height: 180, // Adjust height as needed
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('assets/interview.png'),
+                            fit: BoxFit.cover, // Ensure the image covers the entire container
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                             SizedBox(height: 15),
+                            Padding(
+                              padding: EdgeInsets.only(left: 22.0), // Adjusted padding
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    no_of_eye_test ?? "0",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 35,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 5), // Added SizedBox for spacing
+                                  const Text(
+                                    'Eye Test',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
 
-        Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 10),
-    child: SizedBox(
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('assets/eye_bg.png'),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
 
-    height: 180, // Adjust height as needed
-    child: Row(
-    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-    children: [
-    Expanded(
-    child: Container(
-    decoration: const BoxDecoration(
-    image: DecorationImage(
-    image: AssetImage('assets/interview.png'),
-    // Replace with your image asset
-    fit: BoxFit.cover, // Ensure the image covers the entire container
-    ),
-    ),
-    child: Column(
-    mainAxisAlignment: MainAxisAlignment.start,
-    children: [
-    const SizedBox(height: 28),
-    Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8.0),
-    child: Text(
-    no_of_eye_test ?? "0",
-    style: const TextStyle(
-    color: Colors.white,
-    fontSize: 22,
-    fontWeight: FontWeight.bold,
-    ),
-    ),
-    ),
-    const Padding(
-    padding: EdgeInsets.symmetric(vertical: 5.0),
-    child: Text(
-    'Eye Test',
-    style: TextStyle(
-    color: Colors.white,
-    fontSize: 16,
-    ),
-    ),
-    ),
-    ],
-    ),
-    ),
-    ),
-    Expanded(
-    child: Container(
-    decoration: const BoxDecoration(
-    image: DecorationImage(
-    image: AssetImage('assets/eye_bg.png'),
-    // Replace with your image asset
-    fit: BoxFit.cover, // Ensure the image covers the entire container
-    ),
-    ),
-    child: Column(
-    mainAxisAlignment: MainAxisAlignment.start,
-    children: [
-    const SizedBox(height: 28),
-    Padding(
-    padding: const EdgeInsets.symmetric(
-    vertical: 12.0, horizontal: 8.0),
-    child: Text(
-    no_of_fatigue_test ?? "0",
-    style: const TextStyle(
-    color: Colors.white,
-    fontSize: 22,
-    fontWeight: FontWeight.bold,
-    ),
-    ),
-    ),
-    const Padding(
-    padding: EdgeInsets.symmetric(
-    vertical: 5.0, horizontal: 4.0),
-    child: Text(
-    'Eye Fatigue Test',
-    style: TextStyle(
-    color: Colors.white,
-    fontSize: 14,
-    ),
-    ),
-    ),
-    ],
-    ),
-    ),
-    ),
-    ],
-    ),
-    ),
-    ),
+                          children: [
+                            // Number (left top)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 20.0, top: 12.0),
+                              child: Text(
+                                no_of_fatigue_test ?? "0",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            // Text (below number)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 20.0, top: 10.0),
+                              child: Text(
+                                'Eye Fatigue Test',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
 
-        const SizedBox(height: 19),
-
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 15),
           ],
         ),
       ),
@@ -1118,6 +1159,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
       }
     }
   }
+
   //
   // SfCartesianChart _buildVerticalSplineChart() {
   //   return SfCartesianChart(
@@ -1302,8 +1344,8 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   Future<void> sendcustomerDetails(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
     final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
 // Replace these headers with your required headers
     Map<String, String> headers = {
@@ -1380,13 +1422,13 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
         if (responseData.containsKey('current_day_data') &&
             responseData['current_day_data'].containsKey('value')) {
           List<dynamic> currentDayValue =
-          responseData['current_day_data']['value'];
+              responseData['current_day_data']['value'];
           todaygraphData
               .addAll(currentDayValue.map((value) => value.toDouble()));
         }
         if (responseData.containsKey('get_percentile_graph')) {
           List<dynamic> population =
-          List<dynamic>.from(jsonData['get_percentile_graph']);
+              List<dynamic>.from(jsonData['get_percentile_graph']);
 
           populationTestgraphData
               .addAll(population.map((value) => value.toDouble()));
@@ -1461,6 +1503,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     // throw Exception(Exception);
   }
 }
+
 class DotWithLabel extends StatelessWidget {
   // final Color color;
   final int index;
@@ -1472,64 +1515,59 @@ class DotWithLabel extends StatelessWidget {
     Key? key,
     // required this.color,
     required this.index,
-
     required this.label,
     required this.point,
-
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Container(
-      width: screenWidth, // Ensure the container spans the full width of the screen
+      width: screenWidth,
+      // Ensure the container spans the full width of the screen
       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-      child: Builder(
-        builder: (context) {
-          Color textColor = _getTextColor(index);
+      child: Builder(builder: (context) {
+        Color textColor = _getTextColor(index);
 
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              // Container(
-              //   width: 14.0,
-              //   height: 15.0,
-              //   decoration: BoxDecoration(
-              //     shape: BoxShape.circle,
-              //     color: color,
-              //   ),
-              // ),
-              //
-              // SizedBox(width: MediaQuery.of(context).size.width/4), // Adjust spacing as needed
-              Expanded(
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              SizedBox(width: 20), // Adjust spacing as needed
-              Text(
-                '$point',
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            // Container(
+            //   width: 14.0,
+            //   height: 15.0,
+            //   decoration: BoxDecoration(
+            //     shape: BoxShape.circle,
+            //     color: color,
+            //   ),
+            // ),
+            //
+            // SizedBox(width: MediaQuery.of(context).size.width/4), // Adjust spacing as needed
+            Expanded(
+              child: Text(
+                label,
                 style: TextStyle(
-                  fontSize: 18,
-                  color: textColor,
+                  fontSize: 14,
                   fontWeight: FontWeight.w600,
-
                 ),
               ),
-            ],
-          );
-        }
-      ),
+            ),
+            SizedBox(width: 20),
+            // Adjust spacing as needed
+            Text(
+              '$point',
+              style: TextStyle(
+                fontSize: 18,
+                color: textColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        );
+      }),
     );
   }
-
 
   Color _getTextColor(int index) {
     // Define your logic to determine text color based on point value
@@ -1537,19 +1575,17 @@ class DotWithLabel extends StatelessWidget {
       return Colors.green; // Example condition for green color
     } else if (index == 1) {
       return Colors.orange; // Example condition for orange color
-    }
-    else if (index == 2) {
+    } else if (index == 2) {
       return Colors.blue; // Example condition for orange color
-    }else {
+    } else {
       return Colors.background; // Example condition for red color
     }
   }
 }
 
-
-
 class _ChartData {
   _ChartData(this.x, this.y, this.y2, this.y3, this.y4);
+
   final String x;
   final double y;
   final double y2;
@@ -1559,6 +1595,7 @@ class _ChartData {
 
 class _ChartData2 {
   _ChartData2(this.x, this.y, this.y2);
+
   final String x;
   final double y;
   final double y2;
@@ -1572,14 +1609,13 @@ class setReminder extends StatefulWidget {
 class ReminderState extends State<setReminder> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
-            // appBar: AppBar(
-            //   title: const Text(''),
-            // ),
-            body: Builder(builder: (context) {
-              return const Center();
-            })));
+    return MaterialApp(home: Scaffold(
+        // appBar: AppBar(
+        //   title: const Text(''),
+        // ),
+        body: Builder(builder: (context) {
+      return const Center();
+    })));
   }
 }
 
@@ -1788,7 +1824,7 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                     const Text(
                       'Test For Someone Else',
                       style:
-                      TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     IconButton(
                       icon: const Icon(Icons.close),
@@ -1920,10 +1956,11 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
   }
 }
 
+/*
 class ExampleAlarmRingScreen extends StatelessWidget {
   const ExampleAlarmRingScreen({required this.alarmSettings, super.key});
 
-  final AlarmSettings alarmSettings;
+ // final AlarmSettings alarmSettings;
 //TODO Data Change Alarm Design
   @override
   Widget build(BuildContext context) {
@@ -1978,4 +2015,4 @@ class ExampleAlarmRingScreen extends StatelessWidget {
     );
   }
 }
-
+*/

@@ -57,15 +57,15 @@ class RewardsScreen extends StatefulWidget {
   RewardsScreenState createState() => RewardsScreenState();
 }
 
-class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixin{
-
+class RewardsScreenState extends State<RewardsScreen>
+    with AutoCancelStreamMixin {
   final GlobalKey<ScaffoldState> _scafoldKey = GlobalKey();
   int? isReadFalseCount = 0;
 
   @override
   Iterable<StreamSubscription> get registerSubscriptions sync* {
     yield registerReceiver(['actionMusicPlaying']).listen(
-          (intent) {
+      (intent) {
         switch (intent.action) {
           case 'actionMusicPlaying':
             setState(() {
@@ -77,10 +77,10 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
     );
   }
 
-
   late Future<List<Offer>> futureOffers = Future.value([]);
 
   String eyeHealthScore = '0';
+
   @override
   void initState() {
     super.initState();
@@ -88,6 +88,7 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
 
     futureOffers = fetchOffers();
   }
+
   Future<void> getNotifactionCount() async {
     try {
       String userToken = '';
@@ -113,15 +114,13 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
         if (mounted) {
           setState(() {});
         }
-      }
-      else if (response.statusCode == 401) {
+      } else if (response.statusCode == 401) {
         Fluttertoast.showToast(msg: "Session Expired");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => SignIn()),
         );
-      }
-      else {
+      } else {
         throw Exception('Failed to load data');
       }
     } on DioError catch (e) {
@@ -147,8 +146,8 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
     String access_token = '';
     var sharedPref = await SharedPreferences.getInstance();
     access_token =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE2MjcyODc2LCJpYXQiOjE3MTYxODY0NzYsImp0aSI6ImYyMjJhM2VlZDNjYTRlZjc4MmNmNmEyNTYzOGQxMmU1IiwidXNlcl9pZCI6IjkxOTNhOTE1LWY5YzItNDQ0MC04MDVlLTQxNDBhYTc5ZDQzOSJ9.2Gj1laeNGLhy0FxYQCQVoB_Idt5W0F0X621BVPtNaic";
-    sharedPref.getString("access_token") ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE2MjcyODc2LCJpYXQiOjE3MTYxODY0NzYsImp0aSI6ImYyMjJhM2VlZDNjYTRlZjc4MmNmNmEyNTYzOGQxMmU1IiwidXNlcl9pZCI6IjkxOTNhOTE1LWY5YzItNDQ0MC04MDVlLTQxNDBhYTc5ZDQzOSJ9.2Gj1laeNGLhy0FxYQCQVoB_Idt5W0F0X621BVPtNaic";
+        sharedPref.getString("access_token") ?? '';
     final String apiUrl = '${ApiProvider.baseUrl}/api/offers';
 
     Map<String, String> headers = {
@@ -173,7 +172,6 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
           eyeHealthScore = score.toString();
         });
         return jsonResponse.map((offer) => Offer.fromJson(offer)).toList();
-
       } else {
         throw Exception('Failed to load offers');
       }
@@ -185,7 +183,6 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
       throw Exception('Failed to send data');
     }
   }
-
 
   // Sample data for line 2
   @override
@@ -228,7 +225,8 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
                 height: 50.0, // Height of the FloatingActionButton
                 child: Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0), // Add padding for the icon
+                    padding: const EdgeInsets.all(8.0),
+                    // Add padding for the icon
                     child: Image.asset(
                       "assets/home_icon.jpeg",
                       width: 20,
@@ -243,32 +241,36 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
         ),
       ),
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(50),
+        preferredSize: const Size.fromHeight(60),
         child: Stack(
           children: [
-
-            Align(
-              alignment: Alignment.topLeft,
-              child: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back,
-                  color: Colors.black,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.black,
+                  ),
+                  iconSize: 28, // Back button icon
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
                 ),
-                iconSize: 28, // Back button icon
-                onPressed: () {
-                  Navigator.of(context).pop();
-
-                },
               ),
             ),
             Center(
-              child: Text('Rewards', style: TextStyle(
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-                // Adjust size as needed
-                // Add other styling properties as needed
-              ),),
+              child: Text(
+                'Rewards',
+                style: TextStyle(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                  // Adjust size as needed
+                  // Add other styling properties as needed
+                ),
+              ),
             ),
             Positioned(
               right: 16,
@@ -281,21 +283,26 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                        color: const Color(0xffF9F9FA),
-                        borderRadius: BorderRadius.circular(17.0),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20.0),
+                        border: Border.all(
+                          color: Colors.grey, // Border color
+                          width: 1.0, // Border width
+                        ),
                       ),
-                      height: 40,
-                      width: 40,
+                      height: 35,
+                      width: 35,
                       child: Center(
-              child: Icon(
-              Icons.notifications,
-              color: Colors.black,
-            ),
-      ),
+                        child: Icon(
+                          Icons.notifications_none,
+                          color: Colors.black,
+                        ),
+                      ),
                     ),
                     Positioned(
                       right: 0,
-                      top: -1, // Adjust this value to position the text properly
+                      top: -1,
+                      // Adjust this value to position the text properly
                       child: Container(
                         padding: EdgeInsets.all(2),
                         decoration: BoxDecoration(
@@ -328,7 +335,7 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
               child: Text(
                 'Today $formattedDate', // Display formatted current date
                 style:
-                TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
               ),
             ),
             Stack(
@@ -351,8 +358,8 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
                       style: TextStyle(
                           fontSize: 20.0,
                           color: Colors.white // Adjust size as needed
-                        // Add other styling properties as needed
-                      ),
+                          // Add other styling properties as needed
+                          ),
                     ),
                     Text(
                       eyeHealthScore, // Convert double to String
@@ -372,140 +379,164 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
             ),
             // Add spacing between titles and dynamic list
             Padding(
-              padding: EdgeInsets.fromLTRB(16.0,0, 0, 0),
+              padding: EdgeInsets.fromLTRB(16.0, 0, 0, 0),
               child: Text(
                 'Redeem Offers', // Display formatted current date
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
+                  color: Colors.bluebutton,
                 ),
               ),
-            ),Padding(
-      padding: EdgeInsets.all(8.0),
-      child: FutureBuilder<List<Offer>>(
-        future: futureOffers,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No offers found'));
-          } else {
-            return SizedBox(
-              height: MediaQuery.of(context).size.height / 2.5, // Set a fixed height or any height you deem appropriate
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal, // Set the scroll direction to horizontal
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  final offer = snapshot.data![index];
-                  return Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Card(
-                      color: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                        side: BorderSide(color: Colors.grey.shade100, width: 1.0), // Add this line to set the border color and width
-                      ),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.8, // Adjust the width as needed
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 9,),
-                            // Image on the top
-                            Center(
-                              child: Image.network(
-                                '${ApiProvider.baseUrl}${offer.image}',
-                                width: 80, // Set the image to take the full width
-                                // height: 80, // Set the desired height
-                                fit: BoxFit.fill,
+            ),
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: FutureBuilder<List<Offer>>(
+                future: futureOffers,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(child: Text('No offers found'));
+                  } else {
+                    return SizedBox(
+                      height: MediaQuery.of(context).size.height / 3,
+                      // Set a fixed height or any height you deem appropriate
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        // Set the scroll direction to horizontal
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (context, index) {
+                          final offer = snapshot.data![index];
+                          return Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Card(
+                              elevation: 3, // Adjust elevation as needed
+                              color: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0),
+                                /*side: BorderSide(
+                                    color: Colors.grey.shade100,
+                                    width:
+                                        1.0), */ // Add this line to set the border color and width
                               ),
-                            ),
-
-                            // Title
-                            Padding(
-                              padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-                              child: Center(
-                                child: Text(
-                                  offer.title,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            // Description
-                            Padding(
-                              padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-                              child: Center(
-                                child: Text(
-                                  offer.description,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            // Explore More Button
-                            Spacer(),
-                            Center(
-                              child: Padding(
-                                padding: EdgeInsets.only(bottom: 10.0),
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => RewardSpecs(offer_id: offer.offerId)),
-                                    );
-                                  },
-                                  child: Text('Explore More'),
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.white,
-                                    backgroundColor: Colors.deepPurple, // Text color
-                                    padding: EdgeInsets.all(10),
-                                    minimumSize: Size(100, 20), // Button padding
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30), // Button border radius
+                              child: Container(
+                                width: MediaQuery.of(context).size.width * 0.8,
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Left side - Image
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Center(
+                                        child: Image.network(
+                                          '${ApiProvider.baseUrl}${offer.image}',
+                                          width: 80,
+                                          height: 80, // Set the desired height
+                                          fit: BoxFit.fill,
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                    // Right side - Text content
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // Title
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 5.0,
+                                                horizontal: 10.0),
+                                            child: Text(
+                                              offer.title,
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ),
+                                          // Description
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 5.0,
+                                                horizontal: 10.0),
+                                            child: Text(
+                                              offer.description,
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ),
+                                          // Spacer to push button to the bottom
+                                          Spacer(),
+                                          // Explore More Button
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 10.0, right: 10.0),
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          RewardSpecs(
+                                                              offer_id: offer
+                                                                  .offerId)),
+                                                );
+                                              },
+                                              child: Text('Explore More'),
+                                              style: ElevatedButton.styleFrom(
+                                                foregroundColor: Colors.white,
+                                                backgroundColor:
+                                                    Colors.bluebutton,
+                                                // Text color
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 10,
+                                                    horizontal: 20),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(30),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
-                          ],
-                        ),
+                          );
+                        },
                       ),
-                    ),
-                  );
+                    );
+                  }
                 },
               ),
-            );
-          }
-        },
-      ),
-    ),
+            ),
             Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 0, 0, 10),
+              padding: EdgeInsets.fromLTRB(16.0, 0, 0, 0),
               child: Text(
                 'Perform Eye Test', // Display formatted current date
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
+                  color: Colors.bluebutton,
                 ),
               ),
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Card(
+                elevation: 3, // Adjust elevation as needed
                 color: Colors.white,
-                elevation: 0.6,
                 child: Row(
                   children: [
                     // Image on the left side
@@ -561,15 +592,20 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
                                       return AlertDialog(
                                         title: Text('Choose a Test'),
                                         content: Container(
-                                          height: 200, // Adjust the height as needed
-                                          width: MediaQuery.of(context).size.width * 0.8, // Adjust the width as needed
+                                          height: 200,
+                                          // Adjust the height as needed
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.8,
+                                          // Adjust the width as needed
                                           child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
                                             children: [
                                               GestureDetector(
                                                 onTap: () {
-                                                  sendcustomerDetails( true) ;
-
+                                                  sendcustomerDetails(true);
                                                 },
                                                 child: Image.asset(
                                                   'assets/digital_eye_exam.png',
@@ -578,7 +614,6 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
                                               ),
                                               GestureDetector(
                                                 onTap: () {
-
                                                   requestPermission();
                                                   // Navigator.push(
                                                   //   context,
@@ -600,7 +635,7 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
                                 child: Text('Start Test'),
                                 style: ElevatedButton.styleFrom(
                                   foregroundColor: Colors.white,
-                                  backgroundColor: Colors.deepPurple,
+                                  backgroundColor: Colors.bluebutton,
                                   // Background color
                                   // Text color
                                   padding: EdgeInsets.all(10),
@@ -620,25 +655,25 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
                   ],
                 ),
               ),
-            ),// Add spacing between titles and dynamic list
+            ), // Add spacing between titles and dynamic list
             Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 0, 0, 10),
+              padding: EdgeInsets.fromLTRB(16.0, 0, 0, 0),
               child: Text(
                 'Refer and Earn', // Display formatted current date
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
+                  color: Colors.bluebutton,
                 ),
               ),
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
-              child: Card(color: Colors.white,                elevation: 0.6,
-
+              child: Card(
+                color: Colors.white,
+                elevation: 3,
                 child: Row(
                   children: [
-
                     // Image on the left side
                     Image.asset(
                       'assets/refer_earn.png',
@@ -693,7 +728,7 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
                                 child: Text('Explore More'),
                                 style: ElevatedButton.styleFrom(
                                   foregroundColor: Colors.white,
-                                  backgroundColor: Colors.deepPurple,
+                                  backgroundColor: Colors.bluebutton,
                                   // Background color
                                   // Text color
                                   padding: EdgeInsets.all(10),
@@ -716,21 +751,21 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
             ),
 
             Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 0, 0, 10),
+              padding: EdgeInsets.fromLTRB(16.0, 0, 0, 0),
               child: Text(
                 'Upload Prescription', // Display formatted current date
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
+                  color: Colors.bluebutton,
                 ),
               ),
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Card(
-                color: Colors.white ,                elevation: 0.6,
-
+                color: Colors.white,
+                elevation: 3,
                 child: Row(
                   children: [
                     // Image on the left side
@@ -780,14 +815,15 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => PrescriptionUpload(),
+                                      builder: (context) =>
+                                          PrescriptionUpload(),
                                     ),
                                   );
                                 },
                                 child: Text('Explore More'),
                                 style: ElevatedButton.styleFrom(
                                   foregroundColor: Colors.white,
-                                  backgroundColor: Colors.deepPurple,
+                                  backgroundColor: Colors.bluebutton,
                                   // Background color
                                   // Text color
                                   padding: EdgeInsets.all(10),
@@ -808,35 +844,30 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
                 ),
               ),
             ),
-
           ],
         ),
       ),
-
-      bottomNavigationBar:
-      CustomBottomAppBar(currentScreen: "Rewards"),    );
+      bottomNavigationBar: CustomBottomAppBar(currentScreen: "Rewards"),
+    );
   }
-
-
 
   void requestPermission() async {
     PermissionStatus status = await Permission.camera.status;
     PermissionStatus status2 = await Permission.microphone.status;
 
-    if((status==PermissionStatus.granted&&status2==PermissionStatus.granted) ){
+    if ((status == PermissionStatus.granted &&
+        status2 == PermissionStatus.granted)) {
       setState(() {
         Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (context) => EyeFatigueSelfieScreen()),
+          MaterialPageRoute(builder: (context) => EyeFatigueSelfieScreen()),
         );
       });
-
     }
-    if (!status.isGranted ) {
+    if (!status.isGranted) {
       status = await Permission.camera.request();
     }
-    if (!status2.isGranted ) {
+    if (!status2.isGranted) {
       status = await Permission.microphone.request();
     }
     if (status == PermissionStatus.denied ||
@@ -844,18 +875,19 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
       await [Permission.camera].request();
 
       // Permissions are denied or denied forever, let's request it!
-      status =  await Permission.camera.status;
+      status = await Permission.camera.status;
       if (status == PermissionStatus.denied) {
         await [Permission.camera].request();
         print("camera permissions are still denied");
-      } else if (status ==PermissionStatus.permanentlyDenied) {
+      } else if (status == PermissionStatus.permanentlyDenied) {
         print("camera permissions are permanently denied");
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text("camera permissions required"),
-              content: Text("camera permissions are permanently denied. Please go to app settings to enable camera permissions."),
+              content: Text(
+                  "camera permissions are permanently denied. Please go to app settings to enable camera permissions."),
               actions: <Widget>[
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -867,13 +899,11 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
                     Navigator.pop(context); // Close the dialog
                     await openAppSettings();
                   },
-                  child: Text("OK",
-
-                    style: TextStyle(
-                        color: Colors.white, fontSize: 16),
+                  child: Text(
+                    "OK",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
-
               ],
             );
           },
@@ -886,18 +916,20 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
       await [Permission.microphone].request();
 
       // Permissions are denied or denied forever, let's request it!
-      status2 =  await Permission.microphone.status;
+      status2 = await Permission.microphone.status;
       if (status2 == PermissionStatus.denied) {
         await [Permission.microphone].request();
         print("microphone permissions are still denied");
-      }  if (status2 ==PermissionStatus.permanentlyDenied) {
+      }
+      if (status2 == PermissionStatus.permanentlyDenied) {
         print("microphone permissions are permanently denied");
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text("microphone permissions required"),
-              content: Text("microphone permissions are permanently denied. Please go to app settings to enable microphone permissions."),
+              content: Text(
+                  "microphone permissions are permanently denied. Please go to app settings to enable microphone permissions."),
               actions: <Widget>[
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -909,24 +941,20 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
                     Navigator.pop(context); // Close the dialog
                     await openAppSettings();
                   },
-                  child: Text("OK",
-
-                    style: TextStyle(
-                        color: Colors.white, fontSize: 16),
+                  child: Text(
+                    "OK",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
-
               ],
             );
           },
         );
       }
     }
-
-
   }
 
-  Future<void> sendcustomerDetails( bool isSelf) async {
+  Future<void> sendcustomerDetails(bool isSelf) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken = prefs.getString('access_token') ?? '';
     final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
@@ -938,7 +966,6 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
 
     var body = json.encode({
       'is_self': isSelf,
-
     });
 
     try {

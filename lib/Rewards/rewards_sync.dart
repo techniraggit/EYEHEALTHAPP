@@ -11,7 +11,6 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_sms/flutter_sms.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 //import 'package:flutter_sms/flutter_sms.dart';
@@ -727,13 +726,13 @@ class _RewardsContactsSync extends State<RewardContact> {
   Future<void> sendSMSToAllContacts() async {
     try {
       List<String> allContactNumbers = await _getContactNumbers();
-      await _sendSMS(allContactNumbers);
+//      await _sendSMS(allContactNumbers);
     } catch (error) {
       print("erooooorrrrrrrrrr" + error.toString());
     }
   }
 
-  Future<void> _sendSMS(List<String> recipients) async {
+ /* Future<void> _sendSMS(List<String> recipients) async {
     try {
       String _result = await sendSMS(
         message:
@@ -745,7 +744,7 @@ class _RewardsContactsSync extends State<RewardContact> {
     } catch (error) {
       setState(() => _message = error.toString());
     }
-  }
+  }*/
 
   Future _fetchContacts() async {
     await [Permission.contacts].request();
