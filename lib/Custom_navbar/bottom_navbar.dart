@@ -18,7 +18,7 @@ class CustomBottomAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 75.0, // Adjust the height here
+      height: 120, // Adjust the height here
       color: Colors.white70, // Set the background color
       child: BottomAppBar(
         color: Colors.white.withOpacity(0.9), // Make the BottomAppBar transparent
@@ -52,7 +52,7 @@ class CustomBottomAppBar extends StatelessWidget {
                         children: [
                           Image.asset(
                             'assets/report.png',
-                            width: MediaQuery.of(context).size.width / 15,
+                            width: MediaQuery.of(context).size.width / 17,
                           ),
                           const Text(
                             "Report",
@@ -81,7 +81,7 @@ class CustomBottomAppBar extends StatelessWidget {
                         children: [
                           Image.asset(
                             'assets/health.png',
-                            width: MediaQuery.of(context).size.width / 15,
+                            width: MediaQuery.of(context).size.width / 17,
                           ),
                           const Text(
                             "Health",
@@ -95,7 +95,7 @@ class CustomBottomAppBar extends StatelessWidget {
                       ),
                     ),
                     SizedBox(
-                      width: MediaQuery.of(context).size.width / 12,
+                      width: MediaQuery.of(context).size.width / 16,
                     ),
                     GestureDetector(
                       onTap: () {
@@ -109,7 +109,7 @@ class CustomBottomAppBar extends StatelessWidget {
                         children: [
                           Image.asset(
                             'assets/rewards.png',
-                            width: MediaQuery.of(context).size.width / 15,
+                            width: MediaQuery.of(context).size.width / 17,
                           ),
                           const Text(
                             "Rewards",
@@ -135,7 +135,7 @@ class CustomBottomAppBar extends StatelessWidget {
                         children: [
                           Image.asset(
                             'assets/user.png',
-                            width: MediaQuery.of(context).size.width / 15,
+                            width: MediaQuery.of(context).size.width / 16,
                           ),
                           const Text(
                             "Account",
