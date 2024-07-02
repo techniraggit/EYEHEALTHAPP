@@ -686,7 +686,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
                       padding: const EdgeInsets.symmetric(horizontal: 18.0),
                       child: RichText(
                         text: TextSpan(
-                          text: 'Want to play a game while you wait? ',
+                          text: 'Want to play a game while we are generating Report ',
                           style: TextStyle(color: Colors.black, fontSize: 20),
                           children: [
                             TextSpan(

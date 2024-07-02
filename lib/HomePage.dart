@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:action_broadcast/action_broadcast.dart';
+import 'package:alarm/alarm.dart';
+import 'package:alarm/model/alarm_settings.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -24,6 +26,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'Custom_navbar/bottom_navbar.dart';
+import 'alarm/SharedPref.dart';
 import 'api/Api.dart';
 import 'api/config.dart';
 import 'models/fatigueGraphModel.dart';
@@ -120,9 +123,9 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   // Define selectedDate within the _CalendarButtonState class
   final GlobalKey<ScaffoldState> _scafoldKey = GlobalKey();
 
- // late List<AlarmSettings> alarms;
+  late List<AlarmSettings> alarms;
   List<Map<String, dynamic>>? _datagraph;
- // static StreamSubscription<AlarmSettings>? subscription;
+  static StreamSubscription<AlarmSettings>? subscription;
   late DateTime _fromDate;
   late DateTime _toDate;
 
@@ -155,7 +158,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   @override
   void dispose() {
     _timer?.cancel();
-    //subscription?.cancel();
+    subscription?.cancel();
     super.dispose();
   }
 
@@ -163,15 +166,15 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   void initState() {
     super.initState();
 
- /*   if (Alarm.android) {
+    if (Alarm.android) {
       checkAndroidNotificationPermission();
       checkAndroidScheduleExactAlarmPermission();
     }
     loadAlarms();
     getGraph();
-    _startTimer();*/
+    _startTimer();
 
-   // subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
+    subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
     Future.delayed(const Duration(seconds: 1), () {})
         .then((_) => getNotifactionCount())
         .then((_) {
@@ -244,7 +247,6 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     }
   }
 
-/*
   Future<void> loadAlarms() async {
     var sharedPref = await SharedPreferences.getInstance();
     edited = sharedPref.getBool("edited") ?? false;
@@ -294,9 +296,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
       }
     }
   }
-*/
 
-/*
   AlarmSettings buildAlarmSettings(int i, DateTime duration) {
     final id = DateTime.now().millisecondsSinceEpoch % 10000 + i;
     final alarmSettings = AlarmSettings(
@@ -311,9 +311,8 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
         isAlarmOn: true);
     return alarmSettings;
   }
-*/
 
- /* Future<void> saveAlarm(int i, DateTime duration) async {
+  Future<void> saveAlarm(int i, DateTime duration) async {
     await Alarm.set(alarmSettings: buildAlarmSettings(i, duration));
     alarms = Alarm.getAlarms();
     alarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
@@ -330,7 +329,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     );
     loadAlarms();
   }
-*/
+
   Future<void> checkAndroidExternalStoragePermission() async {
     final status = await Permission.storage.status;
     if (status.isDenied) {
@@ -345,7 +344,6 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     }
   }
 
-/*
   Future<void> navigateToAlarmScreen(AlarmSettings? settings) async {
     final res = await showModalBottomSheet<bool?>(
       context: context,
@@ -363,7 +361,6 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
 
     if (res != null && res == true) loadAlarms();
   }
-*/
 
   @override
   Widget build(BuildContext context) {
@@ -396,6 +393,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
         padding: const EdgeInsets.all(8.0), // Add padding
         child: ClipOval(
           child: Material(
+            // color: Colors.background,
             color: Colors.white70.withOpacity(0.9), // Background color
             elevation: 4.0, // Shadow
             child: InkWell(
@@ -408,8 +406,8 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                     padding:
                     const EdgeInsets.all(8.0), // Add padding for the icon
                     child: Image.asset(
-                      "assets/home_icon.png",
-                      width: 20,
+                      "assets/home_icon.jpeg",
+                      width: 27,
                       // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
                       // color: Colors.grey, // Uncomment if you want to apply a color to the image
                     ),
@@ -421,17 +419,17 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
         ),
       ),
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(147),
+        preferredSize: const Size.fromHeight(145),
         child: Stack(
           children: [
             Image.asset(
               'assets/pageBackground.png',
               fit: BoxFit.fill,
               width: double.infinity,
-              height: 250,
+              height: 260,
             ),
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(14.0),
               child: SizedBox(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(8.0, 10.0, 0, 4),
@@ -540,6 +538,9 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
           ],
         ),
       ),
+
+
+
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -618,13 +619,14 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                   aspectRatio: 16 / 9,
                   autoPlayCurve: Curves.fastOutSlowIn,
                   enableInfiniteScroll: true,
-                  autoPlayAnimationDuration: Duration(milliseconds: 800),
+                  autoPlayAnimationDuration: Duration(milliseconds: 500),
                   viewportFraction: 0.8,
                 ),
               ),
             ),
+    SizedBox(height: 10,),
     Padding(
-              padding: const EdgeInsets.all(15.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 5),
               child: GestureDetector(
                 onTap: () {
                   checkActivePlan('eyeTest');
@@ -633,12 +635,12 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                     MaterialPageRoute(builder: (context) => AddCustomerPage()),
                   );*/
                 },
-                child: Image.asset('assets/digital_eye_exam.png'),
+                child: Image.asset('assets/digital_eye_exam.png',),
               ),
             ),
             Padding(
               padding:
-              const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
+              const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
               child: GestureDetector(
                 onTap: () {
                   // sendcustomerDetails(context);
@@ -647,6 +649,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                 child: Image.asset('assets/eyeFatigueTest.png'),
               ),
             ),
+            SizedBox(height: 10,),
             Row(
               children: [
                 const Padding(
@@ -659,23 +662,24 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                     ),
                   ),
                 ),
-                const SizedBox(
-                  width: 10,
+               Spacer(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                  child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder: (context) => const ExampleAlarmHomeScreen(),
+                          ),
+                        );
+                      },
+                      child:Icon(
+                        Icons.alarm, // Replace with the alarm icon from Icons class
+                        size: 33, // Adjust the size of the icon as needed
+                        color: Colors.blue, // Adjust the color of the icon as needed
+                      ),),
                 ),
-                GestureDetector(
-                    onTap: () {
-                     /* Navigator.push(
-                        context,
-                        MaterialPageRoute<void>(
-                          builder: (context) => const ExampleAlarmHomeScreen(),
-                        ),
-                      );*/
-                    },
-                    child:Icon(
-                      Icons.alarm, // Replace with the alarm icon from Icons class
-                      size: 24, // Adjust the size of the icon as needed
-                      color: Colors.blue, // Adjust the color of the icon as needed
-                    ),),
               ],
             ),
             Container(
@@ -707,32 +711,32 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                                 children: <Widget>[
                                   DotWithLabel(index: 0, label: 'Ideal Score',point:8),
                                   Divider(
-                                    height: 20,
+                                    height: 5,
                                     thickness: 0.5,
                                     color: Colors.grey[400],
                                     indent: 20,
                                     endIndent: 20,
                                   ),
-                                  SizedBox(height: 7,),
+                                  SizedBox(height: 5,),
                                   DotWithLabel(index: 1, label: 'Percentile Score of the population',point:6),
                                   Divider(
-                                    height: 20,
+                                    height: 5,
                                     thickness: 0.5,
                                     color: Colors.grey[400],
                                     indent: 20,
                                     endIndent: 20,
                                   ),
-                                  SizedBox(height: 7,),
+                                  SizedBox(height: 5,),
 
                                   DotWithLabel( index:2,label: 'Your Avg. Score',point:5),
                                   Divider(
-                                    height: 20,
+                                    height: 5,
                                     thickness: 0.5,
                                     color: Colors.grey[400],
                                     indent: 20,
                                     endIndent: 20,
                                   ),
-                                  SizedBox(height: 7,),
+                                  SizedBox(height: 5,),
 
                                   DotWithLabel(index: 3, label: 'Your First Score',point:4),//color: Colors.black,
                                 ],
@@ -871,13 +875,15 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                           ),
                         ),
                       },
-                      const SizedBox(height: 29),
+                      const SizedBox(height: 19),
                     ],
                   ),
                 ),
               ),
-            ),
-            const Padding(
+            ),      SizedBox(
+              height: 8,),
+
+             Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
               child: Text(
                 'YOU HAVE TESTED SO FAR', // Display formatted current date
@@ -887,97 +893,102 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                     color: Colors.black),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: SizedBox(
-                height: 200, // Adjust height as needed
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Container(
-                      height: 180,
-                      width: 140,
-                      decoration: const BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('assets/interview.png'),
-                          // Replace with your image asset
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const SizedBox(
-                            height: 28,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Text(
-                              no_of_eye_test ?? "0",
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 5.0),
-                            child: Text(
-                              'Eye Test',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      height: 180,
-                      width: 140,
-                      decoration: const BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('assets/eye_bg.png'),
-                          // Replace with your image asset
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const SizedBox(
-                            height: 28,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 12.0, horizontal: 8.0),
-                            child: Text(
-                              no_of_fatigue_test ?? "0",
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 5.0, horizontal: 4.0),
-                            child: Text(
-                              'Eye Fatigue Test',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+      SizedBox(
+         height: 24,),
+
+        Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 10),
+    child: SizedBox(
+
+    height: 180, // Adjust height as needed
+    child: Row(
+    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    children: [
+    Expanded(
+    child: Container(
+    decoration: const BoxDecoration(
+    image: DecorationImage(
+    image: AssetImage('assets/interview.png'),
+    // Replace with your image asset
+    fit: BoxFit.cover, // Ensure the image covers the entire container
+    ),
+    ),
+    child: Column(
+    mainAxisAlignment: MainAxisAlignment.start,
+    children: [
+    const SizedBox(height: 28),
+    Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8.0),
+    child: Text(
+    no_of_eye_test ?? "0",
+    style: const TextStyle(
+    color: Colors.white,
+    fontSize: 22,
+    fontWeight: FontWeight.bold,
+    ),
+    ),
+    ),
+    const Padding(
+    padding: EdgeInsets.symmetric(vertical: 5.0),
+    child: Text(
+    'Eye Test',
+    style: TextStyle(
+    color: Colors.white,
+    fontSize: 16,
+    ),
+    ),
+    ),
+    ],
+    ),
+    ),
+    ),
+    Expanded(
+    child: Container(
+    decoration: const BoxDecoration(
+    image: DecorationImage(
+    image: AssetImage('assets/eye_bg.png'),
+    // Replace with your image asset
+    fit: BoxFit.cover, // Ensure the image covers the entire container
+    ),
+    ),
+    child: Column(
+    mainAxisAlignment: MainAxisAlignment.start,
+    children: [
+    const SizedBox(height: 28),
+    Padding(
+    padding: const EdgeInsets.symmetric(
+    vertical: 12.0, horizontal: 8.0),
+    child: Text(
+    no_of_fatigue_test ?? "0",
+    style: const TextStyle(
+    color: Colors.white,
+    fontSize: 22,
+    fontWeight: FontWeight.bold,
+    ),
+    ),
+    ),
+    const Padding(
+    padding: EdgeInsets.symmetric(
+    vertical: 5.0, horizontal: 4.0),
+    child: Text(
+    'Eye Fatigue Test',
+    style: TextStyle(
+    color: Colors.white,
+    fontSize: 14,
+    ),
+    ),
+    ),
+    ],
+    ),
+    ),
+    ),
+    ],
+    ),
+    ),
+    ),
+
+        const SizedBox(height: 19),
+
           ],
         ),
       ),
@@ -1348,7 +1359,8 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
       Map<String, dynamic> jsonData = jsonDecode(response.body);
       // List<dynamic> data = jsonData['data'];
       fullname = jsonData['name'];
-
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('name', fullname);
       int no_of_fatigue = jsonData['no_of_fatigue_test'];
       int no_of_eye_ = jsonData['no_of_eye_test'];
       dynamic eye_hscore = jsonData['eye_health_score'];
@@ -1454,7 +1466,7 @@ class DotWithLabel extends StatelessWidget {
   final int index;
 
   final String label;
-  final int point;
+  final double point;
 
   const DotWithLabel({
     Key? key,
@@ -1908,11 +1920,10 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
   }
 }
 
-/*
 class ExampleAlarmRingScreen extends StatelessWidget {
   const ExampleAlarmRingScreen({required this.alarmSettings, super.key});
 
- // final AlarmSettings alarmSettings;
+  final AlarmSettings alarmSettings;
 //TODO Data Change Alarm Design
   @override
   Widget build(BuildContext context) {
@@ -1967,4 +1978,4 @@ class ExampleAlarmRingScreen extends StatelessWidget {
     );
   }
 }
-*/
+

@@ -35,6 +35,7 @@ class UserProfiledash extends State<UserDashboard> {
   bool isMobileValid = true;
   TextEditingController points_ = TextEditingController();
   bool isLoading = true;
+  String name = '';
 
   @override
   void initState() {
@@ -53,18 +54,22 @@ class UserProfiledash extends State<UserDashboard> {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: isLoading
-          ? const Center(
+      home:
+      isLoading
+          ?
+       Center(
               child: CircularProgressIndicator(
                 color: Colors.black,
               ),
             )
-          : Scaffold(
+          :
+      Scaffold(
               backgroundColor: Colors.background,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: Padding(
           padding: const EdgeInsets.all(8.0), // Add padding
-          child: ClipOval(
+          child:
+          ClipOval(
             child: Material(
               color: Colors.white70.withOpacity(0.9), // Background color
               elevation: 4.0, // Shadow
@@ -79,13 +84,14 @@ class UserProfiledash extends State<UserDashboard> {
                   );
                 },
                 child: SizedBox(
+
                   width: 53.0, // Width of the FloatingActionButton
                   height: 50.0, // Height of the FloatingActionButton
                   child: Center(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0), // Add padding for the icon
                       child: Image.asset(
-                        "assets/home_icon.png",
+                        "assets/home_icon.jpeg",
                         width: 20,
                         // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
                         // color: Colors.grey, // Uncomment if you want to apply a color to the image
@@ -96,6 +102,7 @@ class UserProfiledash extends State<UserDashboard> {
               ),
             ),
           ),
+
         ),
               body: Column(
                 children: [
@@ -146,37 +153,55 @@ class UserProfiledash extends State<UserDashboard> {
 
                     ],
                   ),
-                  SizedBox(height: 16,),
+                  SizedBox(height: 6,),
 
-                  //             Image.asset(
-                  // height: 30,
-                  //               'assets/profileline.png', // Replace this with your image path
-                  //             ),
-                  ClipOval(
-                    child: SizedBox(
-                      width: 86.0, height: 86,
-                      // height: 80.0,
-                      child: imageUrl1 != ""
-                          ? Image.network(
+
+                  CircleAvatar(
+                    radius: 50.0,
+                    backgroundColor: Colors.transparent,
+                    child: ClipOval(
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            width: 100.0,
+                            height: 100.0,
+                            child: isLoading
+                                ?
+                            Center(
+                              child: CircularProgressIndicator(),
+                            )
+                                :
+
+                            (imageUrl1.isNotEmpty&& imageUrl1!='')
+                                ?
+                            Image.network(
                               imageUrl1,
                               fit: BoxFit.cover,
                             )
-                          : _imageFile == null && imageUrl1 == ""
-                              ? Image.asset(
-                                  'assets/profile_pic.png',
-                                  width: 50,
-                                  fit: BoxFit.cover,
-                                )
-                              : Image.file(
-                                  _imageFile!,
-                                  fit: BoxFit.cover,
-                                ),
+                                : Image.asset(
+                              'assets/profile_pic.png',
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+
+                        ],
+                      ),
                     ),
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
 
+
+
+
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    name.toString(),
+                    style: const TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
+                        fontWeight:FontWeight.w500),
+                  ),
                   ShaderMask(
                     shaderCallback: (Rect bounds) {
                       return const RadialGradient(
@@ -226,24 +251,25 @@ class UserProfiledash extends State<UserDashboard> {
                                 },
                                 child: Container(
                                   width:
-                                      MediaQuery.of(context).size.width / 1.3,
+                                      MediaQuery.of(context).size.width ,
                                   height: 60,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(22),
                                     // Half of the height for oval shape
-                                    color: Colors.grey.withOpacity(0.3),
+                                    color: Colors.grey.withOpacity(0.1),
                                   ),
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(12.0),
-                                        child: Text(
-                                          'Personal Details',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 15,
+                                      Expanded(
+                                        child: Center(
+                                          child: Text(
+                                            'Personal Details',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 15,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -266,7 +292,7 @@ class UserProfiledash extends State<UserDashboard> {
                                 ),
                               ),
                               SizedBox(
-                                height: 30,
+                                height: 20,
                               ),
                               GestureDetector(
                                 onTap: () {
@@ -278,24 +304,25 @@ class UserProfiledash extends State<UserDashboard> {
                                 },
                                 child: Container(
                                   width:
-                                      MediaQuery.of(context).size.width / 1.3,
+                                      MediaQuery.of(context).size.width ,
                                   height: 60,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(22),
                                     // Half of the height for oval shape
-                                    color: Colors.grey.withOpacity(0.3),
+                                    color: Colors.grey.withOpacity(0.1),
                                   ),
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(12.0),
-                                        child: Text(
-                                          'Reward Details',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 15,
+                                      Expanded(
+                                        child: Center(
+                                          child: Text(
+                                            'Reward Details',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 15,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -319,7 +346,7 @@ class UserProfiledash extends State<UserDashboard> {
                                 ),
                               ),
                               SizedBox(
-                                height: 30,
+                                height: 20,
                               ),
                               GestureDetector(
                                 onTap: () {
@@ -331,26 +358,27 @@ class UserProfiledash extends State<UserDashboard> {
                                 },
                                 child: Container(
                                   width:
-                                      MediaQuery.of(context).size.width / 1.3,
+                                      MediaQuery.of(context).size.width ,
                                   height: 60,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(22),
                                     // Half of the height for oval shape
-                                    color: Colors.grey.withOpacity(0.3),
+                                    color: Colors.grey.withOpacity(0.1),
                                   ),
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(12.0),
-                                        child: Text(
+                                  Expanded(
+                                  child: Center(
+                                  child: Text(
+
                                           'Plans',
                                           style: TextStyle(
                                             color: Colors.black,
                                             fontSize: 15,
                                           ),
-                                        ),
+                                        ),)
                                       ),
                                       IconButton(
                                         icon: Icon(
@@ -381,27 +409,27 @@ class UserProfiledash extends State<UserDashboard> {
                                 },
                                 child: Container(
                                   width:
-                                      MediaQuery.of(context).size.width / 1.3,
+                                      MediaQuery.of(context).size.width,
                                   height: 60,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(22),
                                     // Half of the height for oval shape
-                                    color: Colors.grey.withOpacity(0.3),
+                                    color: Colors.grey.withOpacity(0.1),
                                   ),
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(12.0),
-                                        child: Text(
+                                  Expanded(
+                                  child: Center(
+                                  child: Text(
                                           'Terms and Condition',
                                           style: TextStyle(
                                             color: Colors.black,
                                             fontSize: 15,
                                           ),
                                         ),
-                                      ),
+                                      ),),
                                       IconButton(
                                         icon: Icon(
                                             Icons.arrow_forward_ios_outlined),
@@ -434,27 +462,27 @@ class UserProfiledash extends State<UserDashboard> {
                                 },
                                 child: Container(
                                   width:
-                                      MediaQuery.of(context).size.width / 1.3,
+                                      MediaQuery.of(context).size.width,
                                   height: 60,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(22),
                                     // Half of the height for oval shape
-                                    color: Colors.grey.withOpacity(0.3),
+                                    color: Colors.grey.withOpacity(0.1),
                                   ),
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(12.0),
-                                        child: Text(
+                                  Expanded(
+                                  child: Center(
+                                  child: Text(
                                           'Privacy Policy',
                                           style: TextStyle(
                                             color: Colors.black,
                                             fontSize: 15,
                                           ),
                                         ),
-                                      ),
+                                      ),),
                                       IconButton(
                                         icon: Icon(
                                             Icons.arrow_forward_ios_outlined),
@@ -484,27 +512,28 @@ class UserProfiledash extends State<UserDashboard> {
                                 },
                                 child: Container(
                                   width:
-                                  MediaQuery.of(context).size.width / 1.3,
+                                  MediaQuery.of(context).size.width ,
                                   height: 60,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(22),
                                     // Half of the height for oval shape
-                                    color: Colors.grey.withOpacity(0.3),
+                                    color: Colors.grey.withOpacity(0.1),
                                   ),
                                   child: Row(
+
                                     mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(12.0),
-                                        child: Text(
+                                  Expanded(
+                                  child: Center(
+                                  child: Text(
                                           'Delete Account',
                                           style: TextStyle(
                                             color: Colors.black,
                                             fontSize: 15,
                                           ),
                                         ),
-                                      ),
+                                      ),),
                                       IconButton(
                                         icon: Icon(
                                             Icons.arrow_forward_ios_outlined),
@@ -615,21 +644,21 @@ class UserProfiledash extends State<UserDashboard> {
   void Logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String access_token = prefs.getString('access_token') ?? '';
-    // Alarm.stopAll();
+    Alarm.stopAll();
+
     prefs.remove("isLoggedIn");
     prefs.remove("access_token");
+
     await prefs.clear();
     Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => SignIn()),
         (Route<dynamic> route) => false);
   }
 
-  Future<Map<String, dynamic>> getProfile() async {
+  void getProfile() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String userId = prefs.getString('id') ?? '';
       String token = prefs.getString('access_token') ?? '';
-      print("id :$userId");
       final response = await http.get(
         Uri.parse('${ApiProvider.baseUrl + ApiProvider.getUserProfile}'),
         headers: <String, String>{
@@ -638,32 +667,54 @@ class UserProfiledash extends State<UserDashboard> {
       );
 
       if (response.statusCode == 200) {
-        // _progressDialog!.hide();
-
-        final jsonResponse = jsonDecode(response.body);
         setState(() {
-          points_.text = jsonResponse['data']['points'].toString();
-          if (jsonResponse['data']['image'] != null) {
-            imageUrl1 = "${ApiProvider.baseUrl}" +
-                jsonResponse['data']['image']; //replace url
-          }
-          isLoading = false;
+          isLoading=false;
+
         });
+        Map<String, dynamic> responseData = jsonDecode(response.body);
+
+        if (responseData.containsKey('data')) {
+          var data = responseData['data'];
+          if (data.containsKey('points')) {
+            points_.text  = data['points'].toString();
+            print("points=:${data['points'].toString()}");
+
+          }
+
+          if (data.containsKey('image') && data['image'] != null) {
+            imageUrl1 = ApiProvider.baseUrl + data['image'].toString();
+          } else {
+            imageUrl1 = '';
+            print("imageUrl1:${imageUrl1}");
+          }
+
+
+          if (data.containsKey('first_name')||data.containsKey('last_name')) {
+            name =   data['first_name'].toString()+' '+data['last_name'].toString();
+            print("responseviewprofile:${data['first_name'].toString()+' '+data['last_name'].toString()}");
+
+          }
+
+
+        }
+
+
 
         print("responseviewprofile:${response.body}");
 
-        return json.decode(response.body);
+        // return json.decode(response.body);
       } else {
-        // _progressDialog!.hide();
 
         print(response.body);
       }
-    } catch (e) {
+      print("isLoading=$isLoading");
+    }
+    catch (e) {
       // _progressDialog!.hide();
 
       print("exception:$e");
     }
-    throw Exception('');
+    // throw Exception('');
   }
 
   Future<Map<String, dynamic>> deleteUser() async {
@@ -712,7 +763,6 @@ class PrivacyScreen extends StatefulWidget {
 
 class _PrivacyScreenState extends State<PrivacyScreen> {
   String privacyContent = '';
-
   @override
   void initState() {
     super.initState();
@@ -729,6 +779,8 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
 
       if (response.statusCode == 200) {
         // _progressDialog!.hide();
+
+
 
         final jsonResponse = jsonDecode(response.body);
         setState(() {
@@ -809,7 +861,11 @@ class _TermsScreenState extends State<TermsScreen> {
     }
   }
 
+  @override
+  void dispose() {
 
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

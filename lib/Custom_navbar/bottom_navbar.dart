@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:project_new/eyeFatigueTest/ReportPage.dart';
 import 'package:project_new/eyeHealthTrack.dart';
 import 'package:project_new/Rewards/rewards.dart';
@@ -34,119 +35,118 @@ class CustomBottomAppBar extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Column(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
+                    GestureDetector(
+                      onTap: () {
                         if (currentScreen != "ReportPage"){
 
-                           Navigator.push(
-                              context, CupertinoPageRoute(
-                              builder: (context) => ReportPage(
-                              ),
+                          Navigator.push(
+                            context, CupertinoPageRoute(
+                            builder: (context) => ReportPage(
                             ),
+                          ),
 
-                            );}
-                          },
-                          child: Image.asset(
-                            'assets/reports.png',
+                          );}
+                      },
+
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            'assets/report.png',
                             width: MediaQuery.of(context).size.width / 15,
                           ),
-                        ),
-                        const Text(
-                          "Report",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 12,
-                            color: Colors.grey,
-                          ),
-                        )
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                  if (currentScreen != "EyeHealth"){
-
-                             Navigator.push(
-                              context, CupertinoPageRoute(
-                              builder: (context) => EyeHealthTrackDashboard(
-                              ),
+                          const Text(
+                            "Report",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 12,
+                              color: Colors.grey,
                             ),
+                          )
+                        ],
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        if (currentScreen != "EyeHealth"){
 
-                            );}
-                          },
-                          child: Image.asset(
+                          Navigator.push(
+                            context, CupertinoPageRoute(
+                            builder: (context) => EyeHealthTrackDashboard(
+                            ),
+                          ),
+
+                          );}
+                      },
+                      child: Column(
+                        children: [
+                          Image.asset(
                             'assets/health.png',
                             width: MediaQuery.of(context).size.width / 15,
                           ),
-                        ),
-                        const Text(
-                          "Health",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 12,
-                            color: Colors.grey,
-                          ),
-                        )
-                      ],
+                          const Text(
+                            "Health",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                     SizedBox(
                       width: MediaQuery.of(context).size.width / 12,
                     ),
-                    Column(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            if (currentScreen != "Rewards"){
-                            Navigator.push(
-                              context,
-                              CupertinoPageRoute(
-                                  builder: (context) =>  RewardsScreen()),
-                            );}
-                          },
-                          child: Image.asset(
+                    GestureDetector(
+                      onTap: () {
+                        if (currentScreen != "Rewards"){
+                          Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                                builder: (context) =>  RewardsScreen()),
+                          );}
+                      },                      child: Column(
+                        children: [
+                          Image.asset(
                             'assets/rewards.png',
                             width: MediaQuery.of(context).size.width / 15,
                           ),
-                        ),
-                        const Text(
-                          "Rewards",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 12,
-                            color: Colors.grey,
-                          ),
-                        )
-                      ],
+                          const Text(
+                            "Rewards",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          )
+                        ],
+                      ),
                     ),
-                    Column(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
+                    GestureDetector(
+                      onTap: () {
 
-                            if (currentScreen != "ProfileDashboard")
-                            Navigator.push(
-                              context,
-                              CupertinoPageRoute(
-                                  builder: (context) =>  UserDashboard()),
-                            );
-                          },
-                          child: Image.asset(
-                            'assets/account.png',
+                        if (currentScreen != "ProfileDashboard")
+                          Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                                builder: (context) =>  UserDashboard()),
+                          );
+                      },                      child: Column(
+                        children: [
+                          Image.asset(
+                            'assets/user.png',
                             width: MediaQuery.of(context).size.width / 15,
                           ),
-                        ),
-                        const Text(
-                          "Account",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 12,
-                            color: Colors.grey,
-                          ),
-                        )
-                      ],
+                          const Text(
+                            "Account",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ],
                 ),

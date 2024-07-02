@@ -163,7 +163,7 @@ class _RewardsContactsSync extends State<RewardContact> {
                         padding: const EdgeInsets.all(8.0),
                         // Add padding for the icon
                         child: Image.asset(
-                          "assets/home_icon.png",
+                          "assets/home_icon.jpeg",
                           width: 20,
                           // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
                           // color: Colors.grey, // Uncomment if you want to apply a color to the image
@@ -1203,7 +1203,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
                             padding: const EdgeInsets.all(
                                 8.0), // Add padding for the icon
                             child: Image.asset(
-                              "assets/home_icon.png",
+                              "assets/home_icon.jpeg",
                               width: 20,
                               // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
                               // color: Colors.grey, // Uncomment if you want to apply a color to the image
@@ -2320,7 +2320,7 @@ class PresUpload extends State<PrescriptionUpload> {
                             padding: const EdgeInsets.all(
                                 8.0), // Add padding for the icon
                             child: Image.asset(
-                              "assets/home_icon.png",
+                              "assets/home_icon.jpeg",
                               width: 20,
                               // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
                               // color: Colors.grey, // Uncomment if you want to apply a color to the image

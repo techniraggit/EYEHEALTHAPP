@@ -32,7 +32,7 @@ class SignInScreen extends State<SignIn> {
 
   bool isMobileValid = true;
   bool isEmailValid = true;
-
+String username='';
   String pincode = '';
   Color buttonColor = Colors.disablebutton; // Default color
 
@@ -333,7 +333,7 @@ class SignInScreen extends State<SignIn> {
                                     initPlatformState();
                                     requestNotificationPermission();
 
-
+                                    getVerifyLoginOtp();
 
 
                                   },
@@ -430,12 +430,20 @@ class SignInScreen extends State<SignIn> {
   }
 
   bool checkValidationForLogin() {
-    setState(() {});
+    // setState(() {});
     // if(_otpController.text.trim().isEmpty || _otpController.text.trim().length!=4){
     //   Fluttertoast.showToast(msg: "Enter Otp");
     //   return false;
     //
     // }
+    if (isEmail(_phoneController.text.trim())) {
+      // Handle email logic
+      username= _phoneController.text.trim();
+  } else if (isPhoneNumber(_phoneController.text.trim())) {
+    // Handle phone number logic
+      username= '+91' + _phoneController.text.trim();
+
+    }
     if (isNumeric(_phoneController.text)) {
       if (_phoneController.text.isEmpty || _phoneController.text.length != 10) {
         Fluttertoast.showToast(msg: "Enter valid Phone Number");
@@ -459,7 +467,8 @@ class SignInScreen extends State<SignIn> {
         Response response = await post(
           Uri.parse('${ApiProvider.baseUrl + ApiProvider.sendLoginOtp}'),
           body: {
-            "username": '+91'+_phoneController.text.trim(),
+
+            "username": username,
           },
           // headers: {
           //   'Authorization': 'Bearer $accessToken',
@@ -690,6 +699,22 @@ class SignInScreen extends State<SignIn> {
       }
     }
   }
+  bool isEmail(String input) {
+    // Regular expression to check if input matches an email format
+    final RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    return emailRegex.hasMatch(input);
+  }
+
+  bool isPhoneNumber(String input) {
+
+    // Regular expression to check if input is a 10-digit number
+
+    final RegExp phoneRegex = RegExp(r'^\d{10}$');
+
+    return phoneRegex.hasMatch(input);
+
+  }
+
 
   bool checkValidationForLoginOtp() {
     if (pincode.isEmpty || pincode.length != 4) {

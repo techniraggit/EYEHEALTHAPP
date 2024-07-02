@@ -37,7 +37,8 @@ class ProfileDetails extends State<UserProfile> {
   TextEditingController _locationController = TextEditingController();
   TextEditingController referalController = TextEditingController();
   TextEditingController _dobController = TextEditingController();
-  String pincode = '';
+  String pincode = '';bool _loading = true; // State variable to track loading state
+
   double Latitude = 0.0;
   double Longitude = 0.0;
   bool isLoading = true;
@@ -154,18 +155,7 @@ class ProfileDetails extends State<UserProfile> {
                         width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.width / 3,
                         alignment: Alignment.topLeft,
-                        // child: Padding(
-                        //   padding: const EdgeInsets.fromLTRB(29, 3, 20, 20),
-                        //   child: Text(
-                        //     "Profile", // Your title text
-                        //     style: TextStyle(
-                        //       fontSize: 18,
-                        //       fontWeight: FontWeight.w500,
-                        //       color: Colors
-                        //           .white, // Adjust the text color as needed
-                        //     ),
-                        //   ),
-                        // ),
+
                       ),
                       Positioned(
                         // top: MediaQuery.of(context).size.width / 3, // Adjust the top position as needed
@@ -183,53 +173,38 @@ class ProfileDetails extends State<UserProfile> {
                             },
                             child: Stack(
                               children: [
-                                // Circular image
-                                // CircleAvatar(
-                                //   radius: 50.0,
-                                //   backgroundColor: Colors.transparent,
-                                //   child: ClipOval(
-                                //     child: SizedBox(
-                                //       width: 80.0,
-                                //       height: 80.0,
-                                //       child: imageUrl1 != ''
-                                //           ? Image.network(
-                                //               imageUrl1,
-                                //               fit: BoxFit.cover,
-                                //             )
-                                //           : _imageFile == null && imageUrl1 == ""
-                                //               ? Image.asset(
-                                //                   'assets/profile_pic.png',
-                                //                   fit: BoxFit.cover,
-                                //                 )
-                                //               : Image.file(
-                                //                   _imageFile!,
-                                //                   fit: BoxFit.cover,
-                                //                 ),
-                                //     ),
-                                //   ),
-                                // ),
-                                // Icon for editing
+
                                 CircleAvatar(
                                   radius: 50.0,
                                   backgroundColor: Colors.transparent,
                                   child: ClipOval(
-                                    child: SizedBox(
-                                      width: 80.0,
-                                      height: 80.0,
-                                      child: _imageFile != null
-                                          ? Image.file(
-                                              _imageFile!,
-                                              fit: BoxFit.cover,
-                                            )
-                                          : imageUrl1.isNotEmpty
+                                    child: Column(
+                                      children: [
+                                        SizedBox(
+                                          width: 100.0,
+                                          height: 100.0,
+                                          child: _loading
+                                              ?
+                                          Center(
+                                            child: CircularProgressIndicator(),
+                                          )
+                                              : _imageFile != null
+                                              ? Image.file(
+                                            _imageFile!,
+                                            fit: BoxFit.cover,
+                                          )
+                                              : imageUrl1.isNotEmpty
                                               ? Image.network(
-                                                  imageUrl1,
-                                                  fit: BoxFit.cover,
-                                                )
+                                            imageUrl1,
+                                            fit: BoxFit.cover,
+                                          )
                                               : Image.asset(
-                                                  'assets/profile_pic.png',
-                                                  fit: BoxFit.cover,
-                                                ),
+                                            'assets/profile_pic.png',
+                                            fit: BoxFit.fill,
+                                          ),
+                                        ),
+
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -345,79 +320,7 @@ class ProfileDetails extends State<UserProfile> {
                                 ),
                               ),
                               const SizedBox(height: 25),
-                              // Builder(builder: (context) {
-                              //   print("_phoneController=======${_phoneController.text}========initialPhone$initialPhone");
-                              //   if( _phoneController.text.isNotEmpty &&
-                              //       _phoneController.text.trim() != initialPhone)
-                              //   {
-                              //     isVerifiedphone=false;
-                              //
-                              //   }
-                              //   else{
-                              //     isVerifiedphone=true;
-                              //   }
-                              //   return SizedBox(
-                              //     height: 55,
-                              //     child: Padding(
-                              //       padding: const EdgeInsets.symmetric(
-                              //           horizontal: 10.0, vertical: 1),
-                              //       child: TextField(
-                              //         controller: _phoneController,
-                              //         inputFormatters: [
-                              //           LengthLimitingTextInputFormatter(10),
-                              //           // Limits input length to 10 characters
-                              //         ],
-                              //         keyboardType: TextInputType.number,
-                              //         textInputAction: TextInputAction.next,
-                              //
-                              //         onSubmitted: (_) {
-                              //           // Call your API function when the user submits the text field
-                              //           verifyUserphone();
-                              //         },
-                              //         onEditingComplete: () {
-                              //           setState(() {
-                              //             isVerifiedphone = false;
-                              //           });
-                              //           // Call your API function when the user completes editing the text field
-                              //           verifyUserphone();
-                              //         },
-                              //
-                              //         decoration: InputDecoration(
-                              //           labelText: 'Phone',
-                              //           hintText: 'Enter Phone Number',
-                              //           labelStyle: const TextStyle(
-                              //               fontSize: 14,
-                              //               color: Colors.background,
-                              //               fontWeight: FontWeight.w400),
-                              //           hintStyle: const TextStyle(
-                              //               fontSize: 16,
-                              //               color: Colors.hinttext,
-                              //               fontWeight: FontWeight.w400),
-                              //           border: OutlineInputBorder(
-                              //             borderRadius: BorderRadius.circular(
-                              //                 27.0), // Add circular border
-                              //           ),
-                              //           // Set floatingLabelBehavior to always display the label
-                              //           floatingLabelBehavior:
-                              //               FloatingLabelBehavior.always,
-                              //           suffixIcon: !isVerifiedphone
-                              //               ? GestureDetector(
-                              //                   onTap: () {
-                              //                     getVerifyPhoneOtp();
-                              //                   },
-                              //                   child: getSuffixIconPhone(),
-                              //                 )
-                              //               : null,
-                              //
-                              //
-                              //         ),
-                              //         style: const TextStyle(
-                              //             fontSize: 15,
-                              //             fontWeight: FontWeight.w400),
-                              //       ),
-                              //     ),
-                              //   );
-                              // }),
+
                               Builder(builder: (context) {
                                 print("_phoneController=======${_phoneController.text}========initialPhone$initialPhone");
 
@@ -702,6 +605,9 @@ class ProfileDetails extends State<UserProfile> {
   }
 
   bool checkValidationForVerifyPhone(String phone) {
+    if(phone.length!=10){
+      Fluttertoast.showToast(msg: "Please enter valid pone no.");
+    }
     // Simple email validation regex pattern
     final RegExp phoneRegex = RegExp(r'^\d{10}$');
     return phoneRegex.hasMatch(phone);
@@ -741,7 +647,7 @@ class ProfileDetails extends State<UserProfile> {
         'Bearer $authToken'; // Replace $authToken with your actual token
     request.fields['id'] = user_id;
     request.fields['email'] = _emailController.text;
-    request.fields['phone_number'] = '+91${_phoneController.text}';
+    request.fields['phone_number'] = '+91${_phoneController.text}';//
     request.fields['last_name'] = _lastNmeController.text;
     request.fields['first_name'] = _firstNameController.text;
     request.fields['dob'] = '1982-12-11';
@@ -810,6 +716,14 @@ class ProfileDetails extends State<UserProfile> {
 
         final jsonResponse = jsonDecode(response.body);
         setState(() {
+          _loading=false;
+
+          if (jsonResponse['data']['image'] != null) {
+            imageUrl1 =
+                "${ApiProvider.baseUrl}" + jsonResponse['data']['image'];
+          } else {
+            imageUrl1 = '';
+          }
           user_id = jsonResponse['data']['id'];
           _firstNameController.text = jsonResponse['data']['first_name'];
           if (jsonResponse['data']['last_name'] == null ||
@@ -818,16 +732,11 @@ class ProfileDetails extends State<UserProfile> {
           } else {
             _lastNmeController.text = "N/A";
           }
-          _phoneController.text = jsonResponse['data']['phone_number'];
+          _phoneController.text = jsonResponse['data']['phone_number'].toString().substring(3,13);
           _emailController.text = jsonResponse['data']['email'];
           initialEmail = jsonResponse['data']['email'];
-          initialPhone = jsonResponse['data']['phone_number'];
-          if (jsonResponse['data']['image'] != null) {
-            imageUrl1 =
-                "${ApiProvider.baseUrl}" + jsonResponse['data']['image'];
-          } else {
-            imageUrl1 = '';
-          }
+          initialPhone = jsonResponse['data']['phone_number'].toString().substring(3,13);
+
 
           isLoading = false; //replace url
         });
@@ -858,13 +767,15 @@ class ProfileDetails extends State<UserProfile> {
         Response response = await post(
           Uri.parse('${ApiProvider.baseUrl + ApiProvider.verifyEmailOtp}'),
           body: {
-            "username":'+91'+ _phoneController.text.trim(),
+            "username": "+91"+_phoneController.text.trim(),
           },
           // headers: {
           //   'Authorization': 'Bearer $accessToken',
           //
           // },
         );
+        print('Response username: ${"+91"+_phoneController.text.trim()}');
+
         print('Response Status Code: ${response.statusCode}');
         print('Response Body: ${response.body}');
         // Close the loading dialog
@@ -1052,6 +963,8 @@ class ProfileDetails extends State<UserProfile> {
 
           print("Otp Sent$data");
         } else {
+          Fluttertoast.showToast(msg: "Please enter valid pone no.");
+
           Map<String, dynamic> data = json.decode(response.body);
 
           print("Otp Sent failed");
@@ -1354,7 +1267,8 @@ class ProfileDetails extends State<UserProfile> {
         Response response = await patch(
           Uri.parse('${ApiProvider.baseUrl + ApiProvider.verifyEmailOtp}'),
           body: {
-            "username": _phoneController.text.trim(),
+
+            "username":'+91'+ _phoneController.text.trim(),
             "otp": pincode // _otpController.text.trim(),
           },
           // headers: {

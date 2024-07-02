@@ -523,7 +523,7 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin {
                       padding: const EdgeInsets.all(8.0),
                       // Add padding for the icon
                       child: Image.asset(
-                        "assets/home_icon.png",
+                        "assets/home_icon.jpeg",
                         width: 20,
                       ),
                     ),
@@ -764,7 +764,7 @@ class __ReportFatigueTestState extends State<_ReportFatigueTest> {
   List<dynamic> percentage = [];
 
   String testResult = 'Good';
-  int count = 0;
+  int count = 0;double first_day_data=0.0;double current_day_data=0.0;double get_percentile_graph=0.0;double get_ideal_graph=0.0;
   List<Prescription> prescriptions = [];
   fatigueGraph? fatigueGraphData;
   bool midtiredness_right = false;
@@ -790,6 +790,8 @@ class __ReportFatigueTestState extends State<_ReportFatigueTest> {
     );
 
     if (response.statusCode == 200) {
+            print("response-"+response.body);
+
       final responseData = json.decode(response.body);
       setState(() {
         isLoading = false;
@@ -811,8 +813,8 @@ class __ReportFatigueTestState extends State<_ReportFatigueTest> {
       print("exception:$e");
     }*/
   }
-  Future<List<double>> getGraph() async {
-  try {
+  Future<void> getGraph() async {
+  // try {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken = prefs.getString('access_token') ?? '';
     final response = await http.get(
@@ -829,59 +831,66 @@ class __ReportFatigueTestState extends State<_ReportFatigueTest> {
 
       print("graphdata===:${response.body}");
 
-      Map<String, dynamic> jsonData = jsonDecode(response.body);
+      Map<String, dynamic> jsonResponse = json.decode(response.body);
+
+      // Accessing eye_health_score from the JSON response
       // List<dynamic> data = jsonData['data'];
-count=jsonData['no_of_fatigue_test'];
-      if (responseData.containsKey('status') && responseData['status']) {
-        if (responseData.containsKey('first_day_data') &&
-            responseData['first_day_data'].containsKey('value')) {
-          List<
-              dynamic> firstDayValue = responseData['first_day_data']['value'];
-          firstTestgraphData.addAll(
-              firstDayValue.map((value) => value.toDouble()));
-        }
-        if (responseData.containsKey('current_day_data') &&
-            responseData['current_day_data'].containsKey('value')) {
-          List<
-              dynamic> currentDayValue = responseData['current_day_data']['value'];
-          todaygraphData.addAll(
-              currentDayValue.map((value) => value.toDouble()));
-        }
-        if (responseData.containsKey('get_percentile_graph')) {
-          List<dynamic> population = List<double>.from(
-              jsonData['get_percentile_graph']);
+      count=jsonResponse['no_of_fatigue_test'];
+      first_day_data=jsonResponse['first_day_data'].toDouble();
+      current_day_data=jsonResponse['current_day_data'].toDouble();
+      get_percentile_graph=jsonResponse['get_percentile_graph'].toDouble();
+      get_ideal_graph=jsonResponse['get_ideal_graph'].toDouble();
 
-          populationTestgraphData.addAll(
-              population.map((value) => value.toDouble()));
-        }
-        if (responseData.containsKey('get_ideal_graph')) {
-          List<dynamic> ideal = List<double>.from(
-              jsonData['get_ideal_graph']);
-
-          idealTestgraphData.addAll(ideal.map((value) => value.toDouble()));
-        }
-      }
-      print("fffffffffffffff$todaygraphData");
-      setState(() {
-        chartData = <_ChartData>[
-          _ChartData('6 AM', todaygraphData[0], idealTestgraphData[0],
-              populationTestgraphData[0], firstTestgraphData[0]),
-          _ChartData('9 AM', todaygraphData[1], idealTestgraphData[1],
-              populationTestgraphData[1], firstTestgraphData[1]),
-          _ChartData('12 PM', todaygraphData[2], idealTestgraphData[2],
-              populationTestgraphData[2], firstTestgraphData[2]),
-          _ChartData('3 PM', todaygraphData[3], idealTestgraphData[3],
-              populationTestgraphData[3], firstTestgraphData[3]),
-          _ChartData('6 PM', todaygraphData[4], idealTestgraphData[4],
-              populationTestgraphData[4], firstTestgraphData[4]),
-          _ChartData('9 PM', todaygraphData[5], idealTestgraphData[5],
-              populationTestgraphData[5], firstTestgraphData[5]),
-          _ChartData('12 AM', todaygraphData[6], idealTestgraphData[6],
-              populationTestgraphData[6], firstTestgraphData[6]),
-
-
-        ];
-      });
+      // if (responseData.containsKey('status') && responseData['status']) {
+      //   if (responseData.containsKey('first_day_data') &&
+      //       responseData['first_day_data'].containsKey('value')) {
+      //     List<
+      //         dynamic> firstDayValue = responseData['first_day_data']['value'];
+      //     firstTestgraphData.addAll(
+      //         firstDayValue.map((value) => value.toDouble()));
+      //   }
+      //   if (responseData.containsKey('current_day_data') &&
+      //       responseData['current_day_data'].containsKey('value')) {
+      //     List<
+      //         dynamic> currentDayValue = responseData['current_day_data']['value'];
+      //     todaygraphData.addAll(
+      //         currentDayValue.map((value) => value.toDouble()));
+      //   }
+      //   if (responseData.containsKey('get_percentile_graph')) {
+      //     List<dynamic> population = List<double>.from(
+      //         jsonData['get_percentile_graph']);
+      //
+      //     populationTestgraphData.addAll(
+      //         population.map((value) => value.toDouble()));
+      //   }
+      //   if (responseData.containsKey('get_ideal_graph')) {
+      //     List<dynamic> ideal = List<double>.from(
+      //         jsonData['get_ideal_graph']);
+      //
+      //     idealTestgraphData.addAll(ideal.map((value) => value.toDouble()));
+      //   }
+      // }
+      // print("fffffffffffffff$todaygraphData");
+      // setState(() {
+      //   chartData = <_ChartData>[
+      //     _ChartData('6 AM', todaygraphData[0], idealTestgraphData[0],
+      //         populationTestgraphData[0], firstTestgraphData[0]),
+      //     _ChartData('9 AM', todaygraphData[1], idealTestgraphData[1],
+      //         populationTestgraphData[1], firstTestgraphData[1]),
+      //     _ChartData('12 PM', todaygraphData[2], idealTestgraphData[2],
+      //         populationTestgraphData[2], firstTestgraphData[2]),
+      //     _ChartData('3 PM', todaygraphData[3], idealTestgraphData[3],
+      //         populationTestgraphData[3], firstTestgraphData[3]),
+      //     _ChartData('6 PM', todaygraphData[4], idealTestgraphData[4],
+      //         populationTestgraphData[4], firstTestgraphData[4]),
+      //     _ChartData('9 PM', todaygraphData[5], idealTestgraphData[5],
+      //         populationTestgraphData[5], firstTestgraphData[5]),
+      //     _ChartData('12 AM', todaygraphData[6], idealTestgraphData[6],
+      //         populationTestgraphData[6], firstTestgraphData[6]),
+      //
+      //
+      //   ];
+      // });
       // return data
       //     .map((item) => double.parse(item['value'].toString()))
       //     .toList();
@@ -895,12 +904,12 @@ count=jsonData['no_of_fatigue_test'];
     } else {
       print(response.body);
     }
-  } catch (e) {
-    // _progressDialog!.hide();
-
-    print("exception:$e");
-  }
-  throw Exception('');
+  // } catch (e) {
+  //   // _progressDialog!.hide();
+  //
+  //   print("exception:$e");
+  // }
+  // throw Exception('');
 }
   List<dynamic> ReportIds = [];
   List<dynamic> items = [];
@@ -931,7 +940,7 @@ count=jsonData['no_of_fatigue_test'];
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (chartData != null) ...{
+                        // if (chartData != null) ...{
                           // Center(
                           //   child: Container(
                           //     color: Colors.white,
@@ -954,28 +963,18 @@ count=jsonData['no_of_fatigue_test'];
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                DotWithLabel(index: 0, label: 'Ideal Score',point:8),
+                                DotWithLabel(index: 0, label: 'Ideal Score',point:get_ideal_graph.toDouble(), ),
                                 Divider(
-                                  height: 20,
+                                  height: 5,
                                   thickness: 0.5,
                                   color: Colors.grey[400],
                                   indent: 20,
                                   endIndent: 20,
                                 ),
                                 SizedBox(height: 7,),
-                                DotWithLabel(index: 1, label: 'Percentile Score of the population',point:6),
+                                DotWithLabel(index: 1, label: 'Percentile Score of the population',point:get_percentile_graph.toDouble(),),
                                 Divider(
-                                  height: 20,
-                                  thickness: 0.5,
-                                  color: Colors.grey[400],
-                                  indent: 20,
-                                  endIndent: 20,
-                                ),
-                                SizedBox(height: 7,),
-
-                                DotWithLabel( index:2,label: 'Your Avg. Score',point:5),
-                                Divider(
-                                  height: 20,
+                                  height: 5,
                                   thickness: 0.5,
                                   color: Colors.grey[400],
                                   indent: 20,
@@ -983,7 +982,17 @@ count=jsonData['no_of_fatigue_test'];
                                 ),
                                 SizedBox(height: 7,),
 
-                                DotWithLabel(index: 3, label: 'Your First Score',point:4),//color: Colors.black,
+                                DotWithLabel( index:2,label: 'Your Avg. Score',point:current_day_data.toDouble(),),
+                                Divider(
+                                  height: 5,
+                                  thickness: 0.5,
+                                  color: Colors.grey[400],
+                                  indent: 20,
+                                  endIndent: 20,
+                                ),
+                                SizedBox(height: 7,),
+
+                                DotWithLabel(index: 3, label: 'Your First Score',point:first_day_data.toDouble(),),//color: Colors.black,
                               ],
                             ),
                           ),
@@ -1058,7 +1067,7 @@ count=jsonData['no_of_fatigue_test'];
 
 
 
-    if(count==0)...{
+                     if   (count==0)...{
     SizedBox(height: 10),
 
     Padding(
@@ -1127,7 +1136,7 @@ count=jsonData['no_of_fatigue_test'];
     SizedBox(height: 30),
 
     },
-    },
+                       // },
 
 
                         SizedBox(height: 29),

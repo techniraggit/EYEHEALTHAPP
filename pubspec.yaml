@@ -98,6 +98,7 @@ dependencies:
   video_compress: ^3.1.2
   flutter_image_compress: ^2.3.0
   upgrader: ^10.3.0
+  carousel_slider: ^4.2.1
 
 dev_dependencies:
   flutter_test:

@@ -230,7 +230,7 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
                   child: Padding(
                     padding: const EdgeInsets.all(8.0), // Add padding for the icon
                     child: Image.asset(
-                      "assets/home_icon.png",
+                      "assets/home_icon.jpeg",
                       width: 20,
                       // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
                       // color: Colors.grey, // Uncomment if you want to apply a color to the image
@@ -441,7 +441,7 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
 
                             // Description
                             Padding(
-                              padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 8.0),
+                              padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
                               child: Center(
                                 child: Text(
                                   offer.description,
@@ -493,7 +493,7 @@ class RewardsScreenState extends State<RewardsScreen>  with AutoCancelStreamMixi
             Padding(
               padding: EdgeInsets.fromLTRB(16.0, 0, 0, 10),
               child: Text(
-                'Perform EyeTest', // Display formatted current date
+                'Perform Eye Test', // Display formatted current date
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
