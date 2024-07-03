@@ -2549,9 +2549,8 @@ class SignUpScreen extends State<SignUp> {
         if (response.statusCode == 201) {
           Fluttertoast.showToast(msg: 'user registered successfully..');
 
-          Map<String, dynamic> data = json.decode(response.body);
-
-          Navigator.pushReplacement(
+          // Map<String, dynamic> data = json.decode(response.body);
+          Navigator.push(
             context,
             CupertinoPageRoute(builder: (context) => SignIn()),
           );
