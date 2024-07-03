@@ -1660,9 +1660,14 @@ class SignUpScreen extends State<SignUp> {
         // Permissions are granted (either whileInUse, always, restricted).
         _determinePosition().then((value) {
           print("User location ${value.latitude} ,, ${value.longitude}");
-          Latitude = value.latitude;
-          Longitude = value.longitude;
-          _getAddressFromLatLng(value.latitude, value.longitude);
+          setState(() {
+            Latitude = value.latitude;
+            Longitude = value.longitude;
+            print("User location ${Latitude} ,, ${Longitude}");
+
+            _getAddressFromLatLng(value.latitude, value.longitude);
+          });
+
         });
         print("Location permissions are granted after requesting");
       }
@@ -1670,10 +1675,13 @@ class SignUpScreen extends State<SignUp> {
       print("Location permissions are granted ");
 
       _determinePosition().then((value) {
-        _getAddressFromLatLng(value.latitude, value.longitude);
-        print("User location ${value.latitude} ,, ${value.longitude}");
-        Latitude = value.latitude;
-        Longitude = value.longitude;
+        setState(() {
+          _getAddressFromLatLng(value.latitude, value.longitude);
+          print("User location ${value.latitude} ,, ${value.longitude}");
+          Latitude = value.latitude;
+          Longitude = value.longitude;
+        });
+
       });
     }
   }
@@ -1863,6 +1871,7 @@ class SignUpScreen extends State<SignUp> {
           //
           // },
         );
+
         print('Response Status Code3: ${response.statusCode}');
         print('Response Body: ${response.body}');
         // Close the loading dialog
@@ -2547,7 +2556,8 @@ class SignUpScreen extends State<SignUp> {
             CupertinoPageRoute(builder: (context) => SignIn()),
           );
           // print("Email verified $data");
-        } else {
+        }
+        else {
           Map<String, dynamic> responseMap = json.decode(response.body);
 
           if (responseMap['status'] == false) {
@@ -2560,7 +2570,12 @@ class SignUpScreen extends State<SignUp> {
                 print(errorMessage);
                 Fluttertoast.showToast(msg: '${responseMap['data']['dob'][0]}');
               }
-
+              if (responseMap['data']['non_field_errors'] is List &&
+                  responseMap['data']['non_field_errors'].isNotEmpty) {
+                String errorMessage = responseMap['data']['non_field_errors'][0];
+                print(errorMessage);
+                Fluttertoast.showToast(msg: '${responseMap['data']['non_field_errors'][0]}');
+              }
               // Check if the 'phone_number' field is a list and not empty
               if (responseMap['data']['phone_number'] is List &&
                   responseMap['data']['phone_number'].isNotEmpty) {

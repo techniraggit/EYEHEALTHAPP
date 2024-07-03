@@ -780,7 +780,7 @@
 
 // ignore_for_file: avoid_print
 // ignore_for_file: avoid_print
-/*
+
 
 import 'dart:async';
 import 'dart:io';
@@ -995,8 +995,9 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
     if (creating) {
       selectedDateTime = DateTime.now().add(const Duration(minutes: 1));
       selectedDateTime = selectedDateTime.copyWith(second: 0, millisecond: 0);
-      loopAudio = true;
-      vibrate = true;
+      loopAudio = false;
+      vibrate = false;
+
       volume = null;
       assetAudio = 'assets/marimba.mp3';
       isSwitched = true;
@@ -1067,8 +1068,8 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
         notificationTitle: 'Test Reminder',
         notificationBody: 'Do your eye test',
         enableNotificationOnKill: Platform.isIOS,
-        isAlarmOn: isSwitched
-      // notificationActionSettings: const NotificationActionSettings(hasSnoozeButton: true,hasStopButton: true,snoozeButtonText: "Snooze",stopButtonText: "Stop",snoozeDurationInSeconds: 300)
+        isAlarmOn: isSwitched,
+      notificationActionSettings: const NotificationActionSettings(hasSnoozeButton: true,hasStopButton: true,snoozeButtonText: "Snooze",stopButtonText: "Stop",snoozeDurationInSeconds: 300)
     );
     return alarmSettings;
   }
@@ -1538,4 +1539,4 @@ class ExampleAlarmTile extends StatelessWidget {
     );
   }
 }
-*/
+

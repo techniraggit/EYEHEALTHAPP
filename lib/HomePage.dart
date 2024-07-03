@@ -2619,6 +2619,25 @@
 //   }
 // }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -2639,7 +2658,9 @@ import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:project_new/alarm/SharedPref.dart';
 import 'package:project_new/alarm/demo_main.dart';
+// import 'package:project_new/alarm/demo_main.dart';
 
 import 'package:project_new/digitalEyeTest/testScreen.dart';
 import 'package:project_new/eyeFatigueTest/EyeFatigueSelfieScreen.dart';
@@ -2707,6 +2728,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   List<String>? dates;
   int i = 0;
   bool edited = false;
+
   // List<Feature>? features;
   List<String>? labelX;
   int count = 0;
@@ -2721,7 +2743,6 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   List<_ChartData>? chartData;
   List<_ChartData2>? chartData2;
   double first_day_data=0.0;double current_day_data=0.0;double get_percentile_graph=0.0;double get_ideal_graph=0.0;
-
 
   List<FlSpot> _spots = [FlSpot(0, 0)]; // Initialize _spots as needed
   bool fatigue_left = false;
@@ -2747,10 +2768,10 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   // Define selectedDate within the _CalendarButtonState class
   final GlobalKey<ScaffoldState> _scafoldKey = GlobalKey();
 
-  // late List<AlarmSettings> alarms;
+  late List<AlarmSettings> alarms;
   List<Map<String, dynamic>>? _datagraph;
 
-  // static StreamSubscription<AlarmSettings>? subscription;
+  static StreamSubscription<AlarmSettings>? subscription;
   late DateTime _fromDate;
   late DateTime _toDate;
 
@@ -2783,7 +2804,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   @override
   void dispose() {
     _timer?.cancel();
-    //subscription?.cancel();
+    subscription?.cancel();
     super.dispose();
   }
 
@@ -2791,15 +2812,15 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   void initState() {
     super.initState();
     getGraph();
-    /*   if (Alarm.android) {
+       if (Alarm.android) {
       checkAndroidNotificationPermission();
       checkAndroidScheduleExactAlarmPermission();
     }
     loadAlarms();
     getGraph();
-    _startTimer();*/
+    _startTimer();
 
-    // subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
+    subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
     Future.delayed(const Duration(seconds: 1), () {})
         .then((_) => getNotifactionCount())
         .then((_) {
@@ -2872,7 +2893,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     }
   }
 
-/*
+
   Future<void> loadAlarms() async {
     var sharedPref = await SharedPreferences.getInstance();
     edited = sharedPref.getBool("edited") ?? false;
@@ -2923,22 +2944,28 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     }
   }
 
+
+
   AlarmSettings buildAlarmSettings(int i, DateTime duration) {
     final id = DateTime.now().millisecondsSinceEpoch % 10000 + i;
     final alarmSettings = AlarmSettings(
         id: id,
         dateTime: duration,
-        loopAudio: true,
-        vibrate: true,
+        loopAudio: false,
+        vibrate: false,
+        fadeDuration: 10.0,
         volume: null,
         assetAudioPath: 'assets/marimba.mp3',
         notificationTitle: 'Test Reminder',
         notificationBody: 'Do your eye test',
-        isAlarmOn: true);
+        isAlarmOn: true,
+        notificationActionSettings: const NotificationActionSettings(hasSnoozeButton: true,hasStopButton: true,snoozeButtonText: "Snooze",stopButtonText: "Stop",snoozeDurationInSeconds: 300)
+    );
     return alarmSettings;
   }
 
-  Future<void> saveAlarm(int i, DateTime duration) async {
+
+   Future<void> saveAlarm(int i, DateTime duration) async {
     await Alarm.set(alarmSettings: buildAlarmSettings(i, duration));
     alarms = Alarm.getAlarms();
     alarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
@@ -2955,7 +2982,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     );
     loadAlarms();
   }
-*/
+
   Future<void> checkAndroidExternalStoragePermission() async {
     final status = await Permission.storage.status;
     if (status.isDenied) {
@@ -2970,7 +2997,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     }
   }
 
-/*
+
   Future<void> navigateToAlarmScreen(AlarmSettings? settings) async {
     final res = await showModalBottomSheet<bool?>(
       context: context,
@@ -2988,20 +3015,14 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
 
     if (res != null && res == true) loadAlarms();
   }
-*/
+
 
   @override
   Widget build(BuildContext context) {
     int currentHour = DateTime.now().hour;
     // Determine the appropriate salutation based on the current hour
     String salutation = 'Welcome';
-    // if (currentHour >= 0 && currentHour < 12) {
-    //   salutation = 'Good morning';
-    // } else if (currentHour >= 12 && currentHour < 17) {
-    //   salutation = 'Good afternoon';
-    // } else {
-    //   salutation = 'Good evening';
-    // }
+
     return Scaffold(
       key: _scafoldKey,
       endDrawer: NotificationSideBar(
@@ -3021,7 +3042,6 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
         padding: const EdgeInsets.all(8.0), // Add padding
         child: ClipOval(
           child: Material(
-            // color: Colors.background,
             color: Colors.white70.withOpacity(0.9), // Background color
             elevation: 4.0, // Shadow
             child: InkWell(
@@ -3147,7 +3167,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                     Positioned(
                       right: 0,
                       top:
-                          -1, // Adjust this value to position the text properly
+                      -1, // Adjust this value to position the text properly
                       child: Container(
                         padding: const EdgeInsets.all(2),
                         decoration: const BoxDecoration(
@@ -3260,10 +3280,10 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
             ),
             Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
+              const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
               child: GestureDetector(
                 onTap: () {
-                 // checkActivePlan('eyeTest');
+                  // checkActivePlan('eyeTest');
                   showModalBottomSheet(
                     context: context,
                     builder: (context) => BottomDialog(),
@@ -3276,16 +3296,15 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
             ),
             Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
+              const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
               child: GestureDetector(
                 onTap: () {
                   requestPermission();
-                 // checkActivePlan('fatigue');
+                  // checkActivePlan('fatigue');
                 },
                 child: Image.asset('assets/eyeFatigueTest.png'),
               ),
             ),
-            SizedBox(height: 10,),
             Row(
               children: [
                 const Padding(
@@ -3303,277 +3322,62 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                   padding: const EdgeInsets.symmetric(horizontal: 18.0),
                   child: GestureDetector(
                     onTap: () {
-                      /* Navigator.push(
+                       Navigator.push(
                           context,
                           MaterialPageRoute<void>(
                             builder: (context) => const ExampleAlarmHomeScreen(),
                           ),
-                        );*/
+                        );
                     },
                     child: Icon(
                       Icons.alarm,
                       // Replace with the alarm icon from Icons class
                       size: 33, // Adjust the size of the icon as needed
                       color:
-                          Colors.blue, // Adjust the color of the icon as needed
+                      Colors.blue, // Adjust the color of the icon as needed
                     ),
                   ),
                 ),
               ],
             ),
-            // Container(
-            //   color: Colors.white,
-            //   child: Padding(
-            //     padding:
-            //     const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
-            //     child: Container(
-            //       color: Colors.white,
-            //       width: MediaQuery.of(context).size.width,
-            //       child: Column(
-            //         crossAxisAlignment: CrossAxisAlignment.start,
-            //         children: [
-            //           if (chartData != null) ...{
-            //             Center(
-            //               child: Card(
-            //                 color: Colors.white,
-            //                 elevation: 0.5,
-            //                 child: isLoading1
-            //                     ? const Center(
-            //                   child: CircularProgressIndicator(
-            //                     color: Colors.blue,
-            //                   ),
-            //                 )
-            //                     :
-            //                 Center(
-            //                   child: Column(
-            //                     mainAxisAlignment: MainAxisAlignment.center,
-            //                     children: <Widget>[
-            //                       DotWithLabel(index: 0, label: 'Ideal Score',point:8),
-            //                       Divider(
-            //                         height: 5,
-            //                         thickness: 0.5,
-            //                         color: Colors.grey[400],
-            //                         indent: 20,
-            //                         endIndent: 20,
-            //                       ),
-            //                       SizedBox(height: 5,),
-            //                       DotWithLabel(index: 1, label: 'Percentile Score of the population',point:6),
-            //                       Divider(
-            //                         height: 5,
-            //                         thickness: 0.5,
-            //                         color: Colors.grey[400],
-            //                         indent: 20,
-            //                         endIndent: 20,
-            //                       ),
-            //                       SizedBox(height: 5,),
-            //
-            //                       DotWithLabel( index:2,label: 'Your Avg. Score',point:5),
-            //                       Divider(
-            //                         height: 5,
-            //                         thickness: 0.5,
-            //                         color: Colors.grey[400],
-            //                         indent: 20,
-            //                         endIndent: 20,
-            //                       ),
-            //                       SizedBox(height: 5,),
-            //
-            //                       DotWithLabel(index: 3, label: 'Your First Score',point:4),//color: Colors.black,
-            //                     ],
-            //                   ),
-            //                 ),
-            //                 // _buildVerticalSplineChart(),
-            //               ),
-            //             ),
-            //             SizedBox(height: 20,),
-            //             Padding(
-            //               padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
-            //               child: Row(
-            //                 crossAxisAlignment: CrossAxisAlignment.start,
-            //                 children: [
-            //                   Padding(
-            //                     padding: const EdgeInsets.all(5.0),
-            //                     child: Container(
-            //                       width: 10,
-            //                       height: 10,
-            //                       decoration: BoxDecoration(
-            //                         color: Colors.background, // Adjust color as needed
-            //                         shape: BoxShape.circle,
-            //                       ),
-            //                     ),
-            //                   ),
-            //                   SizedBox(width: 8),
-            //                   Expanded(
-            //                     child: Text(
-            //                       'Score 10 indicates - You have Perfect Eyes',
-            //                       style: TextStyle(
-            //                         fontSize: 12,
-            //                         fontWeight: FontWeight.w600,
-            //                         color: Colors.background, // Adjust text color as needed
-            //                       ),
-            //                     ),
-            //                   ),
-            //                 ],
-            //               ),
-            //             ),
-            //
-            //             SizedBox(height: 10,),
-            //             Padding(
-            //               padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
-            //               child: Row(
-            //                 crossAxisAlignment: CrossAxisAlignment.start,
-            //                 children: [
-            //                   Padding(
-            //                     padding: const EdgeInsets.all(6.0),
-            //                     child: Container(
-            //                       width: 10,
-            //                       height: 10,
-            //                       decoration: BoxDecoration(
-            //                         color: Colors.redAccent, // Adjust color as needed
-            //                         shape: BoxShape.circle,
-            //                       ),
-            //                     ),
-            //                   ),
-            //                   SizedBox(width: 8),
-            //                   Expanded(
-            //                     child: Text(
-            //                       'Score 3 indicates - Your eyes need Urgent attention',
-            //                       style: TextStyle(
-            //                         fontSize: 12,
-            //                         fontWeight: FontWeight.w600,
-            //                         color: Colors.redAccent, // Adjust text color as needed
-            //                       ),
-            //                     ),
-            //                   ),
-            //                 ],
-            //               ),
-            //             ),
-            //
-            //
-            //
-            //
-            //
-            //
-            //
-            //             // const SizedBox(
-            //             //     height:
-            //             //     10), // Adjust spacing between chart and color descriptions
-            //
-            //             // Color descriptions
-            //             // Center(
-            //             //   child: SingleChildScrollView(
-            //             //     scrollDirection: Axis.horizontal,
-            //             //     child: Row(
-            //             //       children: [
-            //             //         const SizedBox(width: 9),
-            //             //         _buildColorDescription(
-            //             //             Colors.green, 'Ideal Score'),
-            //             //         const SizedBox(width: 9),
-            //             //         _buildColorDescription(
-            //             //             Colors.blue, 'User Average Score'),
-            //             //         const SizedBox(width: 9),
-            //             //       ],
-            //             //     ),
-            //             //   ),
-            //             // )
-            //           },
-            //           if (count == 0 && isLoading1 == false) ...{
-            //             const SizedBox(height: 10),
-            //             const Padding(
-            //               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
-            //               child: Text(
-            //                 'Get your first test done now and start tracking your eye health.',
-            //                 // Display formatted current date
-            //                 style:
-            //                 TextStyle(fontSize: 14, color: Colors.black),
-            //               ),
-            //             ),
-            //             const SizedBox(height: 9),
-            //             Center(
-            //               child: Padding(
-            //                 padding: const EdgeInsets.all(8.0),
-            //                 child: ElevatedButton(
-            //                   onPressed: () {
-            //                     requestPermission();
-            //                     // Navigator.push(
-            //                     //   context,
-            //                     //   MaterialPageRoute(
-            //                     //       builder: (context) =>
-            //                     //           EyeFatigueSelfieScreen()),
-            //                     // );
-            //                   },
-            //                   child: const Text('Start Test Now'),
-            //                   style: ElevatedButton.styleFrom(
-            //                     minimumSize: const Size(200, 45),
-            //                     foregroundColor: Colors.white,
-            //                     backgroundColor: Colors.bluebutton,
-            //                     shape: RoundedRectangleBorder(
-            //                       borderRadius: BorderRadius.circular(25),
-            //                     ),
-            //                   ),
-            //                 ),
-            //               ),
-            //             ),
-            //           },
-            //           const SizedBox(height: 19),
-            //         ],
-            //       ),
-            //     ),
-            //   ),
-            // ),
+
             Container(
               color: Colors.white,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
+                padding:
+                const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
                 child: Container(
-                  // color: Colors.white,
+                  color: Colors.white,
                   width: MediaQuery.of(context).size.width,
-                  child: Card(
-                    color: Colors.white,
-                    elevation: 0.2,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // if (chartData != null) ...{
-                        // Center(
-                        //   child: Container(
-                        //     color: Colors.white,
-                        //     child: _buildVerticalSplineChart(),
-                        //   ),
-                        // ),
-                        // SizedBox(height: 10),
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        //   children: [
-                        //     _buildColorDescription(Colors.black, 'First Test'),
-                        //     _buildColorDescription(Colors.green, 'Ideal'),
-                        //     _buildColorDescription(Colors.orange, 'Percentile'),
-                        //     _buildColorDescription(Colors.blue, 'User avg'),
-                        //   ],
-                        // ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // if (chartData != null) ...{
                         Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              DotWithLabel(index: 0, label: 'Ideal Score',point:get_ideal_graph.toDouble(), ),
-                              Divider(
-                                height: 5,
-                                thickness: 0.5,
-                                color: Colors.grey[400],
-                                indent: 20,
-                                endIndent: 20,
-                              ),
-                              SizedBox(height: 7,),
-                              DotWithLabel(index: 1, label: 'Percentile Score of the population',point:get_percentile_graph.toDouble(),),
-                              Divider(
-                                height: 5,
-                                thickness: 0.5,
-                                color: Colors.grey[400],
-                                indent: 20,
-                                endIndent: 20,
-                              ),
-                              SizedBox(height: 7,),
+                          child: Card(
+                            color: Colors.white,
+                            elevation: 0.5,
+                            child:
+                            //     : isLoading1
+                            //     ?
+                            // const Center(
+                            //   child: CircularProgressIndicator(
+                            //     color: Colors.blue,
+                            //   ),
+                            // )
+                            //     :
 
-                                  DotWithLabel( index:2,label: 'Your Avg. Score',point:5),
+
+
+                            Center(
+                              child: Column(
+                                mainAxisAlignment:
+                                MainAxisAlignment.center,
+                                children: <Widget>[
+                                  DotWithLabel(
+                                      index: 0,
+                                      label: 'Ideal Score',
+                                      point: get_ideal_graph.toDouble()),
                                   Divider(
                                     height: 5,
                                     thickness: 0.5,
@@ -3581,18 +3385,56 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                                     indent: 20,
                                     endIndent: 20,
                                   ),
-                                  SizedBox(height: 5,),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  DotWithLabel(
+                                      index: 1,
+                                      label:
+                                      'Percentile Score of the population',
+                                      point:get_percentile_graph.toDouble(), ),
+                                  Divider(
+                                    height: 5,
+                                    thickness: 0.5,
+                                    color: Colors.grey[400],
+                                    indent: 20,
+                                    endIndent: 20,
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
 
-                                  DotWithLabel(index: 3, label: 'Your First Score',point:4),//color: Colors.black,
+                                  DotWithLabel(
+                                      index: 2,
+                                      label: 'Your Avg. Score',
+                                      point:current_day_data.toDouble(),),
+                                  Divider(
+                                    height: 5,
+                                    thickness: 0.5,
+                                    color: Colors.grey[400],
+                                    indent: 20,
+                                    endIndent: 20,
+                                  ),
+                                  SizedBox(
+                                    height: 7,
+                                  ),
+
+                                  DotWithLabel(
+                                      index: 3,
+                                      label: 'Your First Score',
+                                      point:first_day_data.toDouble(),), //color: Colors.black,
                                 ],
                               ),
                             ),
                             // _buildVerticalSplineChart(),
                           ),
                         ),
-                        SizedBox(height: 20,),
+                        SizedBox(
+                          height: 20,
+                        ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 1),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -3602,7 +3444,8 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                                   width: 10,
                                   height: 10,
                                   decoration: BoxDecoration(
-                                    color: Colors.background, // Adjust color as needed
+                                    color: Colors.background,
+                                    // Adjust color as needed
                                     shape: BoxShape.circle,
                                   ),
                                 ),
@@ -3614,7 +3457,8 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
-                                    color: Colors.background, // Adjust text color as needed
+                                    color: Colors
+                                        .background, // Adjust text color as needed
                                   ),
                                 ),
                               ),
@@ -3622,9 +3466,12 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                           ),
                         ),
 
-                        SizedBox(height: 10,),
+                        SizedBox(
+                          height: 10,
+                        ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 1),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -3634,7 +3481,8 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                                   width: 10,
                                   height: 10,
                                   decoration: BoxDecoration(
-                                    color: Colors.redAccent, // Adjust color as needed
+                                    color: Colors.redAccent,
+                                    // Adjust color as needed
                                     shape: BoxShape.circle,
                                   ),
                                 ),
@@ -3646,7 +3494,8 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
-                                    color: Colors.redAccent, // Adjust text color as needed
+                                    color: Colors
+                                        .redAccent, // Adjust text color as needed
                                   ),
                                 ),
                               ),
@@ -3654,100 +3503,76 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                           ),
                         ),
 
+                        // const SizedBox(
+                        //     height:
+                        //     10), // Adjust spacing between chart and color descriptions
 
-
-
-
-
-
-
-                        if   (count==0)...{
-                          SizedBox(height: 10),
-
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
-                            child: Text(
-                              'Get your first test done now and start tracking your eye health.', // Display formatted current date
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black),
-                            ),
+                        // Color descriptions
+                        // Center(
+                        //   child: SingleChildScrollView(
+                        //     scrollDirection: Axis.horizontal,
+                        //     child: Row(
+                        //       children: [
+                        //         const SizedBox(width: 9),
+                        //         _buildColorDescription(
+                        //             Colors.green, 'Ideal Score'),
+                        //         const SizedBox(width: 9),
+                        //         _buildColorDescription(
+                        //             Colors.blue, 'User Average Score'),
+                        //         const SizedBox(width: 9),
+                        //       ],
+                        //     ),
+                        //   ),
+                        // )
+                      // },
+                      if (count == 0 && isLoading1 == false) ...{
+                        const SizedBox(height: 10),
+                        const Padding(
+                          padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
+                          child: Text(
+                            'Get your first test done now and start tracking your eye health.',
+                            // Display formatted current date
+                            style: TextStyle(fontSize: 14, color: Colors.black),
                           ),
-                          SizedBox(height: 9),
-                          Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: ElevatedButton(
-                                onPressed: () {
-
-                                  requestPermission();
-
-                                  // Navigator.push(
-                                  // context,
-                                  // MaterialPageRoute(
-                                  // builder: (context) => EyeFatigueSelfieScreen()),
-                                  // );
-                                },
-                                child: Text('Start Test Now'),
-                                style: ElevatedButton.styleFrom(
-                                  minimumSize: Size(200, 45),
-                                  foregroundColor: Colors.white,
-                                  backgroundColor: Colors.bluebutton,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(25),
-                                  ),
+                        ),
+                        const SizedBox(height: 9),
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                requestPermission();
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //       builder: (context) =>
+                                //           EyeFatigueSelfieScreen()),
+                                // );
+                              },
+                              child: const Text('Start Test Now'),
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(200, 45),
+                                foregroundColor: Colors.white,
+                                backgroundColor: Colors.bluebutton,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25),
                                 ),
                               ),
                             ),
                           ),
-                          // SizedBox(height: 30),
-                          // Center(
-                          //   child: Column(
-                          //     mainAxisAlignment: MainAxisAlignment.center,
-                          //     children: <Widget>[
-                          //       SizedBox(height: 30),
-                          //       Image.asset(
-                          //         'assets/error.png', // Replace with your image path
-                          //         width: 200, // Adjust width as needed
-                          //         height: 250, // Adjust height as needed
-                          //       ),
-                          //       SizedBox(height: 20), // Adjust spacing between image and text
-                          //
-                          //       Padding(
-                          //         padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          //         child: Text(
-                          //           'No Reports to Show',
-                          //           textAlign: TextAlign.center,
-                          //           style: TextStyle(
-                          //             fontSize: 16,
-                          //             color: Colors.black,
-                          //           ),
-                          //         ),
-                          //       ),
-                          //     ],
-                          //   ),
-                          // ),
-                          // SizedBox(height: 30),
-
-                        },
-
-
-                        // },
-
-
-                        SizedBox(height: 29),
-                      ],
-                    ),
+                        ),
+                      },
+                      const SizedBox(height: 19),
+                    ],
                   ),
                 ),
               ),
-            ),      SizedBox(
-              height: 8,),
-
-             Padding(
+            ),
+            SizedBox(height: 8),
+            Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
               child: Text(
-                'You’ve Tested soo far ', // Display formatted current date
+                'You’ve Tested so far ', // Display formatted current date
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
@@ -3760,7 +3585,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
             ),
             Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
               child: SizedBox(
                 height: 180, // Adjust height as needed
                 child: Row(
@@ -3777,7 +3602,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                             SizedBox(height: 15),
+                            SizedBox(height: 15),
                             Padding(
                               padding: EdgeInsets.only(left: 22.0), // Adjusted padding
                               child: Column(
@@ -3983,6 +3808,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
       }
     }
   }
+
   //
   // SfCartesianChart _buildVerticalSplineChart() {
   //   return SfCartesianChart(
@@ -4217,29 +4043,34 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     print("response=======data===${response.body}");
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      fatigueGraphData = fatigueGraph.fromJson(responseData);
+      first_day_data=responseData['first_day_data'].toDouble();
+        current_day_data=responseData['current_day_data'].toDouble();
+        get_percentile_graph=responseData['get_percentile_graph'].toDouble();
+        get_ideal_graph=responseData['get_ideal_graph'].toDouble();
+       no_of_fatigue_test = responseData['no_of_fatigue_test'].toString();
+       no_of_eye_test = responseData['no_of_eye_test'].toString();
+      fullname = responseData['name'];
 
-      print("graphdata===:${response.body}");
-
-      Map<String, dynamic> jsonData = jsonDecode(response.body);
-      // List<dynamic> data = jsonData['data'];
-      fullname = jsonData['name'];
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('name', fullname);
-      int no_of_fatigue = jsonData['no_of_fatigue_test'];
-      int no_of_eye_ = jsonData['no_of_eye_test'];
-      dynamic eye_hscore = jsonData['eye_health_score'];
-      setState(() {
-        first_day_data=jsonData['first_day_data'].toDouble();
-        current_day_data=jsonData['current_day_data'].toDouble();
-        get_percentile_graph=jsonData['get_percentile_graph'].toDouble();
-        get_ideal_graph=jsonData['get_ideal_graph'].toDouble();
-        // _datagraph = List<Map<String, dynamic>>.from(jsonData['data']);
-        no_of_fatigue_test = no_of_fatigue.toString();
-        no_of_eye_test = no_of_eye_.toString();
-        eye_health_score = eye_hscore.toString();
-      });
 
+      // fatigueGraphData = fatigueGraph.fromJson(responseData);
+      //
+      // print("graphdata===:${response.body}");
+      //
+      // Map<String, dynamic> jsonData = jsonDecode(response.body);
+      // // List<dynamic> data = jsonData['data'];
+      // fullname = jsonData['name'];
+      // SharedPreferences prefs = await SharedPreferences.getInstance();
+      // await prefs.setString('name', fullname);
+
+      // dynamic eye_hscore = jsonData['eye_health_score'];
+      // setState(() {
+      //   // _datagraph = List<Map<String, dynamic>>.from(jsonData['data']);
+      //   no_of_fatigue_test = no_of_fatigue.toString();
+      //   no_of_eye_test = no_of_eye_.toString();
+      //   eye_health_score = eye_hscore.toString();
+      // });
       // if (responseData.containsKey('status') && responseData['status']) {
       //   if (responseData.containsKey('first_day_data') &&
       //       responseData['first_day_data'].containsKey('value')) {
@@ -4267,7 +4098,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
       //     idealTestgraphData.addAll(ideal.map((value) => value.toDouble()));
       //   }
       // }
-      print("fffffffffffffff$todaygraphData");
+      // print("fffffffffffffff$todaygraphData");
       // setState(() {
       //   if (firstTestgraphData.isNotEmpty) {
       //     chartData = <_ChartData>[
@@ -4309,7 +4140,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
       //   }
       // });
 
-      count = jsonData['no_of_eye_test'];
+      count = responseData['no_of_eye_test'];
       isLoading1 = false;
       // return data
       //     .map((item) => double.parse(item['value'].toString()))
@@ -4343,61 +4174,57 @@ class DotWithLabel extends StatelessWidget {
     Key? key,
     // required this.color,
     required this.index,
-
     required this.label,
     required this.point,
-
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Container(
-      width: screenWidth, // Ensure the container spans the full width of the screen
+      width: screenWidth,
+      // Ensure the container spans the full width of the screen
       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-      child: Builder(
-        builder: (context) {
-          Color textColor = _getTextColor(index);
+      child: Builder(builder: (context) {
+        Color textColor = _getTextColor(index);
 
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              // Container(
-              //   width: 14.0,
-              //   height: 15.0,
-              //   decoration: BoxDecoration(
-              //     shape: BoxShape.circle,
-              //     color: color,
-              //   ),
-              // ),
-              //
-              // SizedBox(width: MediaQuery.of(context).size.width/4), // Adjust spacing as needed
-              Expanded(
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              SizedBox(width: 20), // Adjust spacing as needed
-              Text(
-                '$point',
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            // Container(
+            //   width: 14.0,
+            //   height: 15.0,
+            //   decoration: BoxDecoration(
+            //     shape: BoxShape.circle,
+            //     color: color,
+            //   ),
+            // ),
+            //
+            // SizedBox(width: MediaQuery.of(context).size.width/4), // Adjust spacing as needed
+            Expanded(
+              child: Text(
+                label,
                 style: TextStyle(
-                  fontSize: 18,
-                  color: textColor,
+                  fontSize: 14,
                   fontWeight: FontWeight.w600,
-
                 ),
               ),
-            ],
-          );
-        }
-      ),
+            ),
+            SizedBox(width: 20),
+            // Adjust spacing as needed
+            Text(
+              '$point',
+              style: TextStyle(
+                fontSize: 18,
+                color: textColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        );
+      }),
     );
   }
 
@@ -4407,19 +4234,17 @@ class DotWithLabel extends StatelessWidget {
       return Colors.green; // Example condition for green color
     } else if (index == 1) {
       return Colors.orange; // Example condition for orange color
-    }
-    else if (index == 2) {
+    } else if (index == 2) {
       return Colors.blue; // Example condition for orange color
-    }else {
+    } else {
       return Colors.background; // Example condition for red color
     }
   }
 }
 
-
-
 class _ChartData {
   _ChartData(this.x, this.y, this.y2, this.y3, this.y4);
+
   final String x;
   final double y;
   final double y2;
@@ -4429,6 +4254,7 @@ class _ChartData {
 
 class _ChartData2 {
   _ChartData2(this.x, this.y, this.y2);
+
   final String x;
   final double y;
   final double y2;
@@ -4443,12 +4269,12 @@ class ReminderState extends State<setReminder> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(home: Scaffold(
-        // appBar: AppBar(
-        //   title: const Text(''),
-        // ),
+      // appBar: AppBar(
+      //   title: const Text(''),
+      // ),
         body: Builder(builder: (context) {
-      return const Center();
-    })));
+          return const Center();
+        })));
   }
 }
 
@@ -4657,7 +4483,7 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                     const Text(
                       'Test For Someone Else',
                       style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     IconButton(
                       icon: const Icon(Icons.close),
@@ -4789,11 +4615,11 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
   }
 }
 
-/*
+
 class ExampleAlarmRingScreen extends StatelessWidget {
   const ExampleAlarmRingScreen({required this.alarmSettings, super.key});
 
- // final AlarmSettings alarmSettings;
+ final AlarmSettings alarmSettings;
 //TODO Data Change Alarm Design
   @override
   Widget build(BuildContext context) {
@@ -4848,4 +4674,4 @@ class ExampleAlarmRingScreen extends StatelessWidget {
     );
   }
 }
-*/
+

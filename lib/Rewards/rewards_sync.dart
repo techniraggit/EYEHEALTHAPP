@@ -1062,7 +1062,8 @@ class RewardSpecsSync extends State<RewardSpecs> {
           context,
           MaterialPageRoute(builder: (context) => SignIn()),
         );
-      } else {
+      }
+      else {
         throw Exception('Failed to load data');
       }
     } on DioError catch (e) {
@@ -1104,7 +1105,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         address_list = AddressList.fromJson(responseData);
-        print("statusCode================${address_list?.data?[0].isDefault}");
+        // print("statusCode================${address_list?.data?[0].isDefault}");
 
         if (address_list!.data!.isNotEmpty) {
           isSelectedList = List.generate(
@@ -1117,7 +1118,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
           }
         }
 
-        print("statusCode================${address_list?.data?[0].address}");
+        // print("statusCode================${address_list?.data?[0].address}");
 
         setState(() {});
       } else if (response.statusCode == 401) {
@@ -1126,7 +1127,8 @@ class RewardSpecsSync extends State<RewardSpecs> {
           context,
           MaterialPageRoute(builder: (context) => SignIn()),
         );
-      } else {
+      }
+      else {
         throw Exception('Failed to load data');
       }
     } on DioError catch (e) {
