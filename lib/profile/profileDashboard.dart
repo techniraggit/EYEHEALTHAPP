@@ -8,6 +8,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geocoding/geocoding.dart' hide Location;
@@ -54,77 +55,74 @@ class UserProfiledash extends State<UserDashboard> {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home:
-      isLoading
-          ?
-       Center(
+      home: isLoading
+          ? Center(
               child: CircularProgressIndicator(
                 color: Colors.black,
               ),
             )
-          :
-      Scaffold(
+          : Scaffold(
               backgroundColor: Colors.background,
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.all(8.0), // Add padding
-          child:
-          ClipOval(
-            child: Material(
-              color: Colors.white70.withOpacity(0.9), // Background color
-              elevation: 4.0, // Shadow
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context, CupertinoPageRoute(
-                    builder: (context) => HomePage(
-                    ),
-                  ),
-
-                  );
-                },
-                child: SizedBox(
-
-                  width: 53.0, // Width of the FloatingActionButton
-                  height: 50.0, // Height of the FloatingActionButton
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0), // Add padding for the icon
-                      child: Image.asset(
-                        "assets/home_icon.jpeg",
-                        width: 20,
-                        // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
-                        // color: Colors.grey, // Uncomment if you want to apply a color to the image
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.centerDocked,
+              floatingActionButton: Padding(
+                padding: const EdgeInsets.all(8.0), // Add padding
+                child: ClipOval(
+                  child: Material(
+                    color: Colors.white70.withOpacity(0.9), // Background color
+                    elevation: 4.0, // Shadow
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                            builder: (context) => HomePage(),
+                          ),
+                        );
+                      },
+                      child: SizedBox(
+                        width: 53.0, // Width of the FloatingActionButton
+                        height: 50.0, // Height of the FloatingActionButton
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(
+                                8.0), // Add padding for the icon
+                            child: Image.asset(
+                              "assets/home_icon.jpeg",
+                              width: 20,
+                              // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
+                              // color: Colors.grey, // Uncomment if you want to apply a color to the image
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ),
-
-        ),
               body: Column(
                 children: [
                   SizedBox(
                     height: 20,
                   ),
-
                   Row(
                     children: [
-                      SizedBox(width: 10,),
+                      SizedBox(
+                        width: 10,
+                      ),
                       GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           Navigator.of(context).pop();
                         },
                         child: Icon(
                           Icons.arrow_back, // Replace with your icon
                           color: Colors.white,
-                          size: 30,// Adjust icon color as needed
+                          size: 30, // Adjust icon color as needed
                         ),
                       ),
-                      SizedBox(width: MediaQuery.of(context).size.width/3), // Adjust the width as needed for the space between Icon and Text
-
+                      SizedBox(
+                          width: MediaQuery.of(context).size.width /
+                              3), // Adjust the width as needed for the space between Icon and Text
 
                       Text(
                         "Profile", // Your title text
@@ -135,7 +133,9 @@ class UserProfiledash extends State<UserDashboard> {
                               Colors.white, // Adjust the text color as needed
                         ),
                       ),
-                      SizedBox(width: MediaQuery.of(context).size.width/4), // Adjust the width as needed for the space between Icon and Text
+                      SizedBox(
+                          width: MediaQuery.of(context).size.width /
+                              4), // Adjust the width as needed for the space between Icon and Text
 
                       GestureDetector(
                         onTap: () {
@@ -150,12 +150,11 @@ class UserProfiledash extends State<UserDashboard> {
                           },
                         ),
                       ),
-
                     ],
                   ),
-                  SizedBox(height: 6,),
-
-
+                  SizedBox(
+                    height: 6,
+                  ),
                   CircleAvatar(
                     radius: 50.0,
                     backgroundColor: Colors.transparent,
@@ -166,32 +165,23 @@ class UserProfiledash extends State<UserDashboard> {
                             width: 100.0,
                             height: 100.0,
                             child: isLoading
-                                ?
-                            Center(
-                              child: CircularProgressIndicator(),
-                            )
-                                :
-
-                            (imageUrl1.isNotEmpty&& imageUrl1!='')
-                                ?
-                            Image.network(
-                              imageUrl1,
-                              fit: BoxFit.cover,
-                            )
-                                : Image.asset(
-                              'assets/profile_pic.png',
-                              fit: BoxFit.fill,
-                            ),
+                                ? Center(
+                                    child: CircularProgressIndicator(),
+                                  )
+                                : (imageUrl1.isNotEmpty && imageUrl1 != '')
+                                    ? Image.network(
+                                        imageUrl1,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Image.asset(
+                                        'assets/profile_pic.png',
+                                        fit: BoxFit.fill,
+                                      ),
                           ),
-
                         ],
                       ),
                     ),
                   ),
-
-
-
-
                   SizedBox(
                     height: 10,
                   ),
@@ -200,7 +190,7 @@ class UserProfiledash extends State<UserDashboard> {
                     style: const TextStyle(
                         fontSize: 18,
                         color: Colors.white,
-                        fontWeight:FontWeight.w500),
+                        fontWeight: FontWeight.w500),
                   ),
                   ShaderMask(
                     shaderCallback: (Rect bounds) {
@@ -223,7 +213,6 @@ class UserProfiledash extends State<UserDashboard> {
                           fontWeight: FontWeight.bold),
                     ),
                   ),
-
                   const SizedBox(
                     height: 10,
                   ),
@@ -247,11 +236,12 @@ class UserProfiledash extends State<UserDashboard> {
                                     context,
                                     CupertinoPageRoute(
                                         builder: (context) => UserProfile()),
-                                  );
+                                  ).then((value){
+                                    getProfile();
+                                  });
                                 },
                                 child: Container(
-                                  width:
-                                      MediaQuery.of(context).size.width ,
+                                  width: MediaQuery.of(context).size.width,
                                   height: 60,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(22),
@@ -284,7 +274,9 @@ class UserProfiledash extends State<UserDashboard> {
                                             CupertinoPageRoute(
                                                 builder: (context) =>
                                                     UserProfile()),
-                                          );
+                                          ).then((value){
+                                            getProfile();
+                                          });
                                         },
                                       ),
                                     ],
@@ -303,8 +295,7 @@ class UserProfiledash extends State<UserDashboard> {
                                               RewardStatusScreen()));
                                 },
                                 child: Container(
-                                  width:
-                                      MediaQuery.of(context).size.width ,
+                                  width: MediaQuery.of(context).size.width,
                                   height: 60,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(22),
@@ -357,8 +348,7 @@ class UserProfiledash extends State<UserDashboard> {
                                   );
                                 },
                                 child: Container(
-                                  width:
-                                      MediaQuery.of(context).size.width ,
+                                  width: MediaQuery.of(context).size.width,
                                   height: 60,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(22),
@@ -369,17 +359,16 @@ class UserProfiledash extends State<UserDashboard> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                  Expanded(
-                                  child: Center(
-                                  child: Text(
-
+                                      Expanded(
+                                          child: Center(
+                                        child: Text(
                                           'Plans',
                                           style: TextStyle(
                                             color: Colors.black,
                                             fontSize: 15,
                                           ),
-                                        ),)
-                                      ),
+                                        ),
+                                      )),
                                       IconButton(
                                         icon: Icon(
                                             Icons.arrow_forward_ios_outlined),
@@ -408,8 +397,7 @@ class UserProfiledash extends State<UserDashboard> {
                                           builder: (context) => TermsScreen()));
                                 },
                                 child: Container(
-                                  width:
-                                      MediaQuery.of(context).size.width,
+                                  width: MediaQuery.of(context).size.width,
                                   height: 60,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(22),
@@ -420,16 +408,17 @@ class UserProfiledash extends State<UserDashboard> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                  Expanded(
-                                  child: Center(
-                                  child: Text(
-                                          'Terms and Condition',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 15,
+                                      Expanded(
+                                        child: Center(
+                                          child: Text(
+                                            'Terms and Condition',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 15,
+                                            ),
                                           ),
                                         ),
-                                      ),),
+                                      ),
                                       IconButton(
                                         icon: Icon(
                                             Icons.arrow_forward_ios_outlined),
@@ -461,8 +450,7 @@ class UserProfiledash extends State<UserDashboard> {
                                               PrivacyScreen()));
                                 },
                                 child: Container(
-                                  width:
-                                      MediaQuery.of(context).size.width,
+                                  width: MediaQuery.of(context).size.width,
                                   height: 60,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(22),
@@ -473,67 +461,17 @@ class UserProfiledash extends State<UserDashboard> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                  Expanded(
-                                  child: Center(
-                                  child: Text(
-                                          'Privacy Policy',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 15,
+                                      Expanded(
+                                        child: Center(
+                                          child: Text(
+                                            'Privacy Policy',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 15,
+                                            ),
                                           ),
                                         ),
-                                      ),),
-                                      IconButton(
-                                        icon: Icon(
-                                            Icons.arrow_forward_ios_outlined),
-                                        color: Colors.black,
-                                        iconSize: 14,
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            CupertinoPageRoute(
-                                                builder: (context) =>
-                                                   PrivacyScreen()),
-                                          );
-                                          // Navigate to next screen
-                                        },
                                       ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  _showConfirmationDialog();
-                                 // deleteUser();
-                                },
-                                child: Container(
-                                  width:
-                                  MediaQuery.of(context).size.width ,
-                                  height: 60,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(22),
-                                    // Half of the height for oval shape
-                                    color: Colors.grey.withOpacity(0.1),
-                                  ),
-                                  child: Row(
-
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                    children: [
-                                  Expanded(
-                                  child: Center(
-                                  child: Text(
-                                          'Delete Account',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 15,
-                                          ),
-                                        ),
-                                      ),),
                                       IconButton(
                                         icon: Icon(
                                             Icons.arrow_forward_ios_outlined),
@@ -556,45 +494,57 @@ class UserProfiledash extends State<UserDashboard> {
                               SizedBox(
                                 height: 20,
                               ),
-                              // GestureDetector(
-                              //   onTap: () {
-                              //     Logout();
-                              //   },
-                              //   child: Container(
-                              //     width:
-                              //         MediaQuery.of(context).size.width / 1.3,
-                              //     height: 60,
-                              //     decoration: BoxDecoration(
-                              //       borderRadius: BorderRadius.circular(22),
-                              //       // Half of the height for oval shape
-                              //       color: Colors.grey.withOpacity(0.3),
-                              //     ),
-                              //     child: Row(
-                              //       // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              //       children: [
-                              //         IconButton(
-                              //           icon: Icon(Icons.logout_rounded),
-                              //           color: Colors.background,
-                              //           iconSize: 14,
-                              //           onPressed: () {
-                              //             Logout();
-                              //           },
-                              //         ),
-                              //         Padding(
-                              //           padding: const EdgeInsets.symmetric(
-                              //               horizontal: 3.0, vertical: 12),
-                              //           child: Text(
-                              //             'Sign Out',
-                              //             style: TextStyle(
-                              //               color: Colors.background,
-                              //               fontSize: 15,
-                              //             ),
-                              //           ),
-                              //         ),
-                              //       ],
-                              //     ),
-                              //   ),
-                              // ),
+                              GestureDetector(
+                                onTap: () {
+                                  _showConfirmationDialog();
+                                  // deleteUser();
+                                },
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 60,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(22),
+                                    // Half of the height for oval shape
+                                    color: Colors.grey.withOpacity(0.1),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Center(
+                                          child: Text(
+                                            'Delete Account',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 15,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: Icon(
+                                            Icons.arrow_forward_ios_outlined),
+                                        color: Colors.black,
+                                        iconSize: 14,
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                                builder: (context) =>
+                                                    PrivacyScreen()),
+                                          );
+                                          // Navigate to next screen
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+
                             ],
                           ),
                         ),
@@ -603,12 +553,13 @@ class UserProfiledash extends State<UserDashboard> {
                   ),
                 ],
               ),
-        bottomNavigationBar: CustomBottomAppBar(
-          currentScreen: 'ProfileDashboard',
-        ),
+              bottomNavigationBar: CustomBottomAppBar(
+                currentScreen: 'ProfileDashboard',
+              ),
             ),
     );
   }
+
   void _showConfirmationDialog() {
     // flutter defined function
     showDialog(
@@ -640,7 +591,9 @@ class UserProfiledash extends State<UserDashboard> {
           ],
         );
       },
-    );}
+    );
+  }
+
   void Logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String access_token = prefs.getString('access_token') ?? '';
@@ -668,48 +621,45 @@ class UserProfiledash extends State<UserDashboard> {
 
       if (response.statusCode == 200) {
         setState(() {
-          isLoading=false;
-
+          isLoading = false;
         });
         Map<String, dynamic> responseData = jsonDecode(response.body);
 
         if (responseData.containsKey('data')) {
           var data = responseData['data'];
           if (data.containsKey('points')) {
-            points_.text  = data['points'].toString();
+            points_.text = data['points'].toString();
             print("points=:${data['points'].toString()}");
-
           }
 
           if (data.containsKey('image') && data['image'] != null) {
             imageUrl1 = ApiProvider.baseUrl + data['image'].toString();
+
           } else {
             imageUrl1 = '';
             print("imageUrl1:${imageUrl1}");
           }
 
-
-          if (data.containsKey('first_name')||data.containsKey('last_name')) {
-            name =   data['first_name'].toString()+' '+data['last_name'].toString();
-            print("responseviewprofile:${data['first_name'].toString()+' '+data['last_name'].toString()}");
-
+          if (data.containsKey('first_name') || data.containsKey('last_name')) {
+            name = data['first_name'].toString() +
+                ' ' +
+                data['last_name'].toString();
+            print(
+                "responseviewprofile:${data['first_name'].toString() + ' ' + data['last_name'].toString()}");
           }
-
-
         }
-
-
 
         print("responseviewprofile:${response.body}");
 
         // return json.decode(response.body);
       } else {
-
         print(response.body);
       }
+      setState(() {
+
+      });
       print("isLoading=$isLoading");
-    }
-    catch (e) {
+    } catch (e) {
       // _progressDialog!.hide();
 
       print("exception:$e");
@@ -740,7 +690,7 @@ class UserProfiledash extends State<UserDashboard> {
         print("response--------${response.body}");
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => SignIn()),
-              (Route<dynamic> route) => false,
+          (Route<dynamic> route) => false,
         );
       } else {
         // _progressDialog!.hide();
@@ -780,14 +730,10 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
       if (response.statusCode == 200) {
         // _progressDialog!.hide();
 
-
-
         final jsonResponse = jsonDecode(response.body);
         setState(() {
           privacyContent = jsonResponse['privacy_policy']['content'].toString();
-
         });
-
       } else {
         // _progressDialog!.hide();
 
@@ -843,10 +789,9 @@ class _TermsScreenState extends State<TermsScreen> {
 
         final jsonResponse = jsonDecode(response.body);
         setState(() {
-          termsContent = jsonResponse['term_and_condition']['content'].toString();
-
+          termsContent =
+              jsonResponse['term_and_condition']['content'].toString();
         });
-
       } else {
         // _progressDialog!.hide();
 
@@ -863,9 +808,9 @@ class _TermsScreenState extends State<TermsScreen> {
 
   @override
   void dispose() {
-
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

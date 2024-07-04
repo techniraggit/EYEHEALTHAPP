@@ -18,12 +18,10 @@ class CustomBottomAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 120, // Adjust the height here
-      color: Colors.white70, // Set the background color
+      color: Colors.white70,
       child: BottomAppBar(
         color: Colors.white.withOpacity(0.9), // Make the BottomAppBar transparent
-        elevation: 0, // Remove any shadow
-
+        elevation: 0,
         child: Stack(
           alignment: Alignment.center,
           children: [

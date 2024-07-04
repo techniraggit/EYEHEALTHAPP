@@ -836,11 +836,14 @@ class __ReportFatigueTestState extends State<_ReportFatigueTest> {
 
       // Accessing eye_health_score from the JSON response
       // List<dynamic> data = jsonData['data'];
-      count=jsonResponse['no_of_fatigue_test'];
-      first_day_data=jsonResponse['first_day_data'].toDouble();
-      current_day_data=jsonResponse['current_day_data'].toDouble();
-      get_percentile_graph=jsonResponse['get_percentile_graph'].toDouble();
-      get_ideal_graph=jsonResponse['get_ideal_graph'].toDouble();
+      setState(() {
+        count=jsonResponse['no_of_fatigue_test'];
+        first_day_data=jsonResponse['first_day_data'].toDouble();
+        current_day_data=jsonResponse['current_day_data'].toDouble();
+        get_percentile_graph=jsonResponse['get_percentile_graph'].toDouble();
+        get_ideal_graph=jsonResponse['get_ideal_graph'].toDouble();
+      });
+
 
       // if (responseData.containsKey('status') && responseData['status']) {
       //   if (responseData.containsKey('first_day_data') &&

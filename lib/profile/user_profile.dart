@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:fluttertoast/fluttertoast.dart';
@@ -70,7 +71,7 @@ class ProfileDetails extends State<UserProfile> {
     getProfile();
   }
 
-  File? _imageFile;
+  XFile? _imageFile;
   String imageUrl1 = "";
   File? imageFile;
   bool isVerifiedEmail =
@@ -189,10 +190,17 @@ class ProfileDetails extends State<UserProfile> {
                                             child: CircularProgressIndicator(),
                                           )
                                               : _imageFile != null
-                                              ? Image.file(
-                                            _imageFile!,
-                                            fit: BoxFit.cover,
-                                          )
+                                              ? Builder(
+                                                builder: (context) {
+
+                                                  File imageFile = File(_imageFile!.path);
+
+                                                  return Image.file(
+                                                    imageFile!,
+                                                                                              fit: BoxFit.cover,
+                                                                                            );
+                                                }
+                                              )
                                               : imageUrl1.isNotEmpty
                                               ? Image.network(
                                             imageUrl1,
@@ -618,15 +626,49 @@ class ProfileDetails extends State<UserProfile> {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      setState(() {
-        _imageFile = File(pickedFile.path);
-      });
-      imageFile = _imageFile!;
-      // await updateProfilePicture();
+      XFile? compressedImage = await compressAndGetFile(File(pickedFile.path));
+
+      if (compressedImage != null) {
+        setState(() {
+          _imageFile = compressedImage;
+          imageFile = File(_imageFile!.path); // Convert XFile to File
+        });
+
+        print("-----------$_imageFile");
+        print("-----------$imageFile");
+      } else {
+        print("Failed to compress image.");
+        // Handle error or show a message to the user
+      }
     }
   }
 
-  Future<void> updateProfilePicture() async {
+  Future<XFile?> compressAndGetFile(File file) async {
+    try {
+      // Ensure the output file path is different from the source path
+      String outputPath = '${file.path}.compressed.jpg';
+
+      // Create a temporary output file
+      File tempFile = await File(outputPath).create();
+
+      // Compress the file
+      var result = await FlutterImageCompress.compressAndGetFile(
+        file.absolute.path,
+        tempFile.absolute.path,
+        quality: 70, // adjust as needed
+      );
+
+      // Delete the original file if compression is successful
+      if (result != null) {
+        await file.delete();
+      }
+
+      return result;
+    } catch (error) {
+      print("Error while compressing image: $error");
+      return null;
+    }
+  }  Future<void> updateProfilePicture() async {
     const String apiUrl =
         '${ApiProvider.baseUrl + ApiProvider.updateUserProfile}';
     SharedPreferences prefs = await SharedPreferences.getInstance();

@@ -2342,440 +2342,446 @@ class PresUpload extends State<PrescriptionUpload> {
               //     // Add any other app bar properties as needed
               //   ),
               // ),
-              body: Column(
-                children: [
-                  Stack(
-                    children: [
-                      Container(
-                        height: 125,
-                        // width: MediaQuery.of(context).size.width,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(
-                                "assets/rewards_back.png"), // Add your background image path
-                            fit: BoxFit.fill,
+              body:  Column(
+                  children: [
+                    Stack(
+                      children: [
+                        Container(
+                          height: 125,
+                          // width: MediaQuery.of(context).size.width,
+                          decoration: const BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(
+                                  "assets/rewards_back.png"), // Add your background image path
+                              fit: BoxFit.fill,
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 110,
-                        child: Column(
-                          children: <Widget>[
-                            const SizedBox(height: 5),
-
-                            Align(
-                              alignment: Alignment.topLeft,
-                              child: IconButton(
-                                icon: const Icon(
-                                  Icons.arrow_back,
-                                  color: Colors.white,
-                                ),
-                                iconSize: 28, // Back button icon
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  // Navigator.of(context).pop();
-                                },
-                              ),
-                            ),
-                            const SizedBox(height: 5),
-                            Align(
-                              alignment: Alignment.center,
-                              child: RichText(
-                                text: TextSpan(
-                                  children: [
-                                    WidgetSpan(
-                                      alignment: PlaceholderAlignment.middle,
-                                      child: ShaderMask(
-                                        shaderCallback: (Rect bounds) {
-                                          return const RadialGradient(
-                                            radius: 1.0,
-                                            colors: [
-                                              Color(0xFFFFF400),
-                                              Color(0xFFFFE800),
-                                              Color(0xFFFFCA00),
-                                              Color(0xFFFF9A00),
-                                              Color(0xFFFF9800),
-                                            ],
-                                          ).createShader(bounds);
-                                        },
-                                        child: Text(
-                                          ' $EyeHealthPoints ',
-                                          style: const TextStyle(
-                                            fontSize: 28,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors
-                                                .white, // Specify a color for the text
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    const TextSpan(
-                                      text: 'Every visit to Optometrist ',
-                                      style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-
-                            // Add more Text widgets as needed
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  Expanded(
-                    child: Container(
-                      // child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          const SizedBox(
-                            height: 7,
-                          ),
-                          Align(
-                            alignment: Alignment.center,
-                            child: ShaderMask(
-                              shaderCallback: (Rect bounds) {
-                                return const LinearGradient(
-                                  colors: [
-                                    Colors.bluegradient,
-                                    Colors.greengradient
-                                  ], // Your gradient colors
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                ).createShader(bounds);
-                              },
-                              child: Text(
-                                '$totalPoints',
-                                style: const TextStyle(
-                                    fontSize: 22,
+                        SizedBox(
+                          height: 110,
+                          child: Column(
+                            children: <Widget>[
+                              const SizedBox(height: 5),
+                
+                              Align(
+                                alignment: Alignment.topLeft,
+                                child: IconButton(
+                                  icon: const Icon(
+                                    Icons.arrow_back,
                                     color: Colors.white,
-                                    fontWeight: FontWeight.bold),
+                                  ),
+                                  iconSize: 28, // Back button icon
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    // Navigator.of(context).pop();
+                                  },
+                                ),
                               ),
-                            ),
-                          ),
-
-                          const Padding(
-                            padding: EdgeInsets.fromLTRB(18.0, 5, 18, 10),
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Total Point Earned Till Now',
-                                style: TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w400),
-                              ),
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.fromLTRB(18.0, 5, 18, 10),
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Upload',
-                                style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                            ),
-                          ),
-
-                          Container(
-                            height: MediaQuery.of(context).size.width / 2.1,
-                            width: MediaQuery.of(context).size.width / 1.3,
-                            color: Colors.white.withOpacity(0.7),
-                            child: Align(
+                              const SizedBox(height: 5),
+                              Align(
                                 alignment: Alignment.center,
-                                child: Column(
-                                  children: [
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    GestureDetector(
-                                      onTap: isEnabled ? _pickFiles : null,
-
-                                      // onTap: _pickFiles,
-                                      child: Container(
-                                        height: 60,
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                            image: AssetImage(
-                                              isEnabled
-                                                  ? 'assets/upload_icon.png'
-                                                  : 'assets/upload_success.png', // Change the paths accordingly
+                                child: RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      WidgetSpan(
+                                        alignment: PlaceholderAlignment.middle,
+                                        child: ShaderMask(
+                                          shaderCallback: (Rect bounds) {
+                                            return const RadialGradient(
+                                              radius: 1.0,
+                                              colors: [
+                                                Color(0xFFFFF400),
+                                                Color(0xFFFFE800),
+                                                Color(0xFFFFCA00),
+                                                Color(0xFFFF9A00),
+                                                Color(0xFFFF9800),
+                                              ],
+                                            ).createShader(bounds);
+                                          },
+                                          child: Text(
+                                            ' $EyeHealthPoints ',
+                                            style: const TextStyle(
+                                              fontSize: 28,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors
+                                                  .white, // Specify a color for the text
                                             ),
-                                            // AssetImage(
-                                            //     'assets/upload_icon.png'), // Replace with your image asset path
-                                            fit: BoxFit
-                                                .contain, // Adjust the fit as needed
                                           ),
                                         ),
                                       ),
-                                    ),
-                                    SizedBox(
-                                      height: isEnabled
-                                          ? 10
-                                          : 0, // Adjust height based on condition
-                                    ),
-                                    Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(18.0, 7, 18, 3),
-                                        child: Align(
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            isEnabled
-                                                ? 'Drag & drop files or Browse'
-                                                : 'Prescription upload',
-
-                                            // 'Drag & drop files or Browse',
-                                            // 'Win a cool pair of sunglasses of worth rs 1000 free',
-                                            style: TextStyle(
-                                                fontSize: 13,
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                        )),
-                                    SizedBox(
-                                      height: isEnabled
-                                          ? 10
-                                          : 0, // Adjust height based on condition
-                                    ),
-                                    Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(18.0, 0, 18, 4),
-                                        child: Align(
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            isEnabled
-                                                ? 'Supported formates: JPG, JPEG, PNG, WEBP, SVG, BMP'
-                                                : 'Your prescription has been uploaded and is currently being verified by our team. This process will take approximately 24 hours. ',
-
-                                            // 'Win a cool pair of sunglasses of worth rs 1000 free',
-                                            style: TextStyle(
-                                                fontSize: 11,
-                                                color: Colors.greytext,
-                                                fontWeight: FontWeight.w400),
-                                          ),
-                                        )),
-                                  ],
-                                )),
-                          ),
-// TODO REPLACEMENT ===add progress bar for uploading files
-
-                          // Padding(
-                          //   padding: EdgeInsets.fromLTRB(18.0,10,18,10),
-                          //   child: Text(
-                          //     'Uploading - 1/1 files',
-                          //     // 'Win a cool pair of sunglasses of worth rs 1000 free',
-                          //     style: TextStyle(
-                          //         fontSize: 13,
-                          //         color: Colors.greytext,
-                          //         fontWeight: FontWeight.w500),
-                          //   ),
-                          // ),
-
-                          SizedBox(
-                            height: 15,
-                          ),
-                          _files == null || _files.isEmpty
-                              ? Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(18.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    'assets/error.png', // Replace with your image path
-                                    width: 200, // Adjust width as needed
-                                    height: 200, // Adjust height as needed
+                                      const TextSpan(
+                                        text: 'Every visit to Optometrist ',
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                    ],
                                   ),
-                                  SizedBox(height: 20), // Adjust spacing between image and text
-                                  Text(
-                                    'No prescription is uploaded yet... upload new prescription to get points!',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
+                                ),
+                              ),
+                
+                              // Add more Text widgets as needed
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Expanded(
+                      child: Container(
+                        // child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            const SizedBox(
+                              height: 7,
+                            ),
+                            Align(
+                              alignment: Alignment.center,
+                              child: ShaderMask(
+                                shaderCallback: (Rect bounds) {
+                                  return const LinearGradient(
+                                    colors: [
+                                      Colors.bluegradient,
+                                      Colors.greengradient
+                                    ], // Your gradient colors
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                  ).createShader(bounds);
+                                },
+                                child: Text(
+                                  '$totalPoints',
+                                  style: const TextStyle(
+                                      fontSize: 22,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
                               ),
                             ),
-                          )
-                              :
-                          Expanded(
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              physics: const ScrollPhysics(),
-                              itemCount: _files.length,
-                              itemBuilder: (context, index) {
-                                return ListTile(
-                                  leading:
-                                      const Icon(Icons.picture_as_pdf_outlined),
-                                  title: Text(
-                                    _files[index].name ?? '',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 11),
-                                  ),
-                                  subtitle: Padding(
-                                    padding: const EdgeInsets.only(top: 5.0),
-                                    child: Text(
-                                        '${dates[index].toString().substring(0, 10)} , ${dates[index].toString().substring(12, 19)} ago',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 12)),
-                                  ),
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
+                
+                            const Padding(
+                              padding: EdgeInsets.fromLTRB(18.0, 5, 18, 10),
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  'Total Point Earned Till Now',
+                                  style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              ),
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.fromLTRB(18.0, 5, 18, 10),
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  'Upload',
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ),
+                            ),
+                
+                            Container(
+                              height: MediaQuery.of(context).size.width / 2.1,
+                              width: MediaQuery.of(context).size.width / 1.3,
+                              color: Colors.white.withOpacity(0.7),
+                              child: Align(
+                                  alignment: Alignment.center,
+                                  child: Column(
                                     children: [
-                                      Row(
-                                        children: [
-                                          Container(width: 20,height: 10,),
-                                          // if (statuses[index].toLowerCase() ==
-                                          //     "approved")
-                                          //   Container(
-                                          //     decoration: BoxDecoration(
-                                          //       border: Border.all(
-                                          //           color: Colors.black),
-                                          //       borderRadius:
-                                          //           BorderRadius.circular(5.0),
-                                          //     ),
-                                          //     padding: EdgeInsets.all(8.0),
-                                          //     child: Text(
-                                          //       '$points Points',
-                                          //       style: TextStyle(
-                                          //           fontWeight: FontWeight.w400,
-                                          //           fontSize: 12),
-                                          //     ),
-                                          //   ),
-                                          // if (statuses[index].toLowerCase() ==
-                                          //     "pending")
-                                          //   Container(
-                                          //     decoration: BoxDecoration(
-                                          //       border: Border.all(
-                                          //           color: Colors.black),
-                                          //       borderRadius:
-                                          //           BorderRadius.circular(5.0),
-                                          //     ),
-                                          //     padding: EdgeInsets.all(8.0),
-                                          //     child: Text(
-                                          //       '${statuses[index]}',
-                                          //       style: TextStyle(
-                                          //           fontWeight: FontWeight.w400,
-                                          //           fontSize: 12),
-                                          //     ),
-                                          //   ),
-                                          SizedBox(
-                                            width: 20,
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      GestureDetector(
+                                        onTap: isEnabled ? _pickFiles : null,
+                
+                                        // onTap: _pickFiles,
+                                        child: Container(
+                                          height: 60,
+                                          decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                              image: AssetImage(
+                                                isEnabled
+                                                    ? 'assets/upload_icon.png'
+                                                    : 'assets/upload_success.png', // Change the paths accordingly
+                                              ),
+                                              // AssetImage(
+                                              //     'assets/upload_icon.png'), // Replace with your image asset path
+                                              fit: BoxFit
+                                                  .contain, // Adjust the fit as needed
+                                            ),
                                           ),
-                                          if (statuses[index].toLowerCase() == "pending")
-                                          GestureDetector(
-                                            onTap: () {
-                                              showDialog(
-                                                context: context,
-                                                builder:
-                                                    (BuildContext context) {
-                                                  return Dialog(backgroundColor: Colors.white,
-                                                    child: SizedBox(
-
-                                                      height: MediaQuery.of(
-                                                                  context)
-                                                              .size
-                                                              .height *
-                                                          0.75,
-                                                      // Set height to half of screen height
-                                                      child: Column(
-                                                        // mainAxisSize:
-                                                        //     MainAxisSize.min,
-                                                        children: [
-                                                          Center(
-                                                            child: Container(
-                                                              height: MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .height *
-                                                                  0.55, // Set the height of the image container
-                                                              child: ClipRect(
-                                                                child:
-                                                                    FittedBox(
-                                                                  fit: BoxFit
-                                                                      .contain,
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .center,
-                                                                  child: Padding(
-                                                                    padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 19),
-                                                                    child: Image
-                                                                        .network(
-                                                                      "https://eyehealth.backend.zuktiinnovations.com" +
-                                                                          image[
-                                                                              index],
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: isEnabled
+                                            ? 10
+                                            : 0, // Adjust height based on condition
+                                      ),
+                                      Padding(
+                                          padding:
+                                              EdgeInsets.fromLTRB(18.0, 7, 18, 3),
+                                          child: Align(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              isEnabled
+                                                  ? 'Drag & drop files or Browse'
+                                                  : 'Prescription upload',
+                
+                                              // 'Drag & drop files or Browse',
+                                              // 'Win a cool pair of sunglasses of worth rs 1000 free',
+                                              style: TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                          )),
+                                      SizedBox(
+                                        height: isEnabled
+                                            ? 10
+                                            : 0, // Adjust height based on condition
+                                      ),
+                                      Padding(
+                                          padding:
+                                              EdgeInsets.fromLTRB(18.0, 0, 18, 4),
+                                          child: Align(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              isEnabled
+                                                  ? 'Supported formates: JPG, JPEG, PNG, WEBP, SVG, BMP'
+                                                  : 'Your prescription has been uploaded and is currently being verified by our team. This process will take approximately 24 hours. ',
+                
+                                              // 'Win a cool pair of sunglasses of worth rs 1000 free',
+                                              style: TextStyle(
+                                                  fontSize: 11,
+                                                  color: Colors.greytext,
+                                                  fontWeight: FontWeight.w400),
+                                            ),
+                                          )),
+                                    ],
+                                  )),
+                            ),
+                // TODO REPLACEMENT ===add progress bar for uploading files
+                
+                            // Padding(
+                            //   padding: EdgeInsets.fromLTRB(18.0,10,18,10),
+                            //   child: Text(
+                            //     'Uploading - 1/1 files',
+                            //     // 'Win a cool pair of sunglasses of worth rs 1000 free',
+                            //     style: TextStyle(
+                            //         fontSize: 13,
+                            //         color: Colors.greytext,
+                            //         fontWeight: FontWeight.w500),
+                            //   ),
+                            // ),
+                
+                            SizedBox(
+                              height: 15,
+                            ),
+                            _files == null || _files.isEmpty
+                                ?
+                            Expanded(
+                              child: SingleChildScrollView(
+                                child: Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(18.0),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Image.asset(
+                                          'assets/error.png', // Replace with your image path
+                                          width: 200, // Adjust width as needed
+                                          height: 200, // Adjust height as needed
+                                        ),
+                                        SizedBox(height: 20), // Adjust spacing between image and text
+                                        Text(
+                                          'No prescription is uploaded yet... upload new prescription to get points!',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
+                                :
+                            Expanded(
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: const ScrollPhysics(),
+                                itemCount: _files.length,
+                                itemBuilder: (context, index) {
+                                  return ListTile(
+                                    leading:
+                                        const Icon(Icons.picture_as_pdf_outlined),
+                                    title: Text(
+                                      _files[index].name ?? '',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 11),
+                                    ),
+                                    subtitle: Padding(
+                                      padding: const EdgeInsets.only(top: 5.0),
+                                      child: Text(
+                                          '${dates[index].toString().substring(0, 10)} , ${dates[index].toString().substring(12, 19)} ago',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 12)),
+                                    ),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Container(width: 20,height: 10,),
+                                            // if (statuses[index].toLowerCase() ==
+                                            //     "approved")
+                                            //   Container(
+                                            //     decoration: BoxDecoration(
+                                            //       border: Border.all(
+                                            //           color: Colors.black),
+                                            //       borderRadius:
+                                            //           BorderRadius.circular(5.0),
+                                            //     ),
+                                            //     padding: EdgeInsets.all(8.0),
+                                            //     child: Text(
+                                            //       '$points Points',
+                                            //       style: TextStyle(
+                                            //           fontWeight: FontWeight.w400,
+                                            //           fontSize: 12),
+                                            //     ),
+                                            //   ),
+                                            // if (statuses[index].toLowerCase() ==
+                                            //     "pending")
+                                            //   Container(
+                                            //     decoration: BoxDecoration(
+                                            //       border: Border.all(
+                                            //           color: Colors.black),
+                                            //       borderRadius:
+                                            //           BorderRadius.circular(5.0),
+                                            //     ),
+                                            //     padding: EdgeInsets.all(8.0),
+                                            //     child: Text(
+                                            //       '${statuses[index]}',
+                                            //       style: TextStyle(
+                                            //           fontWeight: FontWeight.w400,
+                                            //           fontSize: 12),
+                                            //     ),
+                                            //   ),
+                                            SizedBox(
+                                              width: 20,
+                                            ),
+                                            if (statuses[index].toLowerCase() == "pending")
+                                            GestureDetector(
+                                              onTap: () {
+                                                showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return Dialog(backgroundColor: Colors.white,
+                                                      child: SizedBox(
+                
+                                                        height: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .height *
+                                                            0.75,
+                                                        // Set height to half of screen height
+                                                        child: Column(
+                                                          // mainAxisSize:
+                                                          //     MainAxisSize.min,
+                                                          children: [
+                                                            Center(
+                                                              child: Container(
+                                                                height: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .height *
+                                                                    0.55, // Set the height of the image container
+                                                                child: ClipRect(
+                                                                  child:
+                                                                      FittedBox(
+                                                                    fit: BoxFit
+                                                                        .contain,
+                                                                    alignment:
+                                                                        Alignment
+                                                                            .center,
+                                                                    child: Padding(
+                                                                      padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 19),
+                                                                      child: Image
+                                                                          .network(
+                                                                        "https://eyehealth.backend.zuktiinnovations.com" +
+                                                                            image[
+                                                                                index],
+                                                                      ),
                                                                     ),
                                                                   ),
                                                                 ),
                                                               ),
                                                             ),
-                                                          ),
-                                                          TextButton(
-                                                            onPressed: () =>
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop(),
-                                                            child:
-                                                                Text('Close'),
-                                                          ),
-                                                        ],
+                                                            TextButton(
+                                                              onPressed: () =>
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop(),
+                                                              child:
+                                                                  Text('Close'),
+                                                            ),
+                                                          ],
+                                                        ),
                                                       ),
-                                                    ),
-                                                  );
-                                                },
-                                              );
-                                            },
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    color: Colors.black),
-                                                borderRadius:
-                                                    BorderRadius.circular(5.0),
-                                              ),
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text(
-                                                'Preview',
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 12),
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      color: Colors.black),
+                                                  borderRadius:
+                                                      BorderRadius.circular(5.0),
+                                                ),
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Text(
+                                                  'Preview',
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.w400,
+                                                      fontSize: 12),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-
-                                      // Add your text here
-                                      // IconButton(
-                                      //   icon: Icon(Icons.more_vert),
-                                      //   onPressed: () {
-                                      //     // _removeFile(index, _files[index].identifier ?? '');
-                                      //   },
-                                      // ),
-                                    ],
-                                  ),
-                                );
-                              },
+                                          ],
+                                        ),
+                
+                                        // Add your text here
+                                        // IconButton(
+                                        //   icon: Icon(Icons.more_vert),
+                                        //   onPressed: () {
+                                        //     // _removeFile(index, _files[index].identifier ?? '');
+                                        //   },
+                                        // ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
+                
+                        // ),
                       ),
-
-                      // ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+
               bottomNavigationBar: CustomBottomAppBar(currentScreen: "Rewards"),
             ),
     );

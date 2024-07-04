@@ -956,7 +956,7 @@ class AlphabetTestState extends State<AlphabetTest> {
         currentTextSize = 105;
         randomText = 'W';
       } else {
-        currentTextSize = 7.1 * 3.779527559055118;
+        currentTextSize = 7.1 * 3.4;
         randomText = 'There is a Cat';
       }
       var headers = {
@@ -1317,7 +1317,7 @@ class AlphabetTestState extends State<AlphabetTest> {
   return inches * ppi;
   }*/
   double mmToPixels(BuildContext context, double mm) {
-    return mm * 3.779527559055118;
+    return mm * 3.4;
   }
 
   Future<double> calculateTextSize(String? nextFraction) async {
@@ -1662,12 +1662,12 @@ class Reading extends State<ReadingTest> {
       String authToken = prefs.getString('access_token') ?? '';
       String testname = prefs.getString('test') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
-      currentTextSize=currentTextSize*3.779527559055118;
+      currentTextSize=currentTextSize*3.4;
       if (testname == 'myopia') {
         currentTextSize = 105;
         randomText = 'W';
       } else {
-        currentTextSize = 7.1 * 3.779527559055118;
+        currentTextSize = 7.1 * 3.4;
         randomText = 'There is a Cat';
       }
       var headers = {
@@ -1687,7 +1687,7 @@ class Reading extends State<ReadingTest> {
         randomText = parsedData['data']['text'];
         nextFraction = parsedData['data']['initial_snellen_fraction'];
         print("readingdata${randomText}");
-        currentTextSize =currentTextSize * 3.779527559055118;
+        currentTextSize =currentTextSize * 3.4;
         setState(() {
           currentTextSize;
           randomText;
@@ -1964,7 +1964,7 @@ class Reading extends State<ReadingTest> {
           final data = responseData['data'];
           currentTextSize = data['text_size'];
           randomText = data['text'];
-          currentTextSize=currentTextSize*3.779527559055118;
+          currentTextSize=currentTextSize*3.4;
 
         } else {
 
@@ -4761,7 +4761,7 @@ class redgreen extends State<RedGreenTest> {
   static String action = "";
   String snellenFraction = '0',
       randomText = 'W';
-  double textSize = 10 * 3.779527559055118;
+  double textSize = 10 * 3.4;
   late bool isComplete;
   late bool testcancel;
 
@@ -4872,7 +4872,7 @@ class redgreen extends State<RedGreenTest> {
         print('Red/green Test: $snellenFraction');
         print('Red/green Test: $randomText');
         print('Red/green Test: $textSize');
-        textSize = textSize*3.779527559055118;
+        textSize = textSize*3.4;
         setState(() {
           snellenFraction;
           textSize;

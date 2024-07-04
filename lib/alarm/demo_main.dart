@@ -920,6 +920,193 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
               ))),
       body: SafeArea(
         child: alarms.isNotEmpty
+            ? Expanded(
+
+                child:  ListView.builder(
+                            itemCount: alarms.length,
+                            itemBuilder: (context, index) {
+                  return ExampleAlarmTile(
+                    key: Key(alarms[index].id.toString()),
+                    title: TimeOfDay(
+                      hour: alarms[index].dateTime.hour,
+                      minute: alarms[index].dateTime.minute,
+                    ).format(context),
+                    onPressed: () => navigateToAlarmScreen(alarms[index]),
+                    onDismissed: () {
+                      Alarm.stop(alarms[index].id).then((_) => loadAlarms());
+                    },
+                  );
+                            },
+                          ),
+
+
+            )
+        // Spacer(),
+        //   Container(
+        //     height: 50,              width: MediaQuery.sizeOf(context).width/1.2,
+        //     decoration: BoxDecoration(
+        //       color: Colors.background,
+        //       borderRadius: BorderRadius.circular(22), // Adjust the radius as needed
+        //     ),
+        //     // color: Colors.red,
+        //     child: TextButton(
+        //       onPressed:  () {
+        //         navigateToAlarmScreen(null); // Call your function inside the onPressed callback
+        //       },
+        //       child: Text(
+        //         'Add Alarm',
+        //         style: Theme.of(context)
+        //             .textTheme
+        //             .titleMedium!
+        //             .copyWith(color: Colors.white),
+        //       ),
+        //     ),
+        //   ),
+
+
+
+          : Center(
+          child: Text(
+            'No alarm set',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        ),
+      ),
+      // floatingActionButton: Padding(
+      //   padding: const EdgeInsets.fromLTRB(10, 10, 40, 60),
+      //   child: Row(
+      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //     children: [
+      //       ExampleAlarmHomeShortcutButton(refreshAlarms: loadAlarms),
+      //       FloatingActionButton(
+      //         onPressed: () => navigateToAlarmScreen(null),
+      //         child: const Icon(Icons.alarm_add_rounded, size: 33),
+      //       ),
+      //     ],
+      //   ),
+      // ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+    );
+  }
+
+  Future<bool?> getBoolValueWithId(int id) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // Retrieve the boolean value based on the ID
+    return prefs.getBool('bool_$id');
+  }
+}
+
+class ExampledefaultAlarmHomeScreen extends StatefulWidget {
+  const ExampledefaultAlarmHomeScreen({super.key});
+
+  @override
+  _ExampleAlarmHomeDefaultScreenState createState() => _ExampleAlarmHomeDefaultScreenState();
+}
+
+class _ExampleAlarmHomeDefaultScreenState extends State<ExampledefaultAlarmHomeScreen> {
+  List<AlarmSettings> alarms = [];
+
+  // static StreamSubscription<AlarmSettings>? subscription;
+
+  @override
+  void initState() {
+    super.initState();
+    if (Alarm.android) {
+      checkAndroidNotificationPermission();
+      checkAndroidScheduleExactAlarmPermission();
+    }
+    loadAlarms();
+  }
+
+  Future<void> loadAlarms() async {
+    alarms = await SharedPref.getAlarmsFromPrefs();
+    alarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  Future<void> navigateToRingScreen(AlarmSettings alarmSettings) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        builder: (context) =>
+            ExampleAlarmRingScreen(alarmSettings: alarmSettings),
+      ),
+    );
+    loadAlarms();
+  }
+
+  Future<void> navigateToAlarmScreen(AlarmSettings? settings) async {
+    final res = await showModalBottomSheet<bool?>(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      builder: (context) {
+        return FractionallySizedBox(
+          heightFactor: 0.75,
+          child: ExampleAlarmEditScreen(alarmSettings: settings),
+        );
+      },
+    );
+
+    if (res != null && res == true) loadAlarms();
+  }
+
+  Future<void> checkAndroidNotificationPermission() async {
+    final status = await Permission.notification.status;
+    if (status.isDenied) {
+      alarmPrint('Requesting notification permission...');
+      final res = await Permission.notification.request();
+      alarmPrint(
+        'Notification permission ${res.isGranted ? '' : 'not '}granted',
+      );
+    }
+  }
+
+  Future<void> checkAndroidExternalStoragePermission() async {
+    final status = await Permission.storage.status;
+    if (status.isDenied) {
+      alarmPrint('Requesting external storage permission...');
+      final res = await Permission.storage.request();
+      alarmPrint(
+        'External storage permission ${res.isGranted ? '' : 'not'} granted',
+      );
+    }
+  }
+
+  Future<void> checkAndroidScheduleExactAlarmPermission() async {
+    final status = await Permission.scheduleExactAlarm.status;
+    alarmPrint('Schedule exact alarm permission: $status.');
+    if (status.isDenied) {
+      alarmPrint('Requesting schedule exact alarm permission...');
+      final res = await Permission.scheduleExactAlarm.request();
+      alarmPrint(
+        'Schedule exact alarm permission ${res.isGranted ? '' : 'not'} granted',
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    // subscription?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+          title: const Center(
+              child: Text(
+                'Alarms Scheduled',
+                style: TextStyle(
+                    fontWeight: FontWeight.w400, fontSize: 17, color: Colors.black),
+              ))),
+      body: SafeArea(
+        child: alarms.isNotEmpty
             ? ListView.builder(
           itemCount: alarms.length,
           itemBuilder: (context, index) {
@@ -943,20 +1130,20 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
           ),
         ),
       ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 10, 40, 60),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            ExampleAlarmHomeShortcutButton(refreshAlarms: loadAlarms),
-            FloatingActionButton(
-              onPressed: () => navigateToAlarmScreen(null),
-              child: const Icon(Icons.alarm_add_rounded, size: 33),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      // floatingActionButton: Padding(
+      //   padding: const EdgeInsets.fromLTRB(10, 10, 40, 60),
+      //   child: Row(
+      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //     children: [
+      //       ExampleAlarmHomeShortcutButton(refreshAlarms: loadAlarms),
+      //       FloatingActionButton(
+      //         onPressed: () => navigateToAlarmScreen(null),
+      //         child: const Icon(Icons.alarm_add_rounded, size: 33),
+      //       ),
+      //     ],
+      //   ),
+      // ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
@@ -966,7 +1153,6 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
     return prefs.getBool('bool_$id');
   }
 }
-
 class ExampleAlarmEditScreen extends StatefulWidget {
   const ExampleAlarmEditScreen({super.key, this.alarmSettings});
 
@@ -1069,7 +1255,7 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
         notificationBody: 'Do your eye test',
         enableNotificationOnKill: Platform.isIOS,
         isAlarmOn: isSwitched,
-      notificationActionSettings: const NotificationActionSettings(hasSnoozeButton: true,hasStopButton: true,snoozeButtonText: "Snooze",stopButtonText: "Stop",snoozeDurationInSeconds: 300)
+      // notificationActionSettings: const NotificationActionSettings(hasSnoozeButton: true,hasStopButton: true,snoozeButtonText: "Snooze",stopButtonText: "Stop",snoozeDurationInSeconds: 300)
     );
     return alarmSettings;
   }
@@ -1199,7 +1385,7 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1212,6 +1398,7 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
                 //     .titleLarge!
                 //     .copyWith(color: Colors.blueAccent),
               ),
+
               TextButton(
                 onPressed:
                 requestAlarmNotiPermission, // saveAlarm,requestAlarmNotiPermission
@@ -1238,9 +1425,12 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
           //       .titleMedium!
           //       .copyWith(color: Colors.blueAccent.withOpacity(0.8)),
           // ),
+
+
+          SizedBox(height: 20,),
           RawMaterialButton(
             onPressed: pickTime,
-            fillColor: Colors.grey[200],
+            fillColor: Colors.white.withOpacity(0.9),
             child: Container(
               margin: const EdgeInsets.all(30),
               child: Text(
@@ -1252,25 +1442,27 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
               ),
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Loop alarm audio',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              Switch(
-                value: loopAudio,
-                onChanged: (value) => setState(() => loopAudio = value),
-              ),
-            ],
-          ),
+          SizedBox(height: 30,),
+
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //   children: [
+          //     Text(
+          //       'Loop alarm audio',
+          //       style: Theme.of(context).textTheme.titleMedium,
+          //     ),
+          //     Switch(
+          //       value: loopAudio,
+          //       onChanged: (value) => setState(() => loopAudio = value),
+          //     ),
+          //   ],
+          // ),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Vibrate',
+                'Vibration',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               Switch(
@@ -1280,20 +1472,20 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
             ],
           ),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Custom volume',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              Switch(
-                value: volume != null,
-                onChanged: (value) =>
-                    setState(() => volume = value ? 0.5 : null),
-              ),
-            ],
-          ),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //   children: [
+          //     Text(
+          //       'Custom volume',
+          //       style: Theme.of(context).textTheme.titleMedium,
+          //     ),
+          //     Switch(
+          //       value: volume != null,
+          //       onChanged: (value) =>
+          //           setState(() => volume = value ? 0.5 : null),
+          //     ),
+          //   ],
+          // ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
@@ -1316,6 +1508,8 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
               ),
             ],
           ),
+          SizedBox(height: 20,),
+
           SizedBox(
             height: 30,
             child: volume != null
@@ -1341,18 +1535,27 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
             )
                 : const SizedBox(),
           ),
+          Spacer(),
           if (!creating)
-            TextButton(
-              onPressed: deleteAlarm,
-              child: Text(
-                'Delete Alarm',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium!
-                    .copyWith(color: Colors.red),
+            Container(
+              height: 50,              width: MediaQuery.sizeOf(context).width/1.2,
+              decoration: BoxDecoration(
+              color: Colors.red,
+              borderRadius: BorderRadius.circular(22), // Adjust the radius as needed
+            ),
+              // color: Colors.red,
+              child: TextButton(
+                onPressed: deleteAlarm,
+                child: Text(
+                  'Delete Alarm',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium!
+                      .copyWith(color: Colors.white),
+                ),
               ),
             ),
-          const SizedBox(),
+          const SizedBox(height: 20,),
         ],
       ),
     );

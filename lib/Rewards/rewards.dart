@@ -402,7 +402,7 @@ class RewardsScreenState extends State<RewardsScreen>
                     return Center(child: Text('No offers found'));
                   } else {
                     return SizedBox(
-                      height: MediaQuery.of(context).size.height / 3,
+                      height: MediaQuery.of(context).size.height / 2.3,
                       // Set a fixed height or any height you deem appropriate
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
@@ -413,14 +413,10 @@ class RewardsScreenState extends State<RewardsScreen>
                           return Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Card(
-                              elevation: 3, // Adjust elevation as needed
+                              elevation: 3,
                               color: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15.0),
-                                /*side: BorderSide(
-                                    color: Colors.grey.shade100,
-                                    width:
-                                        1.0), */ // Add this line to set the border color and width
                               ),
                               child: Container(
                                 width: MediaQuery.of(context).size.width * 0.8,
@@ -434,26 +430,30 @@ class RewardsScreenState extends State<RewardsScreen>
                                         child: Image.network(
                                           '${ApiProvider.baseUrl}${offer.image}',
                                           width: 80,
-                                          height: 80, // Set the desired height
+                                          height: 80,
                                           fit: BoxFit.fill,
                                         ),
                                       ),
                                     ),
+                                    // Spacer to create equal space between image and text
+                                    SizedBox(width: 8.0),
                                     // Right side - Text content
                                     Expanded(
                                       child: Column(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                         children: [
                                           // Title
                                           Padding(
                                             padding: const EdgeInsets.symmetric(
-                                                vertical: 5.0,
-                                                horizontal: 10.0),
+                                                vertical: 6.0,
+                                                horizontal: 9.0),
                                             child: Text(
                                               offer.title,
-                                              style: TextStyle(
-                                                fontSize: 14,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleMedium
+                                                  ?.copyWith(
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.black,
                                               ),
@@ -462,13 +462,14 @@ class RewardsScreenState extends State<RewardsScreen>
                                           // Description
                                           Padding(
                                             padding: const EdgeInsets.symmetric(
-                                                vertical: 5.0,
+                                                vertical: 8.0,
                                                 horizontal: 10.0),
                                             child: Text(
                                               offer.description,
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.bold,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleSmall
+                                                  ?.copyWith(
                                                 color: Colors.grey,
                                               ),
                                             ),
@@ -478,30 +479,31 @@ class RewardsScreenState extends State<RewardsScreen>
                                           // Explore More Button
                                           Padding(
                                             padding: const EdgeInsets.only(
-                                                bottom: 10.0, right: 10.0),
+                                                bottom: 10.0),
                                             child: ElevatedButton(
                                               onPressed: () {
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          RewardSpecs(
-                                                              offer_id: offer
-                                                                  .offerId)),
+                                                    builder: (context) =>
+                                                        RewardSpecs(
+                                                            offer_id:
+                                                            offer.offerId),
+                                                  ),
                                                 );
                                               },
                                               child: Text('Explore More'),
                                               style: ElevatedButton.styleFrom(
                                                 foregroundColor: Colors.white,
                                                 backgroundColor:
-                                                    Colors.bluebutton,
-                                                // Text color
+                                                Colors.bluebutton,
                                                 padding: EdgeInsets.symmetric(
-                                                    vertical: 10,
+                                                    vertical: 12,
                                                     horizontal: 20),
                                                 shape: RoundedRectangleBorder(
                                                   borderRadius:
-                                                      BorderRadius.circular(30),
+                                                  BorderRadius.circular(
+                                                      30.0),
                                                 ),
                                               ),
                                             ),
@@ -514,7 +516,7 @@ class RewardsScreenState extends State<RewardsScreen>
                               ),
                             ),
                           );
-                        },
+                          },
                       ),
                     );
                   }
@@ -605,6 +607,7 @@ class RewardsScreenState extends State<RewardsScreen>
                                             children: [
                                               GestureDetector(
                                                 onTap: () {
+                                                  Navigator.of(context).pop();
                                                   sendcustomerDetails(true);
                                                 },
                                                 child: Image.asset(

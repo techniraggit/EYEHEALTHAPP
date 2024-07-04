@@ -30,6 +30,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'Custom_navbar/bottom_navbar.dart';
+import 'Rewards/rewards.dart';
+import 'Rewards/rewards_sync.dart';
 import 'api/Api.dart';
 import 'api/config.dart';
 import 'models/fatigueGraphModel.dart';
@@ -89,6 +91,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   List<String>? dates;
   int i = 0;
   bool edited = false;
+  List<dynamic>  carousalData=[];
 
   // List<Feature>? features;
   List<String>? labelX;
@@ -117,14 +120,14 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   int currentHour = DateTime.now().hour;
   late DateTime selectedDate;
   String no_of_eye_test = "0";
-  String eye_health_score = "";
+  dynamic eye_health_score = "";
   String fullname = "";
   String no_of_fatigue_test = "0";
   dynamic selectedPlanId = '';
   bool isActivePlan = false;
   bool isLoading1 = true;
   int? isReadFalseCount = 0;
-  late Timer? _timer;
+  Timer? _timer;
 
   // Define selectedDate within the _CalendarButtonState class
   final GlobalKey<ScaffoldState> _scafoldKey = GlobalKey();
@@ -164,15 +167,24 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
 
   @override
   void dispose() {
-    _timer?.cancel();
+    print("gngjhgfjhgjhjjhjgjh");
+    cancelTimer();
     subscription?.cancel();
     super.dispose();
   }
 
+  Future<void> cancelTimer() async {
+    if(_timer!=null) {
+      print("CancelTimer");
+       _timer!.cancel();
+    }
+  }
+
+
   @override
   void initState() {
     super.initState();
-    getGraph();
+    getGraph();getCarouselData();
        if (Alarm.android) {
       checkAndroidNotificationPermission();
       checkAndroidScheduleExactAlarmPermission();
@@ -188,9 +200,6 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
       if (mounted) {
         setState(() {});
       }
-      _timer = Timer.periodic(Duration(seconds: 10), (timer) {
-        getNotifactionCount();
-      });
     });
   }
 
@@ -320,7 +329,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
         notificationTitle: 'Test Reminder',
         notificationBody: 'Do your eye test',
         isAlarmOn: true,
-        notificationActionSettings: const NotificationActionSettings(hasSnoozeButton: true,hasStopButton: true,snoozeButtonText: "Snooze",stopButtonText: "Stop",snoozeDurationInSeconds: 300)
+        // notificationActionSettings: const NotificationActionSettings(hasSnoozeButton: true,hasStopButton: true,snoozeButtonText: "Snooze",stopButtonText: "Stop",snoozeDurationInSeconds: 300)
     );
     return alarmSettings;
   }
@@ -488,7 +497,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                               ).createShader(bounds);
                             },
                             child: Text(
-                              eye_health_score,
+                              eye_health_score.toString(),
                               style: const TextStyle(
                                   fontSize: 31,
                                   color: Colors.white,
@@ -558,87 +567,87 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(5.0),
-              child: CarouselSlider(
-                items: [
-                  //1st Image of Slider
-                  Container(
-                    margin: EdgeInsets.all(6.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.0),
-                      image: DecorationImage(
-                        image: AssetImage('assets/slider1.png'),
-                        //NetworkImage("ADD IMAGE URL HERE"),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
+              child:
+              CarouselSlider(
+                items: carousalData.map((item) {
+                  return Builder(
+                    builder: (BuildContext context) {
+                      return GestureDetector(
+                        onTap: () {
+// Navigate to specific page based on image name
+                          switch (item['name']) {
+                            case 'Prescription':
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute<void>(
+                                  builder: (context) => PrescriptionUpload(),
+                                ),
+                              );
+                              break;
+                            case 'Refer and Earn':
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute<void>(
+                                  builder: (context) => RewardContact(),
+                                ),
+                              );
+                              break;
+                            case 'Reward':
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute<void>(
+                                  builder: (context) => RewardsScreen(),
+                                ),
+                              );
+                              break;
+                            case 'EyeTest':
+                              requestPermission();
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute<void>(
+                                  builder: (context) => BottomDialog(),
+                                ),
+                              );
+                              break;
+                            case 'EyeFatigueTest':
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute<void>(
+                                  builder: (context) => EyeFatigueSelfieScreen(),
+                                ),
+                              );
+                              break;
 
-                  //2nd Image of Slider
-                  Container(
-                    margin: EdgeInsets.all(6.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.0),
-                      image: DecorationImage(
-                        image: AssetImage('assets/slider2.png'),
-                        //NetworkImage("ADD IMAGE URL HERE"),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-
-                  //3rd Image of Slider
-                  Container(
-                    margin: EdgeInsets.all(6.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.0),
-                      image: DecorationImage(
-                        image: AssetImage('assets/slider3.png'),
-                        //NetworkImage("ADD IMAGE URL HERE"),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-
-                  //4th Image of Slider
-                  Container(
-                    margin: EdgeInsets.all(6.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.0),
-                      image: DecorationImage(
-                        image: AssetImage('assets/slider1.png'),
-                        //NetworkImage("ADD IMAGE URL HERE"),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-
-                  //5th Image of Slider
-                  Container(
-                    margin: EdgeInsets.all(6.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.0),
-                      image: DecorationImage(
-                        image: AssetImage('assets/slider2.png'),
-                        //NetworkImage("ADD IMAGE URL HERE"),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ],
-
-                //Slider Container properties
+                            default:
+                              break;
+                          }
+                        },
+                        child: Container(
+                          margin: EdgeInsets.all(6.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.0),
+                            image: DecorationImage(
+                              image: NetworkImage(item['image']),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }).toList(),
                 options: CarouselOptions(
-                  height: 190.0,
+                  height: MediaQuery.of(context).size.height /4, // Adjust this fraction as needed
+
+                  // height: 190.0,
                   enlargeCenterPage: true,
                   autoPlay: true,
                   aspectRatio: 16 / 9,
                   autoPlayCurve: Curves.fastOutSlowIn,
                   enableInfiniteScroll: true,
-                  autoPlayAnimationDuration: Duration(milliseconds: 500),
+                  autoPlayAnimationDuration: Duration(milliseconds: 370),
                   viewportFraction: 0.8,
-                ),
-              ),
-            ),
+                ),),            ),
             Padding(
               padding:
               const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
@@ -683,12 +692,16 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                   padding: const EdgeInsets.symmetric(horizontal: 18.0),
                   child: GestureDetector(
                     onTap: () {
-                       Navigator.push(
-                          context,
-                          MaterialPageRoute<void>(
-                            builder: (context) => const ExampleAlarmHomeScreen(),
-                          ),
-                        );
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) => BottomAlarmDialog(),
+                      );
+                       // Navigator.push(
+                       //    context,
+                       //    MaterialPageRoute<void>(
+                       //      builder: (context) => const ExampleAlarmHomeScreen(),
+                       //    ),
+                       //  );
                     },
                     child: Icon(
                       Icons.alarm,
@@ -923,7 +936,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                           ),
                         ),
                       },
-                      const SizedBox(height: 19),
+                      const SizedBox(height: 7),
                     ],
                   ),
                 ),
@@ -942,11 +955,11 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
               ),
             ),
             SizedBox(
-              height: 8,
+              height: 6,
             ),
             Padding(
               padding:
-              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
               child: SizedBox(
                 height: 180, // Adjust height as needed
                 child: Row(
@@ -957,7 +970,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                         decoration: const BoxDecoration(
                           image: DecorationImage(
                             image: AssetImage('assets/interview.png'),
-                            fit: BoxFit.cover, // Ensure the image covers the entire container
+                            fit: BoxFit.fill, // Ensure the image covers the entire container
                           ),
                         ),
                         child: Column(
@@ -999,7 +1012,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                         decoration: BoxDecoration(
                           image: DecorationImage(
                             image: AssetImage('assets/eye_bg.png'),
-                            fit: BoxFit.cover,
+                            fit: BoxFit.fill,
                           ),
                         ),
                         child: Column(
@@ -1170,8 +1183,6 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     }
   }
 
-
-
   void checkActivePlan(String testType) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('access_token') ?? '';
@@ -1231,7 +1242,37 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     }
     throw Exception('');
   }
+  Future<void> getCarouselData() async {
+    try {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken = prefs.getString('access_token') ?? '';
+    final response = await http.get(
+      Uri.parse(
+          '${ApiProvider.baseUrl}/api/dashboard-count'),
+      headers: <String, String>{
+        'Authorization': 'Bearer $authToken',
+      },
+    );
+    print("response=======data===${response.body}");
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      carousalData= responseData['carousel'];
+    } else if (response.statusCode == 401) {
+      Fluttertoast.showToast(msg: "Session Expired");
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => SignIn()),
+      );
+    } else {
+      print(response.body);
+    }
+    } catch (e) {
+      // _progressDialog!.hide();
 
+      print("exception---:$e");
+    }
+    throw Exception(Exception);
+  }
   Future<void> sendcustomerDetails(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
@@ -1285,6 +1326,9 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     print("response=======data===${response.body}");
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
+      setState(() {
+
+
       first_day_data=responseData['first_day_data'].toDouble();
         current_day_data=responseData['current_day_data'].toDouble();
         get_percentile_graph=responseData['get_percentile_graph'].toDouble();
@@ -1292,101 +1336,17 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
        no_of_fatigue_test = responseData['no_of_fatigue_test'].toString();
        no_of_eye_test = responseData['no_of_eye_test'].toString();
       fullname = responseData['name'];
+      eye_health_score= responseData['eye_health_score'];
 
+
+      });
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('name', fullname);
 
-      // fatigueGraphData = fatigueGraph.fromJson(responseData);
-      //
-      // print("graphdata===:${response.body}");
-      //
-      // Map<String, dynamic> jsonData = jsonDecode(response.body);
-      // // List<dynamic> data = jsonData['data'];
-      // fullname = jsonData['name'];
-      // SharedPreferences prefs = await SharedPreferences.getInstance();
-      // await prefs.setString('name', fullname);
-
-      // dynamic eye_hscore = jsonData['eye_health_score'];
-      // setState(() {
-      //   // _datagraph = List<Map<String, dynamic>>.from(jsonData['data']);
-      //   no_of_fatigue_test = no_of_fatigue.toString();
-      //   no_of_eye_test = no_of_eye_.toString();
-      //   eye_health_score = eye_hscore.toString();
-      // });
-      // if (responseData.containsKey('status') && responseData['status']) {
-      //   if (responseData.containsKey('first_day_data') &&
-      //       responseData['first_day_data'].containsKey('value')) {
-      //     List<dynamic> firstDayValue = responseData['first_day_data']['value'];
-      //     firstTestgraphData
-      //         .addAll(firstDayValue.map((value) => value.toDouble()));
-      //   }
-      //   if (responseData.containsKey('current_day_data') &&
-      //       responseData['current_day_data'].containsKey('value')) {
-      //     List<dynamic> currentDayValue =
-      //     responseData['current_day_data']['value'];
-      //     todaygraphData
-      //         .addAll(currentDayValue.map((value) => value.toDouble()));
-      //   }
-      //   if (responseData.containsKey('get_percentile_graph')) {
-      //     List<dynamic> population =
-      //     List<dynamic>.from(jsonData['get_percentile_graph']);
-      //
-      //     populationTestgraphData
-      //         .addAll(population.map((value) => value.toDouble()));
-      //   }
-      //   if (responseData.containsKey('get_ideal_graph')) {
-      //     List<dynamic> ideal = List<dynamic>.from(jsonData['get_ideal_graph']);
-      //
-      //     idealTestgraphData.addAll(ideal.map((value) => value.toDouble()));
-      //   }
-      // }
-      // print("fffffffffffffff$todaygraphData");
-      // setState(() {
-      //   if (firstTestgraphData.isNotEmpty) {
-      //     chartData = <_ChartData>[
-      //       _ChartData('6 AM', firstTestgraphData[0], idealTestgraphData[0],
-      //           populationTestgraphData[0], todaygraphData[0]),
-      //       _ChartData('9 AM', firstTestgraphData[1], idealTestgraphData[1],
-      //           populationTestgraphData[1], todaygraphData[1]),
-      //       _ChartData('12 PM', firstTestgraphData[2], idealTestgraphData[2],
-      //           populationTestgraphData[2], todaygraphData[2]),
-      //       _ChartData('3 PM', firstTestgraphData[3], idealTestgraphData[3],
-      //           populationTestgraphData[3], todaygraphData[3]),
-      //       _ChartData('6 PM', firstTestgraphData[4], idealTestgraphData[4],
-      //           populationTestgraphData[4], todaygraphData[4]),
-      //       _ChartData('9 PM', firstTestgraphData[5], idealTestgraphData[5],
-      //           populationTestgraphData[5], todaygraphData[5]),
-      //       _ChartData('12 AM', firstTestgraphData[6], idealTestgraphData[6],
-      //           populationTestgraphData[6], todaygraphData[6]),
-      //     ];
-      //   } else {
-      //     chartData2 = <_ChartData2>[
-      //       _ChartData2(
-      //           '6 AM', idealTestgraphData[0], populationTestgraphData[0]),
-      //       _ChartData2(
-      //           '9 AM', idealTestgraphData[1], populationTestgraphData[1]),
-      //       _ChartData2(
-      //           '12 PM', idealTestgraphData[2], populationTestgraphData[2]),
-      //       _ChartData2(
-      //           '3 PM', idealTestgraphData[3], populationTestgraphData[3]),
-      //       _ChartData2(
-      //         '6 PM',
-      //         idealTestgraphData[4],
-      //         populationTestgraphData[4],
-      //       ),
-      //       _ChartData2(
-      //           '9 PM', idealTestgraphData[5], populationTestgraphData[5]),
-      //       _ChartData2(
-      //           '12 AM', idealTestgraphData[6], populationTestgraphData[6])
-      //     ];
-      //   }
-      // });
 
       count = responseData['no_of_eye_test'];
       isLoading1 = false;
-      // return data
-      //     .map((item) => double.parse(item['value'].toString()))
-      //     .toList();
+
     } else if (response.statusCode == 401) {
       Fluttertoast.showToast(msg: "Session Expired");
       Navigator.pushReplacement(
@@ -1582,6 +1542,195 @@ class BottomDialog extends StatelessWidget {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> sendcustomerDetails(BuildContext context, bool isSelf,
+      {String? name, String? age}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken = prefs.getString('access_token') ?? '';
+    final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
+
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $authToken',
+      'Content-Type': 'application/json',
+    };
+
+    var body = json.encode({
+      'is_self': isSelf,
+      if (!isSelf) 'name': name,
+      if (!isSelf) 'age': age,
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: body,
+      );
+
+      print('API Response: ${response.statusCode} - ${response.body}');
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        if (jsonResponse.containsKey('customer_id')) {
+          String customerId = jsonResponse['customer_id'];
+
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString('customer_id', customerId);
+
+          print('Customer ID: $customerId');
+
+          // Check if the context is still mounted before navigating
+          if (context.mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => GiveInfo()),
+            );
+          }
+        } else {
+          print('Customer ID not found in response.');
+        }
+      } else {
+        print('API call failed with status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Exception: $e');
+    }
+  }
+}
+
+
+
+
+
+
+
+class BottomAlarmDialog extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16.0, 16, 16, 8),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Set Alarms',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+          Divider(thickness: 1, color: Colors.grey.shade500),
+          const SizedBox(height: 18),
+
+
+          Card(
+            elevation: 2,
+            child: Container(
+              height: 70,
+              child: GestureDetector(
+                onTap: () {
+
+                  Navigator.pop(context);
+
+
+                  Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        builder: (context) =>
+            ExampledefaultAlarmHomeScreen(),
+      ),
+    );
+                  // showModalBottomSheet(
+                  //   context: context,
+                  //   builder: (context) => ExampleAlarmHomeScreen(),
+                  // );
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'Schedule default system alarms',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,color: Colors.background
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(
+                        Icons.arrow_forward,
+                        size: 20,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 8,),
+
+          Card(
+            elevation: 2,
+            child: Container(
+              height: 70,
+              child: GestureDetector(
+                onTap: () {
+
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (context) =>
+                          ExampleAlarmHomeScreen(),
+                    ),
+                  );
+                  // showModalBottomSheet(
+                  //   context: context,
+                  //   builder: (context) => ExampleAlarmHomeScreen(),
+                  // );
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'Add your own alarms',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,color: Colors.background
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(
+                        Icons.arrow_forward,
+                        size: 20,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+
+          SizedBox(height: 18,),
+
         ],
       ),
     );
@@ -1866,52 +2015,50 @@ class ExampleAlarmRingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Text(
-              'Its a reminder , please do eye test',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const Text('🔔', style: TextStyle(fontSize: 50)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                RawMaterialButton(
-                  onPressed: () {
-                    final now = DateTime.now();
-                    Alarm.set(
-                      alarmSettings: alarmSettings.copyWith(
-                        dateTime: DateTime(
-                          now.year,
-                          now.month,
-                          now.day,
-                          now.hour,
-                          now.minute,
-                        ).add(const Duration(minutes: 1)),
-                      ),
-                    ).then((_) => Navigator.pop(context));
-                  },
-                  child: Text(
-                    'Snooze',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Text(
+            'Its a reminder , please do eye test',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const Text('🔔', style: TextStyle(fontSize: 50)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              RawMaterialButton(
+                onPressed: () {
+                  final now = DateTime.now();
+                  Alarm.set(
+                    alarmSettings: alarmSettings.copyWith(
+                      dateTime: DateTime(
+                        now.year,
+                        now.month,
+                        now.day,
+                        now.hour,
+                        now.minute,
+                      ).add(const Duration(minutes: 1)),
+                    ),
+                  ).then((_) => Navigator.pop(context));
+                },
+                child: Text(
+                  'Snooze',
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
-                RawMaterialButton(
-                  onPressed: () {
-                    Alarm.stop(alarmSettings.id)
-                        .then((_) => Navigator.pop(context));
-                  },
-                  child: Text(
-                    'Stop',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
+              ),
+              RawMaterialButton(
+                onPressed: () {
+                  Alarm.stop(alarmSettings.id)
+                      .then((_) => Navigator.pop(context));
+                },
+                child: Text(
+                  'Stop',
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
