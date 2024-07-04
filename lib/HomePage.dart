@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -75,7 +74,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   @override
   Iterable<StreamSubscription> get registerSubscriptions sync* {
     yield registerReceiver(['actionMusicPlaying']).listen(
-          (intent) {
+      (intent) {
         switch (intent.action) {
           case 'actionMusicPlaying':
             setState(() {
@@ -91,7 +90,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   List<String>? dates;
   int i = 0;
   bool edited = false;
-  List<dynamic>  carousalData=[];
+  List<dynamic> carousalData = [];
 
   // List<Feature>? features;
   List<String>? labelX;
@@ -106,7 +105,10 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   List<FlSpot> _value = [];
   List<_ChartData>? chartData;
   List<_ChartData2>? chartData2;
-  double first_day_data=0.0;double current_day_data=0.0;double get_percentile_graph=0.0;double get_ideal_graph=0.0;
+  double first_day_data = 0.0;
+  double current_day_data = 0.0;
+  double get_percentile_graph = 0.0;
+  double get_ideal_graph = 0.0;
 
   List<FlSpot> _spots = [FlSpot(0, 0)]; // Initialize _spots as needed
   bool fatigue_left = false;
@@ -174,18 +176,18 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   }
 
   Future<void> cancelTimer() async {
-    if(_timer!=null) {
+    if (_timer != null) {
       print("CancelTimer");
-       _timer!.cancel();
+      _timer!.cancel();
     }
   }
-
 
   @override
   void initState() {
     super.initState();
-    getGraph();getCarouselData();
-       if (Alarm.android) {
+    getGraph();
+    getCarouselData();
+    if (Alarm.android) {
       checkAndroidNotificationPermission();
       checkAndroidScheduleExactAlarmPermission();
     }
@@ -263,7 +265,6 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     }
   }
 
-
   Future<void> loadAlarms() async {
     var sharedPref = await SharedPreferences.getInstance();
     edited = sharedPref.getBool("edited") ?? false;
@@ -310,11 +311,13 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
           print("Alarm Time $alarmTime");
           saveAlarm(i, alarmTime);
         }
+
+        Future.delayed(const Duration(seconds: 2), () {
+          Alarm.stopAll();
+        });
       }
     }
   }
-
-
 
   AlarmSettings buildAlarmSettings(int i, DateTime duration) {
     final id = DateTime.now().millisecondsSinceEpoch % 10000 + i;
@@ -328,18 +331,21 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
         assetAudioPath: 'assets/marimba.mp3',
         notificationTitle: 'Test Reminder',
         notificationBody: 'Do your eye test',
-        isAlarmOn: true,
-        // notificationActionSettings: const NotificationActionSettings(hasSnoozeButton: true,hasStopButton: true,snoozeButtonText: "Snooze",stopButtonText: "Stop",snoozeDurationInSeconds: 300)
-    );
+        isAlarmOn: false,
+        notificationActionSettings: const NotificationActionSettings(
+            hasSnoozeButton: false,
+            hasStopButton: false,
+            snoozeButtonText: "Snooze",
+            stopButtonText: "Stop",
+            snoozeDurationInSeconds: 300));
     return alarmSettings;
   }
 
-
-   Future<void> saveAlarm(int i, DateTime duration) async {
+  Future<void> saveAlarm(int i, DateTime duration) async {
     await Alarm.set(alarmSettings: buildAlarmSettings(i, duration));
     alarms = Alarm.getAlarms();
     alarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
-    SharedPref.saveAlarmsToPrefs(alarms);
+    SharedPref.saveDefaultAlarmsToPrefs(alarms);
   }
 
   Future<void> navigateToRingScreen(AlarmSettings alarmSettings) async {
@@ -365,25 +371,6 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     if (status.isDenied) {
       final res = await Permission.scheduleExactAlarm.request();
     }
-  }
-
-
-  Future<void> navigateToAlarmScreen(AlarmSettings? settings) async {
-    final res = await showModalBottomSheet<bool?>(
-      context: context,
-      isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      builder: (context) {
-        return FractionallySizedBox(
-          heightFactor: 0.75,
-          child: ExampleAlarmEditScreen(alarmSettings: settings),
-        );
-      },
-    );
-
-    if (res != null && res == true) loadAlarms();
   }
 
 
@@ -422,7 +409,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                 child: Center(
                   child: Padding(
                     padding:
-                    const EdgeInsets.all(8.0), // Add padding for the icon
+                        const EdgeInsets.all(8.0), // Add padding for the icon
                     child: Image.asset(
                       "assets/home_icon.jpeg",
                       width: 27,
@@ -537,7 +524,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                     Positioned(
                       right: 0,
                       top:
-                      -1, // Adjust this value to position the text properly
+                          -1, // Adjust this value to position the text properly
                       child: Container(
                         padding: const EdgeInsets.all(2),
                         decoration: const BoxDecoration(
@@ -567,8 +554,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(5.0),
-              child:
-              CarouselSlider(
+              child: CarouselSlider(
                 items: carousalData.map((item) {
                   return Builder(
                     builder: (BuildContext context) {
@@ -613,7 +599,8 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute<void>(
-                                  builder: (context) => EyeFatigueSelfieScreen(),
+                                  builder: (context) =>
+                                      EyeFatigueSelfieScreen(),
                                 ),
                               );
                               break;
@@ -637,7 +624,8 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                   );
                 }).toList(),
                 options: CarouselOptions(
-                  height: MediaQuery.of(context).size.height /4, // Adjust this fraction as needed
+                  height: MediaQuery.of(context).size.height /
+                      4, // Adjust this fraction as needed
 
                   // height: 190.0,
                   enlargeCenterPage: true,
@@ -647,10 +635,12 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                   enableInfiniteScroll: true,
                   autoPlayAnimationDuration: Duration(milliseconds: 370),
                   viewportFraction: 0.8,
-                ),),            ),
+                ),
+              ),
+            ),
             Padding(
               padding:
-              const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
               child: GestureDetector(
                 onTap: () {
                   // checkActivePlan('eyeTest');
@@ -666,7 +656,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
             ),
             Padding(
               padding:
-              const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
               child: GestureDetector(
                 onTap: () {
                   requestPermission();
@@ -696,30 +686,29 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                         context: context,
                         builder: (context) => BottomAlarmDialog(),
                       );
-                       // Navigator.push(
-                       //    context,
-                       //    MaterialPageRoute<void>(
-                       //      builder: (context) => const ExampleAlarmHomeScreen(),
-                       //    ),
-                       //  );
+                      // Navigator.push(
+                      //    context,
+                      //    MaterialPageRoute<void>(
+                      //      builder: (context) => const ExampleAlarmHomeScreen(),
+                      //    ),
+                      //  );
                     },
                     child: Icon(
                       Icons.alarm,
                       // Replace with the alarm icon from Icons class
                       size: 33, // Adjust the size of the icon as needed
                       color:
-                      Colors.blue, // Adjust the color of the icon as needed
+                          Colors.blue, // Adjust the color of the icon as needed
                     ),
                   ),
                 ),
               ],
             ),
-
             Container(
               color: Colors.white,
               child: Padding(
                 padding:
-                const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
                 child: Container(
                   color: Colors.white,
                   width: MediaQuery.of(context).size.width,
@@ -727,177 +716,176 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // if (chartData != null) ...{
-                        Center(
-                          child: Card(
-                            color: Colors.white,
-                            elevation: 0.5,
-                            child:
-                            //     : isLoading1
-                            //     ?
-                            // const Center(
-                            //   child: CircularProgressIndicator(
-                            //     color: Colors.blue,
-                            //   ),
-                            // )
-                            //     :
+                      Center(
+                        child: Card(
+                          color: Colors.white,
+                          elevation: 0.5,
+                          child:
+                              //     : isLoading1
+                              //     ?
+                              // const Center(
+                              //   child: CircularProgressIndicator(
+                              //     color: Colors.blue,
+                              //   ),
+                              // )
+                              //     :
 
+                              Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                DotWithLabel(
+                                    index: 0,
+                                    label: 'Ideal Score',
+                                    point: get_ideal_graph.toDouble()),
+                                Divider(
+                                  height: 5,
+                                  thickness: 0.5,
+                                  color: Colors.grey[400],
+                                  indent: 20,
+                                  endIndent: 20,
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                DotWithLabel(
+                                  index: 1,
+                                  label: 'Percentile Score of the population',
+                                  point: get_percentile_graph.toDouble(),
+                                ),
+                                Divider(
+                                  height: 5,
+                                  thickness: 0.5,
+                                  color: Colors.grey[400],
+                                  indent: 20,
+                                  endIndent: 20,
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
 
+                                DotWithLabel(
+                                  index: 2,
+                                  label: 'Your Avg. Score',
+                                  point: current_day_data.toDouble(),
+                                ),
+                                Divider(
+                                  height: 5,
+                                  thickness: 0.5,
+                                  color: Colors.grey[400],
+                                  indent: 20,
+                                  endIndent: 20,
+                                ),
+                                SizedBox(
+                                  height: 7,
+                                ),
 
-                            Center(
-                              child: Column(
-                                mainAxisAlignment:
-                                MainAxisAlignment.center,
-                                children: <Widget>[
-                                  DotWithLabel(
-                                      index: 0,
-                                      label: 'Ideal Score',
-                                      point: get_ideal_graph.toDouble()),
-                                  Divider(
-                                    height: 5,
-                                    thickness: 0.5,
-                                    color: Colors.grey[400],
-                                    indent: 20,
-                                    endIndent: 20,
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  DotWithLabel(
-                                      index: 1,
-                                      label:
-                                      'Percentile Score of the population',
-                                      point:get_percentile_graph.toDouble(), ),
-                                  Divider(
-                                    height: 5,
-                                    thickness: 0.5,
-                                    color: Colors.grey[400],
-                                    indent: 20,
-                                    endIndent: 20,
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-
-                                  DotWithLabel(
-                                      index: 2,
-                                      label: 'Your Avg. Score',
-                                      point:current_day_data.toDouble(),),
-                                  Divider(
-                                    height: 5,
-                                    thickness: 0.5,
-                                    color: Colors.grey[400],
-                                    indent: 20,
-                                    endIndent: 20,
-                                  ),
-                                  SizedBox(
-                                    height: 7,
-                                  ),
-
-                                  DotWithLabel(
-                                      index: 3,
-                                      label: 'Your First Score',
-                                      point:first_day_data.toDouble(),), //color: Colors.black,
-                                ],
+                                DotWithLabel(
+                                  index: 3,
+                                  label: 'Your First Score',
+                                  point: first_day_data.toDouble(),
+                                ), //color: Colors.black,
+                              ],
+                            ),
+                          ),
+                          // _buildVerticalSplineChart(),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0, vertical: 1),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Container(
+                                width: 10,
+                                height: 10,
+                                decoration: BoxDecoration(
+                                  color: Colors.background,
+                                  // Adjust color as needed
+                                  shape: BoxShape.circle,
+                                ),
                               ),
                             ),
-                            // _buildVerticalSplineChart(),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0, vertical: 1),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: Container(
-                                  width: 10,
-                                  height: 10,
-                                  decoration: BoxDecoration(
-                                    color: Colors.background,
-                                    // Adjust color as needed
-                                    shape: BoxShape.circle,
-                                  ),
+                            SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Score 10 indicates - You have Perfect Eyes',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors
+                                      .background, // Adjust text color as needed
                                 ),
                               ),
-                              SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  'Score 10 indicates - You have Perfect Eyes',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors
-                                        .background, // Adjust text color as needed
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
+                      ),
 
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0, vertical: 1),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(6.0),
-                                child: Container(
-                                  width: 10,
-                                  height: 10,
-                                  decoration: BoxDecoration(
-                                    color: Colors.redAccent,
-                                    // Adjust color as needed
-                                    shape: BoxShape.circle,
-                                  ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0, vertical: 1),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(6.0),
+                              child: Container(
+                                width: 10,
+                                height: 10,
+                                decoration: BoxDecoration(
+                                  color: Colors.redAccent,
+                                  // Adjust color as needed
+                                  shape: BoxShape.circle,
                                 ),
                               ),
-                              SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  'Score 3 indicates - Your eyes need Urgent attention',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors
-                                        .redAccent, // Adjust text color as needed
-                                  ),
+                            ),
+                            SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Score 3 indicates - Your eyes need Urgent attention',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors
+                                      .redAccent, // Adjust text color as needed
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
+                      ),
 
-                        // const SizedBox(
-                        //     height:
-                        //     10), // Adjust spacing between chart and color descriptions
+                      // const SizedBox(
+                      //     height:
+                      //     10), // Adjust spacing between chart and color descriptions
 
-                        // Color descriptions
-                        // Center(
-                        //   child: SingleChildScrollView(
-                        //     scrollDirection: Axis.horizontal,
-                        //     child: Row(
-                        //       children: [
-                        //         const SizedBox(width: 9),
-                        //         _buildColorDescription(
-                        //             Colors.green, 'Ideal Score'),
-                        //         const SizedBox(width: 9),
-                        //         _buildColorDescription(
-                        //             Colors.blue, 'User Average Score'),
-                        //         const SizedBox(width: 9),
-                        //       ],
-                        //     ),
-                        //   ),
-                        // )
+                      // Color descriptions
+                      // Center(
+                      //   child: SingleChildScrollView(
+                      //     scrollDirection: Axis.horizontal,
+                      //     child: Row(
+                      //       children: [
+                      //         const SizedBox(width: 9),
+                      //         _buildColorDescription(
+                      //             Colors.green, 'Ideal Score'),
+                      //         const SizedBox(width: 9),
+                      //         _buildColorDescription(
+                      //             Colors.blue, 'User Average Score'),
+                      //         const SizedBox(width: 9),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // )
                       // },
                       if (count == 0 && isLoading1 == false) ...{
                         const SizedBox(height: 10),
@@ -959,7 +947,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
             ),
             Padding(
               padding:
-              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
               child: SizedBox(
                 height: 180, // Adjust height as needed
                 child: Row(
@@ -970,7 +958,8 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                         decoration: const BoxDecoration(
                           image: DecorationImage(
                             image: AssetImage('assets/interview.png'),
-                            fit: BoxFit.fill, // Ensure the image covers the entire container
+                            fit: BoxFit
+                                .fill, // Ensure the image covers the entire container
                           ),
                         ),
                         child: Column(
@@ -978,7 +967,8 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                           children: [
                             SizedBox(height: 15),
                             Padding(
-                              padding: EdgeInsets.only(left: 22.0), // Adjusted padding
+                              padding: EdgeInsets.only(
+                                  left: 22.0), // Adjusted padding
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -991,7 +981,8 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  const SizedBox(height: 5), // Added SizedBox for spacing
+                                  const SizedBox(
+                                      height: 5), // Added SizedBox for spacing
                                   const Text(
                                     'Eye Test',
                                     style: TextStyle(
@@ -1006,7 +997,6 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                         ),
                       ),
                     ),
-
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
@@ -1018,11 +1008,11 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
-
                           children: [
                             // Number (left top)
                             Padding(
-                              padding: const EdgeInsets.only(left: 20.0, top: 12.0),
+                              padding:
+                                  const EdgeInsets.only(left: 20.0, top: 12.0),
                               child: Text(
                                 no_of_fatigue_test ?? "0",
                                 style: TextStyle(
@@ -1034,7 +1024,8 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                             ),
                             // Text (below number)
                             Padding(
-                              padding: const EdgeInsets.only(left: 20.0, top: 10.0),
+                              padding:
+                                  const EdgeInsets.only(left: 20.0, top: 10.0),
                               child: Text(
                                 'Eye Fatigue Test',
                                 style: TextStyle(
@@ -1047,7 +1038,6 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                         ),
                       ),
                     ),
-
                   ],
                 ),
               ),
@@ -1242,30 +1232,30 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     }
     throw Exception('');
   }
+
   Future<void> getCarouselData() async {
     try {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String authToken = prefs.getString('access_token') ?? '';
-    final response = await http.get(
-      Uri.parse(
-          '${ApiProvider.baseUrl}/api/dashboard-count'),
-      headers: <String, String>{
-        'Authorization': 'Bearer $authToken',
-      },
-    );
-    print("response=======data===${response.body}");
-    if (response.statusCode == 200) {
-      final responseData = json.decode(response.body);
-      carousalData= responseData['carousel'];
-    } else if (response.statusCode == 401) {
-      Fluttertoast.showToast(msg: "Session Expired");
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => SignIn()),
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String authToken = prefs.getString('access_token') ?? '';
+      final response = await http.get(
+        Uri.parse('${ApiProvider.baseUrl}/api/dashboard-count'),
+        headers: <String, String>{
+          'Authorization': 'Bearer $authToken',
+        },
       );
-    } else {
-      print(response.body);
-    }
+      print("response=======data===${response.body}");
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        carousalData = responseData['carousel'];
+      } else if (response.statusCode == 401) {
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      } else {
+        print(response.body);
+      }
     } catch (e) {
       // _progressDialog!.hide();
 
@@ -1273,11 +1263,12 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     }
     throw Exception(Exception);
   }
+
   Future<void> sendcustomerDetails(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
     final String apiUrl = '${Api.baseurl}/api/eye/add-customer';
 // Replace these headers with your required headers
     Map<String, String> headers = {
@@ -1327,26 +1318,20 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       setState(() {
-
-
-      first_day_data=responseData['first_day_data'].toDouble();
-        current_day_data=responseData['current_day_data'].toDouble();
-        get_percentile_graph=responseData['get_percentile_graph'].toDouble();
-        get_ideal_graph=responseData['get_ideal_graph'].toDouble();
-       no_of_fatigue_test = responseData['no_of_fatigue_test'].toString();
-       no_of_eye_test = responseData['no_of_eye_test'].toString();
-      fullname = responseData['name'];
-      eye_health_score= responseData['eye_health_score'];
-
-
+        first_day_data = responseData['first_day_data'].toDouble();
+        current_day_data = responseData['current_day_data'].toDouble();
+        get_percentile_graph = responseData['get_percentile_graph'].toDouble();
+        get_ideal_graph = responseData['get_ideal_graph'].toDouble();
+        no_of_fatigue_test = responseData['no_of_fatigue_test'].toString();
+        no_of_eye_test = responseData['no_of_eye_test'].toString();
+        fullname = responseData['name'];
+        eye_health_score = responseData['eye_health_score'];
       });
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('name', fullname);
 
-
       count = responseData['no_of_eye_test'];
       isLoading1 = false;
-
     } else if (response.statusCode == 401) {
       Fluttertoast.showToast(msg: "Session Expired");
       Navigator.pushReplacement(
@@ -1471,12 +1456,12 @@ class ReminderState extends State<setReminder> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(home: Scaffold(
-      // appBar: AppBar(
-      //   title: const Text(''),
-      // ),
+        // appBar: AppBar(
+        //   title: const Text(''),
+        // ),
         body: Builder(builder: (context) {
-          return const Center();
-        })));
+      return const Center();
+    })));
   }
 }
 
@@ -1602,12 +1587,6 @@ class BottomDialog extends StatelessWidget {
   }
 }
 
-
-
-
-
-
-
 class BottomAlarmDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -1631,25 +1610,20 @@ class BottomAlarmDialog extends StatelessWidget {
           ),
           Divider(thickness: 1, color: Colors.grey.shade500),
           const SizedBox(height: 18),
-
-
           Card(
             elevation: 2,
             child: Container(
               height: 70,
               child: GestureDetector(
                 onTap: () {
-
                   Navigator.pop(context);
 
-
                   Navigator.push(
-      context,
-      MaterialPageRoute<void>(
-        builder: (context) =>
-            ExampledefaultAlarmHomeScreen(),
-      ),
-    );
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (context) => ExampledefaultAlarmHomeScreen(),
+                    ),
+                  );
                   // showModalBottomSheet(
                   //   context: context,
                   //   builder: (context) => ExampleAlarmHomeScreen(),
@@ -1663,9 +1637,9 @@ class BottomAlarmDialog extends StatelessWidget {
                       child: Text(
                         'Schedule default system alarms',
                         style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,color: Colors.background
-                        ),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.background),
                       ),
                     ),
                     Padding(
@@ -1680,21 +1654,20 @@ class BottomAlarmDialog extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 8,),
-
+          SizedBox(
+            height: 8,
+          ),
           Card(
             elevation: 2,
             child: Container(
               height: 70,
               child: GestureDetector(
                 onTap: () {
-
                   Navigator.pop(context);
                   Navigator.push(
                     context,
                     MaterialPageRoute<void>(
-                      builder: (context) =>
-                          ExampleAlarmHomeScreen(),
+                      builder: (context) => ExampleAlarmHomeScreen(),
                     ),
                   );
                   // showModalBottomSheet(
@@ -1710,9 +1683,9 @@ class BottomAlarmDialog extends StatelessWidget {
                       child: Text(
                         'Add your own alarms',
                         style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,color: Colors.background
-                        ),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.background),
                       ),
                     ),
                     Padding(
@@ -1727,10 +1700,9 @@ class BottomAlarmDialog extends StatelessWidget {
               ),
             ),
           ),
-
-
-          SizedBox(height: 18,),
-
+          SizedBox(
+            height: 18,
+          ),
         ],
       ),
     );
@@ -1874,7 +1846,7 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
                     const Text(
                       'Test For Someone Else',
                       style:
-                      TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     IconButton(
                       icon: const Icon(Icons.close),
@@ -2006,11 +1978,10 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
   }
 }
 
-
 class ExampleAlarmRingScreen extends StatelessWidget {
   const ExampleAlarmRingScreen({required this.alarmSettings, super.key});
 
- final AlarmSettings alarmSettings;
+  final AlarmSettings alarmSettings;
 //TODO Data Change Alarm Design
   @override
   Widget build(BuildContext context) {
@@ -2063,4 +2034,3 @@ class ExampleAlarmRingScreen extends StatelessWidget {
     );
   }
 }
-
