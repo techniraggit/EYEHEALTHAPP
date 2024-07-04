@@ -386,14 +386,17 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
               ),
             ),
             Center(
-              child: Text(
-                'Eye Health Track',
-                style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                  // Adjust size as needed
-                  // Add other styling properties as needed
+              child: Padding(
+                padding:  EdgeInsets.symmetric(vertical: 14.0),
+                child: Text(
+                  'Eye Health Track',
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                    // Adjust size as needed
+                    // Add other styling properties as needed
+                  ),
                 ),
               ),
             ),

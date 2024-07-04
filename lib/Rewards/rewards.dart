@@ -261,14 +261,17 @@ class RewardsScreenState extends State<RewardsScreen>
               ),
             ),
             Center(
-              child: Text(
-                'Rewards',
-                style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                  // Adjust size as needed
-                  // Add other styling properties as needed
+              child: Padding(
+                padding:  EdgeInsets.symmetric(vertical: 12.0),
+                child: Text(
+                  'Rewards',
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    // Adjust size as needed
+                    // Add other styling properties as needed
+                  ),
                 ),
               ),
             ),
@@ -421,7 +424,7 @@ class RewardsScreenState extends State<RewardsScreen>
                               child: Container(
                                 width: MediaQuery.of(context).size.width * 0.8,
                                 child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     // Left side - Image
                                     Padding(
@@ -441,7 +444,8 @@ class RewardsScreenState extends State<RewardsScreen>
                                     Expanded(
                                       child: Column(
                                         crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                        CrossAxisAlignment.center,
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                         children: [
                                           // Title
                                           Padding(
@@ -475,7 +479,6 @@ class RewardsScreenState extends State<RewardsScreen>
                                             ),
                                           ),
                                           // Spacer to push button to the bottom
-                                          Spacer(),
                                           // Explore More Button
                                           Padding(
                                             padding: const EdgeInsets.only(
@@ -545,114 +548,115 @@ class RewardsScreenState extends State<RewardsScreen>
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Image.asset(
+                        // 'assets/refer_earn.png',
+
                         'assets/eyetesticon.png',
                         // Add any additional properties to style the image
                       ),
                     ),
                     // Columns on the right side
-                    Flexible(
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                vertical: 4.0,
-                                horizontal: 8.0,
-                              ),
-                              child: Text(
-                                'Eye Test',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
+                    Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 4.0,
+                              horizontal: 8.0,
+                            ),
+                            child: Text(
+                              'Eye Test',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
                               ),
                             ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                vertical: 4.0,
-                                horizontal: 8.0,
-                              ),
-                              child: Text(
-                                '',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey,
-                                ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 4.0,
+                              horizontal: 8.0,
+                            ),
+                            child: Text(
+                              '',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey,
                               ),
                             ),
-                            Padding(
-                              padding: EdgeInsets.all(2.0),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: Text('Choose a Test'),
-                                        content: Container(
-                                          height: 200,
-                                          // Adjust the height as needed
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.8,
-                                          // Adjust the width as needed
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              GestureDetector(
-                                                onTap: () {
-                                                  Navigator.of(context).pop();
-                                                  sendcustomerDetails(true);
-                                                },
-                                                child: Image.asset(
-                                                  'assets/digital_eye_exam.png',
-                                                  // height: 100,
-                                                ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(2.0),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Choose a Test'),
+                                      content: Container(
+                                        height: 200,
+                                        // Adjust the height as needed
+                                        width: MediaQuery.of(context)
+                                                .size
+                                                .width *
+                                            0.8,
+                                        // Adjust the width as needed
+                                        child: Column(
+
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () {
+                                                Navigator.of(context).pop();
+                                                sendcustomerDetails(true);
+                                              },
+                                              child: Image.asset(
+                                                'assets/digital_eye_exam.png',
+                                                // height: 100,
                                               ),
-                                              GestureDetector(
-                                                onTap: () {
-                                                  requestPermission();
-                                                  // Navigator.push(
-                                                  //   context,
-                                                  //   MaterialPageRoute(builder: (context) => EyeFatigueStartScreen()),
-                                                  // );
-                                                },
-                                                child: Image.asset(
-                                                  'assets/eyeFatigueTest.png',
-                                                  // height: 100,
-                                                ),
+                                            ),
+                                            GestureDetector(
+                                              onTap: () {
+                                                requestPermission();
+                                                // Navigator.push(
+                                                //   context,
+                                                //   MaterialPageRoute(builder: (context) => EyeFatigueStartScreen()),
+                                                // );
+                                              },
+                                              child: Image.asset(
+                                                'assets/eyeFatigueTest.png',
+                                                // height: 100,
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
-                                      );
-                                    },
-                                  );
-                                },
-                                child: Text('Start Test'),
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  backgroundColor: Colors.bluebutton,
-                                  // Background color
-                                  // Text color
-                                  padding: EdgeInsets.all(10),
-                                  minimumSize: Size(100, 20),
-                                  // Button padding
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(26),
-                                    // Button border radius
-                                  ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                              child: Text('Start Test'),
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor: Colors.bluebutton,
+                                // Background color
+                                // Text color
+                                padding: EdgeInsets.all(10),
+                                minimumSize: Size(100, 20),
+                                // Button padding
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(26),
+                                  // Button border radius
                                 ),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -687,7 +691,7 @@ class RewardsScreenState extends State<RewardsScreen>
                       child: Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Padding(
                               padding: EdgeInsets.symmetric(
@@ -781,7 +785,7 @@ class RewardsScreenState extends State<RewardsScreen>
                       child: Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Padding(
                               padding: EdgeInsets.symmetric(

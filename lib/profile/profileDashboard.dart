@@ -62,14 +62,14 @@ class UserProfiledash extends State<UserDashboard> {
               ),
             )
           : Scaffold(
-              backgroundColor: Colors.background,
+              backgroundColor: Colors.bluebutton,
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.centerDocked,
               floatingActionButton: Padding(
                 padding: const EdgeInsets.all(8.0), // Add padding
                 child: ClipOval(
                   child: Material(
-                    color: Colors.white70.withOpacity(0.9), // Background color
+                    color: Colors.white.withOpacity(0.9), // Background color
                     elevation: 4.0, // Shadow
                     child: InkWell(
                       onTap: () {
@@ -133,6 +133,8 @@ class UserProfiledash extends State<UserDashboard> {
                               Colors.white, // Adjust the text color as needed
                         ),
                       ),
+
+
                       SizedBox(
                           width: MediaQuery.of(context).size.width /
                               4), // Adjust the width as needed for the space between Icon and Text
@@ -152,39 +154,49 @@ class UserProfiledash extends State<UserDashboard> {
                       ),
                     ],
                   ),
-                  SizedBox(
-                    height: 6,
-                  ),
-                  CircleAvatar(
-                    radius: 50.0,
-                    backgroundColor: Colors.transparent,
-                    child: ClipOval(
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            width: 100.0,
-                            height: 100.0,
-                            child: isLoading
-                                ? Center(
+SizedBox(height: 5,),
+                  Stack(
+                    children: [
+                      Container(
+
+                        child: Image.asset(
+                          'assets/profileline.png', // Replace this with your image path
+                        ),
+                      ),
+                      Center(
+                        child: CircleAvatar(
+                          radius: 50.0,
+                          backgroundColor: Colors.transparent,
+                          child: ClipOval(
+                            child: Column(
+                              children: [
+
+                                SizedBox(
+                                  width: 100.0,
+                                  height: 100.0,
+                                  child: isLoading
+                                      ? Center(
                                     child: CircularProgressIndicator(),
                                   )
-                                : (imageUrl1.isNotEmpty && imageUrl1 != '')
-                                    ? Image.network(
-                                        imageUrl1,
-                                        fit: BoxFit.cover,
-                                      )
-                                    : Image.asset(
-                                        'assets/profile_pic.png',
-                                        fit: BoxFit.fill,
-                                      ),
+                                      : (imageUrl1.isNotEmpty && imageUrl1 != '')
+                                      ? Image.network(
+                                    imageUrl1,
+                                    fit: BoxFit.cover,
+                                  )
+                                      : Image.asset(
+                                    'assets/profile_pic.png',
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ],
+                        ),
                       ),
-                    ),
+
+                    ],
                   ),
-                  SizedBox(
-                    height: 10,
-                  ),
+
                   Text(
                     name.toString(),
                     style: const TextStyle(
@@ -219,8 +231,8 @@ class UserProfiledash extends State<UserDashboard> {
                   Expanded(
                     child: Container(
                       width: double.infinity,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
+                      decoration:  BoxDecoration(
+                        color: Colors.white.withOpacity(0.92),
                         borderRadius:
                             BorderRadius.vertical(top: Radius.circular(30)),
                       ),
@@ -246,7 +258,7 @@ class UserProfiledash extends State<UserDashboard> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(22),
                                     // Half of the height for oval shape
-                                    color: Colors.grey.withOpacity(0.1),
+                                    color: Colors.white.withOpacity(0.8),
                                   ),
                                   child: Row(
                                     mainAxisAlignment:
@@ -300,7 +312,7 @@ class UserProfiledash extends State<UserDashboard> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(22),
                                     // Half of the height for oval shape
-                                    color: Colors.grey.withOpacity(0.1),
+                                    color: Colors.white.withOpacity(0.8),
                                   ),
                                   child: Row(
                                     mainAxisAlignment:
@@ -353,7 +365,7 @@ class UserProfiledash extends State<UserDashboard> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(22),
                                     // Half of the height for oval shape
-                                    color: Colors.grey.withOpacity(0.1),
+                                    color: Colors.white.withOpacity(0.8),
                                   ),
                                   child: Row(
                                     mainAxisAlignment:
@@ -402,7 +414,7 @@ class UserProfiledash extends State<UserDashboard> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(22),
                                     // Half of the height for oval shape
-                                    color: Colors.grey.withOpacity(0.1),
+                                    color: Colors.white.withOpacity(0.8),
                                   ),
                                   child: Row(
                                     mainAxisAlignment:
@@ -446,6 +458,58 @@ class UserProfiledash extends State<UserDashboard> {
                                   Navigator.push(
                                       context,
                                       CupertinoPageRoute(
+                                          builder: (context) => AboutUs()));
+                                },
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 60,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(22),
+                                    // Half of the height for oval shape
+                                    color: Colors.white.withOpacity(0.8),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Center(
+                                          child: Text(
+                                            'About Us',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 15,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: Icon(
+                                            Icons.arrow_forward_ios_outlined),
+                                        color: Colors.black,
+                                        iconSize: 14,
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                                builder: (context) =>
+                                                    TermsScreen()),
+                                          );
+                                          // Navigate to next screen
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      CupertinoPageRoute(
                                           builder: (context) =>
                                               PrivacyScreen()));
                                 },
@@ -455,7 +519,7 @@ class UserProfiledash extends State<UserDashboard> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(22),
                                     // Half of the height for oval shape
-                                    color: Colors.grey.withOpacity(0.1),
+                                    color: Colors.white.withOpacity(0.8),
                                   ),
                                   child: Row(
                                     mainAxisAlignment:
@@ -505,7 +569,7 @@ class UserProfiledash extends State<UserDashboard> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(22),
                                     // Half of the height for oval shape
-                                    color: Colors.grey.withOpacity(0.1),
+                                    color: Colors.white.withOpacity(0.8),
                                   ),
                                   child: Row(
                                     mainAxisAlignment:
@@ -722,7 +786,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
   Future<void> loadPrivacyPolicy() async {
     try {
       final response = await http.get(
-        Uri.parse(ApiProvider.baseUrl + ApiProvider.isAgreement),
+        Uri.parse(ApiProvider.baseUrl + ApiProvider.privacyPage),
         headers: <String, String>{},
       );
       print("waaa" + response.body);
@@ -731,8 +795,19 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
         // _progressDialog!.hide();
 
         final jsonResponse = jsonDecode(response.body);
+        privacyContent = jsonResponse['content'];
+        // List<dynamic> dataList = jsonResponse['data'];
+
+// Assuming you want to retrieve content from the first item in the data array
+//         if (dataList.isNotEmpty) {
+//
+//
+//           privacyContent = dataList[2]['content'];
+//           print('Content from API: $privacyContent');
+//
+//         }
         setState(() {
-          privacyContent = jsonResponse['privacy_policy']['content'].toString();
+          // privacyContent = jsonResponse['privacy_policy']['content'].toString();
         });
       } else {
         // _progressDialog!.hide();
@@ -752,10 +827,13 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Privacy Policy'),
+        title: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10.0),
+          child: Center(child: Text('Privacy Policy',style: TextStyle(fontWeight: FontWeight.w700,fontSize: 18),)),
+        ),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 2),
         child: Html(data: privacyContent),
       ),
     );
@@ -779,7 +857,7 @@ class _TermsScreenState extends State<TermsScreen> {
   Future<void> loadTerms() async {
     try {
       final response = await http.get(
-        Uri.parse(ApiProvider.baseUrl + ApiProvider.isAgreement),
+        Uri.parse(ApiProvider.baseUrl + ApiProvider.termsPage),
         headers: <String, String>{},
       );
       print("waaa" + response.body);
@@ -788,9 +866,17 @@ class _TermsScreenState extends State<TermsScreen> {
         // _progressDialog!.hide();
 
         final jsonResponse = jsonDecode(response.body);
+        termsContent = jsonResponse['content'];
+
+//         List<dynamic> dataList = jsonResponse['data'];
+//
+// // Assuming you want to retrieve content from the first item in the data array
+//         if (dataList.isNotEmpty) {
+//           termsContent = dataList[1]['content'];
+//           print('Content from API: $termsContent');
+//         }
         setState(() {
-          termsContent =
-              jsonResponse['term_and_condition']['content'].toString();
+
         });
       } else {
         // _progressDialog!.hide();
@@ -815,11 +901,100 @@ class _TermsScreenState extends State<TermsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Terms and Conditions'),
+        title: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10.0),
+          child: Center(child: Text('Terms and Conditions',style: TextStyle(fontWeight: FontWeight.w700,fontSize: 17),)),
+        ),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 2),
         child: Html(data: termsContent),
+      ),
+    );
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+class AboutUs extends StatefulWidget {
+  @override
+  AboutPage createState() => AboutPage();
+}
+
+class AboutPage extends State<AboutUs> {
+  String aboutusContent = '';
+
+  @override
+  void initState() {
+    super.initState();
+    aboutUs();
+  }
+
+  Future<void> aboutUs() async {
+    try {
+      final response = await http.get(
+        Uri.parse(ApiProvider.baseUrl + ApiProvider.aboutPage),
+        headers: <String, String>{},
+      );
+      print("waaa" + response.body);
+
+      if (response.statusCode == 200) {
+        // _progressDialog!.hide();
+
+        final jsonResponse = jsonDecode(response.body);
+//         List<dynamic> dataList = jsonResponse['data'];
+//
+// // Assuming you want to retrieve content from the first item in the data array
+//         if (dataList.isNotEmpty) {
+//           aboutusContent = dataList[0]['content'];
+//           print('Content from API: $aboutusContent');
+//         }
+
+
+          setState(() {
+
+          aboutusContent =
+              jsonResponse['content'].toString();
+        });
+      } else {
+        // _progressDialog!.hide();
+
+        print(response.body);
+      }
+    } catch (e) {
+      print('Error loading privacy policy: $e');
+      // Handle error loading privacy policy
+    }
+    if (mounted) {
+      setState(() {}); // Refresh UI
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10.0),
+          child: Center(child: Text('About Us',style: TextStyle(fontWeight: FontWeight.w700,fontSize: 17),)),
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 2),
+        child: Html(data: aboutusContent),
       ),
     );
   }

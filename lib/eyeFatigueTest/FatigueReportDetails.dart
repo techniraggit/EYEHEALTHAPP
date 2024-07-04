@@ -208,21 +208,26 @@ class EyeFatiguereports extends State<ReportDetails>  with AutoCancelStreamMixin
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                        color: const Color(0xffF9F9FA),
-                        borderRadius: BorderRadius.circular(17.0),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20.0),
+                        border: Border.all(
+                          color: Colors.grey, // Border color
+                          width: 1.0, // Border width
+                        ),
                       ),
-                      height: 40,
-                      width: 40,
+                      height: 35,
+                      width: 35,
                       child: Center(
                         child: Icon(
-                          Icons.notifications,
+                          Icons.notifications_none,
                           color: Colors.black,
                         ),
                       ),
                     ),
                     Positioned(
                       right: 0,
-                      top: -1, // Adjust this value to position the text properly
+                      top: -1,
+                      // Adjust this value to position the text properly
                       child: Container(
                         padding: EdgeInsets.all(2),
                         decoration: BoxDecoration(

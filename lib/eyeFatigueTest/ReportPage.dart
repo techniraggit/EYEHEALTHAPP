@@ -203,19 +203,22 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin {
                   //   height: kToolbarHeight + 10, // Adjust height as needed
                   // ),
                   Center(
-                    child: Text(
-                      'Reports and Statistics',
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                        // Adjust size as needed
-                        // Add other styling properties as needed
-                      ),),
+                    child: Padding(
+                      padding:  EdgeInsets.symmetric(horizontal: 8.0,vertical: 9),
+                      child: Text(
+                        'Reports and Statistics',
+                        style: TextStyle(
+                          fontSize: 17.0,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black,
+                          // Adjust size as needed
+                          // Add other styling properties as needed
+                        ),),
+                    ),
 
                   ),
                   Padding(
-                    padding: EdgeInsets.fromLTRB(16.0, 0, 0, 8),
+                    padding: EdgeInsets.symmetric(horizontal: 16.0,),
                     child: Text(
                       'Today $formattedDate', // Display formatted current date
                       style:
@@ -562,7 +565,13 @@ class _ReportOtherState extends State<_ReportOther> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('My Prescriptions'),
+        title: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12.0),
+            child: Text('My Prescriptions',              style: TextStyle(fontWeight: FontWeight.w600,fontSize: 17),
+          ),
+          ),
+        ),
         backgroundColor: Colors.white,
       ),
       floatingActionButton: Padding(
@@ -922,7 +931,12 @@ class __ReportFatigueTestState extends State<_ReportFatigueTest> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Eye Fatigue Test Report'),
+        title: Center(
+          child: Padding(
+            padding:  EdgeInsets.symmetric(vertical: 12.0),
+            child: Text('Eye Fatigue Test Report',style: TextStyle(fontSize: 18,fontWeight: FontWeight.w600),),
+          ),
+        ),
         backgroundColor: Colors.white,
       ),
       body: isLoading
@@ -1465,7 +1479,14 @@ class __ReportEyeTestState extends State<_ReportEyeTest> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Eye Test Report'),
+        title: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12.0),
+            child: Text('Eye Test Report'
+              ,style: TextStyle(fontWeight: FontWeight.w600,fontSize: 17),
+            ),
+          ),
+        ),
       ),
       body: Stack(
         children: [

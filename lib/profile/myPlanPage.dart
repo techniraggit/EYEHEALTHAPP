@@ -37,177 +37,42 @@ class MyPlanState extends State<MyPlan> {
 
   @override
   Widget build(BuildContext context) {
+    double size = MediaQuery.of(context).size.height /6;
+
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Eye Health Premium Plan'),
+        title: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 13.0),
+          child: Text('Health Plan',style: TextStyle(fontSize: 19,fontWeight: FontWeight.w700),),
+        ),
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back,color: Colors.bluebutton,),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
       ),
-      body: FutureBuilder<List<Plan>>(
-        future: futurePlans,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No plans available'));
-          } else {
-            final plans = snapshot.data!;
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10.0,
-                  mainAxisSpacing: 10.0,
-                  childAspectRatio: 0.38,
-                ),
-                itemCount: plans.length,
-                itemBuilder: (context, index) {
-                  final plan = plans[index];
-
-                  // final features = plan.description.split('.');
-                  List<String> _parseHtml(String htmlString) {
-                    var document = htmlParser.parse(htmlString);
-                    var elements = document.querySelectorAll('li');
-                    return elements.map((element) => element.text).toList();
-                  }
-
-                  List<String> features = _parseHtml(plan.description);
-
-                  bool isSelected = plan.id == selectedPlanId;
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: isSelected ? Colors.white : Colors.white,
-                      borderRadius: BorderRadius.circular(12.0),
-                      // Corner radius
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          // Shadow color with opacity
-                          spreadRadius: 2,
-                          // Spread radius
-                          blurRadius: 5,
-                          // Blur radius
-                          offset: const Offset(0, 3), // Shadow position (x, y)
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 2.0, horizontal: 8.0),
-                            child: Text(
-                              plan.name,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Text(
-                              '\₹${plan.price}/${plan.planType}',
-                              style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-    for(int i=0;i<features.length;i++)...{
-    Padding(
-    padding: const EdgeInsets.symmetric(vertical: 5.0),
-    child: Row(
-    children: [
-    Icon(
-    Icons.check,
-    color: Colors.blue,
-    size: 20,
-    ),
-    const SizedBox(width: 5),
-    Expanded(
-    child: Text(
-    features[index],
-    style: TextStyle(
-    fontSize: 16,
-    color: Colors.grey.shade700,
-    fontStyle: FontStyle.normal,
-    ),
-    ),
-    ),
-    ],
-    ),
-    )},
-
-                          // ...features.map((feature) =>
-                          //     Row(
-                          //       children: [
-                          //         Icon(
-                          //           Icons.check,
-                          //           color: isSelected
-                          //               ? Colors.bluebutton
-                          //               : Colors.bluebutton,
-                          //           size: 20,
-                          //         ),
-                          //         const SizedBox(width: 5),
-                          //         Expanded(
-                          //           child: Text(
-                          //             feature,
-                          //             style: TextStyle(
-                          //               fontSize: 16,
-                          //               color: Colors.grey.shade700,
-                          //               fontStyle: FontStyle.normal,
-                          //             ),
-                          //           ),
-                          //         ),
-                          //       ],
-                          //     )),
-                          const Spacer(),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                checkActivePlan(plan.price);
-                                PlanId = plan.id;
-                                // Add your button onPressed logic here
-                              },
-                              style: ElevatedButton.styleFrom(
-                                foregroundColor:
-                                isSelected ? Colors.black : Colors.white,
-                                backgroundColor: isSelected
-                                    ? Colors.deepPurple.shade100
-                                    : Colors.bluebutton,
-                                padding: const EdgeInsets.all(10),
-                                minimumSize: const Size(100, 20),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(26),
-                                ),
-                              ),
-                              child: Text(isSelected ? 'Selected' : 'Buy Plan'),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            );
-          }
-        },
+      body: SingleChildScrollView(
+        padding: EdgeInsets.fromLTRB(15, size,15,0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Image.asset(
+              'assets/Planbased.png', // Replace with your image path
+              width: 200.0, // Adjust image width as needed
+            ),
+            Image.asset(
+              'assets/Title.png', // Replace with your image path
+              width: 200.0, // Adjust image width as needed
+            ),
+            Image.asset(
+              'assets/coming_soon.png', // Replace with your image path
+              width: 200.0, // Adjust image width as needed
+            ),
+          ],
+        ),
       ),
     );
   }

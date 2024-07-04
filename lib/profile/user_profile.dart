@@ -111,7 +111,7 @@ class ProfileDetails extends State<UserProfile> {
             )
           :
       Scaffold(
-              backgroundColor: Colors.background,
+              backgroundColor: Colors.bluebutton,
               body: Column(
                 children: [
                   SizedBox(

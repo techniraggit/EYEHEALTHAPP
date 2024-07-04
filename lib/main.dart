@@ -3,37 +3,23 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:alarm/alarm.dart';
-import 'package:contacts_service/contacts_service.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import "package:flutter/material.dart";
-import 'package:go_router/go_router.dart';
-// import "package:persistent_bottom_nav_bar/persistent_tab_view.dart";
-// import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
-
 import 'package:platform_device_id_v2/platform_device_id_v2.dart';
 import 'package:project_new/HomePage.dart';
-//import 'package:project_new/demoFiles/smsdemo.dart';
-import 'package:project_new/digitalEyeTest/testScreen.dart';
-import 'package:project_new/eyeFatigueTest/ReportPage.dart';
-import 'package:project_new/eyeHealthTrack.dart';
-import 'package:project_new/profile/user_profile.dart';
 import 'package:project_new/sign_up.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:upgrader/upgrader.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'FirebaseOptions/FirebaseApi.dart';
-import 'Rewards/rewards_sync.dart';
 import 'api/firebase_options.dart';
 
 
@@ -1291,10 +1277,10 @@ class _OnBoardingScreen1State extends State<OnBoardingScreen1> {
                           OnBoardingScreen2()//change this in final step  SecondScreen
                       )
                   ) ;               },
-                child: const Padding(
-                  padding: EdgeInsets.only(right: 20.0,top:40,bottom: 20,),
+                child: Padding(
+                  padding:  EdgeInsets.symmetric(vertical:20,horizontal: MediaQuery.of(context).size.width/9),
                   child: SizedBox(
-                    height:17 ,width: 31,
+                    // height:17 ,width: 31,
                     child: Text(
                       'Skip',
                       style: TextStyle(fontSize: 14, color: Color(0xFF4600A9),fontWeight: FontWeight.w400),
@@ -1426,10 +1412,12 @@ class _OnBoardingScreen2State extends State<OnBoardingScreen2> {
                           OnBoardingScreen3()//change this in final step  SecondScreen
                       )
                   );               },
-                child: const Padding(
-                  padding: EdgeInsets.only(right: 18.0,top: 20,bottom: 20),
+                child:  Padding(
+                  padding:  EdgeInsets.symmetric(vertical:20,horizontal: MediaQuery.of(context).size.width/9),
+
+                  // padding: EdgeInsets.only(right: 18.0,top: 20,bottom: 20),
                   child: SizedBox(
-                    height:17 ,width: 31,
+                    // height:17 ,width: 31,
                     child: Text(
                       'Skip',
                       style: TextStyle(fontSize: 14, color: Color(0xFF4600A9),fontWeight: FontWeight.w400),

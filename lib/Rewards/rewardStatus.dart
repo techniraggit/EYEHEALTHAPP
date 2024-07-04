@@ -251,26 +251,29 @@ class RewardsStatusScreenState extends State<RewardStatusScreen> with AutoCancel
                   height: 10, // Adjust height as needed
                 ),
                 Center(
-                  child: Text(
-                    'Reward Status',
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      // Adjust size as needed
-                      // Add other styling properties as needed
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12.0),
+                    child: Text(
+                      'Reward Status',
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        // Adjust size as needed
+                        // Add other styling properties as needed
+                      ),
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
+                // SizedBox(
+                //   height: 10,
+                // ),
 
               ],
             ),
             Positioned(
               right: 16,
-              top: 16,
+              top: 7,
               child: GestureDetector(
                 onTap: () {
                   _scafoldKey.currentState!.openEndDrawer();

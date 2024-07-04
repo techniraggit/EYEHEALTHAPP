@@ -733,29 +733,45 @@ String username='';
     if (checkValidationForLoginOtp()) {
       EasyLoading.show();
       try {
+        String input = _phoneController.text.trim();
+
+        String formattedNumber = formatPhoneNumber(input);
         SharedPreferences prefs = await SharedPreferences.getInstance();
         device_type = prefs.getString('device_type')!;
         device_id = prefs.getString('device_id')!;
         device_token = prefs.getString('device_token')!;
         print(
             "valuesss===========$device_type=====#$device_id======++++$device_token");
+        Map<String, dynamic> requestBody = {
+
+        "username":formattedNumber, //'+91'+_phoneController.text.trim(),
+        "otp": pincode,
+        "device_type": device_type,
+        "device_token": device_token,
+        // "device_id":  device_id// cahnge device_token
+        };
+
         Response response = await post(
           Uri.parse('${ApiProvider.baseUrl + ApiProvider.verifyLoginOtp}'),
-          body: {
-            "username": '+91'+_phoneController.text.trim(),
-            "otp": pincode,
-            "device_type": device_type,
-            "device_token": device_token,
+          body:            requestBody
+
+            // "username": '+91'+_phoneController.text.trim(),
+            // "otp": pincode,
+            // "device_type": device_type,
+            // "device_token": device_token,
             // "device_id":  device_id// cahnge device_token
-          },
+
           // headers: {
           //   'Authorization': 'Bearer $accessToken',
           //
           // },
         );
-        print('Response Status Code2: ${response.statusCode}');
-        print('Response Body: ${response.body}');
 
+        print('Response Status Code2: ${response.statusCode}');
+// Convert the request body to a JSON string
+        String requestBodyJson = json.encode(requestBody);
+
+        print('Request Body: $requestBodyJson');
         // Close the loading dialog
         EasyLoading.dismiss();
         if (response.statusCode == 200) {
@@ -810,6 +826,19 @@ String username='';
 
     RegExp regExp = RegExp(phonePattern);
     return regExp.hasMatch(value);
+  }
+
+  String formatPhoneNumber(String input) {
+    // Regular expression to match a 10-digit phone number
+    RegExp regExp = RegExp(r'^\d{10}$');
+
+    if (regExp.hasMatch(input.trim())) {
+      // If input is a valid 10-digit phone number, prepend '+91'
+      return '+91$input';
+    } else {
+      // Otherwise, return the input as is
+      return input;
+    }
   }
 }
 
@@ -3007,21 +3036,51 @@ class SignUpScreen extends State<SignUp> {
     RegExp regExp = RegExp(emailPattern);
     return regExp.hasMatch(email);
   }
+  String formatPhoneNumber(String input) {
+    // Regular expression to match a 10-digit phone number
+    RegExp regExp = RegExp(r'^\d{10}$');
 
+    if (regExp.hasMatch(input.trim())) {
+      // If input is a valid 10-digit phone number, prepend '+91'
+      return '+91$input';
+    } else {
+      // Otherwise, return the input as is
+      return input;
+    }
+  }
   void VerifyLoginOtp() async {
     if (checkValidationForLoginOtp()) {
+      String? username='';
+
       EasyLoading.show();
       try {
+        String input = _phoneController.text.trim();
+
+        String formattedNumber = formatPhoneNumber(input);
+
+        print('Formatted Phone Number: $formattedNumber');
         SharedPreferences prefs = await SharedPreferences.getInstance();
         device_type = prefs.getString('device_type')!;
         device_id = prefs.getString('device_id')!;
         device_token = prefs.getString('device_token')!;
+        setState(() {
+
+        // if (isPhoneNumber(_phoneController.text.trim())) {
+        //   username= '+91'+_phoneController.text.trim();
+        // }
+        // else{
+        //   username=_phoneController.text.trim();
+        //
+        // }
+        });
         print(
             "valuesss===========$device_type=====#$device_id======++++$device_token");
         Response response = await post(
           Uri.parse('${ApiProvider.baseUrl + ApiProvider.verifyLoginOtp}'),
+
           body: {
-            "username": '+91${_phoneController.text.trim()}',
+
+            'username':formattedNumber,
             "otp": pincode,
             "device_type": device_type,
             "device_token": device_token,
