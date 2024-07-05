@@ -1,3 +1,4 @@
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -74,7 +75,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   @override
   Iterable<StreamSubscription> get registerSubscriptions sync* {
     yield registerReceiver(['actionMusicPlaying']).listen(
-      (intent) {
+          (intent) {
         switch (intent.action) {
           case 'actionMusicPlaying':
             setState(() {
@@ -90,7 +91,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   List<String>? dates;
   int i = 0;
   bool edited = false;
-  List<dynamic> carousalData = [];
+  List<dynamic>  carousalData=[];
 
   // List<Feature>? features;
   List<String>? labelX;
@@ -182,6 +183,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     }
   }
 
+
   @override
   void initState() {
     super.initState();
@@ -265,6 +267,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     }
   }
 
+
   Future<void> loadAlarms() async {
     var sharedPref = await SharedPreferences.getInstance();
     edited = sharedPref.getBool("edited") ?? false;
@@ -318,6 +321,8 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
       }
     }
   }
+
+
 
   AlarmSettings buildAlarmSettings(int i, DateTime duration) {
     final id = DateTime.now().millisecondsSinceEpoch % 10000 + i;
@@ -599,8 +604,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute<void>(
-                                  builder: (context) =>
-                                      EyeFatigueSelfieScreen(),
+                                  builder: (context) => EyeFatigueSelfieScreen(),
                                 ),
                               );
                               break;
@@ -624,8 +628,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                   );
                 }).toList(),
                 options: CarouselOptions(
-                  height: MediaQuery.of(context).size.height /
-                      4, // Adjust this fraction as needed
+                  height: MediaQuery.of(context).size.height /4, // Adjust this fraction as needed
 
                   // height: 190.0,
                   enlargeCenterPage: true,
@@ -635,9 +638,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                   enableInfiniteScroll: true,
                   autoPlayAnimationDuration: Duration(milliseconds: 370),
                   viewportFraction: 0.8,
-                ),
-              ),
-            ),
+                ),),            ),
             Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
@@ -686,12 +687,12 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                         context: context,
                         builder: (context) => BottomAlarmDialog(),
                       );
-                      // Navigator.push(
-                      //    context,
-                      //    MaterialPageRoute<void>(
-                      //      builder: (context) => const ExampleAlarmHomeScreen(),
-                      //    ),
-                      //  );
+                       // Navigator.push(
+                       //    context,
+                       //    MaterialPageRoute<void>(
+                       //      builder: (context) => const ExampleAlarmHomeScreen(),
+                       //    ),
+                       //  );
                     },
                     child: Icon(
                       Icons.alarm,
@@ -704,6 +705,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                 ),
               ],
             ),
+
             Container(
               color: Colors.white,
               child: Padding(
@@ -997,6 +999,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                         ),
                       ),
                     ),
+
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
@@ -1008,6 +1011,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
+
                           children: [
                             // Number (left top)
                             Padding(
@@ -1038,6 +1042,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                         ),
                       ),
                     ),
+
                   ],
                 ),
               ),
@@ -1232,7 +1237,6 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     }
     throw Exception('');
   }
-
   Future<void> getCarouselData() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -1263,7 +1267,6 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     }
     throw Exception(Exception);
   }
-
   Future<void> sendcustomerDetails(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
@@ -1332,6 +1335,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
 
       count = responseData['no_of_fatigue_test'];
       isLoading1 = false;
+
     } else if (response.statusCode == 401) {
       Fluttertoast.showToast(msg: "Session Expired");
       Navigator.pushReplacement(
@@ -1586,6 +1590,12 @@ class BottomDialog extends StatelessWidget {
     }
   }
 }
+
+
+
+
+
+
 
 class BottomAlarmDialog extends StatelessWidget {
   @override
@@ -2006,6 +2016,7 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
   }
 }
 
+
 class ExampleAlarmRingScreen extends StatelessWidget {
   const ExampleAlarmRingScreen({required this.alarmSettings, super.key});
 
@@ -2062,3 +2073,4 @@ class ExampleAlarmRingScreen extends StatelessWidget {
     );
   }
 }
+
