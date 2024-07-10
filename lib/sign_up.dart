@@ -18,8 +18,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:platform_device_id_v2/platform_device_id_v2.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
-import 'package:project_new/HomePage.dart';
+import 'package:project_new/dashboard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'HomePage.dart';
 import 'api/config.dart';
 
 class SignIn extends StatefulWidget {
@@ -170,238 +171,246 @@ String username='';
 // String device_id="";String device_token="";String device_type="";
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        backgroundColor: Colors.background,
-        body: Column(
-          children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child: Image.asset(
-                "assets/back_sp.png",
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+    return  WillPopScope(
+      onWillPop:  () async {
+        SystemNavigator.pop();
+        return false;
+      },
+      child: MaterialApp(
+        home: Scaffold(
+          backgroundColor: Colors.background,
+          body: Column(
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: Image.asset(
+                  "assets/back_sp.png",
+                  fit: BoxFit.cover,
                 ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(36.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Align(
-                              alignment: Alignment.topLeft,
-                              child: Text(
-                                'Sign In',
-                                style: TextStyle(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.background),
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+                  ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(36.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Align(
+                                alignment: Alignment.topLeft,
+                                child: Text(
+                                  'Sign In',
+                                  style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.background),
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 14),
-                            const Align(
-                              alignment: Alignment.topLeft,
-                              child: Text(
-                                'Please sign in to your registered account',
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.greytext),
-                              ),
-                            ),
-                            const SizedBox(height: 50),
-                            SizedBox(
-                              height: 67,
-                              child: TextField(
-                                controller: _phoneController,
-                                maxLength: isNumeric(_phoneController.text)
-                                    ? 10
-                                    : null,
-                                textInputAction: TextInputAction.done,
-
-                                // keyboardType: TextInputType.number,
-                                // inputFormatters: [
-                                //   LengthLimitingTextInputFormatter(10), // Limits input length to 10 characters
-                                // ],
-                                decoration: InputDecoration(
-                                  labelText: 'Phone/Email',
-                                  labelStyle: const TextStyle(
+                              const SizedBox(height: 14),
+                              const Align(
+                                alignment: Alignment.topLeft,
+                                child: Text(
+                                  'Please sign in to your registered account',
+                                  style: TextStyle(
                                       fontSize: 14,
-                                      color: Colors.background,
-                                      fontWeight: FontWeight.w400),
-                                  hintText: 'Enter Phone/Email',
-                                  hintStyle: const TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.hinttext,
-                                      fontWeight: FontWeight.w400),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        27.0), // Add circular border
-                                  ),
-                                  // Set floatingLabelBehavior to always display the label
-                                  floatingLabelBehavior:
-                                      FloatingLabelBehavior.always,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.greytext),
                                 ),
-                                style: const TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w400),
-                                // Limiting to 10 digits ],
-                                onSubmitted: (_) {
-                                  FocusScope.of(context)
-                                      .unfocus(); // Close keyboard when "Done" is pressed
-                                },
-                                onChanged: (_) {
-                                  // Perform validation on text change
-                                  setState(() {
-                                    isMobileValid = true;
-                                    isEmailValid = true;
-                                    if (isNumeric(_phoneController.text)) {
-                                      isMobileValid = isValidPhoneNumber(
-                                          _phoneController.text);
-                                      if (_phoneController.text.length == 10) {
-                                        // isEmailValid=false;
-                                      }
-                                    } else {
-                                      isEmailValid =
-                                          isEmailIdValid(_phoneController.text);
-                                      // isMobileValid=false;
-                                    }
-                                  });
-                                },
                               ),
-                            ),
-                            if (!isMobileValid &&
-                                !isEmailValid &&
-                                _phoneController.text.length > 5)
-                              const Align(
-                                alignment: Alignment.topLeft,
-                                child: Padding(
-                                  padding: EdgeInsets.only(top: 5, left: 5),
-                                  child: Text(
-                                    'Invalid Phone',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.redAccent,
+                              const SizedBox(height: 50),
+                              SizedBox(
+                                height: 70,
+                                child: TextField(
+                                  controller: _phoneController,
+                                  maxLength: isNumeric(_phoneController.text)
+                                      ? 10
+                                      : null,
+                                  textInputAction: TextInputAction.done,
+
+                                  // keyboardType: TextInputType.number,
+                                  // inputFormatters: [
+                                  //   LengthLimitingTextInputFormatter(10), // Limits input length to 10 characters
+                                  // ],
+                                  decoration: InputDecoration(
+                                    labelText: 'Phone/Email',
+                                    labelStyle: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.background,
+                                        fontWeight: FontWeight.w400),
+                                    hintText: 'Enter Phone/Email',
+                                    hintStyle: const TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.hinttext,
+                                        fontWeight: FontWeight.w400),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          25.0), // Add circular border
                                     ),
-                                  ),
-                                ),
-                              ),
-                            if (!isEmailValid &&
-                                !isMobileValid &&
-                                _phoneController.text.length > 5)
-                              const Align(
-                                alignment: Alignment.topLeft,
-                                child: Padding(
-                                  padding: EdgeInsets.only(top: 5, left: 5),
-                                  child: Text(
-                                    'Invalid Email',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.redAccent,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            const SizedBox(height: 20),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 17.0, vertical: 17),
-                              child: Container(
-                                height: 50,
-                                width: double.infinity,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors
-                                        .background, // Set your desired background color here
-                                    // You can also customize other button properties here if needed
-                                  ),
-                                  onPressed: () {
-                                    initPlatformState();
-                                    requestNotificationPermission();
+                                    // Set floatingLabelBehavior to always display the label
+                                    floatingLabelBehavior:
+                                        FloatingLabelBehavior.always,
+                                    contentPadding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0), // Adjust padding as needed
 
-                                    getVerifyLoginOtp();
-
-
+                                  ),
+                                  style: const TextStyle(
+                                      fontSize: 16, fontWeight: FontWeight.w400),
+                                  // Limiting to 10 digits ],
+                                  onSubmitted: (_) {
+                                    FocusScope.of(context)
+                                        .unfocus(); // Close keyboard when "Done" is pressed
                                   },
-                                  child: const Text(
-                                    'Get Otp',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 16),
+                                  onChanged: (_) {
+                                    // Perform validation on text change
+                                    setState(() {
+                                      isMobileValid = true;
+                                      isEmailValid = true;
+                                      if (isNumeric(_phoneController.text)) {
+                                        isMobileValid = isValidPhoneNumber(
+                                            _phoneController.text);
+                                        if (_phoneController.text.length == 10) {
+                                          // isEmailValid=false;
+                                        }
+                                      } else {
+                                        isEmailValid =
+                                            isEmailIdValid(_phoneController.text);
+                                        // isMobileValid=false;
+                                      }
+                                    });
+                                  },
+                                ),
+                              ),
+                              if (!isMobileValid &&
+                                  !isEmailValid &&
+                                  _phoneController.text.length > 5)
+                                const Align(
+                                  alignment: Alignment.topLeft,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(top: 5, left: 5),
+                                    child: Text(
+                                      'Invalid Phone',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.redAccent,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              if (!isEmailValid &&
+                                  !isMobileValid &&
+                                  _phoneController.text.length > 5)
+                                const Align(
+                                  alignment: Alignment.topLeft,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(top: 5, left: 5),
+                                    child: Text(
+                                      'Invalid Email',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.redAccent,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              const SizedBox(height: 20),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 17.0, vertical: 17),
+                                child: Container(
+                                  height: 50,
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors
+                                          .background, // Set your desired background color here
+                                      // You can also customize other button properties here if needed
+                                    ),
+                                    onPressed: () {
+                                      initPlatformState();
+                                      requestNotificationPermission();
+
+                                      getVerifyLoginOtp();
+
+
+                                    },
+                                    child: const Text(
+                                      'Get Otp',
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 16),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Text(
-                        'Don’t have an account?',
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 25.0, vertical: 20),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color:
-                                    Colors.background), // Set border properties
-                            borderRadius: BorderRadius.circular(
-                                27), // Set border radius for rounded corners
+                            ],
                           ),
-                          height: 50,
-                          width: 300,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              initPlatformState();
-                              Navigator.push(
-                                context,
-                                CupertinoPageRoute(
-                                    builder: (context) => SignUp()),
-                              );
-                            },
-                            style: ButtonStyle(
-                              elevation: MaterialStateProperty.all<double>(
-                                  0), // Set elevation to 0 to remove shadow
+                        ),
+                        const Text(
+                          'Don’t have an account?',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 25.0, vertical: 20),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                  color:
+                                      Colors.background), // Set border properties
+                              borderRadius: BorderRadius.circular(
+                                  27), // Set border radius for rounded corners
+                            ),
+                            height: 50,
+                            width: 300,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                initPlatformState();
+                                Navigator.push(
+                                  context,
+                                  CupertinoPageRoute(
+                                      builder: (context) => SignUp()),
+                                );
+                              },
+                              style: ButtonStyle(
+                                elevation: MaterialStateProperty.all<double>(
+                                    0), // Set elevation to 0 to remove shadow
 
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  Colors.white.withOpacity(
-                                      1)), // Set your desired background color here
+                                backgroundColor: MaterialStateProperty.all<Color>(
+                                    Colors.white.withOpacity(
+                                        1)), // Set your desired background color here
+                              ),
+                              child: const Text('Sign Up',
+                                  style: TextStyle(
+                                      color: Colors.background,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 16)),
                             ),
-                            child: const Text('Sign Up',
-                                style: TextStyle(
-                                    color: Colors.background,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 16)),
                           ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      )
-                    ],
+                        const SizedBox(
+                          height: 20,
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -755,16 +764,7 @@ String username='';
           Uri.parse('${ApiProvider.baseUrl + ApiProvider.verifyLoginOtp}'),
           body:            requestBody
 
-            // "username": '+91'+_phoneController.text.trim(),
-            // "otp": pincode,
-            // "device_type": device_type,
-            // "device_token": device_token,
-            // "device_id":  device_id// cahnge device_token
 
-          // headers: {
-          //   'Authorization': 'Bearer $accessToken',
-          //
-          // },
         );
 
         print('Response Status Code2: ${response.statusCode}');
@@ -776,6 +776,7 @@ String username='';
         EasyLoading.dismiss();
         if (response.statusCode == 200) {
           Fluttertoast.showToast(msg: "Login Successfully");
+          Navigator.of(context).pop();
 
           pincode = '';
           Map<String, dynamic> data = json.decode(response.body);
@@ -785,10 +786,9 @@ String username='';
           prefs.setString('refresh_token', data['tokens']["refresh_token"]);
           prefs.setString('stripe_customer_id', data['data']['stripe_customer_id']);
           prefs.setString('user_id', data['data']['id']);
-          Navigator.of(context).pop();
           //  print("Otp Sent${ data['data']['id']}${data['data']['stripe_customer_id']}");
           Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => HomePage()),
+              MaterialPageRoute(builder: (context) =>Dashboard()),// Dashboard()),
                   (Route<dynamic> route) => false);
         }
         else {
@@ -3097,6 +3097,7 @@ class SignUpScreen extends State<SignUp> {
         // Close the loading dialog
         EasyLoading.dismiss();
         if (response.statusCode == 200) {
+          Navigator.of(context).pop();
           Fluttertoast.showToast(msg: "Login Successfully");
 
           pincode = '';
@@ -3106,10 +3107,10 @@ class SignUpScreen extends State<SignUp> {
           prefs.setString('refresh_token', data['tokens']["refresh_token"]);
           prefs.setString('stripe_customer_id', data['data']['stripe_customer_id']);
           prefs.setString('user_id', data['data']['id']);
-          Navigator.of(context).pop();
+          // Navigator.of(context).pop();
           //  print("Otp Sent${ data['data']['id']}${data['data']['stripe_customer_id']}");
           Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => HomePage()),
+              MaterialPageRoute(builder: (context) =>Dashboard()),// Dashboard()),
                   (Route<dynamic> route) => false);
         }
         else {
@@ -3321,7 +3322,7 @@ class _OTPScreenState extends State<OtpVerificationScreen> {
                                       context,
                                       CupertinoPageRoute(
                                           builder: (context) =>
-                                              SignIn() //Dashboard()
+                                              SignIn()
                                           ),
                                     );
                                     // Handle onPressed action

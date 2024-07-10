@@ -14,6 +14,7 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:project_new/HomePage.dart';
 import 'package:project_new/Rewards/rewards_sync.dart';
 import 'package:project_new/api/Api.dart';
@@ -158,7 +159,6 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin {
         : DefaultTabController(
       length: 3,
       child: Scaffold(
-
         key: _scafoldKey,
         endDrawer: NotificationSideBar(
           onNotificationUpdate: () {
@@ -172,27 +172,26 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin {
           },
         ),
         backgroundColor: Colors.white,
-
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(100),
           child: Stack(
             children: [
-              Align(
-                alignment: Alignment.topLeft,
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.black,
-                  ),
-                  iconSize: 28, // Back button icon
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomePage()),
-                    );
-                  },
-                ),
-              ),
+              // Align(
+              //   alignment: Alignment.topLeft,
+              //   child: IconButton(
+              //     icon: const Icon(
+              //       Icons.arrow_back,
+              //       color: Colors.black,
+              //     ),
+              //     iconSize: 28, // Back button icon
+              //     onPressed: () {
+              //       Navigator.push(
+              //         context,
+              //         MaterialPageRoute(builder: (context) => HomePage()),
+              //       );
+              //     },
+              //   ),
+              // ),
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -278,218 +277,221 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin {
             ],
           ),
         ),
+        body: Container(
+          margin: const EdgeInsets.only(bottom: 50),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
 
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-
-              Padding(
-                padding: EdgeInsets.all(8.0),
-                child: GestureDetector(
-                onTap: (){
-                  Navigator.push(context,
-                      CupertinoPageRoute(builder:
-                          (context) =>
-                          _ReportFatigueTest()//change this in final step  SecondScreen
-                      )
-                  ) ;
-                },
-                  child: Card(
-                    color: Colors.white,
-                    elevation: 2,
-                    child: Row(
-                      children: [
-
-                        // Image on the left side
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Image.asset(
-                            'assets/fatigue.png',
-                            // Add any additional properties to style the image
-                          ),
-                        ),
-                        // Columns on the right side
-                        Flexible(
-                          child: Padding(
-                            padding: EdgeInsets.all(10.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0),
-                                  child: Text(
-                                    'Eye Fatigue Test',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.normal,
-                                      color: Colors.deepPurple,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: 4.0,
-                                    horizontal: 8.0,
-                                  ),
-                                  child: Text(
-                                    'Evaluate vision clarity, focus, and eye health with interactive diagnostic assessments.',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ), // Add spacing between titles and dynamic list
-              Padding(
-                padding: EdgeInsets.all(8.0),
-                child: GestureDetector(
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: GestureDetector(
                   onTap: (){
                     Navigator.push(context,
                         CupertinoPageRoute(builder:
                             (context) =>
-                            _ReportEyeTest()//change this in final step  SecondScreen
+                            _ReportFatigueTest()//change this in final step  SecondScreen
                         )
                     ) ;
                   },
-                  child: Card(color: Colors.white,
-                    elevation: 2,
-                    child: Row(
-                      children: [
-                        // Image on the left side
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Image.asset(
-                            'assets/eye.png',
-                            // Add any additional properties to style the image
-                          ),
-                        ),
-                        // Columns on the right side
-                        Flexible(
-                          child: Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: 4.0,
-                                    horizontal: 8.0,
-                                  ),
-                                  child: Text(
-                                    'Eye Test Reports',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.normal,
-                                      color: Colors.blue,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: 4.0,
-                                    horizontal: 8.0,
-                                  ),
-                                  child: Text(
-                                    'Evaluate vision clarity, focus, and eye health with interactive diagnostic assessments.',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                    child: Card(
+                      color: Colors.white,
+                      elevation: 2,
+                      child: Row(
+                        children: [
+
+                          // Image on the left side
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Image.asset(
+                              'assets/fatigue.png',
+                              // Add any additional properties to style the image
                             ),
                           ),
-                        ),
-                      ],
+                          // Columns on the right side
+                          Flexible(
+                            child: Padding(
+                              padding: EdgeInsets.all(10.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0),
+                                    child: Text(
+                                      'Eye Fatigue Test',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.normal,
+                                        color: Colors.deepPurple,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 4.0,
+                                      horizontal: 8.0,
+                                    ),
+                                    child: Text(
+                                      'Discover your eye fatigue level in just 2 minutes with our quick reading assessment.',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ), // Add spacing between titles and dynamic list
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: GestureDetector(
+                    onTap: (){
+                      Navigator.push(context,
+                          CupertinoPageRoute(builder:
+                              (context) =>
+                              _ReportEyeTest()//change this in final step  SecondScreen
+                          )
+                      ) ;
+                    },
+                    child: Card(color: Colors.white,
+                      elevation: 2,
+                      child: Row(
+                        children: [
+                          // Image on the left side
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Image.asset(
+                              'assets/eye.png',
+                              // Add any additional properties to style the image
+                            ),
+                          ),
+                          // Columns on the right side
+                          Flexible(
+                            child: Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 4.0,
+                                      horizontal: 8.0,
+                                    ),
+                                    child: Text(
+                                      'Eye Test Reports',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.normal,
+                                        color: Colors.blue,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 4.0,
+                                      horizontal: 8.0,
+                                    ),
+                                    child: Text(
+                                      'Check your vision and generate a prescription estimate, all from the comfort of your home.',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
 
-              Padding(
-                padding: EdgeInsets.all(8.0),
-                child: GestureDetector(
-                  onTap: (){
-                    Navigator.push(context,
-                        CupertinoPageRoute(builder:
-                            (context) =>
-                            _ReportOther()//change this in final step  SecondScreen
-                        )
-                    ) ;
-                  },
-                  child: Card(
-                    color: Colors.white,
-                    elevation: 2,
-                    child: Row(
-                      children: [
-                        // Image on the left side
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Image.asset(
-                            'assets/document_upload.png',
-                            // Add any additional properties to style the image
-                          ),
-                        ),
-                        // Columns on the right side
-                        Flexible(
-                          child: Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: 4.0,
-                                    horizontal: 8.0,
-                                  ),
-                                  child: Text(
-                                    'Upload Prescription',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.normal,
-                                      color: Colors.green,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: 4.0,
-                                    horizontal: 8.0,
-                                  ),
-                                  child: Text(
-                                    'Evaluate vision clarity, focus, and eye health with interactive diagnostic assessments.',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ),
-
-                              ],
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: GestureDetector(
+                    onTap: (){
+                      Navigator.push(context,
+                          CupertinoPageRoute(builder:
+                              (context) =>
+                              _ReportOther()//change this in final step  SecondScreen
+                          )
+                      ) ;
+                    },
+                    child: Card(
+                      color: Colors.white,
+                      elevation: 2,
+                      child: Row(
+                        children: [
+                          // Image on the left side
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Image.asset(
+                              'assets/document_upload.png',
+                              // Add any additional properties to style the image
                             ),
                           ),
-                        ),
-                      ],
+                          // Columns on the right side
+                          Flexible(
+                            child: Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 4.0,
+                                      horizontal: 8.0,
+                                    ),
+                                    child: Text(
+                                      'Upload Prescription',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.normal,
+                                        color: Colors.green,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 4.0,
+                                      horizontal: 8.0,
+                                    ),
+                                    child: Text(
+                                      'upload Prescription and keep the record at one place, also uploading correct prescription will help you to Earn Rewards.',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ),
+
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
+                SizedBox(height: 80,),
 
-            ],
+              ],
+            ),
           ),
         ), /*TabBarView(
           children: [
@@ -500,43 +502,43 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin {
             buildOtherReport(context),
           ],
         ),*/
-        floatingActionButtonLocation:
-        FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.all(8.0), // Add padding
-          child: ClipOval(
-            child: Material(
-              color: Colors.white70.withOpacity(0.9), // Background color
-              elevation: 1.0, // Shadow
-              child: InkWell(
-                onTap: () {
-                  Navigator.of(context).pop();
-                  // Navigator.push(
-                  //   context,
-                  //   CupertinoPageRoute(
-                  //     builder: (context) => HomePage(),
-                  //   ),
-                  // );
-                },
-                child: SizedBox(
-                  width: 53.0, // Width of the FloatingActionButton
-                  height: 50.0, // Height of the FloatingActionButton
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      // Add padding for the icon
-                      child: Image.asset(
-                        "assets/home_icon.jpeg",
-                        width: 20,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-        bottomNavigationBar: CustomBottomAppBar(currentScreen: 'ReportPage',),
+        // floatingActionButtonLocation:
+        // FloatingActionButtonLocation.centerDocked,
+        // floatingActionButton: Padding(
+        //   padding: const EdgeInsets.all(8.0), // Add padding
+        //   child: ClipOval(
+        //     child: Material(
+        //       color: Colors.white70.withOpacity(0.9), // Background color
+        //       elevation: 1.0, // Shadow
+        //       child: InkWell(
+        //         onTap: () {
+        //           // Navigator.of(context).pop();
+        //           Navigator.push(
+        //             context,
+        //             CupertinoPageRoute(
+        //               builder: (context) => HomePage(),
+        //             ),
+        //           );
+        //         },
+        //         child: SizedBox(
+        //           width: 53.0, // Width of the FloatingActionButton
+        //           height: 50.0, // Height of the FloatingActionButton
+        //           child: Center(
+        //             child: Padding(
+        //               padding: const EdgeInsets.all(8.0),
+        //               // Add padding for the icon
+        //               child: Image.asset(
+        //                 "assets/home_icon.jpg",
+        //                 width: 20,
+        //               ),
+        //             ),
+        //           ),
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        // ),
+        // bottomNavigationBar: CustomBottomAppBar(currentScreen: 'ReportPage',),
       ),
     ) );
   }
@@ -575,7 +577,7 @@ class _ReportOtherState extends State<_ReportOther> {
         backgroundColor: Colors.white,
       ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 1),
+        padding:  EdgeInsets.only(bottom: MediaQuery.of(context).size.width/4),
         child: FloatingActionButton(
           onPressed: () {
             Navigator.push(
@@ -586,7 +588,9 @@ class _ReportOtherState extends State<_ReportOther> {
             );
           },
           backgroundColor: Colors.bluebutton,
-          child: Icon(Icons.camera_enhance_outlined, color: Colors.white),
+          child: Container(
+            // margin:  EdgeInsets.only(bottom: MediaQuery.of(context).size.width),
+              child: Icon(Icons.camera_enhance_outlined, color: Colors.white)),
         ),
       ),
       body: isLoading
@@ -716,6 +720,8 @@ class _ReportOtherState extends State<_ReportOther> {
                 },
               ),
             ),
+            SizedBox(height: 80,),
+
           ],
         ),
       ),
@@ -1255,6 +1261,7 @@ class __ReportFatigueTestState extends State<_ReportFatigueTest> {
                 );
               },
             ),
+
           ],
         ),
       ),
@@ -1281,11 +1288,18 @@ Widget _buildColorDescription(Color color, String text) {
 
     if((status==PermissionStatus.granted&&status2==PermissionStatus.granted) ){
       setState(() {
-        Navigator.push(
+        pushNewScreenWithRouteSettings(
           context,
-          MaterialPageRoute(
-              builder: (context) => EyeFatigueSelfieScreen()),
+          settings: const RouteSettings(name: 'music_player_page'),
+          screen: EyeFatigueSelfieScreen(),
+          withNavBar: false,
+          pageTransitionAnimation: PageTransitionAnimation.cupertino,
         );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //       builder: (context) => EyeFatigueSelfieScreen()),
+        // );
       });
 
     }
@@ -1770,7 +1784,9 @@ class PrescriptionDetailPage extends StatelessWidget {
                 icon: Icon(Icons.download),
                 label: Text('Download File'),
               ),
-
+              const SizedBox(
+                height: 80,
+              ),
             ],
           ),
         ),

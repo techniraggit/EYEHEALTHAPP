@@ -613,6 +613,9 @@ class EyeFatiguereports extends State<ReportDetails>  with AutoCancelStreamMixin
                 ),
               ),
             ),
+            const SizedBox(
+              height: 80,
+            ),
           ],
         ),
       ),

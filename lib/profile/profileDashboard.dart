@@ -16,6 +16,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart' hide LocationAccuracy;
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:project_new/HomePage.dart';
 import 'package:project_new/profile/myPlanPage.dart';
@@ -26,6 +27,7 @@ import 'package:project_new/profile/user_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Custom_navbar/bottom_navbar.dart';
 import '../api/config.dart';
+import '../notification/notification_dashboard.dart';
 
 class UserDashboard extends StatefulWidget {
   @override
@@ -63,97 +65,50 @@ class UserProfiledash extends State<UserDashboard> {
             )
           : Scaffold(
               backgroundColor: Colors.bluebutton,
-              floatingActionButtonLocation:
-                  FloatingActionButtonLocation.centerDocked,
-              floatingActionButton: Padding(
-                padding: const EdgeInsets.all(8.0), // Add padding
-                child: ClipOval(
-                  child: Material(
-                    color: Colors.white.withOpacity(0.9), // Background color
-                    elevation: 4.0, // Shadow
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                            builder: (context) => HomePage(),
-                          ),
-                        );
-                      },
-                      child: SizedBox(
-                        width: 53.0, // Width of the FloatingActionButton
-                        height: 50.0, // Height of the FloatingActionButton
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(
-                                8.0), // Add padding for the icon
-                            child: Image.asset(
-                              "assets/home_icon.jpeg",
-                              width: 20,
-                              // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
-                              // color: Colors.grey, // Uncomment if you want to apply a color to the image
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+
               body: Column(
                 children: [
                   SizedBox(
                     height: 20,
                   ),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 10,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Icon(
-                          Icons.arrow_back, // Replace with your icon
-                          color: Colors.white,
-                          size: 30, // Adjust icon color as needed
-                        ),
-                      ),
-                      SizedBox(
-                          width: MediaQuery.of(context).size.width /
-                              3), // Adjust the width as needed for the space between Icon and Text
-
-                      Text(
-                        "Profile", // Your title text
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                          color:
-                              Colors.white, // Adjust the text color as needed
-                        ),
-                      ),
-
-
-                      SizedBox(
-                          width: MediaQuery.of(context).size.width /
-                              4), // Adjust the width as needed for the space between Icon and Text
-
-                      GestureDetector(
-                        onTap: () {
-                          Logout();
-                        },
-                        child: IconButton(
-                          icon: Icon(Icons.logout_rounded),
-                          color: Colors.white,
-                          iconSize: 28,
-                          onPressed: () {
-                            Logout();
-                          },
-                        ),
-                      ),
-                    ],
+        Container(
+          width: double.infinity, // Ensure the container takes the full width
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "Profile",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
                   ),
+                ),
+              ),
+              Positioned(
+                top: 0,
+                right: 0,
+                child: GestureDetector(
+                  onTap: () {
+                    Logout();
+
+                    // Replace with your logout logic
+                    print("Logout tapped");
+                  },
+                  child: Container(
+                    child: Icon(
+                      Icons.logout_rounded,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
 SizedBox(height: 5,),
                   Stack(
                     children: [
@@ -171,21 +126,33 @@ SizedBox(height: 5,),
                             child: Column(
                               children: [
 
-                                SizedBox(
-                                  width: 100.0,
-                                  height: 100.0,
-                                  child: isLoading
-                                      ? Center(
-                                    child: CircularProgressIndicator(),
-                                  )
-                                      : (imageUrl1.isNotEmpty && imageUrl1 != '')
-                                      ? Image.network(
-                                    imageUrl1,
-                                    fit: BoxFit.cover,
-                                  )
-                                      : Image.asset(
-                                    'assets/profile_pic.png',
-                                    fit: BoxFit.cover,
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: SizedBox(
+                                    width: 100.0,
+                                    height: 100.0,
+                                    child: isLoading
+                                        ? Center(
+                                      child: CircularProgressIndicator(),
+                                    )
+                                        : (imageUrl1.isNotEmpty && imageUrl1 != '')
+                                        ? Image.network(
+                                      imageUrl1,
+                                      fit: BoxFit.cover,
+                                    )
+                                        :
+                                    Icon(
+                                      Icons.account_circle,  // Use the account circle icon from the Icons class
+                                      size: MediaQuery.of(context).size.width/3.5,  // Adjust the size of the icon as needed
+                                      color: Colors.white,
+
+                                      // Adjust the color of the icon as needed
+                                    ),
+                                    // Image.asset(
+                                    //   'assets/profile.png',
+                                    //   // 'assets/profile_pic.png',
+                                    //   fit: BoxFit.cover,
+                                    // ),
                                   ),
                                 ),
                               ],
@@ -232,7 +199,7 @@ SizedBox(height: 5,),
                     child: Container(
                       width: double.infinity,
                       decoration:  BoxDecoration(
-                        color: Colors.white.withOpacity(0.92),
+                        color: Colors.white.withOpacity(0.97),
                         borderRadius:
                             BorderRadius.vertical(top: Radius.circular(30)),
                       ),
@@ -252,46 +219,49 @@ SizedBox(height: 5,),
                                     getProfile();
                                   });
                                 },
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 60,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(22),
-                                    // Half of the height for oval shape
-                                    color: Colors.white.withOpacity(0.8),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Center(
-                                          child: Text(
-                                            'Personal Details',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 15,
+                                child: Material(
+                                  elevation: 5, borderRadius:BorderRadius.circular(22),
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: 60,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(22),
+                                      // Half of the height for oval shape
+                                      color: Colors.white.withOpacity(0.8),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Center(
+                                            child: Text(
+                                              'Personal Details',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 15,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      IconButton(
-                                        icon: Icon(
-                                            Icons.arrow_forward_ios_outlined),
-                                        color: Colors.black,
-                                        iconSize: 14,
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            CupertinoPageRoute(
-                                                builder: (context) =>
-                                                    UserProfile()),
-                                          ).then((value){
-                                            getProfile();
-                                          });
-                                        },
-                                      ),
-                                    ],
+                                        IconButton(
+                                          icon: Icon(
+                                              Icons.arrow_forward_ios_outlined),
+                                          color: Colors.black,
+                                          iconSize: 14,
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              CupertinoPageRoute(
+                                                  builder: (context) =>
+                                                      UserProfile()),
+                                            ).then((value){
+                                              getProfile();
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -306,45 +276,49 @@ SizedBox(height: 5,),
                                           builder: (context) =>
                                               RewardStatusScreen()));
                                 },
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 60,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(22),
-                                    // Half of the height for oval shape
-                                    color: Colors.white.withOpacity(0.8),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Center(
-                                          child: Text(
-                                            'Reward Details',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 15,
+                                child: Material(
+                                  elevation: 5, borderRadius:BorderRadius.circular(22),
+
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: 60,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(22),
+                                      // Half of the height for oval shape
+                                      color: Colors.white.withOpacity(0.8),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Center(
+                                            child: Text(
+                                              'Reward Details',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 15,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      IconButton(
-                                        icon: Icon(
-                                            Icons.arrow_forward_ios_outlined),
-                                        color: Colors.black,
-                                        iconSize: 14,
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            CupertinoPageRoute(
-                                                builder: (context) =>
-                                                    RewardStatusScreen()),
-                                          );
-                                          // Navigate to next screen
-                                        },
-                                      ),
-                                    ],
+                                        IconButton(
+                                          icon: Icon(
+                                              Icons.arrow_forward_ios_outlined),
+                                          color: Colors.black,
+                                          iconSize: 14,
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              CupertinoPageRoute(
+                                                  builder: (context) =>
+                                                      RewardStatusScreen()),
+                                            );
+                                            // Navigate to next screen
+                                          },
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -359,42 +333,46 @@ SizedBox(height: 5,),
                                         builder: (context) => MyPlan()),
                                   );
                                 },
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 60,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(22),
-                                    // Half of the height for oval shape
-                                    color: Colors.white.withOpacity(0.8),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                          child: Center(
-                                        child: Text(
-                                          'Plans',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 15,
+                                child: Material(
+                                  elevation: 5, borderRadius:BorderRadius.circular(22),
+
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: 60,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(22),
+                                      // Half of the height for oval shape
+                                      color: Colors.white.withOpacity(0.8),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                            child: Center(
+                                          child: Text(
+                                            'Plans',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 15,
+                                            ),
                                           ),
+                                        )),
+                                        IconButton(
+                                          icon: Icon(
+                                              Icons.arrow_forward_ios_outlined),
+                                          color: Colors.black,
+                                          iconSize: 14,
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              CupertinoPageRoute(
+                                                  builder: (context) => MyPlan()),
+                                            );
+                                          },
                                         ),
-                                      )),
-                                      IconButton(
-                                        icon: Icon(
-                                            Icons.arrow_forward_ios_outlined),
-                                        color: Colors.black,
-                                        iconSize: 14,
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            CupertinoPageRoute(
-                                                builder: (context) => MyPlan()),
-                                          );
-                                        },
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -408,45 +386,49 @@ SizedBox(height: 5,),
                                       CupertinoPageRoute(
                                           builder: (context) => TermsScreen()));
                                 },
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 60,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(22),
-                                    // Half of the height for oval shape
-                                    color: Colors.white.withOpacity(0.8),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Center(
-                                          child: Text(
-                                            'Terms and Condition',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 15,
+                                child: Material(
+                                  elevation: 5, borderRadius:BorderRadius.circular(22),
+
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: 60,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(22),
+                                      // Half of the height for oval shape
+                                      color: Colors.white.withOpacity(0.8),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Center(
+                                            child: Text(
+                                              'Terms and Condition',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 15,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      IconButton(
-                                        icon: Icon(
-                                            Icons.arrow_forward_ios_outlined),
-                                        color: Colors.black,
-                                        iconSize: 14,
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            CupertinoPageRoute(
-                                                builder: (context) =>
-                                                    TermsScreen()),
-                                          );
-                                          // Navigate to next screen
-                                        },
-                                      ),
-                                    ],
+                                        IconButton(
+                                          icon: Icon(
+                                              Icons.arrow_forward_ios_outlined),
+                                          color: Colors.black,
+                                          iconSize: 14,
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              CupertinoPageRoute(
+                                                  builder: (context) =>
+                                                      TermsScreen()),
+                                            );
+                                            // Navigate to next screen
+                                          },
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -460,45 +442,49 @@ SizedBox(height: 5,),
                                       CupertinoPageRoute(
                                           builder: (context) => AboutUs()));
                                 },
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 60,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(22),
-                                    // Half of the height for oval shape
-                                    color: Colors.white.withOpacity(0.8),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Center(
-                                          child: Text(
-                                            'About Us',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 15,
+                                child: Material(
+                                  elevation: 5, borderRadius:BorderRadius.circular(22),
+
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: 60,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(22),
+                                      // Half of the height for oval shape
+                                      color: Colors.white.withOpacity(0.8),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Center(
+                                            child: Text(
+                                              'About Us',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 15,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      IconButton(
-                                        icon: Icon(
-                                            Icons.arrow_forward_ios_outlined),
-                                        color: Colors.black,
-                                        iconSize: 14,
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            CupertinoPageRoute(
-                                                builder: (context) =>
-                                                    TermsScreen()),
-                                          );
-                                          // Navigate to next screen
-                                        },
-                                      ),
-                                    ],
+                                        IconButton(
+                                          icon: Icon(
+                                              Icons.arrow_forward_ios_outlined),
+                                          color: Colors.black,
+                                          iconSize: 14,
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              CupertinoPageRoute(
+                                                  builder: (context) =>
+                                                      TermsScreen()),
+                                            );
+                                            // Navigate to next screen
+                                          },
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -513,45 +499,49 @@ SizedBox(height: 5,),
                                           builder: (context) =>
                                               PrivacyScreen()));
                                 },
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 60,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(22),
-                                    // Half of the height for oval shape
-                                    color: Colors.white.withOpacity(0.8),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Center(
-                                          child: Text(
-                                            'Privacy Policy',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 15,
+                                child: Material(
+                                  elevation: 5, borderRadius:BorderRadius.circular(22),
+
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: 60,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(22),
+                                      // Half of the height for oval shape
+                                      color: Colors.white.withOpacity(0.8),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Center(
+                                            child: Text(
+                                              'Privacy Policy',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 15,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      IconButton(
-                                        icon: Icon(
-                                            Icons.arrow_forward_ios_outlined),
-                                        color: Colors.black,
-                                        iconSize: 14,
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            CupertinoPageRoute(
-                                                builder: (context) =>
-                                                    PrivacyScreen()),
-                                          );
-                                          // Navigate to next screen
-                                        },
-                                      ),
-                                    ],
+                                        IconButton(
+                                          icon: Icon(
+                                              Icons.arrow_forward_ios_outlined),
+                                          color: Colors.black,
+                                          iconSize: 14,
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              CupertinoPageRoute(
+                                                  builder: (context) =>
+                                                      PrivacyScreen()),
+                                            );
+                                            // Navigate to next screen
+                                          },
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -563,50 +553,54 @@ SizedBox(height: 5,),
                                   _showConfirmationDialog();
                                   // deleteUser();
                                 },
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 60,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(22),
-                                    // Half of the height for oval shape
-                                    color: Colors.white.withOpacity(0.8),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Center(
-                                          child: Text(
-                                            'Delete Account',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 15,
+                                child: Material(
+                                  elevation: 5, borderRadius:BorderRadius.circular(22),
+
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: 60,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(22),
+                                      // Half of the height for oval shape
+                                      color: Colors.white.withOpacity(0.8),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Center(
+                                            child: Text(
+                                              'Delete Account',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 15,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      IconButton(
-                                        icon: Icon(
-                                            Icons.arrow_forward_ios_outlined),
-                                        color: Colors.black,
-                                        iconSize: 14,
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            CupertinoPageRoute(
-                                                builder: (context) =>
-                                                    PrivacyScreen()),
-                                          );
-                                          // Navigate to next screen
-                                        },
-                                      ),
-                                    ],
+                                        IconButton(
+                                          icon: Icon(
+                                              Icons.arrow_forward_ios_outlined),
+                                          color: Colors.black,
+                                          iconSize: 14,
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              CupertinoPageRoute(
+                                                  builder: (context) =>
+                                                      PrivacyScreen()),
+                                            );
+                                            // Navigate to next screen
+                                          },
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
                               SizedBox(
-                                height: 20,
+                                height: 80,
                               ),
 
                             ],
@@ -615,11 +609,13 @@ SizedBox(height: 5,),
                       ),
                     ),
                   ),
+                  // SizedBox(height: 80,),
+
                 ],
               ),
-              bottomNavigationBar: CustomBottomAppBar(
-                currentScreen: 'ProfileDashboard',
-              ),
+              // bottomNavigationBar: CustomBottomAppBar(
+              //   currentScreen: 'ProfileDashboard',
+              // ),
             ),
     );
   }
@@ -667,9 +663,12 @@ SizedBox(height: 5,),
     prefs.remove("access_token");
 
     await prefs.clear();
-    Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => SignIn()),
-        (Route<dynamic> route) => false);
+
+
+    navigateToSignInScreen(context);
+    // Navigator.of(context).pushAndRemoveUntil(
+    //     MaterialPageRoute(builder: (context) => SignIn()),
+    //     (Route<dynamic> route) => false);
   }
 
   void getProfile() async {
@@ -730,7 +729,17 @@ SizedBox(height: 5,),
     }
     // throw Exception('');
   }
-
+  void navigateToSignInScreen(BuildContext context) {
+    if (mounted) {
+      pushNewScreenWithRouteSettings(
+        context,
+        settings:  RouteSettings(name: 'music_player_page'),
+        screen: SignIn(),
+        withNavBar: false,
+        pageTransitionAnimation: PageTransitionAnimation.cupertino,
+      );
+    }
+  }
   Future<Map<String, dynamic>> deleteUser() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -752,10 +761,22 @@ SizedBox(height: 5,),
         prefs.remove("access_token");
         await prefs.clear();
         print("response--------${response.body}");
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => SignIn()),
-          (Route<dynamic> route) => false,
-        );
+
+        if (context.mounted) {
+          pushNewScreenWithRouteSettings(
+            context,
+            settings: const RouteSettings(name: 'music_player_page'),
+            screen: SignIn(),
+            withNavBar: false,
+            pageTransitionAnimation: PageTransitionAnimation.cupertino,
+          );
+        }
+
+
+        // Navigator.of(context).pushAndRemoveUntil(
+        //   MaterialPageRoute(builder: (context) => SignIn()),
+        //   (Route<dynamic> route) => false,
+        // );
       } else {
         // _progressDialog!.hide();
 
@@ -776,11 +797,69 @@ class PrivacyScreen extends StatefulWidget {
 }
 
 class _PrivacyScreenState extends State<PrivacyScreen> {
-  String privacyContent = '';
+  String privacyContent = ''; final GlobalKey<ScaffoldState> _scafoldKey = GlobalKey();
+  int? isReadFalseCount = 0;
+
   @override
   void initState() {
     super.initState();
     loadPrivacyPolicy();
+    getNotifactionCount();
+
+  }
+  Future<void> getNotifactionCount() async {
+    try {
+      String userToken = '';
+      var sharedPref = await SharedPreferences.getInstance();
+      userToken = sharedPref.getString("access_token") ?? '';
+      String url = "${ApiProvider.baseUrl}/api/user_notification";
+      print("URL: $url");
+      print("userToken: $userToken");
+      Map<String, String> headers = {
+        'Authorization': 'Bearer $userToken', // Bearer token type
+        'Content-Type': 'application/json',
+      };
+      var response = await Dio().get(url, options: Options(headers: headers));
+      print('drf gfbt Count: $response');
+
+      if (response.statusCode == 200) {
+        final responseData = response.data;
+        // Map<String, dynamic> responseData = json.decode(response.data);
+        int unreadNotificationCount = responseData['is_read_false_count'];
+        isReadFalseCount = unreadNotificationCount;
+        print('Unread Notification Count: $unreadNotificationCount');
+        print('Unread gfbt Count: $response');
+        if (mounted) {
+          setState(() {});
+        }
+      }
+      else if (response.statusCode == 401) {
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      }
+      else {
+        throw Exception('Failed to load data');
+      }
+    } on DioError catch (e) {
+      if (e.response != null || e.response!.statusCode == 401) {
+        // Handle 401 error
+
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      } else {
+        // Handle other Dio errors
+        print("DioError: ${e.error}");
+      }
+    } catch (e) {
+      // Handle other exceptions
+      print("Exception---: $e");
+    }
   }
 
   Future<void> loadPrivacyPolicy() async {
@@ -826,15 +905,128 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10.0),
-          child: Center(child: Text('Privacy Policy',style: TextStyle(fontWeight: FontWeight.w700,fontSize: 18),)),
+      key: _scafoldKey,
+      endDrawer: NotificationSideBar(
+        onNotificationUpdate: () {
+          setState(() {
+            if (isReadFalseCount != null) {
+              if (isReadFalseCount! > 0) {
+                isReadFalseCount = isReadFalseCount! - 1;
+              }
+            }
+          });
+        },
+      ),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60),
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.topLeft,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.black,
+                ),
+                iconSize: 28, // Back button icon
+                onPressed: () {
+                 Navigator.of(context).pop();                 },
+              ),
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: 18, // Adjust height as needed
+                ),
+                Center(
+                  child: Text(
+                    'Privacy Policy',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      // Adjust size as needed
+                      // Add other styling properties as needed
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+
+              ],
+            ),
+            Positioned(
+              right: 16,
+              top: 16,
+              child: GestureDetector(
+                onTap: () {
+                  _scafoldKey.currentState!.openEndDrawer();
+                },
+                child: Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20.0),
+                        border: Border.all(
+                          color: Colors.grey, // Border color
+                          width: 1.0, // Border width
+                        ),
+                      ),
+                      height: 35,
+                      width: 35,
+                      child: Center(
+                        child: Icon(
+                          Icons.notifications_none,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      right: 0,
+                      top: -1,
+                      // Adjust this value to position the text properly
+                      child: Container(
+                        padding: EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.red,
+                        ),
+                        child: Text(
+                          '${isReadFalseCount}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
+
+      // appBar: AppBar(
+      //   title: Padding(
+      //     padding: const EdgeInsets.symmetric(vertical: 10.0),
+      //     child: Center(child: Text('Privacy Policy',style: TextStyle(fontWeight: FontWeight.w700,fontSize: 18),)),
+      //   ),
+      // ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 2),
-        child: Html(data: privacyContent),
+        child: Column(
+          children: [
+            Html(data: privacyContent),
+            SizedBox(height: 80,)
+
+          ],
+        ),
       ),
     );
   }
@@ -847,11 +1039,68 @@ class TermsScreen extends StatefulWidget {
 
 class _TermsScreenState extends State<TermsScreen> {
   String termsContent = '';
-
+  final GlobalKey<ScaffoldState> _scafoldKey = GlobalKey();
+  int? isReadFalseCount = 0;
   @override
   void initState() {
     super.initState();
     loadTerms();
+    getNotifactionCount();
+
+  }
+  Future<void> getNotifactionCount() async {
+    try {
+      String userToken = '';
+      var sharedPref = await SharedPreferences.getInstance();
+      userToken = sharedPref.getString("access_token") ?? '';
+      String url = "${ApiProvider.baseUrl}/api/user_notification";
+      print("URL: $url");
+      print("userToken: $userToken");
+      Map<String, String> headers = {
+        'Authorization': 'Bearer $userToken', // Bearer token type
+        'Content-Type': 'application/json',
+      };
+      var response = await Dio().get(url, options: Options(headers: headers));
+      print('drf gfbt Count: $response');
+
+      if (response.statusCode == 200) {
+        final responseData = response.data;
+        // Map<String, dynamic> responseData = json.decode(response.data);
+        int unreadNotificationCount = responseData['is_read_false_count'];
+        isReadFalseCount = unreadNotificationCount;
+        print('Unread Notification Count: $unreadNotificationCount');
+        print('Unread gfbt Count: $response');
+        if (mounted) {
+          setState(() {});
+        }
+      }
+      else if (response.statusCode == 401) {
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      }
+      else {
+        throw Exception('Failed to load data');
+      }
+    } on DioError catch (e) {
+      if (e.response != null || e.response!.statusCode == 401) {
+        // Handle 401 error
+
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      } else {
+        // Handle other Dio errors
+        print("DioError: ${e.error}");
+      }
+    } catch (e) {
+      // Handle other exceptions
+      print("Exception---: $e");
+    }
   }
 
   Future<void> loadTerms() async {
@@ -900,15 +1149,128 @@ class _TermsScreenState extends State<TermsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10.0),
-          child: Center(child: Text('Terms and Conditions',style: TextStyle(fontWeight: FontWeight.w700,fontSize: 17),)),
+      key: _scafoldKey,
+      endDrawer: NotificationSideBar(
+        onNotificationUpdate: () {
+          setState(() {
+            if (isReadFalseCount != null) {
+              if (isReadFalseCount! > 0) {
+                isReadFalseCount = isReadFalseCount! - 1;
+              }
+            }
+          });
+        },
+      ),
+      endDrawerEnableOpenDragGesture: false,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60),
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.topLeft,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.black,
+                ),
+                iconSize: 28, // Back button icon
+                onPressed: () {
+                  Navigator.of(context).pop();                  },
+              ),
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: 18, // Adjust height as needed
+                ),
+                Center(
+                  child: Text(
+                    'Terms and Conditions',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      // Adjust size as needed
+                      // Add other styling properties as needed
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+
+              ],
+            ),
+            Positioned(
+              right: 16,
+              top: 16,
+              child: GestureDetector(
+                onTap: () {
+                  _scafoldKey.currentState!.openEndDrawer();
+                },
+                child: Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20.0),
+                        border: Border.all(
+                          color: Colors.grey, // Border color
+                          width: 1.0, // Border width
+                        ),
+                      ),
+                      height: 35,
+                      width: 35,
+                      child: Center(
+                        child: Icon(
+                          Icons.notifications_none,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      right: 0,
+                      top: -1,
+                      // Adjust this value to position the text properly
+                      child: Container(
+                        padding: EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.red,
+                        ),
+                        child: Text(
+                          '${isReadFalseCount}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
+
+      // appBar: AppBar(
+      //   title: Padding(
+      //     padding: const EdgeInsets.symmetric(vertical: 10.0),
+      //     child: Center(child: Text('Terms and Conditions',style: TextStyle(fontWeight: FontWeight.w700,fontSize: 17),)),
+      //   ),
+      // ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 2),
-        child: Html(data: termsContent),
+        child: Column(
+          children: [
+            Html(data: termsContent),
+            SizedBox(height: 80,)
+          ],
+        ),
       ),
     );
   }
@@ -931,11 +1293,72 @@ class AboutUs extends StatefulWidget {
 
 class AboutPage extends State<AboutUs> {
   String aboutusContent = '';
+  final GlobalKey<ScaffoldState> _scafoldKey = GlobalKey();
+  int? isReadFalseCount = 0;
 
   @override
   void initState() {
     super.initState();
     aboutUs();
+    Future.delayed(const Duration(seconds: 1), () {})
+        .then((_) => getNotifactionCount())
+        .then((_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+  Future<void> getNotifactionCount() async {
+    try {
+      String userToken = '';
+      var sharedPref = await SharedPreferences.getInstance();
+      userToken = sharedPref.getString("access_token") ?? '';
+      String url = "${ApiProvider.baseUrl}/api/user_notification";
+      print("URL: $url");
+      print("userToken: $userToken");
+      Map<String, String> headers = {
+        'Authorization': 'Bearer $userToken', // Bearer token type
+        'Content-Type': 'application/json',
+      };
+      var response = await Dio().get(url, options: Options(headers: headers));
+      print('drf gfbt Count: $response');
+
+      if (response.statusCode == 200) {
+        final responseData = response.data;
+        // Map<String, dynamic> responseData = json.decode(response.data);
+        int unreadNotificationCount = responseData['is_read_false_count'];
+        isReadFalseCount = unreadNotificationCount;
+        print('Unread Notification Count: $unreadNotificationCount');
+        print('Unread gfbt Count: $response');
+        if (mounted) {
+          setState(() {});
+        }
+      } else if (response.statusCode == 401) {
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } on DioError catch (e) {
+      if (e.response != null || e.response!.statusCode == 401) {
+        // Handle 401 error
+
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      } else {
+        // Handle other Dio errors
+        print("DioError: ${e.error}");
+      }
+    } catch (e) {
+      // Handle other exceptions
+      print("Exception---: $e");
+    }
   }
 
   Future<void> aboutUs() async {
@@ -986,15 +1409,129 @@ class AboutPage extends State<AboutUs> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10.0),
-          child: Center(child: Text('About Us',style: TextStyle(fontWeight: FontWeight.w700,fontSize: 17),)),
+      key: _scafoldKey,
+      endDrawer: NotificationSideBar(
+        onNotificationUpdate: () {
+          setState(() {
+            if (isReadFalseCount != null) {
+              if (isReadFalseCount! > 0) {
+                isReadFalseCount = isReadFalseCount! - 1;
+              }
+            }
+          });
+        },
+      ),
+      endDrawerEnableOpenDragGesture: false,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60),
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.topLeft,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.black,
+                ),
+                iconSize: 28, // Back button icon
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: 10, // Adjust height as needed
+                ),
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12.0),
+                    child: Text(
+                      'About Us',
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        // Adjust size as needed
+                        // Add other styling properties as needed
+                      ),
+                    ),
+                  ),
+                ),
+                // SizedBox(
+                //   height: 10,
+                // ),
+
+              ],
+            ),
+            Positioned(
+              right: 16,
+              top: 7,
+              child: GestureDetector(
+                onTap: () {
+                  _scafoldKey.currentState!.openEndDrawer();
+                },
+                child: Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xffF9F9FA),
+                        borderRadius: BorderRadius.circular(17.0),
+                      ),
+                      height: 40,
+                      width: 40,
+                      child: Center(
+                        child: Icon(
+                          Icons.notifications,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      right: 0,
+                      top: -1, // Adjust this value to position the text properly
+                      child: Container(
+                        padding: EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.red,
+                        ),
+                        child: Text(
+                          '${isReadFalseCount}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
+
+
+      // appBar: AppBar(
+      //   title: Padding(
+      //     padding: const EdgeInsets.symmetric(vertical: 10.0),
+      //     child: Center(child: Text('About Us',style: TextStyle(fontWeight: FontWeight.w700,fontSize: 17),)),
+      //   ),
+      // ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 2),
-        child: Html(data: aboutusContent),
+        child: Column(
+          children: [
+            Html(data: aboutusContent),
+            SizedBox(height: 80,)
+
+          ],
+        ),
       ),
     );
   }

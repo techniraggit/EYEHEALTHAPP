@@ -20,11 +20,35 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../api/config.dart';
 
 class UserProfile extends StatefulWidget {
+  const UserProfile({Key? key}) : super(key: key);
+
   @override
   State<UserProfile> createState() => ProfileDetails();
 }
 
 class ProfileDetails extends State<UserProfile> {
+  String? _imagePath;
+
+  void _openBottomDialog() async {
+    final imagePath = await showModalBottomSheet<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return BottomDialog(onDelete: (){
+          imageUrl1 = '';
+          _imagePath = null;
+          setState(() {
+
+          });
+        },);
+      },
+    );
+
+    if (imagePath != null && mounted) {
+      setState(() {
+        _imagePath = imagePath;
+      });
+    }
+  }
 
   bool isMobileValid = true;
   String initialEmail = '';
@@ -38,7 +62,8 @@ class ProfileDetails extends State<UserProfile> {
   TextEditingController _locationController = TextEditingController();
   TextEditingController referalController = TextEditingController();
   TextEditingController _dobController = TextEditingController();
-  String pincode = '';bool _loading = true; // State variable to track loading state
+  String pincode = '';
+  bool _loading = true; // State variable to track loading state
 
   double Latitude = 0.0;
   double Longitude = 0.0;
@@ -49,22 +74,7 @@ class ProfileDetails extends State<UserProfile> {
 
   bool _emailValid = true;
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate ?? DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-        _dobController.text = _selectedDate
-            .toString()
-            .substring(0, 10); // Update the TextField with selected date
-      });
-    }
-  }
+
   @override
   void initState() {
     super.initState();
@@ -98,84 +108,90 @@ class ProfileDetails extends State<UserProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: isLoading
+    return
+        // MaterialApp(
+        // theme: ThemeData(
+        //   primarySwatch: Colors.blue,
+        //   visualDensity: VisualDensity.adaptivePlatformDensity,
+        // ),
+        // home:
+
+        Scaffold(
+      backgroundColor: Colors.bluebutton,
+      body: isLoading
           ? const Center(
               child: CircularProgressIndicator(
                 color: Colors.blue,
               ),
             )
-          :
-      Scaffold(
-              backgroundColor: Colors.bluebutton,
-              body: Column(
-                children: [
-                  SizedBox(
-                    height: 20,
-                  ),
-
-
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 7,
+          : Column(
+              children: [
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 7,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Icon(
+                        Icons.arrow_back, // Replace with your icon
+                        color: Colors.white,
+                        size: 30, // Adjust icon color as needed
                       ),
-                      GestureDetector(
-                        onTap: (){
-                          Navigator.of(context).pop();
-                        },
-                        child: Icon(
-                          Icons.arrow_back, // Replace with your icon
-                          color: Colors.white,
-                          size: 30,// Adjust icon color as needed
-                        ),
+                    ),
+                    SizedBox(
+                        width: MediaQuery.of(context).size.width /
+                            3), // Adjust the width as needed for the space between Icon and Text
+
+                    Text(
+                      "Profile", // Your title text
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white, // Adjust the text color as needed
                       ),
-                      SizedBox(width: MediaQuery.of(context).size.width/3), // Adjust the width as needed for the space between Icon and Text
-
-
-                      Text(
-                        "Profile", // Your title text
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                          color:
-                          Colors.white, // Adjust the text color as needed
-                        ),
+                    ),
+                  ],
+                ),
+                Stack(
+                  children: [
+                    SizedBox(
+                      height: 16,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.width / 3,
+                      alignment: Alignment.topLeft,
+                    ),
+                    Positioned(
+                      // top: MediaQuery.of(context).size.width / 3, // Adjust the top position as needed
+                      left: 0,
+                      right: 0,
+                      child: Image.asset(
+                        'assets/profileline.png', // Replace this with your image path
                       ),
-                    ],
-                  ),
-                  Stack(
-                    children: [
+                    ),
+                    Positioned.fill(
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            _openBottomDialog();
+                            // showModalBottomSheet(
+                            //   context: context,
+                            //   builder: (context) => BottomDialog(),
+                            // );
 
-                      SizedBox(height: 16,),
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.width / 3,
-                        alignment: Alignment.topLeft,
-
-                      ),
-                      Positioned(
-                        // top: MediaQuery.of(context).size.width / 3, // Adjust the top position as needed
-                        left: 0,
-                        right: 0,
-                        child: Image.asset(
-                          'assets/profileline.png', // Replace this with your image path
-                        ),
-                      ),
-                      Positioned.fill(
-                        child: Center(
-                          child: GestureDetector(
-                            onTap: () {
-                              _getImage();
-                            },
-                            child: Stack(
-                              children: [
-
-                                CircleAvatar(
+                            // _getImage();
+                          },
+                          child: Stack(
+                            children: [
+                              Center(
+                                child: CircleAvatar(
                                   radius: 50.0,
                                   backgroundColor: Colors.transparent,
                                   child: ClipOval(
@@ -185,94 +201,205 @@ class ProfileDetails extends State<UserProfile> {
                                           width: 100.0,
                                           height: 100.0,
                                           child: _loading
-                                              ?
-                                          Center(
-                                            child: CircularProgressIndicator(),
-                                          )
-                                              : _imageFile != null
-                                              ? Builder(
-                                                builder: (context) {
+                                              ? Center(
+                                                  child:
+                                                      CircularProgressIndicator(),
+                                                )
+                                              : _imagePath != null
+                                                  ? Builder(builder: (context) {
+                                                      File imageFile =
+                                                          File(_imagePath!);
 
-                                                  File imageFile = File(_imageFile!.path);
-
-                                                  return Image.file(
-                                                    imageFile!,
-                                                                                              fit: BoxFit.cover,
-                                                                                            );
-                                                }
-                                              )
-                                              : imageUrl1.isNotEmpty
-                                              ? Image.network(
-                                            imageUrl1,
-                                            fit: BoxFit.cover,
-                                          )
-                                              : Image.asset(
-                                            'assets/profile_pic.png',
-                                            fit: BoxFit.fill,
-                                          ),
+                                                      return Image.file(
+                                                        imageFile!,
+                                                        fit: BoxFit.cover,
+                                                      );
+                                                    })
+                                                  : imageUrl1.isNotEmpty
+                                                      ? Image.network(
+                                                          imageUrl1,
+                                                          fit: BoxFit.cover,
+                                                        )
+                                                      : Icon(
+                                                          Icons
+                                                              .account_circle, // Use the account circle icon from the Icons class
+                                                          size: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width /
+                                                              3.5, // Adjust the size of the icon as needed
+                                                          color: Colors
+                                                              .white, // Adjust the color of the icon as needed
+                                                        ),
+                                          // Image.asset(
+                                          //   'assets/profile.png',
+                                          //   fit: BoxFit.fill,
+                                          // ),
                                         ),
-
                                       ],
                                     ),
                                   ),
                                 ),
-
-                                Positioned(
-                                  bottom: 0,
-                                  right: 0,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(2),
-                                    decoration: const BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Colors.white,
-                                    ),
-                                    child: Icon(
-                                      Icons.edit,
-                                      color: Colors.grey[800],
-                                    ),
+                              ),
+                              Positioned(
+                                bottom: 10,
+                                right: MediaQuery.of(context).size.width / 2.7,
+                                child: Container(
+                                  padding: const EdgeInsets.all(2),
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.white,
+                                  ),
+                                  child: Icon(
+                                    Icons.edit,
+                                    color: Colors.grey[800],
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  Expanded(
-                    child: Container(
-                      width: double.infinity,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(30)),
-                      ),
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.all(25),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const SizedBox(height: 14),
-                              SizedBox(
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(30)),
+                    ),
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(25),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const SizedBox(height: 14),
+                            SizedBox(
+                              height: 55,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0, vertical: 1),
+                                child: TextField(
+                                  controller: _firstNameController,
+                                  textInputAction: TextInputAction.next,
+                                  decoration: InputDecoration(
+                                    labelText: 'First Name',
+                                    labelStyle: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.background,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    hintText: 'Enter First Name',
+                                    hintStyle: const TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.hinttext,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          27.0), // Add circular border
+                                    ),
+                                    // Set floatingLabelBehavior to always display the label
+                                    floatingLabelBehavior:
+                                        FloatingLabelBehavior.always,
+                                    // Add button to the end of the TextField
+                                  ),
+                                  style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 25),
+                            SizedBox(
+                              height: 55,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0, vertical: 1),
+                                child: TextField(
+                                  controller: _lastNmeController,
+                                  textInputAction: TextInputAction.next,
+                                  decoration: InputDecoration(
+                                    labelText: 'Last Name',
+                                    hintText: 'Enter Last Name',
+                                    labelStyle: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.background,
+                                        fontWeight: FontWeight.w400),
+                                    hintStyle: const TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.hinttext,
+                                        fontWeight: FontWeight.w400),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          27.0), // Add circular border
+                                    ),
+                                    // Set floatingLabelBehavior to always display the label
+                                    floatingLabelBehavior:
+                                        FloatingLabelBehavior.always,
+                                  ),
+                                  style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 25),
+                            Builder(builder: (context) {
+                              print(
+                                  "_phoneController=======${_phoneController.text}========initialPhone$initialPhone");
+
+                              // Add listener to _phoneController to update isVerifiedphone state
+                              _phoneController.addListener(() {
+                                setState(() {
+                                  if (_phoneController.text.trim() !=
+                                      initialPhone) {
+                                    isVerifiedphone = false;
+                                  } else {
+                                    isVerifiedphone = true;
+                                  }
+                                });
+                              });
+
+                              return SizedBox(
                                 height: 55,
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 10.0, vertical: 1),
                                   child: TextField(
-                                    controller: _firstNameController,
+                                    controller: _phoneController,
+                                    inputFormatters: [
+                                      LengthLimitingTextInputFormatter(10),
+                                      // Limits input length to 10 characters
+                                    ],
+                                    keyboardType: TextInputType.number,
                                     textInputAction: TextInputAction.next,
+                                    onSubmitted: (_) {
+                                      // Call your API function when the user submits the text field
+                                      verifyUserphone();
+                                    },
+                                    onEditingComplete: () {
+                                      setState(() {
+                                        isVerifiedphone = false;
+                                      });
+                                      // Call your API function when the user completes editing the text field
+                                      verifyUserphone();
+                                    },
                                     decoration: InputDecoration(
-                                      labelText: 'First Name',
+                                      labelText: 'Phone',
+                                      hintText: 'Enter Phone Number',
                                       labelStyle: const TextStyle(
                                         fontSize: 14,
                                         color: Colors.background,
                                         fontWeight: FontWeight.w400,
                                       ),
-                                      hintText: 'Enter First Name',
                                       hintStyle: const TextStyle(
                                         fontSize: 16,
                                         color: Colors.hinttext,
@@ -285,234 +412,136 @@ class ProfileDetails extends State<UserProfile> {
                                       // Set floatingLabelBehavior to always display the label
                                       floatingLabelBehavior:
                                           FloatingLabelBehavior.always,
-                                      // Add button to the end of the TextField
-                                    ),
-                                    style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 25),
-                              SizedBox(
-                                height: 55,
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10.0, vertical: 1),
-                                  child: TextField(
-                                    controller: _lastNmeController,
-                                    textInputAction: TextInputAction.next,
-                                    decoration: InputDecoration(
-                                      labelText: 'Last Name',
-                                      hintText: 'Enter Last Name',
-                                      labelStyle: const TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.background,
-                                          fontWeight: FontWeight.w400),
-                                      hintStyle: const TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.hinttext,
-                                          fontWeight: FontWeight.w400),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            27.0), // Add circular border
-                                      ),
-                                      // Set floatingLabelBehavior to always display the label
-                                      floatingLabelBehavior:
-                                          FloatingLabelBehavior.always,
-                                    ),
-                                    style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 25),
-
-                              Builder(builder: (context) {
-                                print("_phoneController=======${_phoneController.text}========initialPhone$initialPhone");
-
-                                // Add listener to _phoneController to update isVerifiedphone state
-                                _phoneController.addListener(() {
-                                  setState(() {
-                                    if (_phoneController.text.trim() != initialPhone) {
-                                      isVerifiedphone = false;
-                                    } else {
-                                      isVerifiedphone = true;
-                                    }
-                                  });
-                                });
-
-                                return SizedBox(
-                                  height: 55,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
-                                    child: TextField(
-                                      controller: _phoneController,
-                                      inputFormatters: [
-                                        LengthLimitingTextInputFormatter(10),
-                                        // Limits input length to 10 characters
-                                      ],
-                                      keyboardType: TextInputType.number,
-                                      textInputAction: TextInputAction.next,
-                                      onSubmitted: (_) {
-                                        // Call your API function when the user submits the text field
-                                        verifyUserphone();
-                                      },
-                                      onEditingComplete: () {
-                                        setState(() {
-                                          isVerifiedphone = false;
-                                        });
-                                        // Call your API function when the user completes editing the text field
-                                        verifyUserphone();
-                                      },
-                                      decoration: InputDecoration(
-                                        labelText: 'Phone',
-                                        hintText: 'Enter Phone Number',
-                                        labelStyle: const TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.background,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                        hintStyle: const TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.hinttext,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(27.0), // Add circular border
-                                        ),
-                                        // Set floatingLabelBehavior to always display the label
-                                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                                        suffixIcon: !isVerifiedphone
-                                            ? GestureDetector(
-                                          onTap: () {
-                                            getVerifyPhoneOtp();
-                                          },
-                                          child: getSuffixIconPhone(),
-                                        )
-                                            : null,
-                                      ),
-                                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
-                                    ),
-                                  ),
-                                );
-                              }),
-
-                              const SizedBox(height: 25),
-                              Builder(builder: (context) {
-                                if (_emailController.text.isNotEmpty &&
-                                    _emailController.text != initialEmail) {
-                                  // setState(() {
-                                  isVerifiedemail = false;
-                                  // });
-                                } else {
-                                  isVerifiedemail = true;
-                                }
-
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10.0, vertical: 1),
-                                  child: TextField(
-                                    controller: _emailController,
-                                    textInputAction: TextInputAction.next,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _emailValid = isValidEmail(
-                                            value); // Validate email on change
-                                      });
-                                    },
-                                    onSubmitted: (_) {
-                                      // Call your API function when the user submits the text field
-                                      verifyUseremail();
-                                    },
-                                    onEditingComplete: () {
-                                      setState(() {
-                                        isVerifiedemail = false;
-                                      });
-                                      // Call your API function when the user completes editing the text field
-                                      verifyUseremail();
-                                    },
-                                    decoration: InputDecoration(
-                                      labelText: 'Email',
-                                      hintText: 'Enter Email Address',
-                                      labelStyle: const TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.background,
-                                          fontWeight: FontWeight.w400),
-
-                                      hintStyle:  TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.hinttext,
-                                          fontWeight: FontWeight.w400),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            27.0), // Add circular border
-                                      ),
-                                      // Set floatingLabelBehavior to always display the label
-                                      floatingLabelBehavior:
-                                          FloatingLabelBehavior.always,
-                                      suffixIcon: !isVerifiedemail
+                                      suffixIcon: !isVerifiedphone
                                           ? GestureDetector(
                                               onTap: () {
-                                                getVerifyEmailOtp();
+                                                getVerifyPhoneOtp();
                                               },
-                                              child: getSuffixIconEmail(),
+                                              child: getSuffixIconPhone(),
                                             )
                                           : null,
-
-                                      errorText: _emailValid
-                                          ? null
-                                          : 'Please enter a valid email',
                                     ),
-                                    style:  TextStyle(
+                                    style: const TextStyle(
                                         fontSize: 15,
-                                        fontWeight: FontWeight.w400),maxLines: null,
-                                  ),
-                                );
-                              }),
-                              const SizedBox(height: 20),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 25.0, vertical: 20),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: Colors
-                                            .background), // Set border properties
-                                    borderRadius: BorderRadius.circular(
-                                        27), // Set border radius for rounded corners
-                                  ),
-                                  height: 50,
-                                  width: 300,
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      updateProfilePicture();
-                                    },
-                                    style: ButtonStyle(
-                                      elevation: MaterialStateProperty.all<
-                                              double>(
-                                          0), // Set elevation to 0 to remove shadow
-                                      backgroundColor: MaterialStateProperty
-                                          .all<Color>(Colors
-                                              .background), // Set your desired background color here
-                                    ),
-                                    child: const Text('Update',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 16)),
+                                        fontWeight: FontWeight.w400),
                                   ),
                                 ),
+                              );
+                            }),
+                            const SizedBox(height: 25),
+                            Builder(builder: (context) {
+                              if (_emailController.text.isNotEmpty &&
+                                  _emailController.text != initialEmail) {
+                                // setState(() {
+                                isVerifiedemail = false;
+                                // });
+                              } else {
+                                isVerifiedemail = true;
+                              }
+
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0, vertical: 1),
+                                child: TextField(
+                                  controller: _emailController,
+                                  textInputAction: TextInputAction.next,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _emailValid = isValidEmail(
+                                          value); // Validate email on change
+                                    });
+                                  },
+                                  onSubmitted: (_) {
+                                    // Call your API function when the user submits the text field
+                                    verifyUseremail();
+                                  },
+                                  onEditingComplete: () {
+                                    setState(() {
+                                      isVerifiedemail = false;
+                                    });
+                                    // Call your API function when the user completes editing the text field
+                                    verifyUseremail();
+                                  },
+                                  decoration: InputDecoration(
+                                    labelText: 'Email',
+                                    hintText: 'Enter Email Address',
+                                    labelStyle: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.background,
+                                        fontWeight: FontWeight.w400),
+
+                                    hintStyle: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.hinttext,
+                                        fontWeight: FontWeight.w400),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          27.0), // Add circular border
+                                    ),
+                                    // Set floatingLabelBehavior to always display the label
+                                    floatingLabelBehavior:
+                                        FloatingLabelBehavior.always,
+                                    suffixIcon: !isVerifiedemail
+                                        ? GestureDetector(
+                                            onTap: () {
+                                              getVerifyEmailOtp();
+                                            },
+                                            child: getSuffixIconEmail(),
+                                          )
+                                        : null,
+
+                                    errorText: _emailValid
+                                        ? null
+                                        : 'Please enter a valid email',
+                                  ),
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w400),
+                                  maxLines: null,
+                                ),
+                              );
+                            }),
+                            const SizedBox(height: 20),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 25.0, vertical: 20),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: Colors
+                                          .background), // Set border properties
+                                  borderRadius: BorderRadius.circular(
+                                      27), // Set border radius for rounded corners
+                                ),
+                                height: 50,
+                                width: 300,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    updateProfilePicture();
+                                  },
+                                  style: ButtonStyle(
+                                    elevation: MaterialStateProperty.all<
+                                            double>(
+                                        0), // Set elevation to 0 to remove shadow
+                                    backgroundColor:
+                                        MaterialStateProperty.all<Color>(Colors
+                                            .background), // Set your desired background color here
+                                  ),
+                                  child: const Text('Update',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 16)),
+                                ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
     );
   }
@@ -613,7 +642,7 @@ class ProfileDetails extends State<UserProfile> {
   }
 
   bool checkValidationForVerifyPhone(String phone) {
-    if(phone.length!=10){
+    if (phone.length != 10) {
       Fluttertoast.showToast(msg: "Please enter valid pone no.");
     }
     // Simple email validation regex pattern
@@ -668,7 +697,10 @@ class ProfileDetails extends State<UserProfile> {
       print("Error while compressing image: $error");
       return null;
     }
-  }  Future<void> updateProfilePicture() async {
+  }
+
+  Future<void> updateProfilePicture() async {
+
     const String apiUrl =
         '${ApiProvider.baseUrl + ApiProvider.updateUserProfile}';
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -677,28 +709,34 @@ class ProfileDetails extends State<UserProfile> {
         prefs.getString('access_token') ?? '';
 
     var request = http.MultipartRequest('PATCH', Uri.parse(apiUrl));
-    if (imageFile != null) {
+    if (_imagePath != null) {
       request.files.add(
         await http.MultipartFile.fromPath(
           'image',
-          imageFile!.path,
+          _imagePath!,
         ),
       );
     }
+    if (_imagePath == null) {
+      request.fields['image'] = '';
+
+    }
+
     request.headers['Authorization'] =
         'Bearer $authToken'; // Replace $authToken with your actual token
     request.fields['id'] = user_id;
     request.fields['email'] = _emailController.text;
-    request.fields['phone_number'] = '+91${_phoneController.text}';//
+    request.fields['phone_number'] = '+91${_phoneController.text}'; //
     request.fields['last_name'] = _lastNmeController.text;
     request.fields['first_name'] = _firstNameController.text;
-    request.fields['dob'] = '1982-12-11';
+    // request.fields['dob'] = '1982-12-11';
     print("request.fields===${request.fields}");
 
-    try {
-      // Send the request
+    // try {
+      EasyLoading.show();
       http.StreamedResponse response = await request.send();
       print("dsfds: ${response.stream}=======${response.statusCode}");
+      EasyLoading.dismiss();
 
       // Check the response status code
       if (response.statusCode == 200) {
@@ -730,10 +768,10 @@ class ProfileDetails extends State<UserProfile> {
           print("Unknown error occurred");
         }
       }
-    } catch (e) {
-      // Handle exceptions
-      print('Error: $e');
-    }
+    // } catch (e) {
+    //   // Handle exceptions
+    //   print('Error: $e');
+    // }
   }
 
   Future<Map<String, dynamic>> getProfile() async {
@@ -755,10 +793,10 @@ class ProfileDetails extends State<UserProfile> {
 
       if (response.statusCode == 200) {
         // _progressDialog!.hide();
-
+        print("profile-------------${response.body}");
         final jsonResponse = jsonDecode(response.body);
         setState(() {
-          _loading=false;
+          _loading = false;
 
           if (jsonResponse['data']['image'] != null) {
             imageUrl1 =
@@ -774,11 +812,12 @@ class ProfileDetails extends State<UserProfile> {
           } else {
             _lastNmeController.text = "N/A";
           }
-          _phoneController.text = jsonResponse['data']['phone_number'].toString().substring(3,13);
+          _phoneController.text =
+              jsonResponse['data']['phone_number'].toString().substring(3, 13);
           _emailController.text = jsonResponse['data']['email'];
           initialEmail = jsonResponse['data']['email'];
-          initialPhone = jsonResponse['data']['phone_number'].toString().substring(3,13);
-
+          initialPhone =
+              jsonResponse['data']['phone_number'].toString().substring(3, 13);
 
           isLoading = false; //replace url
         });
@@ -809,14 +848,14 @@ class ProfileDetails extends State<UserProfile> {
         Response response = await post(
           Uri.parse('${ApiProvider.baseUrl + ApiProvider.verifyEmailOtp}'),
           body: {
-            "username": "+91"+_phoneController.text.trim(),
+            "username": "+91" + _phoneController.text.trim(),
           },
           // headers: {
           //   'Authorization': 'Bearer $accessToken',
           //
           // },
         );
-        print('Response username: ${"+91"+_phoneController.text.trim()}');
+        print('Response username: ${"+91" + _phoneController.text.trim()}');
 
         print('Response Status Code: ${response.statusCode}');
         print('Response Body: ${response.body}');
@@ -1035,7 +1074,7 @@ class ProfileDetails extends State<UserProfile> {
         Response response = await post(
           Uri.parse('${ApiProvider.baseUrl + ApiProvider.verifyEmailOtp}'),
           body: {
-            "username":_emailController.text.trim(),
+            "username": _emailController.text.trim(),
           },
           // headers: {
           //   'Authorization': 'Bearer $accessToken',
@@ -1309,8 +1348,7 @@ class ProfileDetails extends State<UserProfile> {
         Response response = await patch(
           Uri.parse('${ApiProvider.baseUrl + ApiProvider.verifyEmailOtp}'),
           body: {
-
-            "username":'+91'+ _phoneController.text.trim(),
+            "username": '+91' + _phoneController.text.trim(),
             "otp": pincode // _otpController.text.trim(),
           },
           // headers: {
@@ -1531,5 +1569,133 @@ class ProfileDetails extends State<UserProfile> {
       print("exception:$e");
     }
     throw Exception('');
+  }
+}
+
+class BottomDialog extends StatefulWidget {
+
+
+  final Function onDelete;
+
+  const BottomDialog({super.key, required this.onDelete});
+
+  @override
+  State<BottomDialog> createState() => Bottom();
+}
+
+class Bottom extends State<BottomDialog> {
+
+
+
+  final picker = ImagePicker();
+
+  Future<XFile?> compressAndGetFile(File file) async {
+    try {
+      // Ensure the output file path is different from the source path
+      String outputPath = '${file.path}.compressed.jpg';
+
+      // Create a temporary output file
+      File tempFile = await File(outputPath).create();
+
+      // Compress the file
+      var result = await FlutterImageCompress.compressAndGetFile(
+        file.absolute.path,
+        tempFile.absolute.path,
+        quality: 70, // adjust as needed
+      );
+
+      // Delete the original file if compression is successful
+      if (result != null) {
+        await file.delete();
+      }
+
+      return result;
+    } catch (error) {
+      print("Error while compressing image: $error");
+      return null;
+    }
+  }
+
+  Future<void> _getImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      XFile? compressedImage = await compressAndGetFile(File(pickedFile.path));
+
+      if (compressedImage != null) {
+        setState(() {
+          Navigator.pop(context,
+              compressedImage.path); // Pass image path back to ProfileScreen
+          print(" compress image.${compressedImage.path}");
+        });
+      } else {
+        print("Failed to compress image.");
+        // Handle error or show a message to the user
+      }
+    }
+  }
+
+  Future<void> _removeImage() async {
+    widget.onDelete();
+      Navigator.pop(context); // Pass image path back to ProfileScreen
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16.0, 16, 16, 8),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Change Profile Image',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+          Divider(thickness: 1, color: Colors.grey.shade500),
+          const SizedBox(height: 18),
+          Row(
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12.0, horizontal: 20),
+                child: GestureDetector(
+                  onTap: () async {
+                    _getImage();
+                  },
+                  child: Icon(Icons.photo, size: 40),
+                ),
+              ),
+              SizedBox(
+                width: 30,
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12.0, horizontal: 20),
+                child: GestureDetector(
+                  onTap: () async {
+                    _removeImage();
+                    // _imagePath = null
+                    // Navigator.pop(context, imagePath);
+                  },
+                  child: Icon(Icons.delete, size: 40),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 80),
+        ],
+      ),
+    );
   }
 }

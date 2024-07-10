@@ -22,6 +22,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:project_new/Rewards/redeem_sucess.dart';
 import 'package:project_new/models/OfferData.dart';
 import 'package:project_new/models/address_list.dart';
@@ -70,7 +71,8 @@ class _RewardsContactsSync extends State<RewardContact> {
     getMyRefferConatcts();
   }
 
-  void shareAppLink(int i) async {
+  void shareAppLink() async {
+    //int i
     try {
       // File imageFile = File('assets/banner1.png'); // Replace 'assets/image.png' with the path to your image file
       //
@@ -110,14 +112,14 @@ class _RewardsContactsSync extends State<RewardContact> {
         subject: 'Check out our awesome app',
       );
       setState(() {
-        _invitationStatus[i] = !(_invitationStatus[i] ?? false);
+        // _invitationStatus[i] = !(_invitationStatus[i] ?? false);
       });
     } catch (e) {
       print("88888888888888$e");
       // If there's an error during sharing, handle it
       // Set _invitationStatus to false to indicate failure
       setState(() {
-        _invitationStatus[i] = false;
+        // _invitationStatus[i] = false;
       });
 
       // Show a SnackBar to inform the user about the failure
@@ -128,7 +130,7 @@ class _RewardsContactsSync extends State<RewardContact> {
       );
 
       // Revert the state change if sharing fails
-      _invitationStatus[i] = !(_invitationStatus[i] ?? false);
+      // _invitationStatus[i] = !(_invitationStatus[i] ?? false);
     }
   }
 
@@ -137,43 +139,43 @@ class _RewardsContactsSync extends State<RewardContact> {
     return DefaultTabController(
         length: 2,
         child: Scaffold(
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerDocked,
-          floatingActionButton: Padding(
-            padding: const EdgeInsets.all(8.0), // Add padding
-            child: ClipOval(
-              child: Material(
-                color: Colors.white70.withOpacity(0.9), // Background color
-                elevation: 4.0, // Shadow
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      CupertinoPageRoute(
-                        builder: (context) => HomePage(),
-                      ),
-                    );
-                  },
-                  child: SizedBox(
-                    width: 53.0, // Width of the FloatingActionButton
-                    height: 50.0, // Height of the FloatingActionButton
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        // Add padding for the icon
-                        child: Image.asset(
-                          "assets/home_icon.jpeg",
-                          width: 20,
-                          // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
-                          // color: Colors.grey, // Uncomment if you want to apply a color to the image
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          // floatingActionButtonLocation:
+          //     FloatingActionButtonLocation.centerDocked,
+          // floatingActionButton: Padding(
+          //   padding: const EdgeInsets.all(8.0), // Add padding
+          //   child: ClipOval(
+          //     child: Material(
+          //       color: Colors.white70.withOpacity(0.9), // Background color
+          //       elevation: 4.0, // Shadow
+          //       child: InkWell(
+          //         onTap: () {
+          //           Navigator.push(
+          //             context,
+          //             CupertinoPageRoute(
+          //               builder: (context) => HomePage(),
+          //             ),
+          //           );
+          //         },
+          //         child: SizedBox(
+          //           width: 53.0, // Width of the FloatingActionButton
+          //           height: 50.0, // Height of the FloatingActionButton
+          //           child: Center(
+          //             child: Padding(
+          //               padding: const EdgeInsets.all(8.0),
+          //               // Add padding for the icon
+          //               child: Image.asset(
+          //                 "assets/home_icon.jpg",
+          //                 width: 20,
+          //                 // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
+          //                 // color: Colors.grey, // Uncomment if you want to apply a color to the image
+          //               ),
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
           // appBar: PreferredSize(
           //   preferredSize: const Size.fromHeight(10),
           //   child: AppBar(
@@ -322,8 +324,8 @@ class _RewardsContactsSync extends State<RewardContact> {
               if (ReferCode!.isNotEmpty)
                 GestureDetector(
                   onTap: () {
-                    Share.share(ReferCode!);
-
+                    // Share.share(ReferCode!);
+                    shareAppLink();
                     // Your action when clicking on the left end or center
                   },
                   child: Container(
@@ -492,7 +494,7 @@ class _RewardsContactsSync extends State<RewardContact> {
                                           const Spacer(),
                                           GestureDetector(
                                             onTap: () async {
-                                              shareAppLink(i);
+                                              shareAppLink();
                                             },
                                             child: Text(
                                               'INVITE',
@@ -504,7 +506,6 @@ class _RewardsContactsSync extends State<RewardContact> {
                                           ),
                                         ],
                                       ),
-
                                     ),
                                   ),
                                 ),
@@ -591,7 +592,16 @@ class _RewardsContactsSync extends State<RewardContact> {
                                   ),
                                 ),
                               )
-                            : Container()
+                            : Container(
+                                // Set constraints, width, height, etc. for the Container
+                                child: Center(
+                                  child: Text(
+                                    "you haven't referred any contact yet.",
+                                    textAlign: TextAlign.center,
+                                    // You can specify other text properties here like style, fontSize, etc.
+                                  ),
+                                ),
+                              )
                         // if (_permissionDenied)
                         //   const Center(child: Text('Permission denied')),
                         // if (_contacts != null) ...{
@@ -601,9 +611,10 @@ class _RewardsContactsSync extends State<RewardContact> {
                   ],
                 ),
               ),
+              SizedBox(height: 80,),
             ],
           ),
-          bottomNavigationBar: CustomBottomAppBar(currentScreen: "Rewards"),
+          // bottomNavigationBar: CustomBottomAppBar(currentScreen: "Rewards"),
         ));
   }
 
@@ -732,7 +743,7 @@ class _RewardsContactsSync extends State<RewardContact> {
     }
   }
 
- /* Future<void> _sendSMS(List<String> recipients) async {
+  /* Future<void> _sendSMS(List<String> recipients) async {
     try {
       String _result = await sendSMS(
         message:
@@ -760,7 +771,6 @@ class _RewardsContactsSync extends State<RewardContact> {
 
       setState(() => _contacts = contacts);
       sendContacts();
-
     } else {}
 
     // }
@@ -789,6 +799,7 @@ class _RewardsContactsSync extends State<RewardContact> {
         final jsonResponse = jsonDecode(response.body);
         setState(() {
           ReferCode = jsonResponse['data']['referral_code'];
+          totalPoints = jsonResponse['data']['points'];
         });
 
         print("responseviewprofile:${response.body}");
@@ -853,10 +864,10 @@ class _RewardsContactsSync extends State<RewardContact> {
       }
 
       int phoneCount = 1;
-      Map<String, String> phoneNumbersMap =
-          {};
+      Map<String, String> phoneNumbersMap = {};
       for (var contact in _contacts) {
-        if (contact.displayName == null) continue; // Skip contacts without a display name
+        if (contact.displayName == null)
+          continue; // Skip contacts without a display name
 
         if (contact.phones != null && contact.phones!.isNotEmpty) {
           for (var phone in contact.phones!) {
@@ -867,19 +878,19 @@ class _RewardsContactsSync extends State<RewardContact> {
 
             // Convert emails list to a comma-separated string
             if (contact.emails != null && contact.emails!.isNotEmpty) {
-              singleContactData["email"] = contact.emails!.map((e) => e.value!).join(", ");
-            }else{
-              singleContactData["email"] ="";
+              singleContactData["email"] =
+                  contact.emails!.map((e) => e.value!).join(", ");
+            } else {
+              singleContactData["email"] = "";
             }
-
 
             // Optionally handle address and avatar as needed
             if (contact.postalAddresses?.isNotEmpty ?? false) {
               final address = contact.postalAddresses!.first;
               singleContactData["address"] =
-              '${address.street ?? ''}, ${address.city ?? ''}, ${address.postcode ?? ''}, ${address.country ?? ""}';
-            }else{
-              singleContactData["address"] ="";
+                  '${address.street ?? ''}, ${address.city ?? ''}, ${address.postcode ?? ''}, ${address.country ?? ""}';
+            } else {
+              singleContactData["address"] = "";
             }
 
             if (contact.avatar != null && contact.avatar!.isNotEmpty) {
@@ -887,10 +898,12 @@ class _RewardsContactsSync extends State<RewardContact> {
               // Use the image where needed
             }
 
-            dataList.add(singleContactData); // Add the modified contact data to dataList
+            dataList.add(
+                singleContactData); // Add the modified contact data to dataList
           }
         }
-      }    }
+      }
+    }
     logger.d("object========${dataList.toString()}");
 
     // Replace with your API endpoint
@@ -938,7 +951,8 @@ class _RewardsContactsSync extends State<RewardContact> {
         if (phoneNumber != null && phoneNumber.isNotEmpty) {
           print("phone-----no-----------$phoneNumber");
           // Construct and send the WhatsApp message
-          var whatsappUrl = "whatsapp://send?phone=$phoneNumber&text= Hi , I am using the Zukti eye health app to track my eye health. Why dont you join me and together we can work towards improving our eye health? Use my code to sign up and get a one-month subscription free.";
+          var whatsappUrl =
+              "whatsapp://send?phone=$phoneNumber&text= Hi , I am using the Zukti eye health app to track my eye health. Why dont you join me and together we can work towards improving our eye health? Use my code to sign up and get a one-month subscription free.";
           if (await canLaunch(whatsappUrl)) {
             await launch(whatsappUrl);
           } else {
@@ -1039,7 +1053,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
         offerData = OfferData.fromJson(responseData);
         isLoading = false;
 
-        print("statusCode================${offerData?.data?.description}");
+        print("statusCode================3${offerData?.data?.description}");
         image_url = offerData!.data!.image!;
         EyeHealthPoints = offerData!.userPoints!;
         totalPoints = offerData!.data!.requiredPoints!;
@@ -1062,8 +1076,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
           context,
           MaterialPageRoute(builder: (context) => SignIn()),
         );
-      }
-      else {
+      } else {
         throw Exception('Failed to load data');
       }
     } on DioError catch (e) {
@@ -1127,8 +1140,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
           context,
           MaterialPageRoute(builder: (context) => SignIn()),
         );
-      }
-      else {
+      } else {
         throw Exception('Failed to load data');
       }
     } on DioError catch (e) {
@@ -1170,52 +1182,46 @@ class RewardSpecsSync extends State<RewardSpecs> {
 
   @override
   Widget build(BuildContext context) {
-    return isLoading
-        ? const Center(
-            child: CircularProgressIndicator(
-              color: Colors.black,
-            ),
-          )
-        : MaterialApp(
-            home: Scaffold(
+    return
+        Scaffold(
               backgroundColor: Colors.white,
-              floatingActionButtonLocation:
-                  FloatingActionButtonLocation.centerDocked,
-              floatingActionButton: Padding(
-                padding: const EdgeInsets.all(8.0), // Add padding
-                child: ClipOval(
-                  child: Material(
-                    color: Colors.white70.withOpacity(0.9), // Background color
-                    elevation: 4.0, // Shadow
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                            builder: (context) => HomePage(),
-                          ),
-                        );
-                      },
-                      child: SizedBox(
-                        width: 53.0, // Width of the FloatingActionButton
-                        height: 50.0, // Height of the FloatingActionButton
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(
-                                8.0), // Add padding for the icon
-                            child: Image.asset(
-                              "assets/home_icon.jpeg",
-                              width: 20,
-                              // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
-                              // color: Colors.grey, // Uncomment if you want to apply a color to the image
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              // floatingActionButtonLocation:
+              //     FloatingActionButtonLocation.centerDocked,
+              // floatingActionButton: Padding(
+              //   padding: const EdgeInsets.all(8.0), // Add padding
+              //   child: ClipOval(
+              //     child: Material(
+              //       color: Colors.white70.withOpacity(0.9), // Background color
+              //       elevation: 4.0, // Shadow
+              //       child: InkWell(
+              //         onTap: () {
+              //           Navigator.push(
+              //             context,
+              //             CupertinoPageRoute(
+              //               builder: (context) => HomePage(),
+              //             ),
+              //           );
+              //         },
+              //         child: SizedBox(
+              //           width: 53.0, // Width of the FloatingActionButton
+              //           height: 50.0, // Height of the FloatingActionButton
+              //           child: Center(
+              //             child: Padding(
+              //               padding: const EdgeInsets.all(
+              //                   8.0), // Add padding for the icon
+              //               child: Image.asset(
+              //                 "assets/home_icon.jpg",
+              //                 width: 20,
+              //                 // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
+              //                 // color: Colors.grey, // Uncomment if you want to apply a color to the image
+              //               ),
+              //             ),
+              //           ),
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
 
               // appBar: PreferredSize(
               //   preferredSize: const Size.fromHeight(10),
@@ -1226,7 +1232,12 @@ class RewardSpecsSync extends State<RewardSpecs> {
               //     // Add any other app bar properties as needed
               //   ),
               // ),
-              body: Column(
+              body: isLoading
+                  ? const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.black,
+                ),
+              ): Column(
                 children: [
                   Stack(
                     children: [
@@ -1354,13 +1365,11 @@ class RewardSpecsSync extends State<RewardSpecs> {
                                 ),
                               ),
                             ),
-                            const SizedBox(
-                              height: 8,
-                            ),
+
                             Align(
                                 alignment: Alignment.center,
                                 child: Container(
-                                  height: 60,
+                                  height: MediaQuery.of(context).size.width / 2,
                                   decoration: BoxDecoration(
                                     image: image_url != null
                                         ? DecorationImage(
@@ -1372,7 +1381,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
                                   ),
                                 )),
                             Padding(
-                              padding: EdgeInsets.fromLTRB(18.0, 10, 18, 10),
+                              padding: EdgeInsets.fromLTRB(18.0, 5, 18, 10),
                               child: Align(
                                 alignment: Alignment.center,
                                 child: Text(
@@ -1400,6 +1409,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
                           ),
                         ),
                       ),*/
+                            // SizedBox(height: 10,),
                             Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1475,7 +1485,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
                                       ],
                                     ),
                                   ),
-                                  const SizedBox(height: 18),
+                                  // SizedBox(height: 10),
 
                                   GestureDetector(
                                     onTap: () {
@@ -1554,8 +1564,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
                                     ),
                                   ),
 
-                                  const SizedBox(height: 40),
-
+                                  const SizedBox(height: 20),
                                   Align(
                                     alignment: Alignment.bottomCenter,
                                     child: SizedBox(
@@ -1595,31 +1604,39 @@ class RewardSpecsSync extends State<RewardSpecs> {
                       ),
                     ),
                   ),
+                  SizedBox(height: 80,),
                 ],
               ),
-              bottomNavigationBar: CustomBottomAppBar(currentScreen: "Rewards"),
+              // bottomNavigationBar: CustomBottomAppBar(currentScreen: "Rewards"),
 // Include the persistent bottom bar here
-            ),
-          );
+            );
+
   }
+
   void requestPermission() async {
     PermissionStatus status = await Permission.camera.status;
     PermissionStatus status2 = await Permission.microphone.status;
 
-    if((status==PermissionStatus.granted&&status2==PermissionStatus.granted) ){
+    if ((status == PermissionStatus.granted &&
+        status2 == PermissionStatus.granted)) {
       setState(() {
-        Navigator.push(
+        pushNewScreenWithRouteSettings(
           context,
-          MaterialPageRoute(
-              builder: (context) => EyeFatigueSelfieScreen()),
+          settings: const RouteSettings(name: 'music_player_page'),
+          screen: EyeFatigueSelfieScreen(),
+          withNavBar: false,
+          pageTransitionAnimation: PageTransitionAnimation.cupertino,
         );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => EyeFatigueSelfieScreen()),
+        // );
       });
-
     }
-    if (!status.isGranted ) {
+    if (!status.isGranted) {
       status = await Permission.camera.request();
     }
-    if (!status2.isGranted ) {
+    if (!status2.isGranted) {
       status = await Permission.microphone.request();
     }
     if (status == PermissionStatus.denied ||
@@ -1627,18 +1644,19 @@ class RewardSpecsSync extends State<RewardSpecs> {
       await [Permission.camera].request();
 
       // Permissions are denied or denied forever, let's request it!
-      status =  await Permission.camera.status;
+      status = await Permission.camera.status;
       if (status == PermissionStatus.denied) {
         await [Permission.camera].request();
         print("camera permissions are still denied");
-      } else if (status ==PermissionStatus.permanentlyDenied) {
+      } else if (status == PermissionStatus.permanentlyDenied) {
         print("camera permissions are permanently denied");
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text("camera permissions required"),
-              content: Text("camera permissions are permanently denied. Please go to app settings to enable camera permissions."),
+              content: Text(
+                  "camera permissions are permanently denied. Please go to app settings to enable camera permissions."),
               actions: <Widget>[
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -1650,13 +1668,11 @@ class RewardSpecsSync extends State<RewardSpecs> {
                     Navigator.pop(context); // Close the dialog
                     await openAppSettings();
                   },
-                  child: Text("OK",
-
-                    style: TextStyle(
-                        color: Colors.white, fontSize: 16),
+                  child: Text(
+                    "OK",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
-
               ],
             );
           },
@@ -1669,18 +1685,20 @@ class RewardSpecsSync extends State<RewardSpecs> {
       await [Permission.microphone].request();
 
       // Permissions are denied or denied forever, let's request it!
-      status2 =  await Permission.microphone.status;
+      status2 = await Permission.microphone.status;
       if (status2 == PermissionStatus.denied) {
         await [Permission.microphone].request();
         print("microphone permissions are still denied");
-      }  if (status2 ==PermissionStatus.permanentlyDenied) {
+      }
+      if (status2 == PermissionStatus.permanentlyDenied) {
         print("microphone permissions are permanently denied");
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text("microphone permissions required"),
-              content: Text("microphone permissions are permanently denied. Please go to app settings to enable microphone permissions."),
+              content: Text(
+                  "microphone permissions are permanently denied. Please go to app settings to enable microphone permissions."),
               actions: <Widget>[
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -1692,21 +1710,17 @@ class RewardSpecsSync extends State<RewardSpecs> {
                     Navigator.pop(context); // Close the dialog
                     await openAppSettings();
                   },
-                  child: Text("OK",
-
-                    style: TextStyle(
-                        color: Colors.white, fontSize: 16),
+                  child: Text(
+                    "OK",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
-
               ],
             );
           },
         );
       }
     }
-
-
   }
 
   void RedeemaddressSheet(BuildContext context) {
@@ -2287,504 +2301,585 @@ class PresUpload extends State<PrescriptionUpload> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(
-                color: Colors.blue,
-              ),
-            )
-          : Scaffold(
-              backgroundColor: Colors.white,
-              floatingActionButtonLocation:
-                  FloatingActionButtonLocation.centerDocked,
-              floatingActionButton: Padding(
-                padding: const EdgeInsets.all(8.0), // Add padding
-                child: ClipOval(
-                  child: Material(
-                    color: Colors.white70.withOpacity(0.9), // Background color
-                    elevation: 4.0, // Shadow
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                            builder: (context) => HomePage(),
-                          ),
-                        );
-                      },
-                      child: SizedBox(
-                        width: 53.0, // Width of the FloatingActionButton
-                        height: 50.0, // Height of the FloatingActionButton
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(
-                                8.0), // Add padding for the icon
-                            child: Image.asset(
-                              "assets/home_icon.jpeg",
-                              width: 20,
-                              // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
-                              // color: Colors.grey, // Uncomment if you want to apply a color to the image
-                            ),
-                          ),
-                        ),
-                      ),
+    return Scaffold(
+        backgroundColor: Colors.white,
+        // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        // floatingActionButton: Padding(
+        //   padding: const EdgeInsets.all(8.0), // Add padding
+        //   child: ClipOval(
+        //     child: Material(
+        //       color: Colors.white70.withOpacity(0.9), // Background color
+        //       elevation: 4.0, // Shadow
+        //       child: InkWell(
+        //         onTap: () {
+        //           Navigator.push(
+        //             context,
+        //             CupertinoPageRoute(
+        //               builder: (context) => HomePage(),
+        //             ),
+        //           );
+        //         },
+        //         child: SizedBox(
+        //           width: 53.0, // Width of the FloatingActionButton
+        //           height: 50.0, // Height of the FloatingActionButton
+        //           child: Center(
+        //             child: Padding(
+        //               padding:
+        //                   const EdgeInsets.all(8.0), // Add padding for the icon
+        //               child: Image.asset(
+        //                 "assets/home_icon.jpg",
+        //                 width: 20,
+        //                 // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
+        //                 // color: Colors.grey, // Uncomment if you want to apply a color to the image
+        //               ),
+        //             ),
+        //           ),
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        // ),
+        // appBar: PreferredSize(
+        //   preferredSize: const Size.fromHeight(10),
+        //   child: AppBar(
+        //     backgroundColor:
+        //     Colors.white, // Set app bar background color to white
+        //     elevation: 0, // Remove app bar shadow
+        //     // Add any other app bar properties as needed
+        //   ),
+        // ),
+        body:isLoading
+            ? const Center(
+          child: CircularProgressIndicator(
+            color: Colors.blue,
+          ),
+        )
+            : Column(
+          children: [
+            Stack(
+              children: [
+                Container(
+                  height: 125,
+                  // width: MediaQuery.of(context).size.width,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(
+                          "assets/rewards_back.png"), // Add your background image path
+                      fit: BoxFit.fill,
                     ),
                   ),
                 ),
-              ),
-              // appBar: PreferredSize(
-              //   preferredSize: const Size.fromHeight(10),
-              //   child: AppBar(
-              //     backgroundColor:
-              //     Colors.white, // Set app bar background color to white
-              //     elevation: 0, // Remove app bar shadow
-              //     // Add any other app bar properties as needed
-              //   ),
-              // ),
-              body:  Column(
-                  children: [
-                    Stack(
-                      children: [
-                        Container(
-                          height: 125,
-                          // width: MediaQuery.of(context).size.width,
-                          decoration: const BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(
-                                  "assets/rewards_back.png"), // Add your background image path
-                              fit: BoxFit.fill,
-                            ),
+                SizedBox(
+                  height: 110,
+                  child: Column(
+                    children: <Widget>[
+                      const SizedBox(height: 5),
+
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.arrow_back,
+                            color: Colors.white,
                           ),
+                          iconSize: 28, // Back button icon
+                          onPressed: () {
+                            Navigator.pop(context);
+                            // Navigator.of(context).pop();
+                          },
                         ),
-                        SizedBox(
-                          height: 110,
-                          child: Column(
-                            children: <Widget>[
-                              const SizedBox(height: 5),
-                
-                              Align(
-                                alignment: Alignment.topLeft,
-                                child: IconButton(
-                                  icon: const Icon(
-                                    Icons.arrow_back,
-                                    color: Colors.white,
-                                  ),
-                                  iconSize: 28, // Back button icon
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    // Navigator.of(context).pop();
+                      ),
+                      const SizedBox(height: 5),
+                      Align(
+                        alignment: Alignment.center,
+                        child: RichText(
+                          text: TextSpan(
+                            children: [
+                              WidgetSpan(
+                                alignment: PlaceholderAlignment.middle,
+                                child: ShaderMask(
+                                  shaderCallback: (Rect bounds) {
+                                    return const RadialGradient(
+                                      radius: 1.0,
+                                      colors: [
+                                        Color(0xFFFFF400),
+                                        Color(0xFFFFE800),
+                                        Color(0xFFFFCA00),
+                                        Color(0xFFFF9A00),
+                                        Color(0xFFFF9800),
+                                      ],
+                                    ).createShader(bounds);
                                   },
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              Align(
-                                alignment: Alignment.center,
-                                child: RichText(
-                                  text: TextSpan(
-                                    children: [
-                                      WidgetSpan(
-                                        alignment: PlaceholderAlignment.middle,
-                                        child: ShaderMask(
-                                          shaderCallback: (Rect bounds) {
-                                            return const RadialGradient(
-                                              radius: 1.0,
-                                              colors: [
-                                                Color(0xFFFFF400),
-                                                Color(0xFFFFE800),
-                                                Color(0xFFFFCA00),
-                                                Color(0xFFFF9A00),
-                                                Color(0xFFFF9800),
-                                              ],
-                                            ).createShader(bounds);
-                                          },
-                                          child: Text(
-                                            ' $EyeHealthPoints ',
-                                            style: const TextStyle(
-                                              fontSize: 28,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors
-                                                  .white, // Specify a color for the text
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      const TextSpan(
-                                        text: 'Every visit to Optometrist ',
-                                        style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                                    ],
+                                  child: Text(
+                                    ' $EyeHealthPoints ',
+                                    style: const TextStyle(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors
+                                          .white, // Specify a color for the text
+                                    ),
                                   ),
                                 ),
                               ),
-                
-                              // Add more Text widgets as needed
+                              const TextSpan(
+                                text: 'Every visit to Optometrist ',
+                                style: TextStyle(
+                                    fontSize: 15, fontWeight: FontWeight.w500),
+                              ),
                             ],
                           ),
                         ),
-                      ],
+                      ),
+
+                      // Add more Text widgets as needed
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Expanded(
+              child: Container(
+                // child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 7,
                     ),
-                    Expanded(
-                      child: Container(
-                        // child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            const SizedBox(
-                              height: 7,
-                            ),
-                            Align(
-                              alignment: Alignment.center,
-                              child: ShaderMask(
-                                shaderCallback: (Rect bounds) {
-                                  return const LinearGradient(
-                                    colors: [
-                                      Colors.bluegradient,
-                                      Colors.greengradient
-                                    ], // Your gradient colors
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                  ).createShader(bounds);
-                                },
-                                child: Text(
-                                  '$totalPoints',
-                                  style: const TextStyle(
-                                      fontSize: 22,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
-                                ),
+                    Align(
+                      alignment: Alignment.center,
+                      child: ShaderMask(
+                        shaderCallback: (Rect bounds) {
+                          return const LinearGradient(
+                            colors: [
+                              Colors.bluegradient,
+                              Colors.greengradient
+                            ], // Your gradient colors
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ).createShader(bounds);
+                        },
+                        child: Text(
+                          '$totalPoints',
+                          style: const TextStyle(
+                              fontSize: 22,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+
+                    const Padding(
+                      padding: EdgeInsets.fromLTRB(18.0, 5, 18, 10),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          'Total Point Earned Till Now',
+                          style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w400),
+                        ),
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.fromLTRB(18.0, 5, 18, 10),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          'Upload',
+                          style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                    ),
+
+                    Container(
+                      height: MediaQuery.of(context).size.width / 2.1,
+                      width: MediaQuery.of(context).size.width / 1.3,
+                      color: Colors.white.withOpacity(0.7),
+                      child: Align(
+                          alignment: Alignment.center,
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: 10,
                               ),
-                            ),
-                
-                            const Padding(
-                              padding: EdgeInsets.fromLTRB(18.0, 5, 18, 10),
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  'Total Point Earned Till Now',
-                                  style: TextStyle(
-                                      fontSize: 13,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                              ),
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.fromLTRB(18.0, 5, 18, 10),
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  'Upload',
-                                  style: TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ),
-                            ),
-                
-                            Container(
-                              height: MediaQuery.of(context).size.width / 2.1,
-                              width: MediaQuery.of(context).size.width / 1.3,
-                              color: Colors.white.withOpacity(0.7),
-                              child: Align(
-                                  alignment: Alignment.center,
-                                  child: Column(
-                                    children: [
-                                      SizedBox(
-                                        height: 10,
+                              GestureDetector(
+                                onTap: isEnabled ? _pickFiles : null,
+
+                                // onTap: _pickFiles,
+                                child: Container(
+                                  height: 60,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: AssetImage(
+                                        isEnabled
+                                            ? 'assets/upload_icon.png'
+                                            : 'assets/upload_success.png', // Change the paths accordingly
                                       ),
-                                      GestureDetector(
-                                        onTap: isEnabled ? _pickFiles : null,
-                
-                                        // onTap: _pickFiles,
-                                        child: Container(
-                                          height: 60,
-                                          decoration: BoxDecoration(
-                                            image: DecorationImage(
-                                              image: AssetImage(
-                                                isEnabled
-                                                    ? 'assets/upload_icon.png'
-                                                    : 'assets/upload_success.png', // Change the paths accordingly
-                                              ),
-                                              // AssetImage(
-                                              //     'assets/upload_icon.png'), // Replace with your image asset path
-                                              fit: BoxFit
-                                                  .contain, // Adjust the fit as needed
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: isEnabled
-                                            ? 10
-                                            : 0, // Adjust height based on condition
-                                      ),
-                                      Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(18.0, 7, 18, 3),
-                                          child: Align(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              isEnabled
-                                                  ? 'Drag & drop files or Browse'
-                                                  : 'Prescription upload',
-                
-                                              // 'Drag & drop files or Browse',
-                                              // 'Win a cool pair of sunglasses of worth rs 1000 free',
-                                              style: TextStyle(
-                                                  fontSize: 13,
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.w500),
-                                            ),
-                                          )),
-                                      SizedBox(
-                                        height: isEnabled
-                                            ? 10
-                                            : 0, // Adjust height based on condition
-                                      ),
-                                      Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(18.0, 0, 18, 4),
-                                          child: Align(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              isEnabled
-                                                  ? 'Supported formates: JPG, JPEG, PNG, WEBP, SVG, BMP'
-                                                  : 'Your prescription has been uploaded and is currently being verified by our team. This process will take approximately 24 hours. ',
-                
-                                              // 'Win a cool pair of sunglasses of worth rs 1000 free',
-                                              style: TextStyle(
-                                                  fontSize: 11,
-                                                  color: Colors.greytext,
-                                                  fontWeight: FontWeight.w400),
-                                            ),
-                                          )),
-                                    ],
-                                  )),
-                            ),
-                // TODO REPLACEMENT ===add progress bar for uploading files
-                
-                            // Padding(
-                            //   padding: EdgeInsets.fromLTRB(18.0,10,18,10),
-                            //   child: Text(
-                            //     'Uploading - 1/1 files',
-                            //     // 'Win a cool pair of sunglasses of worth rs 1000 free',
-                            //     style: TextStyle(
-                            //         fontSize: 13,
-                            //         color: Colors.greytext,
-                            //         fontWeight: FontWeight.w500),
-                            //   ),
-                            // ),
-                
-                            SizedBox(
-                              height: 15,
-                            ),
-                            _files == null || _files.isEmpty
-                                ?
-                            Expanded(
-                              child: SingleChildScrollView(
-                                child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(18.0),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Image.asset(
-                                          'assets/error.png', // Replace with your image path
-                                          width: 200, // Adjust width as needed
-                                          height: 200, // Adjust height as needed
-                                        ),
-                                        SizedBox(height: 20), // Adjust spacing between image and text
-                                        Text(
-                                          'No prescription is uploaded yet... upload new prescription to get points!',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                      ],
+                                      // AssetImage(
+                                      //     'assets/upload_icon.png'), // Replace with your image asset path
+                                      fit: BoxFit
+                                          .contain, // Adjust the fit as needed
                                     ),
                                   ),
                                 ),
                               ),
-                            )
-                                :
-                            Expanded(
-                              child: ListView.builder(
-                                shrinkWrap: true,
-                                physics: const ScrollPhysics(),
-                                itemCount: _files.length,
-                                itemBuilder: (context, index) {
-                                  return ListTile(
-                                    leading:
-                                        const Icon(Icons.picture_as_pdf_outlined),
-                                    title: Text(
-                                      _files[index].name ?? '',
+                              SizedBox(
+                                height: isEnabled
+                                    ? 10
+                                    : 0, // Adjust height based on condition
+                              ),
+                              Padding(
+                                  padding: EdgeInsets.fromLTRB(18.0, 7, 18, 3),
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      isEnabled
+                                          ? 'Drag & drop files or Browse'
+                                          : 'Prescription upload',
+
+                                      // 'Drag & drop files or Browse',
+                                      // 'Win a cool pair of sunglasses of worth rs 1000 free',
                                       style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 11),
+                                          fontSize: 13,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w500),
                                     ),
-                                    subtitle: Padding(
-                                      padding: const EdgeInsets.only(top: 5.0),
-                                      child: Text(
-                                          '${dates[index].toString().substring(0, 10)} , ${dates[index].toString().substring(12, 19)} ago',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w400,
-                                              fontSize: 12)),
+                                  )),
+                              SizedBox(
+                                height: isEnabled
+                                    ? 10
+                                    : 0, // Adjust height based on condition
+                              ),
+                              Padding(
+                                  padding: EdgeInsets.fromLTRB(18.0, 0, 18, 4),
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      isEnabled
+                                          ? 'Supported formates: JPG, JPEG, PNG, WEBP, SVG, BMP'
+                                          : 'Your prescription has been uploaded and is currently being verified by our team. This process will take approximately 24 hours. ',
+
+                                      // 'Win a cool pair of sunglasses of worth rs 1000 free',
+                                      style: TextStyle(
+                                          fontSize: 11,
+                                          color: Colors.greytext,
+                                          fontWeight: FontWeight.w400),
                                     ),
-                                    trailing: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Container(width: 20,height: 10,),
-                                            // if (statuses[index].toLowerCase() ==
-                                            //     "approved")
-                                            //   Container(
-                                            //     decoration: BoxDecoration(
-                                            //       border: Border.all(
-                                            //           color: Colors.black),
-                                            //       borderRadius:
-                                            //           BorderRadius.circular(5.0),
-                                            //     ),
-                                            //     padding: EdgeInsets.all(8.0),
-                                            //     child: Text(
-                                            //       '$points Points',
-                                            //       style: TextStyle(
-                                            //           fontWeight: FontWeight.w400,
-                                            //           fontSize: 12),
-                                            //     ),
-                                            //   ),
-                                            // if (statuses[index].toLowerCase() ==
-                                            //     "pending")
-                                            //   Container(
-                                            //     decoration: BoxDecoration(
-                                            //       border: Border.all(
-                                            //           color: Colors.black),
-                                            //       borderRadius:
-                                            //           BorderRadius.circular(5.0),
-                                            //     ),
-                                            //     padding: EdgeInsets.all(8.0),
-                                            //     child: Text(
-                                            //       '${statuses[index]}',
-                                            //       style: TextStyle(
-                                            //           fontWeight: FontWeight.w400,
-                                            //           fontSize: 12),
-                                            //     ),
-                                            //   ),
-                                            SizedBox(
-                                              width: 20,
-                                            ),
-                                            if (statuses[index].toLowerCase() == "pending")
-                                            GestureDetector(
-                                              onTap: () {
-                                                showDialog(
-                                                  context: context,
-                                                  builder:
-                                                      (BuildContext context) {
-                                                    return Dialog(backgroundColor: Colors.white,
-                                                      child: SizedBox(
-                
-                                                        height: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .height *
-                                                            0.75,
-                                                        // Set height to half of screen height
-                                                        child: Column(
-                                                          // mainAxisSize:
-                                                          //     MainAxisSize.min,
-                                                          children: [
-                                                            Center(
-                                                              child: Container(
-                                                                height: MediaQuery.of(
-                                                                            context)
-                                                                        .size
-                                                                        .height *
-                                                                    0.55, // Set the height of the image container
-                                                                child: ClipRect(
-                                                                  child:
-                                                                      FittedBox(
-                                                                    fit: BoxFit
-                                                                        .contain,
-                                                                    alignment:
-                                                                        Alignment
-                                                                            .center,
-                                                                    child: Padding(
-                                                                      padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 19),
-                                                                      child: Image
-                                                                          .network(
-                                                                        "https://eyehealth.backend.zuktiinnovations.com" +
-                                                                            image[
-                                                                                index],
-                                                                      ),
-                                                                    ),
+                                  )),
+                            ],
+                          )),
+                    ),
+                    // TODO REPLACEMENT ===add progress bar for uploading files
+
+                    // Padding(
+                    //   padding: EdgeInsets.fromLTRB(18.0,10,18,10),
+                    //   child: Text(
+                    //     'Uploading - 1/1 files',
+                    //     // 'Win a cool pair of sunglasses of worth rs 1000 free',
+                    //     style: TextStyle(
+                    //         fontSize: 13,
+                    //         color: Colors.greytext,
+                    //         fontWeight: FontWeight.w500),
+                    //   ),
+                    // ),
+
+                    SizedBox(
+                      height: 15,
+                    ),
+                    _files == null || _files.isEmpty
+                        ? Expanded(
+                            child: SingleChildScrollView(
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.asset(
+                                        'assets/error.png', // Replace with your image path
+                                        width: 200, // Adjust width as needed
+                                        // height: 200, // Adjust height as needed
+                                      ),
+                                      // SizedBox(height: 20), // Adjust spacing between image and text
+                                      Text(
+                                        'No prescription is uploaded yet... upload new prescription to get points!',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 20,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        : Expanded(
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              physics: const ScrollPhysics(),
+                              itemCount: _files.length,
+                              itemBuilder: (context, index) {
+                                return ListTile(
+                                  leading:
+                                      const Icon(Icons.picture_as_pdf_outlined),
+                                  title: Text(
+                                    _files[index].name ?? '',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 11),
+                                  ),
+                                  subtitle: Padding(
+                                    padding: const EdgeInsets.only(top: 5.0),
+                                    child: Text(
+                                        '${dates[index].toString().substring(0, 10)} , ${dates[index].toString().substring(12, 19)} ago',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 12)),
+                                  ),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Container(
+                                            width: 20,
+                                            height: 10,
+                                          ),
+                                          // if (statuses[index].toLowerCase() ==
+                                          //     "approved")
+                                          //   Container(
+                                          //     decoration: BoxDecoration(
+                                          //       border: Border.all(
+                                          //           color: Colors.black),
+                                          //       borderRadius:
+                                          //           BorderRadius.circular(5.0),
+                                          //     ),
+                                          //     padding: EdgeInsets.all(8.0),
+                                          //     child: Text(
+                                          //       '$points Points',
+                                          //       style: TextStyle(
+                                          //           fontWeight: FontWeight.w400,
+                                          //           fontSize: 12),
+                                          //     ),
+                                          //   ),
+                                          // if (statuses[index].toLowerCase() ==
+                                          //     "pending")
+                                          //   Container(
+                                          //     decoration: BoxDecoration(
+                                          //       border: Border.all(
+                                          //           color: Colors.black),
+                                          //       borderRadius:
+                                          //           BorderRadius.circular(5.0),
+                                          //     ),
+                                          //     padding: EdgeInsets.all(8.0),
+                                          //     child: Text(
+                                          //       '${statuses[index]}',
+                                          //       style: TextStyle(
+                                          //           fontWeight: FontWeight.w400,
+                                          //           fontSize: 12),
+                                          //     ),
+                                          //   ),
+                                          SizedBox(
+                                            width: 20,
+                                          ),
+                                          GestureDetector(
+                                            onTap: () {
+                                              showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return Dialog(
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                    child: Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      // Use min to make the dialog size wrap its content
+                                                      // crossAxisAlignment: CrossAxisAlignment.stretch,
+                                                      children: [
+                                                        Center(
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(12.0),
+                                                            child: Container(
+                                                              color:
+                                                                  Colors.white,
+                                                              // constraints: BoxConstraints(
+                                                              //   maxHeight: MediaQuery.of(context).size.height *
+                                                              //       0.55, // Set max height for the image container
+                                                              // ),
+                                                              child: ClipRect(
+                                                                child:
+                                                                    FittedBox(
+                                                                  fit: BoxFit
+                                                                      .fill,
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  child: Image
+                                                                      .network(
+                                                                    "https://eyehealth.backend.zuktiinnovations.com" +
+                                                                        image[
+                                                                            index],
                                                                   ),
                                                                 ),
                                                               ),
                                                             ),
-                                                            TextButton(
-                                                              onPressed: () =>
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop(),
-                                                              child:
-                                                                  Text('Close'),
-                                                            ),
-                                                          ],
+                                                          ),
                                                         ),
-                                                      ),
-                                                    );
-                                                  },
-                                                );
-                                              },
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  border: Border.all(
-                                                      color: Colors.black),
-                                                  borderRadius:
-                                                      BorderRadius.circular(5.0),
-                                                ),
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text(
-                                                  'Preview',
-                                                  style: TextStyle(
-                                                      fontWeight: FontWeight.w400,
-                                                      fontSize: 12),
-                                                ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: TextButton(
+                                                            onPressed: () =>
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop(),
+                                                            child:
+                                                                Text('Close'),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    color: Colors.black),
+                                                borderRadius:
+                                                    BorderRadius.circular(5.0),
+                                              ),
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Text(
+                                                'Preview',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 12),
                                               ),
                                             ),
-                                          ],
-                                        ),
-                
-                                        // Add your text here
-                                        // IconButton(
-                                        //   icon: Icon(Icons.more_vert),
-                                        //   onPressed: () {
-                                        //     // _removeFile(index, _files[index].identifier ?? '');
-                                        //   },
-                                        // ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
+                                          ),
+
+                                          // if (statuses[index].toLowerCase() == "pending")
+                                          // GestureDetector(
+                                          //   onTap: () {
+                                          //     showDialog(
+                                          //       context: context,
+                                          //       builder:
+                                          //           (BuildContext context) {
+                                          //         return Dialog(backgroundColor: Colors.white,
+                                          //           child: SizedBox(
+                                          //
+                                          //             height: MediaQuery.of(
+                                          //                         context)
+                                          //                     .size
+                                          //                     .height *
+                                          //                 0.75,
+                                          //             // Set height to half of screen height
+                                          //             child: Column(
+                                          //               // mainAxisSize:
+                                          //               //     MainAxisSize.min,
+                                          //               children: [
+                                          //                 Center(
+                                          //                   child: Container(
+                                          //                     height: MediaQuery.of(
+                                          //                                 context)
+                                          //                             .size
+                                          //                             .height *
+                                          //                         0.55, // Set the height of the image container
+                                          //                     child: ClipRect(
+                                          //                       child:
+                                          //                           FittedBox(
+                                          //                         fit: BoxFit
+                                          //                             .contain,
+                                          //                         alignment:
+                                          //                             Alignment
+                                          //                                 .center,
+                                          //                         child: Padding(
+                                          //                           padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 19),
+                                          //                           child: Image
+                                          //                               .network(
+                                          //                             "https://eyehealth.backend.zuktiinnovations.com" +
+                                          //                                 image[
+                                          //                                     index],
+                                          //                           ),
+                                          //                         ),
+                                          //                       ),
+                                          //                     ),
+                                          //                   ),
+                                          //                 ),
+                                          //                 TextButton(
+                                          //                   onPressed: () =>
+                                          //                       Navigator.of(
+                                          //                               context)
+                                          //                           .pop(),
+                                          //                   child:
+                                          //                       Text('Close'),
+                                          //                 ),
+                                          //               ],
+                                          //             ),
+                                          //           ),
+                                          //         );
+                                          //       },
+                                          //     );
+                                          //   },
+                                          //   child: Container(
+                                          //     decoration: BoxDecoration(
+                                          //       border: Border.all(
+                                          //           color: Colors.black),
+                                          //       borderRadius:
+                                          //           BorderRadius.circular(5.0),
+                                          //     ),
+                                          //     padding: EdgeInsets.all(8.0),
+                                          //     child: Text(
+                                          //       'Preview',
+                                          //       style: TextStyle(
+                                          //           fontWeight: FontWeight.w400,
+                                          //           fontSize: 12),
+                                          //     ),
+                                          //   ),
+                                          // ),
+                                        ],
+                                      ),
+
+                                      // Add your text here
+                                      // IconButton(
+                                      //   icon: Icon(Icons.more_vert),
+                                      //   onPressed: () {
+                                      //     // _removeFile(index, _files[index].identifier ?? '');
+                                      //   },
+                                      // ),
+                                    ],
+                                  ),
+                                );
+                              },
                             ),
-                          ],
-                        ),
-                
-                        // ),
-                      ),
-                    ),
+                          ),
                   ],
                 ),
 
-              bottomNavigationBar: CustomBottomAppBar(currentScreen: "Rewards"),
+                // ),
+              ),
             ),
-    );
+            SizedBox(height: 80,),
+          ],
+        ),
+
+        // bottomNavigationBar: CustomBottomAppBar(currentScreen: "Rewards"),
+      );
   }
 
   void _pickFiles() async {
@@ -2825,8 +2920,10 @@ class PresUpload extends State<PrescriptionUpload> {
         builder: (context) => SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.only(
-                 bottom: MediaQuery.of(context).viewInsets.bottom,left: 16,right: 16,top: 16
-                ),
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                left: 16,
+                right: 16,
+                top: 16),
             child: Wrap(
               children: [
                 Row(
@@ -2834,7 +2931,8 @@ class PresUpload extends State<PrescriptionUpload> {
                   children: [
                     const Text(
                       'Prescription Upload Feedback',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     IconButton(
                       icon: const Icon(Icons.close),
@@ -2856,8 +2954,8 @@ class PresUpload extends State<PrescriptionUpload> {
                 ),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 1.0),
-                  child:
-                      Text("1.Kindly enter the name of the Doctor you visited. "),
+                  child: Text(
+                      "1.Kindly enter the name of the Doctor you visited. "),
                 ),
                 SizedBox(height: 10),
                 Padding(
@@ -2879,8 +2977,8 @@ class PresUpload extends State<PrescriptionUpload> {
                 SizedBox(
                   height: 55,
                   child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 14.0, vertical: 1),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14.0, vertical: 1),
                     child: TextField(
                       controller: _dateController,
                       readOnly: true,
@@ -2942,13 +3040,13 @@ class PresUpload extends State<PrescriptionUpload> {
                         // You can do something with the comment here
                         print("User comment: $comment");
                         uploadPrescription(pickedFiles.files, comment);
-          
+
                         Navigator.of(context).pop(); // Close the dialog
                       },
                       style: ButtonStyle(
                         elevation: MaterialStateProperty.all<double>(
                             0), // Set elevation to 0 to remove shadow
-          
+
                         backgroundColor: MaterialStateProperty.all<Color>(Colors
                             .background), // Set your desired background color here
                       ),
@@ -2960,6 +3058,7 @@ class PresUpload extends State<PrescriptionUpload> {
                     ),
                   ),
                 ),
+                SizedBox(height: 80,),
               ],
             ),
           ),

@@ -1,4 +1,4 @@
-name: project_new
+name: second_eye
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -101,7 +101,7 @@ dependencies:
   flutter_image_compress: ^2.3.0
   upgrader: ^10.3.0
   carousel_slider: ^4.2.1
-  persistent_bottom_nav_bar: ^5.0.2
+  persistent_bottom_nav_bar_v2: ^4.2.8
   go_router: ^13.2.5
 
 dev_dependencies:

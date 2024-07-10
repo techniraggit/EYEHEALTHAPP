@@ -764,6 +764,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:alarm/alarm.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -942,7 +943,7 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 15,),
+                  const SizedBox(height: 80,),
                 ],
               )
             : Column(
@@ -979,7 +980,7 @@ class _ExampleAlarmHomeScreenState extends State<ExampleAlarmHomeScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 15,),
+                const SizedBox(height: 80,),
               ],
             ),
       ),
@@ -1455,10 +1456,10 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
             height: 20,
           ),
           RawMaterialButton(
-            onPressed: pickTime,
-            fillColor: Colors.white.withOpacity(0.9),
+            onPressed: null,
+            // fillColor: Colors.white70.withOpacity(0.7),
             child: Container(
-              margin: const EdgeInsets.all(30),
+              // margin: const EdgeInsets.all(15),
               child: Text(
                 TimeOfDay.fromDateTime(selectedDateTime).format(context),
                 style: Theme.of(context)
@@ -1469,8 +1470,18 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
             ),
           ),
           SizedBox(
-            height: 30,
+            height: 20,
           ),
+                           GestureDetector(
+                             onTap: pickTime,
+                               child:  Image.asset(
+                                 'assets/setAlarm.png', // Replace this with your image path
+                                 width:MediaQuery.of(context).size.width/4,
+                               ),
+                               // Icon(Icons.keyboard_arrow_right_rounded,
+                               //     size: 24)
+                           ), // Adjusted icon size
+
 
           // Row(
           //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1587,7 +1598,7 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
               ),
             ),
           const SizedBox(
-            height: 20,
+            height: 80,
           ),
         ],
       ),

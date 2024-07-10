@@ -844,7 +844,7 @@ class TestReportState extends State<TestReport> {
 
                     // Bottom Banner
 
-                    SizedBox(height: 60),
+                    SizedBox(height: 80),
                   ],
                 ))));
   }

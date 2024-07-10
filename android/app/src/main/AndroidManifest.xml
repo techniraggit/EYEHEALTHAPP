@@ -37,7 +37,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
-        android:label="project_new"
+        android:label="second_eye"
         android:name="${applicationName}"
    android:requestLegacyExternalStorage="true"
 

@@ -869,7 +869,7 @@ class TestReportState extends State<EyeTestReport> {
 
                     // Bottom Banner
 
-                    SizedBox(height: 60),
+                    SizedBox(height: 80),
                   ],
                 ))));
   }

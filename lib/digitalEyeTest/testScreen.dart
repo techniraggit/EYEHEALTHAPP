@@ -13,10 +13,12 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:project_new/HomePage.dart';
+import 'package:project_new/dashboard.dart';
 import 'package:rename/platform_file_editors/abs_platform_file_editor.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:typed_data';
-import 'package:image/image.dart' as img; // Import image package for decoding image dimensions
+import 'package:image/image.dart'
+    as img; // Import image package for decoding image dimensions
 
 import 'package:image_picker/image_picker.dart';
 import 'dart:convert' as convert;
@@ -35,35 +37,29 @@ class SelectQuestion extends State<GiveInfo> {
   late Future<List<Question>> _questionsFuture;
 
   List<int> selectedIds = [];
-  List<int> allQuestionIds = []; // This should hold all question IDs you are displaying
-
+  List<int> allQuestionIds =
+      []; // This should hold all question IDs you are displaying
 
   String message = "";
   late final http.Client client;
 
-
   void _onCheckboxChanged(bool? value, int questionId) {
     setState(() {
       if (!allQuestionIds.contains(questionId)) {
-
-      allQuestionIds.add(questionId);}
-       print("allQuestionIds-------4$allQuestionIds");
+        allQuestionIds.add(questionId);
+      }
+      print("allQuestionIds-------4$allQuestionIds");
       if (value == true) {
         // Add the ID to the selected IDs list if it's not already present
         if (!selectedIds.contains(questionId)) {
           selectedIds.add(questionId);
         }
-      }
-      else {
+      } else {
         if (selectedIds.contains(questionId)) {
           selectedIds.remove(questionId);
 
-
           // Remove the ID from the selected IDs list if it's present
         }
-
-
-
       }
     });
   }
@@ -85,7 +81,8 @@ class SelectQuestion extends State<GiveInfo> {
   void dispose() {
     _progressDialog?.hide();
     _stopSpeaking();
-    super.dispose();allQuestionIds.clear();
+    super.dispose();
+    allQuestionIds.clear();
   }
 
   final FlutterTts flutterTts = FlutterTts();
@@ -111,24 +108,95 @@ class SelectQuestion extends State<GiveInfo> {
     return WillPopScope(
       onWillPop: () async {
         if (flutterTts != null) {
-          flutterTts.stop();
+          flutterTts.pause();
         }
-        return false;
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              contentPadding:
+                  const EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
+
+              title: const Text(
+                "Are you sure to exit test?",
+                style: TextStyle(fontSize: 18),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text(
+                    "Yes",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+
+                  },
+                ),
+                TextButton(
+                  child: const Text(
+                    "No",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return true;
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("EYE TEST"),
+          title: const Text("EYE TEST"),
           centerTitle: true,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
+            icon: const Icon(Icons.arrow_back, color: Colors.bluebutton),
             onPressed: () {
               if (flutterTts != null) {
                 flutterTts.stop();
               }
-              Navigator.push(
-                context,
-                CupertinoPageRoute(builder: (context) => HomePage()),
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    contentPadding: const EdgeInsets.fromLTRB(
+                        24, 20, 24, 0), // Adjust content padding
+
+                    title: const Text(
+                      "Are you sure to exit test?",
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text(
+                          "Yes",
+                          style: TextStyle(
+                              fontSize: 16), // Adjust button text size
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      TextButton(
+                        child: const Text(
+                          "No",
+                          style: TextStyle(
+                              fontSize: 16), // Adjust button text size
+                        ),
+                        onPressed: () {
+                          // Handle 'No' button tap
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                      ),
+                    ],
+                  );
+                },
               );
+
             },
           ),
         ),
@@ -138,27 +206,27 @@ class SelectQuestion extends State<GiveInfo> {
               future: _questionsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('No questions available'));
+                  return const Center(child: Text('No questions available'));
                 } else {
                   return SingleChildScrollView(
-                    padding: EdgeInsets.only(bottom: 50),
+                    padding: const EdgeInsets.only(bottom: 50),
                     // Add padding to avoid button overlap
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10),
+                          padding: const EdgeInsets.symmetric(vertical: 10),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               GestureDetector(
                                 onTap: _onReplayPressed,
                                 child: Container(
-                                  padding: EdgeInsets.only(bottom: 10),
+                                  padding: const EdgeInsets.only(bottom: 10),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(25),
                                   ),
@@ -166,16 +234,16 @@ class SelectQuestion extends State<GiveInfo> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Padding(
-                                        padding: EdgeInsets.only(top: 4.0),
+                                        padding: const EdgeInsets.only(top: 4.0),
                                         child: Image.asset(
                                           'assets/play_circle_fill.png',
                                           width: 50,
                                           height: 40,
                                         ),
                                       ),
-                                      SizedBox(width: 8),
+                                      const SizedBox(width: 8),
                                       // Adjust spacing between icon and text
-                                      Text(
+                                      const Text(
                                         'Replay Audio',
                                         style: TextStyle(
                                           color: Colors.black,
@@ -186,7 +254,7 @@ class SelectQuestion extends State<GiveInfo> {
                                   ),
                                 ),
                               ),
-                              Text(
+                              const Text(
                                 'Welcome to Eye Health',
                                 style: TextStyle(
                                   fontSize: 24,
@@ -194,20 +262,44 @@ class SelectQuestion extends State<GiveInfo> {
                                   color: Colors.bluebutton,
                                 ),
                               ),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               // Dynamically create QuestionCheckbox widgets based on fetched questions
                               for (var question in snapshot.data!) ...[
                                 QuestionCheckbox(
                                   questionId: question.id,
                                   questionText: question.questionText,
                                   onChanged: (bool? value) {
-                                     setState(() {
-                                    _onCheckboxChanged(value, question.id);});
+                                    setState(() {
+                                      _onCheckboxChanged(value, question.id);
+                                    });
                                   },
                                 ),
                               ],
-
                             ],
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(10, 10, 0, 30),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                requestPermission();
+
+                                // submitApi();
+                              },
+                              child: const Text('Next'),
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor: const Color(0xFF5900D9),
+                                padding: const EdgeInsets.all(6),
+                                minimumSize:
+                                    Size(MediaQuery.of(context).size.width, 50),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(26),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -216,51 +308,25 @@ class SelectQuestion extends State<GiveInfo> {
                 }
               },
             ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(10, 10, 0, 10),
-                child: ElevatedButton(
-                  onPressed: () {
-                    requestPermission();
-
-
-
-
-
-                    // submitApi();
-                  },
-                  child: Text('Next'),
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Color(0xFF5900D9),
-                    padding: EdgeInsets.all(6),
-                    minimumSize: Size(MediaQuery.of(context).size.width, 50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(26),
-                    ),
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
     );
   }
+
   void requestPermission() async {
     PermissionStatus status = await Permission.camera.status;
     PermissionStatus status2 = await Permission.microphone.status;
 
-    if((status==PermissionStatus.granted&&status2==PermissionStatus.granted) ){
+    if ((status == PermissionStatus.granted &&
+        status2 == PermissionStatus.granted)) {
       setState(() {
         print("allQuestionIds-----${allQuestionIds.length}");
         if (allQuestionIds.length == 5) {
           submitApi();
         } else {
           Fluttertoast.showToast(
-            msg:
-            'Please answer all questions',
+            msg: 'Please answer all questions',
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.BOTTOM,
             backgroundColor: Colors.black,
@@ -269,12 +335,11 @@ class SelectQuestion extends State<GiveInfo> {
           // showToast('Please answer all questions');
         }
       });
-
     }
-    if (!status.isGranted ) {
+    if (!status.isGranted) {
       status = await Permission.camera.request();
     }
-    if (!status2.isGranted ) {
+    if (!status2.isGranted) {
       status = await Permission.microphone.request();
     }
     if (status == PermissionStatus.denied ||
@@ -282,18 +347,19 @@ class SelectQuestion extends State<GiveInfo> {
       await [Permission.camera].request();
 
       // Permissions are denied or denied forever, let's request it!
-      status =  await Permission.camera.status;
+      status = await Permission.camera.status;
       if (status == PermissionStatus.denied) {
         await [Permission.camera].request();
         print("camera permissions are still denied");
-      } else if (status ==PermissionStatus.permanentlyDenied) {
+      } else if (status == PermissionStatus.permanentlyDenied) {
         print("camera permissions are permanently denied");
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text("camera permissions required"),
-              content: Text("camera permissions are permanently denied. Please go to app settings to enable camera permissions."),
+              title: const Text("camera permissions required"),
+              content: const Text(
+                  "camera permissions are permanently denied. Please go to app settings to enable camera permissions."),
               actions: <Widget>[
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -305,13 +371,11 @@ class SelectQuestion extends State<GiveInfo> {
                     Navigator.pop(context); // Close the dialog
                     await openAppSettings();
                   },
-                  child: Text("OK",
-
-                    style: TextStyle(
-                        color: Colors.white, fontSize: 16),
+                  child: const Text(
+                    "OK",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
-
               ],
             );
           },
@@ -324,18 +388,20 @@ class SelectQuestion extends State<GiveInfo> {
       await [Permission.microphone].request();
 
       // Permissions are denied or denied forever, let's request it!
-      status2 =  await Permission.microphone.status;
+      status2 = await Permission.microphone.status;
       if (status2 == PermissionStatus.denied) {
         await [Permission.microphone].request();
         print("microphone permissions are still denied");
-      }  if (status2 ==PermissionStatus.permanentlyDenied) {
+      }
+      if (status2 == PermissionStatus.permanentlyDenied) {
         print("microphone permissions are permanently denied");
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text("microphone permissions required"),
-              content: Text("microphone permissions are permanently denied. Please go to app settings to enable microphone permissions."),
+              title: const Text("microphone permissions required"),
+              content: const Text(
+                  "microphone permissions are permanently denied. Please go to app settings to enable microphone permissions."),
               actions: <Widget>[
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -347,21 +413,17 @@ class SelectQuestion extends State<GiveInfo> {
                     Navigator.pop(context); // Close the dialog
                     await openAppSettings();
                   },
-                  child: Text("OK",
-
-                    style: TextStyle(
-                        color: Colors.white, fontSize: 16),
+                  child: const Text(
+                    "OK",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
-
               ],
             );
           },
         );
       }
     }
-
-
   }
 
   Future<List<Question>> getQuestionApi() async {
@@ -381,7 +443,7 @@ class SelectQuestion extends State<GiveInfo> {
         Uri.parse('${Api.baseurl}/api/eye/get-question-details'),
         headers: headers,
       );
-print("response---questions${response.body}");
+      print("response---questions${response.body}");
       if (response.statusCode == 200) {
         final parsed = jsonDecode(response.body);
         final List<dynamic> data = parsed['data'];
@@ -425,8 +487,8 @@ print("response---questions${response.body}");
         body: body,
       );
       print(headers);
-      print("kkkk" + response.body);      print("kkkk00000" + selectedIds.toString());
-
+      print("kkkk" + response.body);
+      print("kkkk00000" + selectedIds.toString());
 
       if (response.statusCode == 200) {
         // _progressDialog!.hide();
@@ -449,7 +511,7 @@ print("response---questions${response.body}");
         Navigator.pushReplacement(
           context,
           CupertinoPageRoute(builder: (context) => CameraS()),
-        );
+        ).then((value) => Navigator.of(context).pop() );
       } else {
         // _progressDialog!.hide();
         Map<String, dynamic> parsedJson = json.decode(response.body);
@@ -496,7 +558,6 @@ class LeftEyeTestState extends State<LeftEyeTest> {
     super.initState();
     _configureTts();
     _onReplayPressed();
-
   }
 
   final FlutterTts flutterTts = FlutterTts();
@@ -519,59 +580,103 @@ class LeftEyeTestState extends State<LeftEyeTest> {
 
   @override
   Widget build(BuildContext context) {
-    return    WillPopScope(
+    return WillPopScope(
       onWillPop: () async {
+        if (flutterTts != null) {
+          flutterTts.pause();
+        }
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              contentPadding:
+                  const EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
 
+              title: const Text(
+                "Are you sure to exit test?",
+                style: TextStyle(fontSize: 18),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text(
+                    "Yes",
+                    style: TextStyle(fontSize: 16), // Adjust button text size
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
 
-        return false;
+                  },
+                ),
+                TextButton(
+                  child: const Text(
+                    "No",
+                    style: TextStyle(fontSize: 16), // Adjust button text size
+                  ),
+                  onPressed: () {
+                    // Handle 'No' button tap
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return true;
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("EYE TEST"),
+          title: const Text("EYE TEST"),
           centerTitle: true,
           leading: GestureDetector(
-          onTap: () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  contentPadding: EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    contentPadding: const EdgeInsets.fromLTRB(
+                        24, 20, 24, 0), // Adjust content padding
 
-                  title: Text("Are you sure to exit test?", style: TextStyle(fontSize: 18), ),
-                  actions: <Widget>[
-                    TextButton(
-                      child: Text("Yes",                          style: TextStyle(fontSize: 16), // Adjust button text size
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pop(); // Close the dialog
-                        Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(builder: (context) => HomePage()),
-                                (Route<dynamic> route) => false);
-                        // Navigate back (in this example)
-                      },
+                    title: const Text(
+                      "Are you sure to exit test?",
+                      style: TextStyle(fontSize: 18),
                     ),
-                    TextButton(
-                      child: Text("No",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text(
+                          "Yes",
+                          style: TextStyle(
+                              fontSize: 16), // Adjust button text size
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
+                        },
                       ),
-                      onPressed: () {
-                        // Handle 'No' button tap
-                        Navigator.of(context).pop(); // Close the dialog
-                      },
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-          child: Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-            size: 30,
+                      TextButton(
+                        child: const Text(
+                          "No",
+                          style: TextStyle(
+                              fontSize: 16), // Adjust button text size
+                        ),
+                        onPressed: () {
+                          // Handle 'No' button tap
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            child: const Icon(
+              Icons.arrow_back,
+              color: Colors.black,
+              size: 30,
+            ),
           ),
-        ),
 
-
-        // leading: IconButton(
+          // leading: IconButton(
           //   icon: Icon(Icons.arrow_back, color: Colors.bluebutton),
           //   onPressed: () {
           //     // Add your back button functionality here
@@ -589,7 +694,7 @@ class LeftEyeTestState extends State<LeftEyeTest> {
                         GestureDetector(
                           onTap: _onReplayPressed,
                           child: Container(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 vertical: 10, horizontal: 10),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(25),
@@ -598,16 +703,16 @@ class LeftEyeTestState extends State<LeftEyeTest> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Padding(
-                                  padding: EdgeInsets.only(top: 4.0),
+                                  padding: const EdgeInsets.only(top: 4.0),
                                   child: Image.asset(
                                     'assets/play_circle_fill.png',
                                     width: 50,
                                     height: 40,
                                   ),
                                 ),
-                                SizedBox(width: 8),
+                                const SizedBox(width: 8),
                                 // Adjust spacing between icon and text
-                                Text(
+                                const Text(
                                   'Replay Audio',
                                   style: TextStyle(
                                     color: Colors.black,
@@ -618,7 +723,7 @@ class LeftEyeTestState extends State<LeftEyeTest> {
                             ),
                           ),
                         ),
-                        Center(
+                        const Center(
                           child: Padding(
                             padding: EdgeInsets.fromLTRB(10, 10, 10.0, 0),
                             child: Text(
@@ -632,7 +737,7 @@ class LeftEyeTestState extends State<LeftEyeTest> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(top: 4.0),
+                          padding: const EdgeInsets.only(top: 4.0),
                           child: Image.asset(
                             'assets/left_eye_image.png',
                             width: 300,
@@ -640,7 +745,7 @@ class LeftEyeTestState extends State<LeftEyeTest> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -659,21 +764,22 @@ class LeftEyeTestState extends State<LeftEyeTest> {
                 ),
                 Container(
                   width: double.infinity,
-                  padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
                   child: ElevatedButton(
                     onPressed: () {
                       select_eye_for_test('left');
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
-                      backgroundColor: Color(0xFF4600A9),
+                      backgroundColor: const Color(0xFF4600A9),
                       // Set button background color
-                      padding: EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                    child: Text('Next'),
+                    child: const Text('Next'),
                   ),
                 ),
               ],
@@ -723,7 +829,7 @@ class LeftEyeTestState extends State<LeftEyeTest> {
         Navigator.push(
           context,
           CupertinoPageRoute(builder: (context) => AlphabetTest()),
-        );
+        ).then((value) => Navigator.of(context).pop() );
       } else {
         print(response.stream);
       }
@@ -742,11 +848,11 @@ Widget bulletText(String text) {
   return Row(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text("• ", style: TextStyle(fontSize: 18)),
+      const Text("• ", style: TextStyle(fontSize: 18)),
       Expanded(
         child: Text(
           text,
-          style: TextStyle(fontSize: 16, color: Colors.bluebutton),
+          style: const TextStyle(fontSize: 16, color: Colors.bluebutton),
         ),
       ),
     ],
@@ -773,7 +879,6 @@ class AlphabetTestState extends State<AlphabetTest> {
     getSnellFraction();
     _configureTts();
     _onReplayPressed();
-
   }
 
   final FlutterTts flutterTts = FlutterTts();
@@ -793,6 +898,7 @@ class AlphabetTestState extends State<AlphabetTest> {
         "Please read the letters on the screen. If you are able to read clearly click green button. Keep clicking on green button until you are unable to see or letters are blurred. If letters are blurred click on black button. If you are unable to read the letters click on red button.";
     _speak(replayText);
   }
+
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
@@ -804,7 +910,6 @@ class AlphabetTestState extends State<AlphabetTest> {
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
 
     await _controller?.initialize().then((_) {
-
       // _controller?.setZoomLevel(1.614);
 
       // Start streaming the camera
@@ -820,25 +925,26 @@ class AlphabetTestState extends State<AlphabetTest> {
     // Start capturing images per second
     _captureImagePerSecond();
   }
+
   void _captureImagePerSecond() async {
-     print("CAPTURE--ALFABATICTEST");
-     while (true) {
+    print("CAPTURE--ALFABATICTEST");
+    while (true) {
       XFile? image = await _controller
           ?.takePicture(); // Process the captured image as needed
       print('Image captured: ${image?.path}');
       // Delay to capture image per second
       capturePhoto(image!);
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       // regpatient1(image);
     }
   }
+
   void capturePhoto(XFile photo) async {
     img.Image originalImage = img.decodeImage(await photo.readAsBytes())!;
     int originalWidth = originalImage.width!;
     int originalHeight = originalImage.height!;
 
     print('Original width: $originalWidth, height: $originalHeight');
-
 
     int targetWidth = 672;
     int targetHeight = 896;
@@ -852,21 +958,21 @@ class AlphabetTestState extends State<AlphabetTest> {
     img.Image resizedImage = img.decodeImage(resizedBytes)!;
 
     // Crop or scale the resized image to exact dimensions
-    img.Image finalImage = img.copyResize(resizedImage,
+    img.Image finalImage = img.copyResize(
+      resizedImage,
       width: targetWidth,
       height: targetHeight,
     );
 
     // Convert final image to bytes
-    List<int> finalBytes = img.encodePng(finalImage); // or encodeJpg for JPEG format
+    List<int> finalBytes =
+        img.encodePng(finalImage); // or encodeJpg for JPEG format
 
     // Convert resized photo to base64
     print('Resized width: ${finalImage.width}, height: ${finalImage.height}');
 
     String photoBase64 = convert.base64Encode(finalBytes);
-    sendDistanceRequest(photoBase64 );//photoAsBase64
-
-
+    sendDistanceRequest(photoBase64); //photoAsBase64
 
     // Uint8List photoBytes = await photo.readAsBytes();
     // Uint8List resizedBytes = await FlutterImageCompress.compressWithList(
@@ -879,11 +985,10 @@ class AlphabetTestState extends State<AlphabetTest> {
     // // Convert resized photo to base64
     // String photoBase64 = convert.base64Encode(resizedBytes);
 
-
     // List<int> photoAsBytes = await photo.readAsBytes();
     // String photoAsBase64 = convert.base64Encode(photoAsBytes);
-
   }
+
   Future<void> sendDistanceRequest(String image) async {
     print("CAPTURE--ALFABATICTEST========DISTANCE");
 
@@ -896,9 +1001,7 @@ class AlphabetTestState extends State<AlphabetTest> {
     print("testTypecam:--" + text);
     if (text == 'myopia') {
       distanceType = 'fardistance';
-    }
-    else if (text == 'hyperopia')
-    {
+    } else if (text == 'hyperopia') {
       distanceType = 'neardistance';
     } //print('image$image');
 
@@ -931,7 +1034,6 @@ class AlphabetTestState extends State<AlphabetTest> {
         String alertMessage = data['alert'];
         alert = alertMessage;
       });
-
     } catch (e) {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
@@ -945,6 +1047,7 @@ class AlphabetTestState extends State<AlphabetTest> {
       throw Exception('Failed to send data');
     }
   }
+
   Future<void> getSnellFraction() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -1008,16 +1111,54 @@ class AlphabetTestState extends State<AlphabetTest> {
 
   @override
   Widget build(BuildContext context) {
-    return    WillPopScope(
+    return WillPopScope(
       onWillPop: () async {
+        if (flutterTts != null) {
+          flutterTts.pause();
+        }
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              contentPadding:
+                  const EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
 
+              title: const Text(
+                "Are you sure to exit test?",
+                style: TextStyle(fontSize: 18),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text(
+                    "Yes",
+                    style: TextStyle(fontSize: 16), // Adjust button text size
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
 
-        return false;
+                  },
+                ),
+                TextButton(
+                  child: const Text(
+                    "No",
+                    style: TextStyle(fontSize: 16), // Adjust button text size
+                  ),
+                  onPressed: () {
+                    // Handle 'No' button tap
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return true;
       },
       child: MaterialApp(
         home: Scaffold(
           appBar: AppBar(
-            title: Text("EYE TEST"),
+            title: const Text("EYE TEST"),
             centerTitle: true,
             leading: GestureDetector(
               onTap: () {
@@ -1025,23 +1166,30 @@ class AlphabetTestState extends State<AlphabetTest> {
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      contentPadding: EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
+                      contentPadding: const EdgeInsets.fromLTRB(
+                          24, 20, 24, 0), // Adjust content padding
 
-                      title: Text("Are you sure to exit test?", style: TextStyle(fontSize: 18), ),
+                      title: const Text(
+                        "Are you sure to exit test?",
+                        style: TextStyle(fontSize: 18),
+                      ),
                       actions: <Widget>[
                         TextButton(
-                          child: Text("Yes",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                          child: const Text(
+                            "Yes",
+                            style: TextStyle(
+                                fontSize: 16), // Adjust button text size
                           ),
                           onPressed: () {
-                            Navigator.of(context).pop(); // Close the dialog
-                            Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(builder: (context) => HomePage()),
-                                    (Route<dynamic> route) => false);
-                            // Navigate back (in this example)
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
                           },
                         ),
                         TextButton(
-                          child: Text("No",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                          child: const Text(
+                            "No",
+                            style: TextStyle(
+                                fontSize: 16), // Adjust button text size
                           ),
                           onPressed: () {
                             // Handle 'No' button tap
@@ -1053,18 +1201,17 @@ class AlphabetTestState extends State<AlphabetTest> {
                   },
                 );
               },
-              child: Icon(
+              child: const Icon(
                 Icons.arrow_back,
                 color: Colors.black,
                 size: 30,
               ),
             ),
-
           ),
           body: Stack(
             children: [
               Container(
-                decoration: BoxDecoration(),
+                decoration: const BoxDecoration(),
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1072,7 +1219,7 @@ class AlphabetTestState extends State<AlphabetTest> {
                   GestureDetector(
                     onTap: _onReplayPressed,
                     child: Container(
-                      padding: EdgeInsets.only(bottom: 10),
+                      padding: const EdgeInsets.only(bottom: 10),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(25),
                       ),
@@ -1080,16 +1227,16 @@ class AlphabetTestState extends State<AlphabetTest> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Padding(
-                            padding: EdgeInsets.only(top: 4.0),
+                            padding: const EdgeInsets.only(top: 4.0),
                             child: Image.asset(
                               'assets/play_circle_fill.png',
                               width: 50,
                               height: 40,
                             ),
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           // Adjust spacing between icon and text
-                          Text(
+                          const Text(
                             'Replay Audio',
                             style: TextStyle(
                               color: Colors.black,
@@ -1100,7 +1247,7 @@ class AlphabetTestState extends State<AlphabetTest> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Container(
@@ -1127,7 +1274,7 @@ class AlphabetTestState extends State<AlphabetTest> {
                             ),
                             Visibility(
                               visible: isLoadingRandomText,
-                              child: CircularProgressIndicator(
+                              child: const CircularProgressIndicator(
                                 valueColor:
                                     AlwaysStoppedAnimation<Color>(Colors.grey),
                               ),
@@ -1142,7 +1289,7 @@ class AlphabetTestState extends State<AlphabetTest> {
                       Container(
                         width: 320,
                         height: 40,
-                        padding: EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(8),
                         child: Text(
                           alert,
                           textAlign: TextAlign.center,
@@ -1165,7 +1312,7 @@ class AlphabetTestState extends State<AlphabetTest> {
                                 increaseTextSize();
                                 getRandomTest();
                               },
-                              child: Text(
+                              child: const Text(
                                 'Back',
                                 style: TextStyle(
                                   color: Colors.white,
@@ -1173,7 +1320,7 @@ class AlphabetTestState extends State<AlphabetTest> {
                                 ),
                               ),
                               style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.symmetric(
+                                padding: const EdgeInsets.symmetric(
                                     horizontal: 5, vertical: 3),
                                 backgroundColor: Colors.teal,
                                 shape: RoundedRectangleBorder(
@@ -1182,7 +1329,7 @@ class AlphabetTestState extends State<AlphabetTest> {
                               ),
                             ),
                           ),
-                          SizedBox(width: 30),
+                          const SizedBox(width: 30),
                           SizedBox(
                             height: 50,
                             width: 150,
@@ -1191,7 +1338,7 @@ class AlphabetTestState extends State<AlphabetTest> {
                                 decreaseTextSize();
                                 getRandomTest();
                               },
-                              child: Text(
+                              child: const Text(
                                 'Perfectly Visible',
                                 style: TextStyle(
                                   color: Colors.white,
@@ -1199,7 +1346,7 @@ class AlphabetTestState extends State<AlphabetTest> {
                                 ),
                               ),
                               style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.symmetric(
+                                padding: const EdgeInsets.symmetric(
                                     horizontal: 5, vertical: 3),
                                 backgroundColor: Colors.bluebutton,
                                 shape: RoundedRectangleBorder(
@@ -1210,7 +1357,7 @@ class AlphabetTestState extends State<AlphabetTest> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: SizedBox(
@@ -1222,13 +1369,13 @@ class AlphabetTestState extends State<AlphabetTest> {
                             },
                             child: Text(
                               btnname ? 'Able to Read' : 'Not able to Read',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(
+                              padding: const EdgeInsets.symmetric(
                                   horizontal: 5, vertical: 3),
                               backgroundColor: Colors.red,
                               shape: RoundedRectangleBorder(
@@ -1337,7 +1484,6 @@ class AlphabetTestState extends State<AlphabetTest> {
     return 20.0 * value;
   }
 
-
   Future<String?> getRandomTest() async {
     setState(() {
       isLoadingRandomText = true;
@@ -1430,7 +1576,7 @@ class AlphabetTestState extends State<AlphabetTest> {
         Navigator.push(
           context,
           CupertinoPageRoute(builder: (context) => AstigmationTest()),
-        );
+        ).then((value) => Navigator.of(context).pop());
         print(await response.stream.bytesToString());
       }
     } catch (e) {
@@ -1491,10 +1637,9 @@ class Reading extends State<ReadingTest> {
           _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
     );
 
-    _controller = CameraController(frontCamera, ResolutionPreset.medium);//high
+    _controller = CameraController(frontCamera, ResolutionPreset.medium); //high
 
     await _controller?.initialize().then((_) {
-
       // _controller?.setZoomLevel(1.614);
 
       // Start streaming the camera
@@ -1519,7 +1664,7 @@ class Reading extends State<ReadingTest> {
       print('Image captured: ${image?.path}');
       // Delay to capture image per second
       capturePhoto(image!);
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       // regpatient1(image);
     }
   }
@@ -1530,7 +1675,6 @@ class Reading extends State<ReadingTest> {
     int originalHeight = originalImage.height!;
 
     print('Original width: $originalWidth, height: $originalHeight');
-
 
     int targetWidth = 672;
     int targetHeight = 896;
@@ -1544,21 +1688,21 @@ class Reading extends State<ReadingTest> {
     img.Image resizedImage = img.decodeImage(resizedBytes)!;
 
     // Crop or scale the resized image to exact dimensions
-    img.Image finalImage = img.copyResize(resizedImage,
+    img.Image finalImage = img.copyResize(
+      resizedImage,
       width: targetWidth,
       height: targetHeight,
     );
 
     // Convert final image to bytes
-    List<int> finalBytes = img.encodePng(finalImage); // or encodeJpg for JPEG format
+    List<int> finalBytes =
+        img.encodePng(finalImage); // or encodeJpg for JPEG format
 
     // Convert resized photo to base64
     print('Resized width: ${finalImage.width}, height: ${finalImage.height}');
 
     String photoBase64 = convert.base64Encode(finalBytes);
-    sendDistanceRequest(photoBase64 );//photoAsBase64
-
-
+    sendDistanceRequest(photoBase64); //photoAsBase64
 
     // Uint8List photoBytes = await photo.readAsBytes();
     // Uint8List resizedBytes = await FlutterImageCompress.compressWithList(
@@ -1571,10 +1715,8 @@ class Reading extends State<ReadingTest> {
     // // Convert resized photo to base64
     // String photoBase64 = convert.base64Encode(resizedBytes);
 
-
     // List<int> photoAsBytes = await photo.readAsBytes();
     // String photoAsBase64 = convert.base64Encode(photoAsBytes);
-
   }
 
   Future<void> sendDistanceRequest(String image) async {
@@ -1654,15 +1796,13 @@ class Reading extends State<ReadingTest> {
   int currentIndex = 0;
   List<Map<String, dynamic>> snellenFractions = [];
 
-
   Future<void> getReadingSnellFractionNew() async {
-
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken = prefs.getString('access_token') ?? '';
       String testname = prefs.getString('test') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
-      currentTextSize=currentTextSize*3.4;
+      currentTextSize = currentTextSize * 3.4;
       if (testname == 'myopia') {
         currentTextSize = 105;
         randomText = 'W';
@@ -1687,7 +1827,7 @@ class Reading extends State<ReadingTest> {
         randomText = parsedData['data']['text'];
         nextFraction = parsedData['data']['initial_snellen_fraction'];
         print("readingdata${randomText}");
-        currentTextSize =currentTextSize * 3.4;
+        currentTextSize = currentTextSize * 3.4;
         setState(() {
           currentTextSize;
           randomText;
@@ -1727,22 +1867,20 @@ class Reading extends State<ReadingTest> {
 
   @override
   Widget build(BuildContext context) {
-    return    WillPopScope(
+    return WillPopScope(
       onWillPop: () async {
-
-
         return false;
       },
       child: MaterialApp(
         home: Scaffold(
           appBar: AppBar(
-            title: Text("EYE TEST"),
+            title: const Text("EYE TEST"),
             centerTitle: true,
           ),
           body: Stack(
             children: [
               Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     /*   image: DecorationImage(
                     image: AssetImage('assets/test.png'),
                     fit: BoxFit.cover,
@@ -1752,7 +1890,7 @@ class Reading extends State<ReadingTest> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(height: 70),
+                  const SizedBox(height: 70),
                   Container(
                     width: 150,
                     height: 150,
@@ -1770,7 +1908,7 @@ class Reading extends State<ReadingTest> {
                           ),
                           Visibility(
                             visible: isLoadingRandomText,
-                            child: CircularProgressIndicator(
+                            child: const CircularProgressIndicator(
                               valueColor:
                                   AlwaysStoppedAnimation<Color>(Colors.grey),
                             ),
@@ -1784,7 +1922,7 @@ class Reading extends State<ReadingTest> {
                       Container(
                         width: 320,
                         height: 70,
-                        padding: EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(8),
                         child: Text(
                           alert,
                           textAlign: TextAlign.center,
@@ -1809,7 +1947,7 @@ class Reading extends State<ReadingTest> {
                                 // increaseReadingTextSize();
                                 counter++;
                               },
-                              child: Text(
+                              child: const Text(
                                 'Back',
                                 style: TextStyle(
                                   color: Colors.white,
@@ -1817,7 +1955,7 @@ class Reading extends State<ReadingTest> {
                                 ),
                               ),
                               style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.symmetric(
+                                padding: const EdgeInsets.symmetric(
                                     horizontal: 5, vertical: 3),
                                 backgroundColor: Colors.teal,
                                 shape: RoundedRectangleBorder(
@@ -1826,7 +1964,7 @@ class Reading extends State<ReadingTest> {
                               ),
                             ),
                           ),
-                          SizedBox(width: 30),
+                          const SizedBox(width: 30),
                           SizedBox(
                             height: 50,
                             width: 150,
@@ -1836,7 +1974,7 @@ class Reading extends State<ReadingTest> {
                                 counter++;
                                 // decreaseReadingTextSize();
                               },
-                              child: Text(
+                              child: const Text(
                                 'Perfectly Visible',
                                 style: TextStyle(
                                   color: Colors.white,
@@ -1844,7 +1982,7 @@ class Reading extends State<ReadingTest> {
                                 ),
                               ),
                               style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.symmetric(
+                                padding: const EdgeInsets.symmetric(
                                     horizontal: 5, vertical: 3),
                                 backgroundColor: Colors.bluebutton,
                                 shape: RoundedRectangleBorder(
@@ -1855,7 +1993,7 @@ class Reading extends State<ReadingTest> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: SizedBox(
@@ -1868,7 +2006,7 @@ class Reading extends State<ReadingTest> {
 
                               //Update_HyperMyopiaTest(context);
                             },
-                            child: Text(
+                            child: const Text(
                               'Not able to Read',
                               style: TextStyle(
                                 color: Colors.white,
@@ -1876,7 +2014,7 @@ class Reading extends State<ReadingTest> {
                               ),
                             ),
                             style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(
+                              padding: const EdgeInsets.symmetric(
                                   horizontal: 5, vertical: 3),
                               backgroundColor: Colors.red,
                               shape: RoundedRectangleBorder(
@@ -1918,7 +2056,6 @@ class Reading extends State<ReadingTest> {
   String? nextFraction;
   double currentTextSize = 24.0; // Initial text size
 
-
   Map<String, dynamic>? paymentIntent;
   String selectedPlan = 'a', expiry_date = 'b';
   String test_left = '0';
@@ -1956,21 +2093,19 @@ class Reading extends State<ReadingTest> {
         final responseData = jsonDecode(responseBody);
 
         if (responseData['message'] == 'data save successfully') {
+
           Navigator.push(
-              context, CupertinoPageRoute(builder: (context) => TestReport()));
+              context, CupertinoPageRoute(builder: (context) => const TestReport())).then((value) => Navigator.of(context).pop());
         } else {}
         if (responseData.containsKey('data')) {
           // Handle the first type of response
           final data = responseData['data'];
           currentTextSize = data['text_size'];
           randomText = data['text'];
-          currentTextSize=currentTextSize*3.4;
-
-        } else {
-
-        }
+          currentTextSize = currentTextSize * 3.4;
+        } else {}
         setState(() {
-       // Assign fetched data to your variables
+          // Assign fetched data to your variables
           currentTextSize;
           randomText;
         }); //remove for reading test update
@@ -2038,13 +2173,13 @@ class Reading extends State<ReadingTest> {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('page', "readingtestpage");
         Navigator.push(context,
-            CupertinoPageRoute(builder: (context) => const TestReport()));
+            CupertinoPageRoute(builder: (context) => const TestReport())).then((value) => Navigator.of(context).pop());
         // getActivePlan();
       } else {
         Navigator.push(
           context,
           CupertinoPageRoute(builder: (context) => RightEye()),
-        );
+        ).then((value) => Navigator.of(context).pop());
       }
       print(await response.stream.bytesToString());
     }
@@ -2161,7 +2296,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
 
   void startTimer() {
     _timer?.cancel(); // Cancel the previous timer if it exists
-    _timer = Timer.periodic(Duration(seconds: 6), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 6), (timer) {
       setState(() {
         //&& !increasing
         print("imagesize$imageSize");
@@ -2194,7 +2329,6 @@ class AstigmationTest1 extends State<AstigmationTest> {
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
 
     await _controller?.initialize().then((_) {
-
       // _controller?.setZoomLevel(1.614);
 
       // Start streaming the camera
@@ -2219,7 +2353,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
       print('Image captured: ${image?.path}');
       // Delay to capture image per second
       capturePhoto(image!);
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       // regpatient1(image);
     }
   }
@@ -2230,7 +2364,6 @@ class AstigmationTest1 extends State<AstigmationTest> {
     int originalHeight = originalImage.height!;
 
     print('Original width: $originalWidth, height: $originalHeight');
-
 
     int targetWidth = 672;
     int targetHeight = 896;
@@ -2244,21 +2377,21 @@ class AstigmationTest1 extends State<AstigmationTest> {
     img.Image resizedImage = img.decodeImage(resizedBytes)!;
 
     // Crop or scale the resized image to exact dimensions
-    img.Image finalImage = img.copyResize(resizedImage,
+    img.Image finalImage = img.copyResize(
+      resizedImage,
       width: targetWidth,
       height: targetHeight,
     );
 
     // Convert final image to bytes
-    List<int> finalBytes = img.encodePng(finalImage); // or encodeJpg for JPEG format
+    List<int> finalBytes =
+        img.encodePng(finalImage); // or encodeJpg for JPEG format
 
     // Convert resized photo to base64
     print('Resized width: ${finalImage.width}, height: ${finalImage.height}');
 
     String photoBase64 = convert.base64Encode(finalBytes);
-    sendDistanceRequest(photoBase64 );//photoAsBase64
-
-
+    sendDistanceRequest(photoBase64); //photoAsBase64
 
     // Uint8List photoBytes = await photo.readAsBytes();
     // Uint8List resizedBytes = await FlutterImageCompress.compressWithList(
@@ -2271,10 +2404,8 @@ class AstigmationTest1 extends State<AstigmationTest> {
     // // Convert resized photo to base64
     // String photoBase64 = convert.base64Encode(resizedBytes);
 
-
     // List<int> photoAsBytes = await photo.readAsBytes();
     // String photoAsBase64 = convert.base64Encode(photoAsBytes);
-
   }
 
   Future<void> sendDistanceRequest(String image) async {
@@ -2323,9 +2454,6 @@ class AstigmationTest1 extends State<AstigmationTest> {
         String alertMessage = data['alert'];
         alert = alertMessage;
       });
-
-
-
     } catch (e) {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
@@ -2368,45 +2496,44 @@ class AstigmationTest1 extends State<AstigmationTest> {
 
   Future<void> ChoseAstigmation() async {
     // try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String authToken =
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-          prefs.getString('access_token') ?? '';
-      String test_id = prefs.getString('test_id') ?? '';
-      await prefs.setString('region', region);
-      print("choseastigmation_response${region}");
-      String CustomerId = prefs.getString('customer_id') ?? '';
-      print("choseastigmation_res${authToken}");
-      String apiUrl = '${Api.baseurl}/api/eye/choose-astigmatism';
-      Map<String, dynamic> body1 = {
-        'test_id': test_id,
-        'choose_astigmatism': region,
-      };
-      final response = await http.put(
-        Uri.parse(apiUrl),
-        headers: {
-          'Authorization': 'Bearer ${authToken}',
-          'Content-Type': 'application/json',
-          'Customer-Id': CustomerId
-        },
-        body: jsonEncode(body1),
-      );
-      if (kDebugMode) {
-        print("choseastigmation_response${response.body}");
-      }
-      if (response.statusCode == 200) {
-        // final jsonData = json.decode(response.body);
-        Navigator.push(
-          context,
-          CupertinoPageRoute(builder: (context) => AstigmationTest2()),
-        );
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken =
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
+    String test_id = prefs.getString('test_id') ?? '';
+    await prefs.setString('region', region);
+    print("choseastigmation_response${region}");
+    String CustomerId = prefs.getString('customer_id') ?? '';
+    print("choseastigmation_res${authToken}");
+    String apiUrl = '${Api.baseurl}/api/eye/choose-astigmatism';
+    Map<String, dynamic> body1 = {
+      'test_id': test_id,
+      'choose_astigmatism': region,
+    };
+    final response = await http.put(
+      Uri.parse(apiUrl),
+      headers: {
+        'Authorization': 'Bearer ${authToken}',
+        'Content-Type': 'application/json',
+        'Customer-Id': CustomerId
+      },
+      body: jsonEncode(body1),
+    );
+    if (kDebugMode) {
+      print("choseastigmation_response${response.body}");
+    }
+    if (response.statusCode == 200) {
+      // final jsonData = json.decode(response.body);
+      Navigator.push(
+        context,
+        CupertinoPageRoute(builder: (context) => AstigmationTest2()),
+      ).then((value) => Navigator.of(context).pop() );
 
-
-        setState(() {});
-      }
-      if (response.statusCode == 400) {
-        // showCustomToast(context, "Get In Range");
-      }
+      setState(() {});
+    }
+    if (response.statusCode == 400) {
+      // showCustomToast(context, "Get In Range");
+    }
 //     } catch (e) {
 //       if (e is SocketException) {
 //         CustomAlertDialog.eyetstcomplete(
@@ -2435,16 +2562,53 @@ class AstigmationTest1 extends State<AstigmationTest> {
 
   @override
   Widget build(BuildContext context) {
-    return   WillPopScope(
+    return WillPopScope(
       onWillPop: () async {
+        if (flutterTts != null) {
+          flutterTts.pause();
+        }
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              contentPadding:
+                  const EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
 
-
-        return false;
+              title: const Text(
+                "Are you sure to exit test?",
+                style: TextStyle(fontSize: 18),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text(
+                    "Yes",
+                    style: TextStyle(fontSize: 16), // Adjust button text size
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: const Text(
+                    "No",
+                    style: TextStyle(fontSize: 16), // Adjust button text size
+                  ),
+                  onPressed: () {
+                    // Handle 'No' button tap
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return true;
       },
       child: MaterialApp(
         home: Scaffold(
           appBar: AppBar(
-            title: Text("EYE TEST"),
+            title: const Text("EYE TEST"),
             centerTitle: true,
             leading: GestureDetector(
               onTap: () {
@@ -2452,23 +2616,30 @@ class AstigmationTest1 extends State<AstigmationTest> {
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      contentPadding: EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
+                      contentPadding: const EdgeInsets.fromLTRB(
+                          24, 20, 24, 0), // Adjust content padding
 
-                      title: Text("Are you sure to exit test?", style: TextStyle(fontSize: 18), ),
+                      title: const Text(
+                        "Are you sure to exit test?",
+                        style: TextStyle(fontSize: 18),
+                      ),
                       actions: <Widget>[
                         TextButton(
-                          child: Text("Yes",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                          child: const Text(
+                            "Yes",
+                            style: TextStyle(
+                                fontSize: 16), // Adjust button text size
                           ),
                           onPressed: () {
-                            Navigator.of(context).pop(); // Close the dialog
-                            Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(builder: (context) => HomePage()),
-                                    (Route<dynamic> route) => false);
-                            // Navigate back (in this example)
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
                           },
                         ),
                         TextButton(
-                          child: Text("No",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                          child: const Text(
+                            "No",
+                            style: TextStyle(
+                                fontSize: 16), // Adjust button text size
                           ),
                           onPressed: () {
                             // Handle 'No' button tap
@@ -2480,13 +2651,12 @@ class AstigmationTest1 extends State<AstigmationTest> {
                   },
                 );
               },
-              child: Icon(
+              child: const Icon(
                 Icons.arrow_back,
                 color: Colors.black,
                 size: 30,
               ),
             ),
-
           ),
           body: Stack(
             fit: StackFit.expand,
@@ -2494,7 +2664,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.fromLTRB(40, 0, 40, 0),
                     child: Text(
                       'Astigmatic Test',
@@ -2507,7 +2677,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
                   GestureDetector(
                     onTap: _onReplayPressed,
                     child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                      padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(25),
                       ),
@@ -2515,16 +2685,16 @@ class AstigmationTest1 extends State<AstigmationTest> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Padding(
-                            padding: EdgeInsets.only(top: 4.0),
+                            padding: const EdgeInsets.only(top: 4.0),
                             child: Image.asset(
                               'assets/play_circle_fill.png',
                               width: 50,
                               height: 40,
                             ),
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           // Adjust spacing between icon and text
-                          Text(
+                          const Text(
                             'Replay Audio',
                             style: TextStyle(
                               color: Colors.black,
@@ -2535,7 +2705,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
                       ),
                     ),
                   ),
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                     child: Text(
                       'Choose the part where you can see a more darker line',
@@ -2603,8 +2773,8 @@ class AstigmationTest1 extends State<AstigmationTest> {
                             containerColor = Colors.bluebutton;
                             containerColor5 = Colors.bluebutton;
                           });
-                          ChoseAstigmation();
                           region = 'd';
+                          ChoseAstigmation();
                         }),
                         buildAstigmaticButton('None', containerColor5, () {
                           setState(() {
@@ -2619,13 +2789,13 @@ class AstigmationTest1 extends State<AstigmationTest> {
                             context,
                             CupertinoPageRoute(
                                 builder: (context) => AstigmationTest3()),
-                          );
+                          ).then((value) => Navigator.of(context).pop() );
                         }),
                       ],
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(8),
                     child: Text(
                       alert,
                       textAlign: TextAlign.center,
@@ -2682,9 +2852,9 @@ class AstigmationTest1 extends State<AstigmationTest> {
   Widget buildAstigmaticButton(
       String text, Color color, VoidCallback onPressed) {
     return Container(
-      height: 36,
-      width: 60,
-      margin: EdgeInsets.all(3),
+      height: 34,
+      width: 65,
+      margin: const EdgeInsets.all(3),
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(20),
@@ -2692,7 +2862,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
       child: TextButton(
         child: Text(
           text,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 14,
           ),
@@ -2730,7 +2900,6 @@ class Astigmationtest2 extends State<AstigmationTest2> {
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
 
     await _controller?.initialize().then((_) {
-
       // _controller?.setZoomLevel(1.614);
 
       // Start streaming the camera
@@ -2755,7 +2924,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
       print('Image captured: ${image?.path}');
       // Delay to capture image per second
       capturePhoto(image!);
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       // regpatient1(image);
     }
   }
@@ -2766,7 +2935,6 @@ class Astigmationtest2 extends State<AstigmationTest2> {
     int originalHeight = originalImage.height!;
 
     print('Original width: $originalWidth, height: $originalHeight');
-
 
     int targetWidth = 672;
     int targetHeight = 896;
@@ -2780,21 +2948,21 @@ class Astigmationtest2 extends State<AstigmationTest2> {
     img.Image resizedImage = img.decodeImage(resizedBytes)!;
 
     // Crop or scale the resized image to exact dimensions
-    img.Image finalImage = img.copyResize(resizedImage,
+    img.Image finalImage = img.copyResize(
+      resizedImage,
       width: targetWidth,
       height: targetHeight,
     );
 
     // Convert final image to bytes
-    List<int> finalBytes = img.encodePng(finalImage); // or encodeJpg for JPEG format
+    List<int> finalBytes =
+        img.encodePng(finalImage); // or encodeJpg for JPEG format
 
     // Convert resized photo to base64
     print('Resized width: ${finalImage.width}, height: ${finalImage.height}');
 
     String photoBase64 = convert.base64Encode(finalBytes);
-    sendDistanceRequest(photoBase64 );//photoAsBase64
-
-
+    sendDistanceRequest(photoBase64); //photoAsBase64
 
     // Uint8List photoBytes = await photo.readAsBytes();
     // Uint8List resizedBytes = await FlutterImageCompress.compressWithList(
@@ -2807,10 +2975,8 @@ class Astigmationtest2 extends State<AstigmationTest2> {
     // // Convert resized photo to base64
     // String photoBase64 = convert.base64Encode(resizedBytes);
 
-
     // List<int> photoAsBytes = await photo.readAsBytes();
     // String photoAsBase64 = convert.base64Encode(photoAsBytes);
-
   }
 
   Future<void> sendDistanceRequest(String image) async {
@@ -2856,10 +3022,9 @@ class Astigmationtest2 extends State<AstigmationTest2> {
       print("response-camera33${response.body}");
       Map<String, dynamic> data = jsonDecode(response.body);
       setState(() {
-      String alertMessage = data['alert'];
-          alert = alertMessage;
+        String alertMessage = data['alert'];
+        alert = alertMessage;
       });
-
     } catch (e) {
       if (e is SocketException) {
         CustomAlertDialog.attractivepopup(
@@ -2902,13 +3067,13 @@ class Astigmationtest2 extends State<AstigmationTest2> {
 
   void _onReplayPressed() {
     const String replayText =
-    "Focus on the black dot for 10 second. After 10 second look at the lines and click on the degree option which is more darker than others. If unable to see the lines clearly, click on Increase or click on decrease till you see any one line darker than others. Once you select the degree, click next";
+        "Focus on the black dot for 10 second. After 10 second look at the lines and click on the degree option which is more darker than others. If unable to see the lines clearly, click on Increase or click on decrease till you see any one line darker than others. Once you select the degree, click next";
     _speak(replayText);
   }
 
   void startTimer() {
     _timer?.cancel(); // Cancel the previous timer if it exists
-    _timer = Timer.periodic(Duration(seconds: 6), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 6), (timer) {
       setState(() {
         //&& !increasing
         print("imagesize1$imageSize1");
@@ -2937,7 +3102,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
     print('API call will be made after 1 seconds...');
 
     // Delay the API call for 3 seconds
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
 
     // After the delay, make the API call
     fetchData();
@@ -2945,48 +3110,47 @@ class Astigmationtest2 extends State<AstigmationTest2> {
 
   Future<void> fetchData() async {
     // try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String authToken = prefs.getString('access_token') ?? '';
-      String test_id = prefs.getString('test_id') ?? '';
-      String selectedRegion = prefs.getString('region') ?? '';
-      String CustomerId = prefs.getString('customer_id') ?? '';
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken = prefs.getString('access_token') ?? '';
+    String test_id = prefs.getString('test_id') ?? '';
+    String selectedRegion = prefs.getString('region') ?? '';
+    String CustomerId = prefs.getString('customer_id') ?? '';
 
-      print("eeee$test_id");
-      final String apiUrl =
-          '${Api.baseurl}/api/eye/get-degrees?test_id=$test_id';
-      final response = await http.get(
-        Uri.parse(apiUrl),
-        headers: {
-          'Authorization': 'Bearer $authToken',
-          'Customer-Id': CustomerId,
-        },
-      );
-      print("degrees--" + response.body);
-      print("apiurl--" + apiUrl);
-      print("token--" + authToken);
+    print("eeee$test_id");
+    final String apiUrl = '${Api.baseurl}/api/eye/get-degrees?test_id=$test_id';
+    final response = await http.get(
+      Uri.parse(apiUrl),
+      headers: {
+        'Authorization': 'Bearer $authToken',
+        'Customer-Id': CustomerId,
+      },
+    );
+    print("degrees--" + response.body);
+    print("apiurl--" + apiUrl);
+    print("token--" + authToken);
 
-      if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
-        final List<dynamic> data = jsonData['data'];
-        dataList = List<int>.from(data);
-        print('sss$dataList');
-      }
-      if (selectedRegion == "a") {
-        currentImage = 'assets/astig1.png';
-      }
-      if (selectedRegion == "b") {
-        currentImage = 'assets/astig2.png';
-      }
-      if (selectedRegion == "c") {
-        currentImage = 'assets/astig3.png';
-      }
-      if (selectedRegion == "d") {
-        print("selectrefion4 " + selectedRegion);
-        currentImage = 'assets/astig4.png';
-      }
-      setState(() {
-        currentImage;
-      });
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      final List<dynamic> data = jsonData['data'];
+      dataList = List<int>.from(data);
+      print('sss$dataList');
+    }
+    if (selectedRegion == "a") {
+      currentImage = 'assets/astig1.png';
+    }
+    if (selectedRegion == "b") {
+      currentImage = 'assets/astig2.png';
+    }
+    if (selectedRegion == "c") {
+      currentImage = 'assets/astig3.png';
+    }
+    if (selectedRegion == "d") {
+      print("selectrefion4 " + selectedRegion);
+      currentImage = 'assets/astig4.png';
+    }
+    setState(() {
+      currentImage;
+    });
     // }
 //     catch (e) {
 //       if (e is SocketException) {
@@ -3006,37 +3170,36 @@ class Astigmationtest2 extends State<AstigmationTest2> {
 
   Future<void> ChoseAstigmation(int value) async {
     // try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String authToken =
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-          prefs.getString('access_token') ?? '';
-      String test_id = prefs.getString('test_id') ?? '';
-      String CustomerId = prefs.getString('customer_id') ?? '';
-      String apiUrl = '${Api.baseurl}/api/eye/choose-degree-api';
-      Map<String, dynamic> body1 = {
-        'test_id': test_id,
-        "degree": value,
-      };
-      print("degree_choosen$body1");
-      final response = await http.put(
-        Uri.parse(apiUrl),
-        headers: {
-          'Authorization': 'Bearer $authToken',
-          'Content-Type': 'application/json',
-          'Customer-Id': CustomerId,
-        },
-        body: jsonEncode(body1),
-      );
-      print("degree_choosssssssssen$response");
-      print("choseastigmation_response" + response.body);
-      if (response.statusCode == 200) {
-
-        // final jsonData = json.decode(response.body);
-        //
-        // final List<dynamic> data = jsonData['data'];
-        //
-        // dataList = List<int>.from(data);
-      }
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken =
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
+    String test_id = prefs.getString('test_id') ?? '';
+    String CustomerId = prefs.getString('customer_id') ?? '';
+    String apiUrl = '${Api.baseurl}/api/eye/choose-degree-api';
+    Map<String, dynamic> body1 = {
+      'test_id': test_id,
+      "degree": value,
+    };
+    print("degree_choosen$body1");
+    final response = await http.put(
+      Uri.parse(apiUrl),
+      headers: {
+        'Authorization': 'Bearer $authToken',
+        'Content-Type': 'application/json',
+        'Customer-Id': CustomerId,
+      },
+      body: jsonEncode(body1),
+    );
+    print("degree_choosssssssssen$response");
+    print("choseastigmation_response" + response.body);
+    if (response.statusCode == 200) {
+      // final jsonData = json.decode(response.body);
+      //
+      // final List<dynamic> data = jsonData['data'];
+      //
+      // dataList = List<int>.from(data);
+    }
 //     } catch (e) {
 //       if (e is SocketException) {
 //         CustomAlertDialog.attractivepopup(
@@ -3084,19 +3247,55 @@ class Astigmationtest2 extends State<AstigmationTest2> {
   @override
   int selectedValue = 0;
 
-
   @override
   Widget build(BuildContext context) {
-    return  WillPopScope(
+    return WillPopScope(
       onWillPop: () async {
+        if (flutterTts != null) {
+          flutterTts.pause();
+        }
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              contentPadding:
+                  const EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
 
-
-        return false;
+              title: const Text(
+                "Are you sure to exit test?",
+                style: TextStyle(fontSize: 18),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text(
+                    "Yes",
+                    style: TextStyle(fontSize: 16), // Adjust button text size
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: const Text(
+                    "No",
+                    style: TextStyle(fontSize: 16), // Adjust button text size
+                  ),
+                  onPressed: () {
+                    // Handle 'No' button tap
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return true;
       },
       child: MaterialApp(
         home: Scaffold(
           appBar: AppBar(
-            title: Text("EYE TEST"),
+            title: const Text("EYE TEST"),
             centerTitle: true,
             leading: GestureDetector(
               onTap: () {
@@ -3104,23 +3303,30 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      contentPadding: EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
+                      contentPadding: const EdgeInsets.fromLTRB(
+                          24, 20, 24, 0), // Adjust content padding
 
-                      title: Text("Are you sure to exit test?", style: TextStyle(fontSize: 18), ),
+                      title: const Text(
+                        "Are you sure to exit test?",
+                        style: TextStyle(fontSize: 18),
+                      ),
                       actions: <Widget>[
                         TextButton(
-                          child: Text("Yes",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                          child: const Text(
+                            "Yes",
+                            style: TextStyle(
+                                fontSize: 16), // Adjust button text size
                           ),
                           onPressed: () {
-                            Navigator.of(context).pop(); // Close the dialog
-                            Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(builder: (context) => HomePage()),
-                                    (Route<dynamic> route) => false);
-                            // Navigate back (in this example)
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
                           },
                         ),
                         TextButton(
-                          child: Text("No",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                          child: const Text(
+                            "No",
+                            style: TextStyle(
+                                fontSize: 16), // Adjust button text size
                           ),
                           onPressed: () {
                             // Handle 'No' button tap
@@ -3132,13 +3338,12 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                   },
                 );
               },
-              child: Icon(
+              child: const Icon(
                 Icons.arrow_back,
                 color: Colors.black,
                 size: 30,
               ),
             ),
-
           ),
           body: Stack(
             children: <Widget>[
@@ -3148,7 +3353,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      Padding(
+                      const Padding(
                         padding: EdgeInsets.fromLTRB(40, 10, 10, 2),
                         child: Text(
                           'Astigmatic Test',
@@ -3161,7 +3366,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                       GestureDetector(
                         onTap: _onReplayPressed,
                         child: Container(
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               vertical: 10, horizontal: 10),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(25),
@@ -3170,16 +3375,16 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Padding(
-                                padding: EdgeInsets.only(top: 4.0),
+                                padding: const EdgeInsets.only(top: 4.0),
                                 child: Image.asset(
                                   'assets/play_circle_fill.png',
                                   width: 50,
                                   height: 40,
                                 ),
                               ),
-                              SizedBox(width: 8),
+                              const SizedBox(width: 8),
                               // Adjust spacing between icon and text
-                              Text(
+                              const Text(
                                 'Replay Audio',
                                 style: TextStyle(
                                   color: Colors.black,
@@ -3190,9 +3395,9 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 5),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
+                      const SizedBox(height: 5),
+                      const Padding(
+                        padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
                         child: Text(
                           'Choose the part where you can see a more darker line',
                           style: TextStyle(
@@ -3202,21 +3407,21 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 1.0),
+                      const SizedBox(height: 1.0),
                       Container(
-                        margin: EdgeInsets.fromLTRB(10, 8, 10, 8),
+                        margin: const EdgeInsets.fromLTRB(10, 8, 10, 8),
                         child: currentImage.isEmpty
-                            ? CircularProgressIndicator()
+                            ? const CircularProgressIndicator()
                             : Image.asset(
                                 currentImage,
                                 width: imageSize1,
                                 fit: BoxFit.fill,
                               ),
                       ),
-                      SizedBox(height: 10.0),
+                      const SizedBox(height: 10.0),
                       Center(
                         child: dataList.isEmpty
-                            ? CircularProgressIndicator()
+                            ? const CircularProgressIndicator()
                             : SingleChildScrollView(
                                 scrollDirection: Axis.horizontal,
                                 child: Row(
@@ -3243,7 +3448,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                                           ),
                                           side: MaterialStateProperty.all<
                                               BorderSide>(
-                                            BorderSide(
+                                            const BorderSide(
                                               color: Colors
                                                   .white, // Blue border color
                                               width: 2.0,
@@ -3264,40 +3469,35 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                                 ),
                               ),
                       ),
-                      SizedBox(height: 10.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Container(
-                            height: 35,
-                            width: 130,
-                            child: CustomElevatedButtonY(
+                      const SizedBox(height: 10.0),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 30.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            CustomElevatedButtonY(
                               text: 'Decrease',
                               onPressed: decreaseSize,
                             ),
-                          ),
-                          Container(
-                            height: 35,
-                            width: 130,
-                            child: CustomElevatedButtonG(
-                              text: 'Increase ',
+                            CustomElevatedButtonG(
+                              text: 'Increase',
                               onPressed: increaseSize,
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Container(
-                        padding: EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(8),
                         child: Text(
                           alert,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              fontSize: 18,
-                              color: alert == 'Good to go'
-                                  ? Colors.green
-                                  : Colors.red,
-                             ),
+                            fontSize: 18,
+                            color: alert == 'Good to go'
+                                ? Colors.green
+                                : Colors.red,
+                          ),
                         ),
                       ),
                     ],
@@ -3312,7 +3512,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                     ? CameraPreview(_controller!)
                     : Container(
                         color: Colors.black,
-                        child: Center(
+                        child: const Center(
                           child: Text(
                             'Loading Camera...',
                             style: TextStyle(color: Colors.white),
@@ -3326,7 +3526,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                 right: 0,
                 child: Column(
                   children: [
-                    SizedBox(height: 10), // Adjust as needed
+                    const SizedBox(height: 10), // Adjust as needed
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: Container(
@@ -3346,10 +3546,10 @@ class Astigmationtest2 extends State<AstigmationTest2> {
                                 context,
                                 CupertinoPageRoute(
                                     builder: (context) => ShadowTest()),
-                              );
+                              ).then((value) => Navigator.of(context).pop() );
                             }
                           },
-                          child: Text(
+                          child: const Text(
                             'Next',
                             style: TextStyle(
                               color: Colors.white,
@@ -3433,7 +3633,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
 
   void startTimer() {
     _timer?.cancel(); // Cancel the previous timer if it exists
-    _timer = Timer.periodic(Duration(seconds: 6), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 6), (timer) {
       setState(() {
         //&& !increasing
         print("imagesize3$imageSize");
@@ -3466,7 +3666,6 @@ class AstigmationTestNone extends State<AstigmationTest3> {
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
 
     await _controller?.initialize().then((_) {
-
       // _controller?.setZoomLevel(1.614);
 
       // Start streaming the camera
@@ -3491,7 +3690,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
       print('Image captured: ${image?.path}');
       // Delay to capture image per second
       capturePhoto(image!);
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       // regpatient1(image);
     }
   }
@@ -3502,7 +3701,6 @@ class AstigmationTestNone extends State<AstigmationTest3> {
     int originalHeight = originalImage.height!;
 
     print('Original width: $originalWidth, height: $originalHeight');
-
 
     int targetWidth = 672;
     int targetHeight = 896;
@@ -3516,21 +3714,21 @@ class AstigmationTestNone extends State<AstigmationTest3> {
     img.Image resizedImage = img.decodeImage(resizedBytes)!;
 
     // Crop or scale the resized image to exact dimensions
-    img.Image finalImage = img.copyResize(resizedImage,
+    img.Image finalImage = img.copyResize(
+      resizedImage,
       width: targetWidth,
       height: targetHeight,
     );
 
     // Convert final image to bytes
-    List<int> finalBytes = img.encodePng(finalImage); // or encodeJpg for JPEG format
+    List<int> finalBytes =
+        img.encodePng(finalImage); // or encodeJpg for JPEG format
 
     // Convert resized photo to base64
     print('Resized width: ${finalImage.width}, height: ${finalImage.height}');
 
     String photoBase64 = convert.base64Encode(finalBytes);
-    sendDistanceRequest(photoBase64 );//photoAsBase64
-
-
+    sendDistanceRequest(photoBase64); //photoAsBase64
 
     // Uint8List photoBytes = await photo.readAsBytes();
     // Uint8List resizedBytes = await FlutterImageCompress.compressWithList(
@@ -3543,10 +3741,8 @@ class AstigmationTestNone extends State<AstigmationTest3> {
     // // Convert resized photo to base64
     // String photoBase64 = convert.base64Encode(resizedBytes);
 
-
     // List<int> photoAsBytes = await photo.readAsBytes();
     // String photoAsBase64 = convert.base64Encode(photoAsBytes);
-
   }
 
   Future<void> sendDistanceRequest(String image) async {
@@ -3679,45 +3875,39 @@ class AstigmationTestNone extends State<AstigmationTest3> {
 
   Future<void> ChoseAstigmation(String selectedpart) async {
     // try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String authToken = prefs.getString('access_token') ?? '';
-      String test_id = prefs.getString('test_id') ?? '';
-      String CustomerId = prefs.getString('customer_id') ?? '';
-      print("choseastigmation_res$CustomerId");
-      print("choseastigmation_selectedpart$selectedpart");
-      print("choseastigmation_test_id$test_id");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken = prefs.getString('access_token') ?? '';
+    String test_id = prefs.getString('test_id') ?? '';
+    String CustomerId = prefs.getString('customer_id') ?? '';
+    print("choseastigmation_res$CustomerId");
+    print("choseastigmation_selectedpart$selectedpart");
+    print("choseastigmation_test_id$test_id");
 
-      final String apiUrl = '${Api.baseurl}/api/eye/choose-astigmatism';
-      Map<String, dynamic> body1 = {
-        'choose_astigmatism': selectedpart,
+    final String apiUrl = '${Api.baseurl}/api/eye/choose-astigmatism';
+    Map<String, dynamic> body1 = {
+      'choose_astigmatism': selectedpart,
+      'test_id': test_id,
+    };
+    final response = await http.put(
+      Uri.parse(apiUrl),
+      headers: {
+        'Authorization': 'Bearer $authToken',
+        'Content-Type': 'application/json',
+        'Customer-Id': CustomerId,
+      },
+      body: jsonEncode(body1),
+    );
+    logger.d("choseastigmation_response${response.body}");
 
-        'test_id': test_id,
-      };
-      final response = await http.put(
-        Uri.parse(apiUrl),
-        headers: {
-          'Authorization': 'Bearer $authToken',
-          'Content-Type': 'application/json',
-          'Customer-Id': CustomerId,
-        },
-        body: jsonEncode(body1),
-      );
-      logger.d("choseastigmation_response${response.body}");
-
-      if (response.statusCode == 200) {
-
-        setState(() {
-          Navigator.push(
+    if (response.statusCode == 200) {
+      setState(() {
+        Navigator.push(
           context,
           CupertinoPageRoute(builder: (context) => AstigmationTest2()),
-        );
-
-        });
-      }
-
+        ).then((value) => Navigator.of(context).pop());
+      });
+    }
   }
-
-
 
   Color containerColor = Colors.bluebutton;
   Color containerColor2 = Colors.bluebutton;
@@ -3734,20 +3924,56 @@ class AstigmationTestNone extends State<AstigmationTest3> {
     super.dispose();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    return  WillPopScope(
+    return WillPopScope(
       onWillPop: () async {
+        if (flutterTts != null) {
+          flutterTts.pause();
+        }
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              contentPadding:
+                  const EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
 
-
-        return false;
+              title: const Text(
+                "Are you sure to exit test?",
+                style: TextStyle(fontSize: 18),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text(
+                    "Yes",
+                    style: TextStyle(fontSize: 16), // Adjust button text size
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                    Navigator.of(context).pop();
+                    // Navigate back (in this example)
+                  },
+                ),
+                TextButton(
+                  child: const Text(
+                    "No",
+                    style: TextStyle(fontSize: 16), // Adjust button text size
+                  ),
+                  onPressed: () {
+                    // Handle 'No' button tap
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return true;
       },
       child: MaterialApp(
         home: Scaffold(
           appBar: AppBar(
-            title: Text("EYE TEST"),
+            title: const Text("EYE TEST"),
             centerTitle: true,
             leading: GestureDetector(
               onTap: () {
@@ -3755,23 +3981,31 @@ class AstigmationTestNone extends State<AstigmationTest3> {
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      contentPadding: EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
+                      contentPadding: const EdgeInsets.fromLTRB(
+                          24, 20, 24, 0), // Adjust content padding
 
-                      title: Text("Are you sure to exit test?", style: TextStyle(fontSize: 18), ),
+                      title: const Text(
+                        "Are you sure to exit test?",
+                        style: TextStyle(fontSize: 18),
+                      ),
                       actions: <Widget>[
                         TextButton(
-                          child: Text("Yes",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                          child: const Text(
+                            "Yes",
+                            style: TextStyle(
+                                fontSize: 16), // Adjust button text size
                           ),
                           onPressed: () {
                             Navigator.of(context).pop(); // Close the dialog
-                            Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(builder: (context) => HomePage()),
-                                    (Route<dynamic> route) => false);
+                            Navigator.of(context).pop();
                             // Navigate back (in this example)
                           },
                         ),
                         TextButton(
-                          child: Text("No",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                          child: const Text(
+                            "No",
+                            style: TextStyle(
+                                fontSize: 16), // Adjust button text size
                           ),
                           onPressed: () {
                             // Handle 'No' button tap
@@ -3783,13 +4017,12 @@ class AstigmationTestNone extends State<AstigmationTest3> {
                   },
                 );
               },
-              child: Icon(
+              child: const Icon(
                 Icons.arrow_back,
                 color: Colors.black,
                 size: 30,
               ),
             ),
-
           ),
           body: Stack(
             children: <Widget>[
@@ -3801,11 +4034,11 @@ class AstigmationTestNone extends State<AstigmationTest3> {
                     children: <Widget>[
                       // Background Image
                       Container(
-                        margin: EdgeInsets.fromLTRB(0, 55, 0, 2),
+                        margin: const EdgeInsets.fromLTRB(0, 55, 0, 2),
                         child: SingleChildScrollView(
                           child: Column(
                             children: <Widget>[
-                              Padding(
+                              const Padding(
                                 padding: EdgeInsets.fromLTRB(40, 15, 40, 2),
                                 child: Text(
                                   'Astigmatic Test',
@@ -3819,7 +4052,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
                               GestureDetector(
                                 onTap: _onReplayPressed,
                                 child: Container(
-                                  padding: EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                       vertical: 10, horizontal: 10),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(25),
@@ -3828,16 +4061,16 @@ class AstigmationTestNone extends State<AstigmationTest3> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Padding(
-                                        padding: EdgeInsets.only(top: 4.0),
+                                        padding: const EdgeInsets.only(top: 4.0),
                                         child: Image.asset(
                                           'assets/play_circle_fill.png',
                                           width: 50,
                                           height: 40,
                                         ),
                                       ),
-                                      SizedBox(width: 8),
+                                      const SizedBox(width: 8),
                                       // Adjust spacing between icon and text
-                                      Text(
+                                      const Text(
                                         'Replay Audio',
                                         style: TextStyle(
                                           color: Colors.black,
@@ -3848,10 +4081,10 @@ class AstigmationTestNone extends State<AstigmationTest3> {
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 1.0),
-                              Padding(
+                              const SizedBox(height: 1.0),
+                              const Padding(
                                 padding:
-                                    const EdgeInsets.fromLTRB(20, 5, 0, 20),
+                                    EdgeInsets.fromLTRB(20, 5, 0, 20),
                                 child: Text(
                                   'Choose the part where you can see a more darker line',
                                   style: TextStyle(
@@ -3861,12 +4094,12 @@ class AstigmationTestNone extends State<AstigmationTest3> {
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 2.0),
+                              const SizedBox(height: 2.0),
                               Image.asset(
                                 'assets/astigmation3.png',
-                                width: 300, // Adjust the size as needed
+                                width: imageSize, // Adjust the size as needed
                               ),
-                              SizedBox(height: 23.0),
+                              const SizedBox(height: 23.0),
                               // Four Buttons Aligned Horizontally
                               SingleChildScrollView(
                                 scrollDirection: Axis.horizontal,
@@ -3874,25 +4107,20 @@ class AstigmationTestNone extends State<AstigmationTest3> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
                                   children: <Widget>[
-
-                                    _buildOptionButton(
-                                        'A', containerColor, 0),
-                                    _buildOptionButton(
-                                        'B', containerColor2, 1),
-                                    _buildOptionButton(
-                                        'C', containerColor3, 2),
-                                    _buildOptionButton(
-                                        'D', containerColor4, 3),
+                                    _buildOptionButton('A', containerColor, 0),
+                                    _buildOptionButton('B', containerColor2, 1),
+                                    _buildOptionButton('C', containerColor3, 2),
+                                    _buildOptionButton('D', containerColor4, 3),
                                     _buildOptionButton(
                                         'None', containerColor5, 4),
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               Container(
                                 width: 320,
                                 height: 40,
-                                padding: EdgeInsets.all(8),
+                                padding: const EdgeInsets.all(8),
                                 child: Text(
                                   alert,
                                   textAlign: TextAlign.center,
@@ -3909,6 +4137,22 @@ class AstigmationTestNone extends State<AstigmationTest3> {
                           ),
                         ),
                       ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 30.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            CustomElevatedButtonY(
+                              text: 'Decrease',
+                              onPressed: decreaseSize,
+                            ),
+                            CustomElevatedButtonG(
+                              text: 'Increase',
+                              onPressed: increaseSize,
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -3922,43 +4166,13 @@ class AstigmationTestNone extends State<AstigmationTest3> {
                     ? CameraPreview(_controller!)
                     : Container(
                         color: Colors.black,
-                        child: Center(
+                        child: const Center(
                           child: Text(
                             'Loading Camera...',
                             style: TextStyle(color: Colors.white),
                           ),
                         ),
                       ),
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Container(
-                          height: 40,
-                          width: 140,
-                          child: CustomElevatedButtonY(
-                            text: 'Decrease ',
-                            onPressed: decreaseSize,
-                          ),
-                        ),
-                        Container(
-                          height: 40,
-                          width: 140,
-                          child: CustomElevatedButtonG(
-                            text: 'Increase ',
-                            onPressed: increaseSize,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
               ),
             ],
           ),
@@ -3979,7 +4193,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
       child: TextButton(
         child: Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 12,
           ),
@@ -3998,9 +4212,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
               selectedPart = 'a';
               print("selected region $selectedPart");
               ChoseAstigmation(selectedPart);
-
-            }
-            else if (index == 1) {
+            } else if (index == 1) {
               setState(() {
                 containerColor2 = Colors.lightBlueAccent;
                 containerColor = Colors.bluebutton;
@@ -4010,9 +4222,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
               });
               selectedPart = 'b';
               ChoseAstigmation(selectedPart);
-
-            }
-            else if (index == 2) {
+            } else if (index == 2) {
               setState(() {
                 containerColor3 = Colors.lightBlueAccent;
                 containerColor = Colors.bluebutton;
@@ -4022,9 +4232,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
               });
               selectedPart = 'c';
               ChoseAstigmation(selectedPart);
-
-            }
-            else if (index == 3) {
+            } else if (index == 3) {
               setState(() {
                 containerColor4 = Colors.lightBlueAccent;
                 containerColor2 = Colors.bluebutton;
@@ -4034,9 +4242,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
               });
               selectedPart = 'd';
               ChoseAstigmation(selectedPart);
-
-            }
-            else {
+            } else {
               setState(() {
                 containerColor5 = Colors.lightBlueAccent;
                 containerColor2 = Colors.bluebutton;
@@ -4052,8 +4258,6 @@ class AstigmationTestNone extends State<AstigmationTest3> {
               );
               return;
             }
-
-
           });
         },
       ),
@@ -4107,7 +4311,6 @@ class _ShadowTestState extends State<ShadowTest> {
     _controller = CameraController(frontCamera, ResolutionPreset.medium);
 
     await _controller?.initialize().then((_) {
-
       // _controller?.setZoomLevel(1.614);
 
       // Start streaming the camera
@@ -4132,7 +4335,7 @@ class _ShadowTestState extends State<ShadowTest> {
       print('Image captured: ${image?.path}');
       // Delay to capture image per second
       capturePhoto(image!);
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       // regpatient1(image);
     }
   }
@@ -4143,7 +4346,6 @@ class _ShadowTestState extends State<ShadowTest> {
     int originalHeight = originalImage.height!;
 
     print('Original width: $originalWidth, height: $originalHeight');
-
 
     int targetWidth = 672;
     int targetHeight = 896;
@@ -4157,21 +4359,21 @@ class _ShadowTestState extends State<ShadowTest> {
     img.Image resizedImage = img.decodeImage(resizedBytes)!;
 
     // Crop or scale the resized image to exact dimensions
-    img.Image finalImage = img.copyResize(resizedImage,
+    img.Image finalImage = img.copyResize(
+      resizedImage,
       width: targetWidth,
       height: targetHeight,
     );
 
     // Convert final image to bytes
-    List<int> finalBytes = img.encodePng(finalImage); // or encodeJpg for JPEG format
+    List<int> finalBytes =
+        img.encodePng(finalImage); // or encodeJpg for JPEG format
 
     // Convert resized photo to base64
     print('Resized width: ${finalImage.width}, height: ${finalImage.height}');
 
     String photoBase64 = convert.base64Encode(finalBytes);
-    sendDistanceRequest(photoBase64 );//photoAsBase64
-
-
+    sendDistanceRequest(photoBase64); //photoAsBase64
 
     // Uint8List photoBytes = await photo.readAsBytes();
     // Uint8List resizedBytes = await FlutterImageCompress.compressWithList(
@@ -4184,10 +4386,8 @@ class _ShadowTestState extends State<ShadowTest> {
     // // Convert resized photo to base64
     // String photoBase64 = convert.base64Encode(resizedBytes);
 
-
     // List<int> photoAsBytes = await photo.readAsBytes();
     // String photoAsBase64 = convert.base64Encode(photoAsBytes);
-
   }
 
   Future<void> sendDistanceRequest(String image) async {
@@ -4292,16 +4492,53 @@ class _ShadowTestState extends State<ShadowTest> {
 
   @override
   Widget build(BuildContext context) {
-    return  WillPopScope(
+    return WillPopScope(
       onWillPop: () async {
+        if (flutterTts != null) {
+          flutterTts.pause();
+        }
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              contentPadding:
+                  const EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
 
-
-        return false;
+              title: const Text(
+                "Are you sure to exit test?",
+                style: TextStyle(fontSize: 18),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text(
+                    "Yes",
+                    style: TextStyle(fontSize: 16), // Adjust button text size
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: const Text(
+                    "No",
+                    style: TextStyle(fontSize: 16), // Adjust button text size
+                  ),
+                  onPressed: () {
+                    // Handle 'No' button tap
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return true;
       },
       child: MaterialApp(
         home: Scaffold(
           appBar: AppBar(
-            title: Text("EYE TEST"),
+            title: const Text("EYE TEST"),
             centerTitle: true,
             leading: GestureDetector(
               onTap: () {
@@ -4309,23 +4546,30 @@ class _ShadowTestState extends State<ShadowTest> {
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      contentPadding: EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
+                      contentPadding: const EdgeInsets.fromLTRB(
+                          24, 20, 24, 0), // Adjust content padding
 
-                      title: Text("Are you sure to exit test?", style: TextStyle(fontSize: 18), ),
+                      title: const Text(
+                        "Are you sure to exit test?",
+                        style: TextStyle(fontSize: 18),
+                      ),
                       actions: <Widget>[
                         TextButton(
-                          child: Text("Yes",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                          child: const Text(
+                            "Yes",
+                            style: TextStyle(
+                                fontSize: 16), // Adjust button text size
                           ),
                           onPressed: () {
-                            Navigator.of(context).pop(); // Close the dialog
-                            Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(builder: (context) => HomePage()),
-                                    (Route<dynamic> route) => false);
-                            // Navigate back (in this example)
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
                           },
                         ),
                         TextButton(
-                          child: Text("No",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                          child: const Text(
+                            "No",
+                            style: TextStyle(
+                                fontSize: 16), // Adjust button text size
                           ),
                           onPressed: () {
                             // Handle 'No' button tap
@@ -4337,13 +4581,12 @@ class _ShadowTestState extends State<ShadowTest> {
                   },
                 );
               },
-              child: Icon(
+              child: const Icon(
                 Icons.arrow_back,
                 color: Colors.black,
                 size: 30,
               ),
             ),
-
           ),
           body: Stack(
             fit: StackFit.expand,
@@ -4356,7 +4599,7 @@ class _ShadowTestState extends State<ShadowTest> {
                       onTap: _onReplayPressed,
                       child: Container(
                         padding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                            const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(25),
                         ),
@@ -4364,15 +4607,15 @@ class _ShadowTestState extends State<ShadowTest> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Padding(
-                              padding: EdgeInsets.only(top: 4.0),
+                              padding: const EdgeInsets.only(top: 4.0),
                               child: Image.asset(
                                 'assets/play_circle_fill.png',
                                 width: 50,
                                 height: 40,
                               ),
                             ),
-                            SizedBox(width: 8),
-                            Text(
+                            const SizedBox(width: 8),
+                            const Text(
                               'Replay Audio',
                               style: TextStyle(
                                 color: Colors.black,
@@ -4383,7 +4626,7 @@ class _ShadowTestState extends State<ShadowTest> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 20), // Add some space after the button
+                    const SizedBox(height: 20), // Add some space after the button
                     Padding(
                       padding: const EdgeInsets.only(top: 90.0),
                       child: Container(
@@ -4393,8 +4636,8 @@ class _ShadowTestState extends State<ShadowTest> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 10, 4, 0),
+                            const Padding(
+                              padding: EdgeInsets.fromLTRB(0, 10, 4, 0),
                               child: Text(
                                 'Shadow Test',
                                 style: TextStyle(
@@ -4404,7 +4647,7 @@ class _ShadowTestState extends State<ShadowTest> {
                                 ),
                               ),
                             ),
-                            Spacer(),
+                            const Spacer(),
                             Center(
                               child: Text(
                                 dynamicText,
@@ -4415,12 +4658,12 @@ class _ShadowTestState extends State<ShadowTest> {
                                 ),
                               ),
                             ),
-                            Spacer(),
+                            const Spacer(),
                           ],
                         ),
                       ),
                     ),
-                    SizedBox(height: 20), // Add some space after the container
+                    const SizedBox(height: 20), // Add some space after the container
                     Padding(
                       padding: const EdgeInsets.only(top: 10),
                       child: Row(
@@ -4429,7 +4672,7 @@ class _ShadowTestState extends State<ShadowTest> {
                           Container(
                             height: 40,
                             width: 150,
-                            margin: EdgeInsets.fromLTRB(10, 5, 20, 0),
+                            margin: const EdgeInsets.fromLTRB(10, 5, 20, 0),
                             child: CustomElevatedButtonY(
                               text: 'Decrease',
                               onPressed: () => changeSize('down'),
@@ -4437,7 +4680,7 @@ class _ShadowTestState extends State<ShadowTest> {
                           ),
                           Container(
                             height: 40,
-                            margin: EdgeInsets.fromLTRB(10, 5, 20, 0),
+                            margin: const EdgeInsets.fromLTRB(10, 5, 20, 0),
                             child: CustomElevatedButtonG(
                               text: 'Increase',
                               onPressed: () => changeSize('up'),
@@ -4488,7 +4731,7 @@ class _ShadowTestState extends State<ShadowTest> {
                   // Call your function here
                   CylTestApi();
                 },
-                child: Text(
+                child: const Text(
                   'Next',
                   style: TextStyle(
                     color: Colors.white,
@@ -4534,7 +4777,7 @@ class _ShadowTestState extends State<ShadowTest> {
         Navigator.push(
           context,
           CupertinoPageRoute(builder: (context) => RedGreenTest()),
-        );
+        ).then((value) => Navigator.of(context).pop());
       }
     } catch (e) {
       if (e is SocketException) {
@@ -4596,15 +4839,14 @@ class redgreen extends State<RedGreenTest> {
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     CameraDescription? frontCamera = _cameras.firstWhere(
-          (camera) => camera.lensDirection == CameraLensDirection.front,
+      (camera) => camera.lensDirection == CameraLensDirection.front,
       orElse: () =>
-      _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
+          _cameras.isEmpty ? throw 'No camera available' : _cameras[0],
     );
 
     _controller = CameraController(frontCamera, ResolutionPreset.high);
 
     await _controller?.initialize().then((_) {
-
       // _controller?.setZoomLevel(1.614);
 
       // Start streaming the camera
@@ -4628,7 +4870,7 @@ class redgreen extends State<RedGreenTest> {
       print('Image captured: ${image?.path}');
       // Delay to capture image per second
       capturePhoto(image!);
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       // regpatient1(image);
     }
   }
@@ -4639,7 +4881,6 @@ class redgreen extends State<RedGreenTest> {
     int originalHeight = originalImage.height!;
 
     print('Original width: $originalWidth, height: $originalHeight');
-
 
     int targetWidth = 672;
     int targetHeight = 896;
@@ -4653,21 +4894,21 @@ class redgreen extends State<RedGreenTest> {
     img.Image resizedImage = img.decodeImage(resizedBytes)!;
 
     // Crop or scale the resized image to exact dimensions
-    img.Image finalImage = img.copyResize(resizedImage,
+    img.Image finalImage = img.copyResize(
+      resizedImage,
       width: targetWidth,
       height: targetHeight,
     );
 
     // Convert final image to bytes
-    List<int> finalBytes = img.encodePng(finalImage); // or encodeJpg for JPEG format
+    List<int> finalBytes =
+        img.encodePng(finalImage); // or encodeJpg for JPEG format
 
     // Convert resized photo to base64
     print('Resized width: ${finalImage.width}, height: ${finalImage.height}');
 
     String photoBase64 = convert.base64Encode(finalBytes);
-    sendDistanceRequest(photoBase64 );//photoAsBase64
-
-
+    sendDistanceRequest(photoBase64); //photoAsBase64
 
     // Uint8List photoBytes = await photo.readAsBytes();
     // Uint8List resizedBytes = await FlutterImageCompress.compressWithList(
@@ -4680,10 +4921,8 @@ class redgreen extends State<RedGreenTest> {
     // // Convert resized photo to base64
     // String photoBase64 = convert.base64Encode(resizedBytes);
 
-
     // List<int> photoAsBytes = await photo.readAsBytes();
     // String photoAsBase64 = convert.base64Encode(photoAsBytes);
-
   }
 
   Future<void> sendDistanceRequest(String image) async {
@@ -4711,8 +4950,8 @@ class redgreen extends State<RedGreenTest> {
       });
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken =
-      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-      prefs.getString('access_token') ?? '';
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+          prefs.getString('access_token') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
 
       var response = await http.post(
@@ -4759,8 +4998,7 @@ class redgreen extends State<RedGreenTest> {
   String alert = '';
   Map<String, dynamic> _data = {};
   static String action = "";
-  String snellenFraction = '0',
-      randomText = 'W';
+  String snellenFraction = '0', randomText = 'W';
   double textSize = 10 * 3.4;
   late bool isComplete;
   late bool testcancel;
@@ -4768,16 +5006,15 @@ class redgreen extends State<RedGreenTest> {
   Future<void> fetchData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
     String CustomerId = prefs.getString('customer_id') ?? '';
 
     String test_id = prefs.getString('test_id') ?? '';
     print('mytestid$test_id');
 
     final String apiUrl =
-        '${Api
-        .baseurl}/api/eye/snellen-fraction-red-green-test?test_id=$test_id';
+        '${Api.baseurl}/api/eye/snellen-fraction-red-green-test?test_id=$test_id';
 // Replace these headers with your required headers
     Map<String, String> headers = {
       'Content-Type': 'application/json',
@@ -4820,16 +5057,15 @@ class redgreen extends State<RedGreenTest> {
 
   //double imageSize = 200.0; // Initial image size
   Map<String, dynamic>? paymentIntent;
-  String selectedPlan = 'a',
-      expiry_date = 'b';
+  String selectedPlan = 'a', expiry_date = 'b';
   String test_left = '0';
   late String subscriptionId;
 
   Future<void> _callAPI() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
 // Replace this URL with your PUT API endpoint
     String test_id = prefs.getString('test_id') ?? '';
     String CustomerId = prefs.getString('customer_id') ?? '';
@@ -4872,7 +5108,7 @@ class redgreen extends State<RedGreenTest> {
         print('Red/green Test: $snellenFraction');
         print('Red/green Test: $randomText');
         print('Red/green Test: $textSize');
-        textSize = textSize*3.4;
+        textSize = textSize * 3.4;
         setState(() {
           snellenFraction;
           textSize;
@@ -4887,12 +5123,12 @@ class redgreen extends State<RedGreenTest> {
           }
           Fluttertoast.showToast(
               msg:
-              'Please do the test again and follow the instructions carefully ... ');
+                  'Please do the test again and follow the instructions carefully ... ');
           /*    CustomAlertDialog.attractivepopup(context,
               'Please do the test again and follow the instructions carefully ... ');*/
           Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => HomePage()),
-                  (Route<dynamic> route) => false);
+              MaterialPageRoute(builder: (context) => Dashboard()),
+              (Route<dynamic> route) => false);
         }
       }
 // If the server did not return a 200 OK response,
@@ -4911,8 +5147,8 @@ class redgreen extends State<RedGreenTest> {
   Future<void> UpdateRedGreenTest() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String authToken =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
-    prefs.getString('access_token') ?? '';
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
+        prefs.getString('access_token') ?? '';
     String test_id = prefs.getString('test_id') ?? '';
     String CustomerId = prefs.getString('customer_id') ?? '';
 
@@ -4957,7 +5193,7 @@ class redgreen extends State<RedGreenTest> {
               Navigator.push(
                 context,
                 CupertinoPageRoute(builder: (context) => ReadingTest()),
-              );
+              ).then((value) => Navigator.of(context).pop());
             } else {
               // Navigate to appropriate screen based on age and eye status
               if (age < 40 && jsonResponseMap["data"]['data']["is_completed"]) {
@@ -4971,21 +5207,21 @@ class redgreen extends State<RedGreenTest> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const TestReport()));
+                        builder: (context) => const TestReport())).then((value) => Navigator.of(context).pop());
               } else if (age >= 40 &&
                   !jsonResponseMap["data"]['data']["is_completed"]) {
                 // Otherwise, navigate to the next appropriate screen
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => ReadingTest()),
-                );
+                ).then((value) => Navigator.of(context).pop());
               }
             }
           } else {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => RightEye()),
-            );
+            ).then((value) => Navigator.of(context).pop());
           }
         } else {
           print("Invalid response format or missing 'eye_status' field.");
@@ -5008,11 +5244,50 @@ class redgreen extends State<RedGreenTest> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        return false;
+        if (flutterTts != null) {
+          flutterTts.pause();
+        }
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              contentPadding:
+                  const EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
+
+              title: const Text(
+                "Are you sure to exit test?",
+                style: TextStyle(fontSize: 18),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text(
+                    "Yes",
+                    style: TextStyle(fontSize: 16), // Adjust button text size
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: const Text(
+                    "No",
+                    style: TextStyle(fontSize: 16), // Adjust button text size
+                  ),
+                  onPressed: () {
+                    // Handle 'No' button tap
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return true;
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("EYE TEST"),
+          title: const Text("EYE TEST"),
           centerTitle: true,
           leading: GestureDetector(
             onTap: () {
@@ -5020,23 +5295,30 @@ class redgreen extends State<RedGreenTest> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    contentPadding: EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
+                    contentPadding: const EdgeInsets.fromLTRB(
+                        24, 20, 24, 0), // Adjust content padding
 
-                    title: Text("Are you sure to exit test?", style: TextStyle(fontSize: 18), ),
+                    title: const Text(
+                      "Are you sure to exit test?",
+                      style: TextStyle(fontSize: 18),
+                    ),
                     actions: <Widget>[
                       TextButton(
-                        child: Text("Yes",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                        child: const Text(
+                          "Yes",
+                          style: TextStyle(
+                              fontSize: 16), // Adjust button text size
                         ),
                         onPressed: () {
-                          Navigator.of(context).pop(); // Close the dialog
-                          Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(builder: (context) => HomePage()),
-                                  (Route<dynamic> route) => false);
-                          // Navigate back (in this example)
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
                         },
                       ),
                       TextButton(
-                        child: Text("No",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                        child: const Text(
+                          "No",
+                          style: TextStyle(
+                              fontSize: 16), // Adjust button text size
                         ),
                         onPressed: () {
                           // Handle 'No' button tap
@@ -5048,13 +5330,12 @@ class redgreen extends State<RedGreenTest> {
                 },
               );
             },
-            child: Icon(
+            child: const Icon(
               Icons.arrow_back,
               color: Colors.black,
               size: 30,
             ),
           ),
-
         ),
         body: Stack(
           children: <Widget>[
@@ -5065,8 +5346,8 @@ class redgreen extends State<RedGreenTest> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 10.0),
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 10.0),
                       child: Text(
                         'Red/Green Test',
                         style: TextStyle(
@@ -5081,8 +5362,8 @@ class redgreen extends State<RedGreenTest> {
                       child: GestureDetector(
                         onTap: _onReplayPressed,
                         child: Container(
-                          padding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 10),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(25),
                           ),
@@ -5090,15 +5371,15 @@ class redgreen extends State<RedGreenTest> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Padding(
-                                padding: EdgeInsets.only(top: 4.0),
+                                padding: const EdgeInsets.only(top: 4.0),
                                 child: Image.asset(
                                   'assets/play_circle_fill.png',
                                   width: 50,
                                   height: 40,
                                 ),
                               ),
-                              SizedBox(width: 8),
-                              Text(
+                              const SizedBox(width: 8),
+                              const Text(
                                 'Replay Audio',
                                 style: TextStyle(
                                   color: Colors.black,
@@ -5118,10 +5399,7 @@ class redgreen extends State<RedGreenTest> {
                           _callAPI();
                         },
                         child: Container(
-                          width: MediaQuery
-                              .of(context)
-                              .size
-                              .width,
+                          width: MediaQuery.of(context).size.width,
                           height: 150,
                           color: Colors.red.shade700,
                           child: Center(
@@ -5137,7 +5415,7 @@ class redgreen extends State<RedGreenTest> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 10.0),
+                    const SizedBox(height: 10.0),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
                       child: InkWell(
@@ -5146,10 +5424,7 @@ class redgreen extends State<RedGreenTest> {
                           _callAPI();
                         },
                         child: Container(
-                          width: MediaQuery
-                              .of(context)
-                              .size
-                              .width,
+                          width: MediaQuery.of(context).size.width,
                           height: 150,
                           color: Colors.green.shade700,
                           child: Center(
@@ -5165,21 +5440,21 @@ class redgreen extends State<RedGreenTest> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 10, height: 10),
+                    const SizedBox(width: 10, height: 10),
                     Container(
-                      padding: EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(8),
                       child: Text(
                         alert,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 18,
                           color:
-                          alert == 'Good to go' ? Colors.green : Colors.red,
+                              alert == 'Good to go' ? Colors.green : Colors.red,
                           fontWeight: FontWeight.normal,
                         ),
                       ),
                     ),
-                    SizedBox(height: 60),
+                    const SizedBox(height: 60),
                     // Add some space to avoid overlap with the button
                   ],
                 ),
@@ -5221,7 +5496,7 @@ class redgreen extends State<RedGreenTest> {
                     // Call your function here
                     UpdateRedGreenTest();
                   },
-                  child: Text(
+                  child: const Text(
                     'Next',
                     style: TextStyle(
                       color: Colors.white,
@@ -5233,9 +5508,11 @@ class redgreen extends State<RedGreenTest> {
             ),
           ],
         ),
-      ),);
+      ),
+    );
   }
 }
+
 class RightEye extends StatefulWidget {
 //for Red Green Test Screen
   @override
@@ -5271,15 +5548,52 @@ class RightEyeState extends State<RightEye> {
 // Add your desired functionality here
   @override
   Widget build(BuildContext context) {
-    return  WillPopScope(
+    return WillPopScope(
       onWillPop: () async {
+        if (flutterTts != null) {
+          flutterTts.pause();
+        }
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              contentPadding:
+                  const EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
 
-
-        return false;
+              title: const Text(
+                "Are you sure to exit test?",
+                style: TextStyle(fontSize: 18),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text(
+                    "Yes",
+                    style: TextStyle(fontSize: 16), // Adjust button text size
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: const Text(
+                    "No",
+                    style: TextStyle(fontSize: 16), // Adjust button text size
+                  ),
+                  onPressed: () {
+                    // Handle 'No' button tap
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return true;
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("EYE TEST"),
+          title: const Text("EYE TEST"),
           centerTitle: true,
           leading: GestureDetector(
             onTap: () {
@@ -5287,23 +5601,30 @@ class RightEyeState extends State<RightEye> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    contentPadding: EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
+                    contentPadding: const EdgeInsets.fromLTRB(
+                        24, 20, 24, 0), // Adjust content padding
 
-                    title: Text("Are you sure to exit test?", style: TextStyle(fontSize: 18), ),
+                    title: const Text(
+                      "Are you sure to exit test?",
+                      style: TextStyle(fontSize: 18),
+                    ),
                     actions: <Widget>[
                       TextButton(
-                        child: Text("Yes",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                        child: const Text(
+                          "Yes",
+                          style: TextStyle(
+                              fontSize: 16), // Adjust button text size
                         ),
                         onPressed: () {
-                          Navigator.of(context).pop(); // Close the dialog
-                          Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(builder: (context) => HomePage()),
-                                  (Route<dynamic> route) => false);
-                          // Navigate back (in this example)
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
                         },
                       ),
                       TextButton(
-                        child: Text("No",                          style: TextStyle(fontSize: 16), // Adjust button text size
+                        child: const Text(
+                          "No",
+                          style: TextStyle(
+                              fontSize: 16), // Adjust button text size
                         ),
                         onPressed: () {
                           // Handle 'No' button tap
@@ -5315,13 +5636,12 @@ class RightEyeState extends State<RightEye> {
                 },
               );
             },
-            child: Icon(
+            child: const Icon(
               Icons.arrow_back,
               color: Colors.black,
               size: 30,
             ),
           ),
-
         ),
         body: Stack(
           children: [
@@ -5334,7 +5654,7 @@ class RightEyeState extends State<RightEye> {
                         GestureDetector(
                           onTap: _onReplayPressed,
                           child: Container(
-                            padding: EdgeInsets.only(bottom: 10),
+                            padding: const EdgeInsets.only(bottom: 10),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(25),
                             ),
@@ -5342,16 +5662,16 @@ class RightEyeState extends State<RightEye> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Padding(
-                                  padding: EdgeInsets.only(top: 4.0),
+                                  padding: const EdgeInsets.only(top: 4.0),
                                   child: Image.asset(
                                     'assets/play_circle_fill.png',
                                     width: 50,
                                     height: 40,
                                   ),
                                 ),
-                                SizedBox(width: 8),
+                                const SizedBox(width: 8),
                                 // Adjust spacing between icon and text
-                                Text(
+                                const Text(
                                   'Replay Audio',
                                   style: TextStyle(
                                     color: Colors.black,
@@ -5362,7 +5682,7 @@ class RightEyeState extends State<RightEye> {
                             ),
                           ),
                         ),
-                        Center(
+                        const Center(
                           child: Padding(
                             padding: EdgeInsets.symmetric(horizontal: 10.0),
                             child: Text(
@@ -5376,7 +5696,7 @@ class RightEyeState extends State<RightEye> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(top: 4.0),
+                          padding: const EdgeInsets.only(top: 4.0),
                           child: Image.asset(
                             'assets/right_eye_image.png',
                             width: 300,
@@ -5384,7 +5704,7 @@ class RightEyeState extends State<RightEye> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -5403,21 +5723,22 @@ class RightEyeState extends State<RightEye> {
                 ),
                 Container(
                   width: double.infinity,
-                  padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
                   child: ElevatedButton(
                     onPressed: () {
                       select_eye_for_test('right', context);
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
-                      backgroundColor: Color(0xFF4600A9),
+                      backgroundColor: const Color(0xFF4600A9),
                       // Set button background color
-                      padding: EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                    child: Text('Next'),
+                    child: const Text('Next'),
                   ),
                 ),
               ],
@@ -5472,7 +5793,7 @@ class RightEyeState extends State<RightEye> {
         Navigator.push(
           context,
           CupertinoPageRoute(builder: (context) => AlphabetTest()),
-        );
+        ).then((value) => Navigator.of(context).pop() );
       } else {
         print(response.reasonPhrase);
       }
@@ -5511,7 +5832,7 @@ class CustomElevatedButton extends StatelessWidget {
         padding: const EdgeInsets.all(6.0),
         child: Text(
           text,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white, // Text color
             fontSize: 16,
             fontStyle: FontStyle.normal,
@@ -5538,13 +5859,13 @@ class CustomElevatedButtonG extends StatelessWidget {
     return OutlinedButton(
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
-        side: BorderSide(color: Colors.bluebutton, width: 2.0), // Blue border
+        side: const BorderSide(color: Colors.bluebutton, width: 2.0), // Blue border
         backgroundColor: Colors.white, // Yellow background
-        padding: EdgeInsets.symmetric(vertical: 1, horizontal: 20),
+        padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 20),
       ),
       child: Text(
         '+ $text', // Include the dash before the text
-        style: TextStyle(
+        style: const TextStyle(
           color: Colors.bluebutton, // Text color
           fontSize: 18,
           fontStyle: FontStyle.normal,
@@ -5570,13 +5891,13 @@ class CustomElevatedButtonY extends StatelessWidget {
     return OutlinedButton(
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
-        side: BorderSide(color: Colors.bluebutton, width: 2.0), // Blue border
+        side: const BorderSide(color: Colors.bluebutton, width: 2.0), // Blue border
         backgroundColor: Colors.white, // Yellow background
-        padding: EdgeInsets.symmetric(vertical: 1, horizontal: 20),
+        padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 20),
       ),
       child: Text(
         '- $text', // Include the dash before the text
-        style: TextStyle(
+        style: const TextStyle(
           color: Colors.bluebutton, // Text color
           fontSize: 18,
           fontStyle: FontStyle.normal,
@@ -5597,14 +5918,14 @@ void showCustomToast(BuildContext context, String message) {
       child: Material(
         color: Colors.transparent,
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
             color: Colors.black26.withOpacity(0.7),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
             message,
-            style: TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white),
           ),
         ),
       ),
@@ -5612,7 +5933,7 @@ void showCustomToast(BuildContext context, String message) {
   );
   Overlay.of(context).insert(overlayEntry);
 // Remove the toast after 2 seconds
-  Future.delayed(Duration(seconds: 2), () {
+  Future.delayed(const Duration(seconds: 2), () {
     overlayEntry.remove();
   });
 }
@@ -5639,13 +5960,13 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 3),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             widget.questionText,
-            style: TextStyle(fontSize: 14, color: Colors.black),
+            style: const TextStyle(fontSize: 14, color: Colors.black),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -5665,7 +5986,7 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
                             ),
                             side: MaterialStateBorderSide.resolveWith(
                               (states) {
-                                return BorderSide(
+                                return const BorderSide(
                                     color: Colors.bluebutton, width: 2);
                               },
                             ),
@@ -5702,7 +6023,7 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
                         ),
                       ),
                     ),
-                    Text('Yes', style: TextStyle(color: Colors.black)),
+                    const Text('Yes', style: TextStyle(color: Colors.black)),
                   ],
                 ),
               ),
@@ -5718,7 +6039,7 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
                           ),
                           side: MaterialStateBorderSide.resolveWith(
                             (states) {
-                              return BorderSide(
+                              return const BorderSide(
                                   color: Colors.bluebutton, width: 2);
                             },
                           ),
@@ -5753,7 +6074,7 @@ class _QuestionCheckboxState extends State<QuestionCheckbox> {
                       ),
                     ),
                   ),
-                  Text('No', style: TextStyle(color: Colors.black)),
+                  const Text('No', style: TextStyle(color: Colors.black)),
                 ],
               ),
             ],
@@ -5815,8 +6136,8 @@ class _CameraScreenState extends State<CameraS> {
         "Maintain the screen brightness at 50% throughout the eye test. Keep the device on a stable surface at the eye level. Keep the device at the recommended distance, for this follow the onscreen instructions throughout the eye test. Only move your face Move forward or backward till the time you see good to go sign on screen. Do not disturb or move the device from its position during the eye test. Are you ready? Let’s start the test. Please click on Start Eye Test Now.";
     _speak(replayText);
   }
-  Future<void> _initializeCamera() async {
 
+  Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
 
     CameraDescription? frontCamera = _cameras.firstWhere(
@@ -5853,14 +6174,14 @@ class _CameraScreenState extends State<CameraS> {
         print('Error capturing image: $e');
       }
 
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
     }
   }
 
   @override
   void dispose() {
     _controller.dispose();
-      flutterTts.stop();
+    flutterTts.stop();
     super.dispose();
   }
 
@@ -5878,61 +6199,103 @@ class _CameraScreenState extends State<CameraS> {
         if (flutterTts != null) {
           flutterTts.pause();
         }
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              contentPadding:
+                  const EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
 
-        return false;
+              title: const Text(
+                "Are you sure to exit test?",
+                style: TextStyle(fontSize: 18),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text(
+                    "Yes",
+                    style: TextStyle(fontSize: 16), // Adjust button text size
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+
+                  },
+                ),
+                TextButton(
+                  child: const Text(
+                    "No",
+                    style: TextStyle(fontSize: 16), // Adjust button text size
+                  ),
+                  onPressed: () {
+                    // Handle 'No' button tap
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return true;
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("EYE TEST"),
+          title: const Text("EYE TEST"),
           centerTitle: true,
-    leading: GestureDetector(
-    onTap: () {
-    showDialog(
-    context: context,
-    builder: (BuildContext context) {
-    return AlertDialog(
-    contentPadding: EdgeInsets.fromLTRB(24, 20, 24, 0), // Adjust content padding
+          leading: GestureDetector(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    contentPadding: const EdgeInsets.fromLTRB(
+                        24, 20, 24, 0), // Adjust content padding
 
-    title: Text("Are you sure to exit test?", style: TextStyle(fontSize: 18), ),
-    actions: <Widget>[
-    TextButton(
-    child: Text("Yes",                          style: TextStyle(fontSize: 16), // Adjust button text size
-    ),
-    onPressed: () {
-    Navigator.of(context).pop(); // Close the dialog
-    Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => HomePage()),
-            (Route<dynamic> route) => false);
-      // Navigate back (in this example)
-    },
-    ),
-    TextButton(
-    child: Text("No",                          style: TextStyle(fontSize: 16), // Adjust button text size
-    ),
-    onPressed: () {
-    // Handle 'No' button tap
-    Navigator.of(context).pop(); // Close the dialog
-    },
-    ),
-    ],
-    );
-    },
-    );
-    },
-    child: Icon(
-    Icons.arrow_back,
-    color: Colors.black,
-    size: 30,
-    ),
-    ),
+                    title: const Text(
+                      "Are you sure to exit test?",
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text(
+                          "Yes",
+                          style: TextStyle(
+                              fontSize: 16), // Adjust button text size
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
+
+                        },
+                      ),
+                      TextButton(
+                        child: const Text(
+                          "No",
+                          style: TextStyle(
+                              fontSize: 16),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            child: const Icon(
+              Icons.arrow_back,
+              color: Colors.black,
+              size: 30,
+            ),
+          ),
         ),
-
-    body: Column(
+        body: Column(
           children: [
             GestureDetector(
               onTap: _onReplayPressed,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(25),
                 ),
@@ -5940,16 +6303,16 @@ class _CameraScreenState extends State<CameraS> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Padding(
-                      padding: EdgeInsets.only(top: 4.0),
+                      padding: const EdgeInsets.only(top: 4.0),
                       child: Image.asset(
                         'assets/play_circle_fill.png',
                         width: 50,
                         height: 40,
                       ),
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     // Adjust spacing between icon and text
-                    Text(
+                    const Text(
                       'Replay Audio',
                       style: TextStyle(
                         color: Colors.black,
@@ -5970,16 +6333,16 @@ class _CameraScreenState extends State<CameraS> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SizedBox(height: 1),
+                      const SizedBox(height: 1),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                          SizedBox(height: 90),
+                          const SizedBox(height: 90),
                           Container(
                             width: 320,
                             height: 40,
-                            padding: EdgeInsets.all(8),
+                            padding: const EdgeInsets.all(8),
                             child: Text(
                               alert,
                               textAlign: TextAlign.center,
@@ -6014,29 +6377,28 @@ class _CameraScreenState extends State<CameraS> {
                             ),
                           ),
                           Container(
-                            margin: EdgeInsets.all(20),
+                            margin: const EdgeInsets.all(20),
                             child: ElevatedButton(
                               onPressed: () {
                                 setState(() {
-                                  _isCameraInitialized=false;
-
+                                  _isCameraInitialized = false;
                                 });
                                 Navigator.push(
                                   context,
                                   CupertinoPageRoute(
                                       builder: (context) => LeftEyeTest()),
-                                );
+                                ).then((value) => Navigator.of(context).pop() );
                               },
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: Colors.white,
                                 backgroundColor: Colors.bluebutton,
-                                padding: EdgeInsets.all(16),
-                                minimumSize: Size(200, 30),
+                                padding: const EdgeInsets.all(16),
+                                minimumSize: const Size(200, 30),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15),
                                 ),
                               ),
-                              child: Text('Start Test Now'),
+                              child: const Text('Start Test Now'),
                             ),
                           ),
                         ],
@@ -6060,7 +6422,6 @@ class _CameraScreenState extends State<CameraS> {
 
     print('Original width: $originalWidth, height: $originalHeight');
 
-
     int targetWidth = 672;
     int targetHeight = 896;
 
@@ -6073,21 +6434,21 @@ class _CameraScreenState extends State<CameraS> {
     img.Image resizedImage = img.decodeImage(resizedBytes)!;
 
     // Crop or scale the resized image to exact dimensions
-    img.Image finalImage = img.copyResize(resizedImage,
+    img.Image finalImage = img.copyResize(
+      resizedImage,
       width: targetWidth,
       height: targetHeight,
     );
 
     // Convert final image to bytes
-    List<int> finalBytes = img.encodePng(finalImage); // or encodeJpg for JPEG format
+    List<int> finalBytes =
+        img.encodePng(finalImage); // or encodeJpg for JPEG format
 
     // Convert resized photo to base64
     print('Resized width: ${finalImage.width}, height: ${finalImage.height}');
 
     String photoBase64 = convert.base64Encode(finalBytes);
-    sendDistanceRequest(photoBase64 );//photoAsBase64
-
-
+    sendDistanceRequest(photoBase64); //photoAsBase64
 
     // Uint8List photoBytes = await photo.readAsBytes();
     // Uint8List resizedBytes = await FlutterImageCompress.compressWithList(
@@ -6100,10 +6461,8 @@ class _CameraScreenState extends State<CameraS> {
     // // Convert resized photo to base64
     // String photoBase64 = convert.base64Encode(resizedBytes);
 
-
     // List<int> photoAsBytes = await photo.readAsBytes();
     // String photoAsBase64 = convert.base64Encode(photoAsBytes);
-
   }
 
   Future<void> sendDistanceRequest(String image) async {
@@ -6116,8 +6475,7 @@ class _CameraScreenState extends State<CameraS> {
     print("testTypecam:--" + text);
     if (text == 'myopia') {
       distanceType = 'fardistance';
-    }
-    else if (text == 'hyperopia') {
+    } else if (text == 'hyperopia') {
       distanceType = 'neardistance';
     }
     try {
@@ -6129,7 +6487,8 @@ class _CameraScreenState extends State<CameraS> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken = prefs.getString('access_token') ?? '';
       String CustomerId = prefs.getString('customer_id') ?? '';
-      var response = await http.post(Uri.parse(apiUrl),
+      var response = await http.post(
+        Uri.parse(apiUrl),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${authToken} ',

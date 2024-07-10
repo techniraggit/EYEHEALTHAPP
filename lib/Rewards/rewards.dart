@@ -10,6 +10,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:project_new/Rewards/rewards_sync.dart';
 import 'package:project_new/api/config.dart';
 
@@ -202,64 +203,64 @@ class RewardsScreenState extends State<RewardsScreen>
         },
       ),
       backgroundColor: Colors.white,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.all(8.0), // Add padding
-        child: ClipOval(
-          child: Material(
-            color: Colors.white70.withOpacity(0.9), // Background color
-            elevation: 4.0, // Shadow
-            child: InkWell(
-              onTap: () {
-                // Navigator.of(context).pop();
-                Navigator.push(
-                  context, CupertinoPageRoute(
-                  builder: (context) => HomePage(
-                  ),
-                ),
-
-                );
-              },
-              child: SizedBox(
-                width: 53.0, // Width of the FloatingActionButton
-                height: 50.0, // Height of the FloatingActionButton
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    // Add padding for the icon
-                    child: Image.asset(
-                      "assets/home_icon.jpeg",
-                      width: 20,
-                      // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
-                      // color: Colors.grey, // Uncomment if you want to apply a color to the image
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      // floatingActionButton: Padding(
+      //   padding: const EdgeInsets.all(8.0), // Add padding
+      //   child: ClipOval(
+      //     child: Material(
+      //       color: Colors.white70.withOpacity(0.9), // Background color
+      //       elevation: 4.0, // Shadow
+      //       child: InkWell(
+      //         onTap: () {
+      //           // Navigator.of(context).pop();
+      //           Navigator.push(
+      //             context, CupertinoPageRoute(
+      //             builder: (context) => HomePage(
+      //             ),
+      //           ),
+      //
+      //           );
+      //         },
+      //         child: SizedBox(
+      //           width: 53.0, // Width of the FloatingActionButton
+      //           height: 50.0, // Height of the FloatingActionButton
+      //           child: Center(
+      //             child: Padding(
+      //               padding: const EdgeInsets.all(8.0),
+      //               // Add padding for the icon
+      //               child: Image.asset(
+      //                 "assets/home_icon.jpg",
+      //                 width: 20,
+      //                 // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
+      //                 // color: Colors.grey, // Uncomment if you want to apply a color to the image
+      //               ),
+      //             ),
+      //           ),
+      //         ),
+      //       ),
+      //     ),
+      //   ),
+      // ),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
         child: Stack(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.black,
-                  ),
-                  iconSize: 28, // Back button icon
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.all(8.0),
+            //   child: Align(
+            //     alignment: Alignment.topLeft,
+            //     child: IconButton(
+            //       icon: const Icon(
+            //         Icons.arrow_back,
+            //         color: Colors.black,
+            //       ),
+            //       iconSize: 28, // Back button icon
+            //       onPressed: () {
+            //         Navigator.of(context).pop();
+            //       },
+            //     ),
+            //   ),
+            // ),
             Center(
               child: Padding(
                 padding:  EdgeInsets.symmetric(vertical: 12.0),
@@ -406,6 +407,7 @@ class RewardsScreenState extends State<RewardsScreen>
                   } else {
                     return SizedBox(
                       height: MediaQuery.of(context).size.height / 2.3,
+
                       // Set a fixed height or any height you deem appropriate
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
@@ -413,108 +415,115 @@ class RewardsScreenState extends State<RewardsScreen>
                         itemCount: snapshot.data!.length,
                         itemBuilder: (context, index) {
                           final offer = snapshot.data![index];
-                          return Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Card(
-                              elevation: 3,
-                              color: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15.0),
-                              ),
-                              child: Container(
-                                width: MediaQuery.of(context).size.width * 0.8,
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    // Left side - Image
-                                    Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Center(
-                                        child: Image.network(
-                                          '${ApiProvider.baseUrl}${offer.image}',
-                                          width: 80,
-                                          height: 80,
-                                          fit: BoxFit.fill,
+                          return Container(
+                            color: Colors.white70,
+                            child: Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Material(
+                                elevation: 7, // Adjust elevation as needed
+                                color: Colors.white, // Set white background color for Material
+                                borderRadius: BorderRadius.circular(20), // Optional: Add border radius
+                                child: Card(
+                                  elevation: 0,            color: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width * 0.8,
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        // Left side - Image
+                                        Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Center(
+                                            child: Image.network(
+                                              '${ApiProvider.baseUrl}${offer.image}',
+                                              width: 80,
+                                              height: 80,
+                                              fit: BoxFit.fill,
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                    // Spacer to create equal space between image and text
-                                    SizedBox(width: 8.0),
-                                    // Right side - Text content
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          // Title
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 6.0,
-                                                horizontal: 9.0),
-                                            child: Text(
-                                              offer.title,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleMedium
-                                                  ?.copyWith(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                          ),
-                                          // Description
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 8.0,
-                                                horizontal: 10.0),
-                                            child: Text(
-                                              offer.description,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleSmall
-                                                  ?.copyWith(
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                          ),
-                                          // Spacer to push button to the bottom
-                                          // Explore More Button
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 10.0),
-                                            child: ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        RewardSpecs(
-                                                            offer_id:
-                                                            offer.offerId),
+                                        // Spacer to create equal space between image and text
+                                        SizedBox(width: 8.0),
+                                        // Right side - Text content
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              // Title
+                                              Padding(
+                                                padding: const EdgeInsets.symmetric(
+                                                    vertical: 6.0,
+                                                    horizontal: 9.0),
+                                                child: Text(
+                                                  offer.title,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleMedium
+                                                      ?.copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black,
                                                   ),
-                                                );
-                                              },
-                                              child: Text('Explore More'),
-                                              style: ElevatedButton.styleFrom(
-                                                foregroundColor: Colors.white,
-                                                backgroundColor:
-                                                Colors.bluebutton,
-                                                padding: EdgeInsets.symmetric(
-                                                    vertical: 12,
-                                                    horizontal: 20),
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                  BorderRadius.circular(
-                                                      30.0),
                                                 ),
                                               ),
-                                            ),
+                                              // Description
+                                              Padding(
+                                                padding: const EdgeInsets.symmetric(
+                                                    vertical: 8.0,
+                                                    horizontal: 10.0),
+                                                child: Text(
+                                                  offer.description,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleSmall
+                                                      ?.copyWith(
+                                                    color: Colors.grey,
+                                                  ),
+                                                ),
+                                              ),
+                                              // Spacer to push button to the bottom
+                                              // Explore More Button
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 10.0),
+                                                child: ElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            RewardSpecs(
+                                                                offer_id:
+                                                                offer.offerId),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: Text('Redeem Now'),
+                                                  style: ElevatedButton.styleFrom(
+                                                    foregroundColor: Colors.white,
+                                                    backgroundColor:
+                                                    Colors.bluebutton,
+                                                    padding: EdgeInsets.symmetric(
+                                                        vertical: 12,
+                                                        horizontal: 20),
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                      BorderRadius.circular(
+                                                          30.0),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -526,143 +535,259 @@ class RewardsScreenState extends State<RewardsScreen>
                 },
               ),
             ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 0, 0, 0),
-              child: Text(
-                'Perform Eye Test', // Display formatted current date
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.bluebutton,
+            Container(
+              color: Colors.white70,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(16.0, 0, 0, 0),
+                child: Text(
+                  'Perform Eye Test', // Display formatted current date
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.bluebutton,
+                  ),
                 ),
               ),
             ),
-            Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Card(
-                elevation: 3, // Adjust elevation as needed
-                color: Colors.white,
-                child: Row(
-                  children: [
-                    // Image on the left side
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.asset(
-                        // 'assets/refer_earn.png',
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Material(
+            elevation: 7, // Adjust elevation as needed
+            color: Colors.white, // Set white background color for Material
+            borderRadius: BorderRadius.circular(8), // Optional: Add border radius
+            child: Card(
+              elevation: 0,            color: Colors.white, // Set white background color for Material
+              // Set Card's elevation to 0 to prevent shadow
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8), // Optional: Add same border radius
+              ),
+              child: Row(
+                children: [
 
-                        'assets/eyetesticon.png',
-                        // Add any additional properties to style the image
-                      ),
-                    ),
-                    // Columns on the right side
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 4.0,
-                              horizontal: 8.0,
-                            ),
-                            child: Text(
-                              'Eye Test',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
+                  // Image on the left side
+                  Image.asset(
+                    'assets/eyetesticon.png',
+                    // Add any additional properties to style the image
+                  ),
+                  // Columns on the right side
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Eye Test',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 4.0,
+                            horizontal: 8.0,
+                          ),
+                          child: Text(
+                            '',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey,
                             ),
                           ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 4.0,
-                              horizontal: 8.0,
-                            ),
-                            child: Text(
-                              '',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(2.0),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text('Choose a Test'),
-                                      content: Container(
-                                        height: 200,
-                                        // Adjust the height as needed
-                                        width: MediaQuery.of(context)
-                                                .size
-                                                .width *
-                                            0.8,
-                                        // Adjust the width as needed
-                                        child: Column(
-
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            GestureDetector(
-                                              onTap: () {
-                                                Navigator.of(context).pop();
-                                                sendcustomerDetails(true);
-                                              },
-                                              child: Image.asset(
-                                                'assets/digital_eye_exam.png',
-                                                // height: 100,
-                                              ),
-                                            ),
-                                            GestureDetector(
-                                              onTap: () {
-                                                requestPermission();
-                                                // Navigator.push(
-                                                //   context,
-                                                //   MaterialPageRoute(builder: (context) => EyeFatigueStartScreen()),
-                                                // );
-                                              },
-                                              child: Image.asset(
-                                                'assets/eyeFatigueTest.png',
-                                                // height: 100,
-                                              ),
-                                            ),
-                                          ],
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Choose a Test'),
+                                  content: Container(
+                                    height: 200,
+                                    // Adjust the height as needed
+                                    width: MediaQuery.of(context).size.width * 0.8,
+                                    // Adjust the width as needed
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            Navigator.of(context).pop();
+                                            sendcustomerDetails(true);
+                                          },
+                                          child: Image.asset(
+                                            'assets/digital_eye_exam.png',
+                                            // height: 100,
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  },
+                                        GestureDetector(
+                                          onTap: () {
+                                            requestPermission();
+                                          },
+                                          child: Image.asset(
+                                            'assets/eyeFatigueTest.png',
+                                            // height: 100,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 );
                               },
-                              child: Text('Start Test'),
-                              style: ElevatedButton.styleFrom(
-                                foregroundColor: Colors.white,
-                                backgroundColor: Colors.bluebutton,
-                                // Background color
-                                // Text color
-                                padding: EdgeInsets.all(10),
-                                minimumSize: Size(100, 20),
-                                // Button padding
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(26),
-                                  // Button border radius
-                                ),
-                              ),
+                            );
+                          },
+                          child: Text('Start Test'),
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.bluebutton,
+                            // Background color
+                            // Text color
+                            padding: EdgeInsets.all(10),
+                            minimumSize: Size(100, 20),
+                            // Button padding
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(26),
+                              // Button border radius
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ), // Add spacing between titles and dynamic list
+            ),
+          ),
+        ),
+
+        // Padding(
+            //   padding: EdgeInsets.all(8.0),
+            //   child: Card(
+            //     elevation: 3, // Adjust elevation as needed
+            //     color: Colors.white,
+            //     child: Row(
+            //       children: [
+            //         // Image on the left side
+            //         Padding(
+            //           padding: const EdgeInsets.all(8.0),
+            //           child: Image.asset(
+            //             // 'assets/refer_earn.png',
+            //
+            //             'assets/eyetesticon.png'
+            //             // Add any additional properties to style the image
+            //           ),
+            //         ),
+            //         // Columns on the right side
+            //         Padding(
+            //           padding: EdgeInsets.all(8.0),
+            //           child: Column(
+            //             crossAxisAlignment: CrossAxisAlignment.center,
+            //             children: [
+            //               Padding(
+            //                 padding: EdgeInsets.symmetric(
+            //                   vertical: 4.0,
+            //                   horizontal: 8.0,
+            //                 ),
+            //                 child: Text(
+            //                   'Eye Test',
+            //                   style: TextStyle(
+            //                     fontSize: 16,
+            //                     fontWeight: FontWeight.bold,
+            //                     color: Colors.black,
+            //                   ),
+            //                 ),
+            //               ),
+            //               Padding(
+            //                 padding: EdgeInsets.symmetric(
+            //                   vertical: 4.0,
+            //                   horizontal: 8.0,
+            //                 ),
+            //                 child: Text(
+            //                   '',
+            //                   style: TextStyle(
+            //                     fontSize: 14,
+            //                     fontWeight: FontWeight.bold,
+            //                     color: Colors.grey,
+            //                   ),
+            //                 ),
+            //               ),
+            //               Padding(
+            //                 padding: EdgeInsets.all(2.0),
+            //                 child: ElevatedButton(
+            //                   onPressed: () {
+            //                     showDialog(
+            //                       context: context,
+            //                       builder: (BuildContext context) {
+            //                         return AlertDialog(
+            //                           title: Text('Choose a Test'),
+            //                           content: Container(
+            //                             height: 200,
+            //                             // Adjust the height as needed
+            //                             width: MediaQuery.of(context)
+            //                                     .size
+            //                                     .width *
+            //                                 0.8,
+            //                             // Adjust the width as needed
+            //                             child: Column(
+            //
+            //                               mainAxisAlignment:
+            //                                   MainAxisAlignment.spaceEvenly,
+            //                               children: [
+            //                                 GestureDetector(
+            //                                   onTap: () {
+            //                                     Navigator.of(context).pop();
+            //                                     sendcustomerDetails(true);
+            //                                   },
+            //                                   child: Image.asset(
+            //                                     'assets/digital_eye_exam.png',
+            //                                     // height: 100,
+            //                                   ),
+            //                                 ),
+            //                                 GestureDetector(
+            //                                   onTap: () {
+            //                                     requestPermission();
+            //                                     // Navigator.push(
+            //                                     //   context,
+            //                                     //   MaterialPageRoute(builder: (context) => EyeFatigueStartScreen()),
+            //                                     // );
+            //                                   },
+            //                                   child: Image.asset(
+            //                                     'assets/eyeFatigueTest.png',
+            //                                     // height: 100,
+            //                                   ),
+            //                                 ),
+            //                               ],
+            //                             ),
+            //                           ),
+            //                         );
+            //                       },
+            //                     );
+            //                   },
+            //                   child: Text('Start Test'),
+            //                   style: ElevatedButton.styleFrom(
+            //                     foregroundColor: Colors.white,
+            //                     backgroundColor: Colors.bluebutton,
+            //                     // Background color
+            //                     // Text color
+            //                     padding: EdgeInsets.all(10),
+            //                     minimumSize: Size(100, 20),
+            //                     // Button padding
+            //                     shape: RoundedRectangleBorder(
+            //                       borderRadius: BorderRadius.circular(26),
+            //                       // Button border radius
+            //                     ),
+            //                   ),
+            //                 ),
+            //               ),
+            //             ],
+            //           ),
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // ), // Add spacing between titles and dynamic list
             Padding(
               padding: EdgeInsets.fromLTRB(16.0, 0, 0, 0),
               child: Text(
@@ -676,83 +801,88 @@ class RewardsScreenState extends State<RewardsScreen>
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
-              child: Card(
-                color: Colors.white,
-                elevation: 3,
-                child: Row(
-                  children: [
-                    // Image on the left side
-                    Image.asset(
-                      'assets/refer_earn.png',
-                      // Add any additional properties to style the image
-                    ),
-                    // Columns on the right side
-                    Flexible(
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                vertical: 4.0,
-                                horizontal: 8.0,
-                              ),
-                              child: Text(
-                                'Refer and Earn',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+              child: Material(
+
+                elevation: 7, // Adjust elevation as needed
+                color: Colors.white, // Set white background color for Material
+                borderRadius: BorderRadius.circular(8), // Optional: Add border radius
+                child: Card(
+                  elevation: 0,            color: Colors.white,
+                  child: Row(
+                    children: [
+                      // Image on the left side
+                      Image.asset(
+                        'assets/refer_earn.png',
+                        // Add any additional properties to style the image
+                      ),
+                      // Columns on the right side
+                      Flexible(
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 4.0,
+                                  horizontal: 8.0,
                                 ),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                vertical: 4.0,
-                                horizontal: 8.0,
-                              ),
-                              child: Text(
-                                '',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(2.0),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => RewardContact(),
-                                    ),
-                                  );
-                                },
-                                child: Text('Explore More'),
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  backgroundColor: Colors.bluebutton,
-                                  // Background color
-                                  // Text color
-                                  padding: EdgeInsets.all(10),
-                                  minimumSize: Size(100, 20),
-                                  // Button padding
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(26),
-                                    // Button border radius
+                                child: Text(
+                                  'Refer and Earn',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 4.0,
+                                  horizontal: 8.0,
+                                ),
+                                child: Text(
+                                  '',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.all(2.0),
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => RewardContact(),
+                                      ),
+                                    );
+                                  },
+                                  child: Text('Refer Now'),
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                    backgroundColor: Colors.bluebutton,
+                                    // Background color
+                                    // Text color
+                                    padding: EdgeInsets.all(10),
+                                    minimumSize: Size(100, 20),
+                                    // Button padding
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(26),
+                                      // Button border radius
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -770,91 +900,99 @@ class RewardsScreenState extends State<RewardsScreen>
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
-              child: Card(
-                color: Colors.white,
-                elevation: 3,
-                child: Row(
-                  children: [
-                    // Image on the left side
-                    Image.asset(
-                      'assets/prescription.png',
-                      // Add any additional properties to style the image
-                    ),
-                    // Columns on the right side
-                    Flexible(
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                vertical: 4.0,
-                                horizontal: 8.0,
-                              ),
-                              child: Text(
-                                'Upload Prescription',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+              child: Material(
+                elevation: 7, // Adjust elevation as needed
+                color: Colors.white, // Set white background color for Material
+                borderRadius: BorderRadius.circular(8), // Optional: Add border radius
+                child: Card(
+                  elevation: 0,            color: Colors.white,
+                  child: Row(
+                    children: [
+                      // Image on the left side
+                      Image.asset(
+                        'assets/prescription.png',
+                        // Add any additional properties to style the image
+                      ),
+                      // Columns on the right side
+                      Flexible(
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 4.0,
+                                  horizontal: 8.0,
                                 ),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                vertical: 4.0,
-                                horizontal: 8.0,
-                              ),
-                              child: Text(
-                                '',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(2.0),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          PrescriptionUpload(),
-                                    ),
-                                  );
-                                },
-                                child: Text('Explore More'),
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  backgroundColor: Colors.bluebutton,
-                                  // Background color
-                                  // Text color
-                                  padding: EdgeInsets.all(10),
-                                  minimumSize: Size(100, 20),
-                                  // Button padding
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(26),
-                                    // Button border radius
+                                child: Text(
+                                  'Upload Prescription',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 4.0,
+                                  horizontal: 8.0,
+                                ),
+                                child: Text(
+                                  '',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.all(2.0),
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            PrescriptionUpload(),
+                                      ),
+                                    );
+                                  },
+                                  child: Text('Upload Now'),
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                    backgroundColor: Colors.bluebutton,
+                                    // Background color
+                                    // Text color
+                                    padding: EdgeInsets.all(10),
+                                    minimumSize: Size(100, 20),
+                                    // Button padding
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(26),
+                                      // Button border radius
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
+            ),
+
+            const SizedBox(
+              height: 80,
             ),
           ],
         ),
       ),
-      bottomNavigationBar: CustomBottomAppBar(currentScreen: "Rewards"),
+      // bottomNavigationBar: CustomBottomAppBar(currentScreen: "Rewards"),
     );
   }
 
@@ -865,10 +1003,17 @@ class RewardsScreenState extends State<RewardsScreen>
     if ((status == PermissionStatus.granted &&
         status2 == PermissionStatus.granted)) {
       setState(() {
-        Navigator.push(
+        pushNewScreenWithRouteSettings(
           context,
-          MaterialPageRoute(builder: (context) => EyeFatigueSelfieScreen()),
+          settings: const RouteSettings(name: 'music_player_page'),
+          screen: EyeFatigueSelfieScreen(),
+          withNavBar: false,
+          pageTransitionAnimation: PageTransitionAnimation.cupertino,
         );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => EyeFatigueSelfieScreen()),
+        // );
       });
     }
     if (!status.isGranted) {

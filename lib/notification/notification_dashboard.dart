@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:action_broadcast/action_broadcast.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -48,7 +49,7 @@ class _NotificationSideBarState extends State<NotificationSideBar> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Padding(
-                    padding: EdgeInsets.fromLTRB(8.0,30,2,2),
+                    padding: EdgeInsets.fromLTRB(12.0,30,2,2),
                     child: Text(
                       'NOTIFICATIONS',
                       style: TextStyle(fontSize: 13,fontWeight: FontWeight.bold,color: Colors.background),
@@ -132,6 +133,8 @@ class _NotificationSideBarState extends State<NotificationSideBar> {
                   },
                 ),
               ),
+              SizedBox(height: 80,)
+
             ],
           ),
         ),
@@ -139,105 +142,119 @@ class _NotificationSideBarState extends State<NotificationSideBar> {
     );
   }
 
-  Future<void> updateNotificationStatus(String id, int position) async {
-    print("kjhgfc" + id.toString());
-    notificationModel!.data![position].isRead = true;
-    setState(() {});
-
-    String userToken = '';
-    var sharedPref = await SharedPreferences.getInstance();
-    userToken = sharedPref.getString("access_token") ?? '';
-
-    Map<String, String> headers = {
-      'Authorization': 'Bearer $userToken',
-      'Content-Type': 'application/json',
-    };
-
-    final url = '${ApiProvider.baseUrl}${ApiProvider.update_notification_status}';
-    print('URL: $url');
-
-    Map<String, dynamic> requestBody = {
-      "id": id.toString(), // Convert id to String
-    };
-
-    final response = await http.put(
-      Uri.parse(url),
-      body: jsonEncode(requestBody),
-      headers: headers,
-    );
-    sendBroadcast('actionMusicPlaying');
-
-    print("okijuhgfc" + response.body);
-  }
 
   Widget notificationCard(NotificationData? notificationData, Function onPressed,int position) {
-    return Container(
-      margin: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-          color: Colors.grey.withOpacity(0.05),
-          border: notificationData!.isRead! ? null : Border.all(
-            color: Colors.black,
-            width:  0.6,
-          ),
-          borderRadius: BorderRadius.circular(15)
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+    return
+      // Container(
+      // margin: const EdgeInsets.all(10),
+      // decoration: BoxDecoration(
+      //     color: Colors.white.withOpacity(0.05),
+      //     border: notificationData!.isRead! ? Border.all(
+      //       color: Colors.background.withOpacity(0.5),
+      //       width:  0.6,
+      //     ) : Border.all(
+      //       color: Colors.grey,
+      //       width:  0.6,
+      //     ),
+      //     borderRadius: BorderRadius.circular(12)
+      // ),
+      // child:
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          // crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
 
-          ListTile(
-              title: Text.rich(
-                TextSpan(
-                  children: [
-                    TextSpan(
-                      text: '${notificationData.title}',
-                      style: const TextStyle(
-                        fontSize: 16, // Example font size
-                        fontWeight: FontWeight.bold, // Example font weight for the first part
-                        color: Colors.black, // Example text color
-                      ),
+            GestureDetector(
+              onTap: (){
+                if(!notificationData!.isRead!) {
+
+                  widget.onNotificationUpdate();
+                  String id=notificationData.id!;
+                  print("JHGNVm${id}");
+                  updateNotificationStatus(
+                      id, position);
+                }
+              },
+              child: Material(
+                color: Colors.white,
+                elevation: 5,borderRadius: BorderRadius.circular(10),
+                child: Padding(
+                  padding:  EdgeInsets.only(bottom: 6.0,left: 4,right: 4),
+                  child: ListTile(
+                    leading: Icon(
+                      Icons.message, // Replace with your desired icon
+                      color: Colors.blue, // Replace with your desired color
                     ),
-                    TextSpan(
-                      text: '\n${getTimeDifference(notificationData.created ?? '')}' ?? 'No title',
-                      style: const TextStyle(
-                        fontSize: 16, // Example font size
-                        color: Colors.black, // Example text color
+                      title: Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: '${notificationData?.title}',
+                              style: const TextStyle(
+                                fontSize: 16, // Example font size
+                                fontWeight: FontWeight.bold, // Example font weight for the first part
+                                color: Colors.black, // Example text color
+                              ),
+                            ),
+                        // notificationData!.isRead! ? Border.all(
+                          //       color: Colors.background.withOpacity(0.5),
+                          //       width:  0.6,
+                          //     ) : Border.all(
+                          //       color: Colors.grey,
+                          //       width:  0.6,
+                          //     ),
+                            TextSpan(
+                              text: '\n${notificationData?.message!}',
+                              //'\n${getTimeDifference(notificationData.created ?? '')}' ?? 'No title',
+                              style:  TextStyle(
+                                fontSize: 16, // Example font size
+                                color:notificationData!.isRead! ?  Colors.black45:Colors.background.withOpacity(0.4), // Example text color
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                      // trailing: IconButton(
+                      //   icon: Icon(notificationData.isExpanded ? Icons.expand_less : Icons
+                      //       .expand_more),
+                      //   onPressed: () {
+                      //     onPressed();
+                      //     if(!notificationData.isRead!) {
+                      //
+                      //       widget.onNotificationUpdate();
+                      //       String id=notificationData.id!;
+                      //       print("JHGNVm${id}");
+                      //       updateNotificationStatus(
+                      //           id, position);
+                      //     }
+                      //   },
+                      // )
+
+
+                  ),
                 ),
               ),
-              trailing: IconButton(
-                icon: Icon(notificationData.isExpanded ? Icons.expand_less : Icons
-                    .expand_more),
-                onPressed: () {
-                  onPressed();
-                  if(!notificationData.isRead!) {
-
-                    widget.onNotificationUpdate();
-                    String id=notificationData.id!;
-                    print("JHGNVm${id}");
-                    updateNotificationStatus(
-                        id, position);
-                  }
-                },
-              )
-
-
-          ),
-          if (notificationData.isExpanded && notificationData.message !=
-              null ) // if (_expanded && widget.data.data != null && widget.data.data!.isNotEmpty) {
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(notificationData.message!),
             ),
-          const SizedBox(
-            height: 15,
-          ),
-        ],
-      ),
-    );
+            // if (notificationData.isExpanded && notificationData.message !=
+            //     null ) // if (_expanded && widget.data.data != null && widget.data.data!.isNotEmpty) {
+            //   Padding(
+            //     padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            //     child: Text(notificationData.message!),
+            //   ),
+            // const SizedBox(
+            //   height: 15,
+            // ),
+          ],
+        ),
+      );
+    // );
   }
+
+
+
+
+
 
   String getTimeDifference(String dateString) {
     // Parse the provided date string
@@ -260,8 +277,6 @@ class _NotificationSideBarState extends State<NotificationSideBar> {
       return DateFormat.yMMMd().format(date);
     }
   }
-
-
   Future<void> fetchData() async {
     // try {
       String userToken = '';
@@ -316,8 +331,36 @@ class _NotificationSideBarState extends State<NotificationSideBar> {
   //   //   print("Exception---: $e");
   //   // }
   // }
+  Future<void> updateNotificationStatus(String id, int position) async {
+    print("kjhgfc" + id.toString());
+    notificationModel!.data![position].isRead = true;
+    setState(() {});
 
+    String userToken = '';
+    var sharedPref = await SharedPreferences.getInstance();
+    userToken = sharedPref.getString("access_token") ?? '';
 
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $userToken',
+      'Content-Type': 'application/json',
+    };
+
+    final url = '${ApiProvider.baseUrl}${ApiProvider.update_notification_status}';
+    print('URL: $url');
+
+    Map<String, dynamic> requestBody = {
+      "id": id.toString(), // Convert id to String
+    };
+
+    final response = await http.put(
+      Uri.parse(url),
+      body: jsonEncode(requestBody),
+      headers: headers,
+    );
+    sendBroadcast('actionMusicPlaying');
+
+    print("okijuhgfc" + response.body);
+  }
   Future<void> _makeAllRead() async {
     String userToken = '';
     var sharedPref = await SharedPreferences.getInstance();

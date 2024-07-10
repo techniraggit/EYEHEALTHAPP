@@ -10,6 +10,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:project_new/Rewards/rewards.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api/Api.dart';
@@ -23,12 +24,13 @@ class MyPlan extends StatefulWidget {
 
 class MyPlanState extends State<MyPlan> {
   late Future<List<Plan>> futurePlans;
-
+late String email='';late String phoneno='';
   @override
   void initState() {
     super.initState();
+    Userprofile();
     futurePlans = _getPlanApi(context);
-    checkActivePlan("");
+    // checkActivePlan("");
   }
 
   late String PlanId;
@@ -53,6 +55,178 @@ class MyPlanState extends State<MyPlan> {
           },
         ),
       ),
+
+
+
+      // body: FutureBuilder<List<Plan>>(
+      //   future: futurePlans,
+      //   builder: (context, snapshot) {
+      //     if (snapshot.connectionState == ConnectionState.waiting) {
+      //       return const Center(child: CircularProgressIndicator());
+      //     } else if (snapshot.hasError) {
+      //       return Center(child: Text('Error: ${snapshot.error}'));
+      //     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+      //       return const Center(child: Text('No plans available'));
+      //     } else {
+      //       final plans = snapshot.data!;
+      //       return Padding(
+      //         padding: const EdgeInsets.all(8.0),
+      //         child: GridView.builder(
+      //           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      //             crossAxisCount: 2,
+      //             crossAxisSpacing: 10.0,
+      //             mainAxisSpacing: 10.0,
+      //             childAspectRatio: 0.38,
+      //           ),
+      //           itemCount: plans.length,
+      //           itemBuilder: (context, index) {
+      //             final plan = plans[index];
+      //
+      //             // final features = plan.description.split('.');
+      //             List<String> _parseHtml(String htmlString) {
+      //               var document = htmlParser.parse(htmlString);
+      //               var elements = document.querySelectorAll('li');
+      //               return elements.map((element) => element.text).toList();
+      //             }
+      //
+      //             List<String> features = _parseHtml(plan.description);
+      //
+      //             bool isSelected = plan.id == selectedPlanId;
+      //             return Container(
+      //               decoration: BoxDecoration(
+      //                 color: isSelected ? Colors.white : Colors.white,
+      //                 borderRadius: BorderRadius.circular(12.0),
+      //                 // Corner radius
+      //                 boxShadow: [
+      //                   BoxShadow(
+      //                     color: Colors.grey.withOpacity(0.5),
+      //                     // Shadow color with opacity
+      //                     spreadRadius: 2,
+      //                     // Spread radius
+      //                     blurRadius: 5,
+      //                     // Blur radius
+      //                     offset: const Offset(0, 3), // Shadow position (x, y)
+      //                   ),
+      //                 ],
+      //               ),
+      //               child: Padding(
+      //                 padding: const EdgeInsets.all(8),
+      //                 child: Column(
+      //                   crossAxisAlignment: CrossAxisAlignment.start,
+      //                   children: [
+      //                     Padding(
+      //                       padding: const EdgeInsets.symmetric(
+      //                           vertical: 2.0, horizontal: 8.0),
+      //                       child: Text(
+      //                         plan.name,
+      //                         style: const TextStyle(
+      //                           fontSize: 16,
+      //                           fontWeight: FontWeight.bold,
+      //                           color: Colors.black,
+      //                         ),
+      //                       ),
+      //                     ),
+      //                     Padding(
+      //                       padding: const EdgeInsets.symmetric(vertical: 8.0),
+      //                       child: Text(
+      //                         '\₹${plan.price}/${plan.planType}',
+      //                         style: const TextStyle(
+      //                             fontSize: 16,
+      //                             color: Colors.black,
+      //                             fontWeight: FontWeight.bold),
+      //                       ),
+      //                     ),
+      //                     for(int i=0;i<features.length;i++)...{
+      //                       Padding(
+      //                         padding: const EdgeInsets.symmetric(vertical: 5.0),
+      //                         child: Row(
+      //                           children: [
+      //                             Icon(
+      //                               Icons.check,
+      //                               color: Colors.blue,
+      //                               size: 20,
+      //                             ),
+      //                             const SizedBox(width: 5),
+      //                             Expanded(
+      //                               child: Text(
+      //                                 features[index],
+      //                                 style: TextStyle(
+      //                                   fontSize: 16,
+      //                                   color: Colors.grey.shade700,
+      //                                   fontStyle: FontStyle.normal,
+      //                                 ),
+      //                               ),
+      //                             ),
+      //                           ],
+      //                         ),
+      //                       )},
+      //
+      //                     // ...features.map((feature) =>
+      //                     //     Row(
+      //                     //       children: [
+      //                     //         Icon(
+      //                     //           Icons.check,
+      //                     //           color: isSelected
+      //                     //               ? Colors.bluebutton
+      //                     //               : Colors.bluebutton,
+      //                     //           size: 20,
+      //                     //         ),
+      //                     //         const SizedBox(width: 5),
+      //                     //         Expanded(
+      //                     //           child: Text(
+      //                     //             feature,
+      //                     //             style: TextStyle(
+      //                     //               fontSize: 16,
+      //                     //               color: Colors.grey.shade700,
+      //                     //               fontStyle: FontStyle.normal,
+      //                     //             ),
+      //                     //           ),
+      //                     //         ),
+      //                     //       ],
+      //                     //     )),
+      //                     const Spacer(),
+      //                     Padding(
+      //                       padding: const EdgeInsets.symmetric(vertical: 10),
+      //                       child: ElevatedButton(
+      //                         onPressed: () {
+      //                           checkActivePlan(plan.price);
+      //                           PlanId = plan.id;
+      //                           // Add your button onPressed logic here
+      //                         },
+      //                         style: ElevatedButton.styleFrom(
+      //                           foregroundColor:
+      //                           isSelected ? Colors.black : Colors.white,
+      //                           backgroundColor: isSelected
+      //                               ? Colors.deepPurple.shade100
+      //                               : Colors.bluebutton,
+      //                           padding: const EdgeInsets.all(10),
+      //                           minimumSize: const Size(100, 20),
+      //                           shape: RoundedRectangleBorder(
+      //                             borderRadius: BorderRadius.circular(26),
+      //                           ),
+      //                         ),
+      //                         child: Text(isSelected ? 'Selected' : 'Buy Plan'),
+      //                       ),
+      //                     ),
+      //                     SizedBox(height: 80,)
+      //                   ],
+      //                 ),
+      //               ),
+      //             );
+      //           },
+      //         ),
+      //       );
+      //     }
+      //   },
+      // ),
+
+
+
+
+
+
+
+
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(15, size,15,0),
         child: Column(
@@ -139,6 +313,10 @@ class MyPlanState extends State<MyPlan> {
   }
 
   createPaymentIntent(String amount, String currency) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    UserId = prefs.getString('user_id') ?? '';
+
     try {
       Map<String, dynamic> body = {
         'amount': calculateAmount(amount),
@@ -173,7 +351,49 @@ class MyPlanState extends State<MyPlan> {
     final calculatedAmount = (double.parse(amount) * 100).toInt();
     return calculatedAmount.toString();
   }
+  void handlePaymentErrorResponse(PaymentFailureResponse response){
+    /*
+    * PaymentFailureResponse contains three values:
+    * 1. Error Code
+    * 2. Error Description
+    * 3. Metadata
+    * */
+    showAlertDialog(context, "Payment Failed", "Code: ${response.code}\nDescription: ${response.message}\nMetadata:${response.error.toString()}");
+  }
 
+  void handlePaymentSuccessResponse(PaymentSuccessResponse response){
+    /*
+    * Payment Success Response contains three values:
+    * 1. Order ID
+    * 2. Payment ID
+    * 3. Signature
+    * */
+    showAlertDialog(context, "Payment Successful", "Payment ID: ${response.paymentId}");
+  }
+
+  void handleExternalWalletSelected(ExternalWalletResponse response){
+    showAlertDialog(context, "External Wallet Selected", "${response.walletName}");
+  }
+
+  void showAlertDialog(BuildContext context, String title, String message){
+    // set up the buttons
+    Widget continueButton = ElevatedButton(
+      child: const Text("Continue"),
+      onPressed:  () {},
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text(title),
+      content: Text(message),
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
   void checkActivePlan(String price) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('access_token') ?? '';
@@ -194,14 +414,41 @@ class MyPlanState extends State<MyPlan> {
       // Access the value of is_verified
       isActivePlan = jsonResponse['is_active_plan'];
       selectedPlanId = jsonResponse['plan_id'];
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      UserId = prefs.getString('user_id') ?? '';
 
-      setState(() {
-        if (isActivePlan == false) {
-          makePayment(price);
-        } else {
-          Fluttertoast.showToast(msg: "you already have an active plan !!");
-        }
-      });
+      // setState(() {
+      //   if (isActivePlan == false) {
+          // makePayment(price);
+          Razorpay razorpay = Razorpay();
+          var options = {
+            'key': 'rzp_test_2l6JfsPM4u3Y2l',
+            'amount':calculateAmount(price),
+            'name': 'Zukti Eye Health App',
+            'description': 'Fine T-Shirt',
+            'notes':{
+              'plan_id': PlanId,
+              'user_id': UserId,
+            },
+
+            'retry': {'enabled': true, 'max_count': 1},
+            'send_sms_hash': true,
+            'prefill': {'contact': '${phoneno}', 'email': '${email}'},
+            // 'external': {
+            //   'wallets': ['paytm']
+            // }
+          };
+      print("options======:${options}");
+
+      razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, handlePaymentErrorResponse);
+          razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlePaymentSuccessResponse);
+          razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, handleExternalWalletSelected);
+          razorpay.open(options);
+        // }
+        // else {
+        //   Fluttertoast.showToast(msg: "you already have an active plan !!");
+        // }
+      // });
 
       print("responseviewprofile:${response.body}");
 
@@ -219,6 +466,54 @@ class MyPlanState extends State<MyPlan> {
     }
     throw Exception('');
   }
+  void Userprofile() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String token = prefs.getString('access_token') ?? '';
+      final response = await http.get(
+        Uri.parse('${ApiProvider.baseUrl + ApiProvider.getUserProfile}'),
+        headers: <String, String>{
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+
+        Map<String, dynamic> responseData = jsonDecode(response.body);
+
+        if (responseData.containsKey('data')) {
+          var data = responseData['data'];
+
+
+
+
+          if (data.containsKey('email') ) {
+            email = data['email'].toString() ;
+
+          }
+          if (data.containsKey('phone_number') ) {
+            phoneno = data['phone_number'].toString() ;
+
+          }
+        }
+
+        print("responseviewprofile:${response.body}");
+
+        // return json.decode(response.body);
+      } else {
+        print(response.body);
+      }
+      setState(() {
+
+      });
+    } catch (e) {
+      // _progressDialog!.hide();
+
+      print("exception:$e");
+    }
+    // throw Exception('');
+  }
+
 }
 
 late final jsonResponse;

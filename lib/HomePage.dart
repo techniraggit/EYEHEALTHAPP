@@ -19,6 +19,7 @@ import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:project_new/alarm/SharedPref.dart';
 import 'package:project_new/alarm/demo_main.dart';
 // import 'package:project_new/alarm/demo_main.dart';
@@ -130,35 +131,12 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   bool isActivePlan = false;
   bool isLoading1 = true;
   int? isReadFalseCount = 0;
-  Timer? _timer;
+  Timer? _timer;bool isCrosalLoading=true;
 
   // Define selectedDate within the _CalendarButtonState class
   final GlobalKey<ScaffoldState> _scafoldKey = GlobalKey();
 
-  late List<AlarmSettings> alarms;
-  List<Map<String, dynamic>>? _datagraph;
 
-  static StreamSubscription<AlarmSettings>? subscription;
-  late DateTime _fromDate;
-  late DateTime _toDate;
-
-  Future<void> _selectDate(BuildContext context, bool isFromDate) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: isFromDate ? _fromDate : _toDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null && picked != (isFromDate ? _fromDate : _toDate)) {
-      setState(() {
-        if (isFromDate) {
-          _fromDate = picked;
-        } else {
-          _toDate = picked;
-        }
-      });
-    }
-  }
 
   void _startTimer() {
     const tenSeconds = Duration(seconds: 10);
@@ -170,15 +148,12 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
 
   @override
   void dispose() {
-    print("gngjhgfjhgjhjjhjgjh");
     cancelTimer();
-    subscription?.cancel();
     super.dispose();
   }
 
   Future<void> cancelTimer() async {
     if (_timer != null) {
-      print("CancelTimer");
       _timer!.cancel();
     }
   }
@@ -187,17 +162,12 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
   @override
   void initState() {
     super.initState();
-    getGraph();
+    // getGraph();
     getCarouselData();
-    if (Alarm.android) {
-      checkAndroidNotificationPermission();
-      checkAndroidScheduleExactAlarmPermission();
-    }
-    loadAlarms();
     getGraph();
     _startTimer();
 
-    subscription ??= Alarm.ringStream.stream.listen(navigateToRingScreen);
+
     Future.delayed(const Duration(seconds: 1), () {})
         .then((_) => getNotifactionCount())
         .then((_) {
@@ -205,13 +175,6 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
         setState(() {});
       }
     });
-  }
-
-  Future<void> checkAndroidNotificationPermission() async {
-    final status = await Permission.notification.status;
-    if (status.isDenied) {
-      final res = await Permission.notification.request();
-    }
   }
 
   Future<void> getNotifactionCount() async {
@@ -222,7 +185,9 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
       String url = "${ApiProvider.baseUrl}/api/user_notification";
       print("URL: $url");
       print("userToken: $userToken");
-      Map<String, String> headers = {
+      if(userToken.isNotEmpty){
+
+        Map<String, String> headers = {
         'Authorization': 'Bearer $userToken', // Bearer token type
         'Content-Type': 'application/json',
       };
@@ -248,7 +213,8 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
       } else {
         throw Exception('Failed to load data');
       }
-    } on DioError catch (e) {
+    } }
+    on DioError catch (e) {
       if (e.response != null || e.response!.statusCode == 401) {
         // Handle 401 error
 
@@ -257,126 +223,23 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
           context,
           MaterialPageRoute(builder: (context) => SignIn()),
         );
-      } else {
+      }
+      else {
         // Handle other Dio errors
         print("DioError: ${e.error}");
       }
-    } catch (e) {
+    }
+
+
+
+
+    catch (e) {
       // Handle other exceptions
       print("Exception---: $e");
     }
   }
 
 
-  Future<void> loadAlarms() async {
-    var sharedPref = await SharedPreferences.getInstance();
-    edited = sharedPref.getBool("edited") ?? false;
-    if (!edited) {
-      alarms = Alarm.getAlarms();
-      alarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
-
-      if (alarms.isNotEmpty) {
-        for (int i = 0; i < alarms.length; i++) {
-          await Alarm.stop(alarms[i].id);
-        }
-        alarms.clear();
-      }
-
-      if (alarms.isEmpty) {
-        DateTime now = DateTime.now();
-
-        // Define alarm times for today
-        List<DateTime> todayAlarmTimes = [
-          DateTime(now.year, now.month, now.day, 6),
-          DateTime(now.year, now.month, now.day, 9),
-          DateTime(now.year, now.month, now.day, 12),
-          DateTime(now.year, now.month, now.day, 15),
-          DateTime(now.year, now.month, now.day, 18),
-          DateTime(now.year, now.month, now.day, 21),
-          DateTime(now.year, now.month, now.day + 1, 0),
-        ];
-
-        // Define alarm times for tomorrow
-        List<DateTime> tomorrowAlarmTimes = todayAlarmTimes.map((alarmTime) {
-          return alarmTime.add(const Duration(days: 1));
-        }).toList();
-
-        for (int i = 0; i < 7; i++) {
-          DateTime alarmTime;
-          if (todayAlarmTimes[i].isBefore(now)) {
-            // Set alarm for tomorrow
-            alarmTime = tomorrowAlarmTimes[i];
-          } else {
-            // Set alarm for today
-            alarmTime = todayAlarmTimes[i];
-          }
-
-          print("Alarm Time $alarmTime");
-          saveAlarm(i, alarmTime);
-        }
-
-        Future.delayed(const Duration(seconds: 2), () {
-          Alarm.stopAll();
-        });
-      }
-    }
-  }
-
-
-
-  AlarmSettings buildAlarmSettings(int i, DateTime duration) {
-    final id = DateTime.now().millisecondsSinceEpoch % 10000 + i;
-    final alarmSettings = AlarmSettings(
-        id: id,
-        dateTime: duration,
-        loopAudio: false,
-        vibrate: false,
-        fadeDuration: 10.0,
-        volume: null,
-        assetAudioPath: 'assets/marimba.mp3',
-        notificationTitle: 'Test Reminder',
-        notificationBody: 'Do your eye test',
-        isAlarmOn: false,
-        notificationActionSettings: const NotificationActionSettings(
-            hasSnoozeButton: false,
-            hasStopButton: false,
-            snoozeButtonText: "Snooze",
-            stopButtonText: "Stop",
-            snoozeDurationInSeconds: 300));
-    return alarmSettings;
-  }
-
-  Future<void> saveAlarm(int i, DateTime duration) async {
-    await Alarm.set(alarmSettings: buildAlarmSettings(i, duration));
-    alarms = Alarm.getAlarms();
-    alarms.sort((a, b) => a.dateTime.isBefore(b.dateTime) ? 0 : 1);
-    SharedPref.saveDefaultAlarmsToPrefs(alarms);
-  }
-
-  Future<void> navigateToRingScreen(AlarmSettings alarmSettings) async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute<void>(
-        builder: (context) =>
-            ExampleAlarmRingScreen(alarmSettings: alarmSettings),
-      ),
-    );
-    loadAlarms();
-  }
-
-  Future<void> checkAndroidExternalStoragePermission() async {
-    final status = await Permission.storage.status;
-    if (status.isDenied) {
-      final res = await Permission.storage.request();
-    }
-  }
-
-  Future<void> checkAndroidScheduleExactAlarmPermission() async {
-    final status = await Permission.scheduleExactAlarm.status;
-    if (status.isDenied) {
-      final res = await Permission.scheduleExactAlarm.request();
-    }
-  }
 
 
   @override
@@ -399,35 +262,42 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
         },
       ),
       endDrawerEnableOpenDragGesture: false,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.all(8.0), // Add padding
-        child: ClipOval(
-          child: Material(
-            color: Colors.white70.withOpacity(0.9), // Background color
-            elevation: 4.0, // Shadow
-            child: InkWell(
-              onTap: () {},
-              child: SizedBox(
-                width: 53.0, // Width of the FloatingActionButton
-                height: 50.0, // Height of the FloatingActionButton
-                child: Center(
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.all(8.0), // Add padding for the icon
-                    child: Image.asset(
-                      "assets/home_icon.jpeg",
-                      width: 27,
-                      // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
-                      // color: Colors.grey, // Uncomment if you want to apply a color to the image
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      // floatingActionButton: Padding(
+      //   padding: const EdgeInsets.all(8.0), // Add padding
+      //   child: ClipOval(
+      //     child: Material(
+      //       color: Colors.white70.withOpacity(0.9), // Background color
+      //       elevation: 4.0, // Shadow
+      //       child: InkWell(
+      //         onTap: () {
+      //           Navigator.push(
+      //             context,
+      //             CupertinoPageRoute(
+      //               builder: (context) => HomePage(),
+      //             ),
+      //           );
+      //         },
+      //         child: SizedBox(
+      //           width: 53.0, // Width of the FloatingActionButton
+      //           height: 50.0, // Height of the FloatingActionButton
+      //           child: Center(
+      //             child: Padding(
+      //               padding:
+      //                   const EdgeInsets.all(8.0), // Add padding for the icon
+      //               child: Image.asset(
+      //                 "assets/home_icon.jpg",
+      //                 width: 27,
+      //                 // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
+      //                 // color: Colors.grey, // Uncomment if you want to apply a color to the image
+      //               ),
+      //             ),
+      //           ),
+      //         ),
+      //       ),
+      //     ),
+      //   ),
+      // ),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(145),
         child: Stack(
@@ -442,7 +312,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
               padding: const EdgeInsets.all(14.0),
               child: SizedBox(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8.0, 10.0, 0, 4),
+                  padding: const EdgeInsets.fromLTRB(8.0, 10.0, 0, 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -557,89 +427,99 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: CarouselSlider(
-                items: carousalData.map((item) {
-                  return Builder(
-                    builder: (BuildContext context) {
-                      return GestureDetector(
-                        onTap: () {
-// Navigate to specific page based on image name
-                          switch (item['name']) {
-                            case 'Prescription':
-                              Navigator.push(
+SizedBox(height: 10,),
+            isCrosalLoading
+                ? Center(
+              // Show loader when isLoading is true
+              child: CircularProgressIndicator(),
+            )
+                :  CarouselSlider(
+              items: carousalData.map((item) {
+                return Builder(
+                  builder: (BuildContext context) {
+                    return GestureDetector(
+                      onTap: () {
+                        // Navigate based on image name
+                        switch (item['name']) {
+                          case 'Prescription':
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (context) => PrescriptionUpload(),
+                              ),
+                            );
+                            break;
+                          case 'Refer and Earn':
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (context) => RewardContact(),
+                              ),
+                            );
+                            break;
+                          case 'Reward':
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (context) => RewardsScreen(),
+                              ),
+                            );
+                            break;
+                          case 'Eye Test':
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (context) => BottomDialog(),
+                              ),
+                            );
+                            break;
+                          case 'Eye Fatigue Test':
+                            if (context.mounted) {
+                              pushNewScreenWithRouteSettings(
                                 context,
-                                MaterialPageRoute<void>(
-                                  builder: (context) => PrescriptionUpload(),
-                                ),
+                                settings: const RouteSettings(name: 'music_player_page'),
+                                screen: EyeFatigueSelfieScreen(),
+                                withNavBar: false,
+                                pageTransitionAnimation: PageTransitionAnimation.cupertino,
                               );
-                              break;
-                            case 'Refer and Earn':
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute<void>(
-                                  builder: (context) => RewardContact(),
-                                ),
-                              );
-                              break;
-                            case 'Reward':
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute<void>(
-                                  builder: (context) => RewardsScreen(),
-                                ),
-                              );
-                              break;
-                            case 'EyeTest':
-                              requestPermission();
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute<void>(
-                                  builder: (context) => BottomDialog(),
-                                ),
-                              );
-                              break;
-                            case 'EyeFatigueTest':
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute<void>(
-                                  builder: (context) => EyeFatigueSelfieScreen(),
-                                ),
-                              );
-                              break;
-
-                            default:
-                              break;
-                          }
-                        },
-                        child: Container(
-                          margin: EdgeInsets.all(6.0),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8.0),
-                            image: DecorationImage(
-                              image: NetworkImage(item['image']),
-                              fit: BoxFit.fill,
-                            ),
+                            }
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute<void>(
+                            //     builder: (context) => EyeFatigueSelfieScreen(),
+                            //   ),
+                            // );
+                            break;
+                          default:
+                            break;
+                        }
+                      },
+                      child: Container(
+                        margin: EdgeInsets.all(6.0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8.0),
+                          image: DecorationImage(
+                            image: NetworkImage(item['image']),
+                            fit: BoxFit.fill,
                           ),
                         ),
-                      );
-                    },
-                  );
-                }).toList(),
-                options: CarouselOptions(
-                  height: MediaQuery.of(context).size.height /4, // Adjust this fraction as needed
-
-                  // height: 190.0,
-                  enlargeCenterPage: true,
-                  autoPlay: true,
-                  aspectRatio: 16 / 9,
-                  autoPlayCurve: Curves.fastOutSlowIn,
-                  enableInfiniteScroll: true,
-                  autoPlayAnimationDuration: Duration(milliseconds: 370),
-                  viewportFraction: 0.8,
-                ),),            ),
-            Padding(
+                      ),
+                    );
+                  },
+                );
+              }).toList(),
+              options: CarouselOptions(
+                height: MediaQuery.of(context).size.height / 4, // Adjust height as needed
+                enlargeCenterPage: true,
+                autoPlay: true,
+                aspectRatio: 16 / 9,
+                autoPlayCurve: Curves.fastOutSlowIn,
+                enableInfiniteScroll: true,
+                autoPlayAnimationDuration: Duration(milliseconds: 370),
+                viewportFraction: 0.8,
+              ),
+            ),
+                     Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
               child: GestureDetector(
@@ -1047,13 +927,14 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
                 ),
               ),
             ),
-            const SizedBox(height: 15),
+            // const SizedBox(height: 15),
+            SizedBox(height: 80,),
           ],
         ),
       ),
-      bottomNavigationBar: CustomBottomAppBar(
-        currentScreen: 'HomePage',
-      ),
+      // bottomNavigationBar: CustomBottomAppBar(
+      //   currentScreen: 'HomePage',
+      // ),
     );
   }
 
@@ -1082,10 +963,20 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     if ((status == PermissionStatus.granted &&
         status2 == PermissionStatus.granted)) {
       setState(() {
-        Navigator.push(
+
+        pushNewScreenWithRouteSettings(
           context,
-          MaterialPageRoute(builder: (context) => EyeFatigueSelfieScreen()),
+          settings: const RouteSettings(name: 'music_player_page'),
+          screen: EyeFatigueSelfieScreen(),
+          withNavBar: false,
+          pageTransitionAnimation: PageTransitionAnimation.cupertino,
         );
+
+
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => EyeFatigueSelfieScreen()),
+        // );
       });
     }
     if (!status.isGranted) {
@@ -1238,7 +1129,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
     throw Exception('');
   }
   Future<void> getCarouselData() async {
-    try {
+    // try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String authToken = prefs.getString('access_token') ?? '';
       final response = await http.get(
@@ -1251,6 +1142,7 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         carousalData = responseData['carousel'];
+        isCrosalLoading=false;
       } else if (response.statusCode == 401) {
         Fluttertoast.showToast(msg: "Session Expired");
         Navigator.pushReplacement(
@@ -1260,12 +1152,12 @@ class HomePageState extends State<HomePage> with AutoCancelStreamMixin {
       } else {
         print(response.body);
       }
-    } catch (e) {
-      // _progressDialog!.hide();
-
-      print("exception---:$e");
-    }
-    throw Exception(Exception);
+    // } catch (e) {
+    //   // _progressDialog!.hide();
+    //
+    //   print("exception---:$e");
+    // }
+    // throw Exception(Exception);
   }
   Future<void> sendcustomerDetails(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -1531,6 +1423,7 @@ class BottomDialog extends StatelessWidget {
               ),
             ),
           ),
+          SizedBox(height: 80,)
         ],
       ),
     );
@@ -1574,10 +1467,17 @@ class BottomDialog extends StatelessWidget {
 
           // Check if the context is still mounted before navigating
           if (context.mounted) {
-            Navigator.push(
+            pushNewScreenWithRouteSettings(
               context,
-              MaterialPageRoute(builder: (context) => GiveInfo()),
+              settings: const RouteSettings(name: 'music_player_page'),
+              screen: GiveInfo(),
+              withNavBar: false,
+              pageTransitionAnimation: PageTransitionAnimation.cupertino,
             );
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => GiveInfo()),
+            // );
           }
         } else {
           print('Customer ID not found in response.');
@@ -1738,8 +1638,9 @@ class BottomAlarmDialog extends StatelessWidget {
               ),
             ),
           ),
+
           SizedBox(
-            height: 18,
+            height: 80,
           ),
         ],
       ),
@@ -1843,8 +1744,11 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
           prefs.setString('customer_id', customerId);
 
           print('Customer ID: $customerId');
-
-          // Navigate to GiveInfo screen
+          // PersistentNavBarNavigator.pushNewScreen(
+          //   context,
+          //   screen:  GiveInfo(),
+          //   withNavBar: false,
+          // );
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => GiveInfo()),

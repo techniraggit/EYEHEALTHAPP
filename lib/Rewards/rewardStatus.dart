@@ -191,42 +191,42 @@ class RewardsStatusScreenState extends State<RewardStatusScreen> with AutoCancel
           });
         },
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: Padding(
-        padding:  EdgeInsets.all(8.0), // Add padding
-        child: ClipOval(
-          child: Material(
-            color: Colors.white70.withOpacity(0.9), // Background color
-            elevation: 4.0, // Shadow
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                  context, CupertinoPageRoute(
-                  builder: (context) => HomePage(
-                  ),
-                ),
-
-                );
-              },
-              child: SizedBox(
-                width: 53.0, // Width of the FloatingActionButton
-                height: 50.0, // Height of the FloatingActionButton
-                child: Center(
-                  child: Padding(
-                    padding:  EdgeInsets.all(8.0), // Add padding for the icon
-                    child: Image.asset(
-                      "assets/home_icon.jpeg",
-                      width: 20,
-                      // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
-                      // color: Colors.grey, // Uncomment if you want to apply a color to the image
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      // floatingActionButton: Padding(
+      //   padding:  EdgeInsets.all(8.0), // Add padding
+      //   child: ClipOval(
+      //     child: Material(
+      //       color: Colors.white70.withOpacity(0.9), // Background color
+      //       elevation: 4.0, // Shadow
+      //       child: InkWell(
+      //         onTap: () {
+      //           Navigator.push(
+      //             context, CupertinoPageRoute(
+      //             builder: (context) => HomePage(
+      //             ),
+      //           ),
+      //
+      //           );
+      //         },
+      //         child: SizedBox(
+      //           width: 53.0, // Width of the FloatingActionButton
+      //           height: 50.0, // Height of the FloatingActionButton
+      //           child: Center(
+      //             child: Padding(
+      //               padding:  EdgeInsets.all(8.0), // Add padding for the icon
+      //               child: Image.asset(
+      //                 "assets/home_icon.jpg",
+      //                 width: 20,
+      //                 // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
+      //                 // color: Colors.grey, // Uncomment if you want to apply a color to the image
+      //               ),
+      //             ),
+      //           ),
+      //         ),
+      //       ),
+      //     ),
+      //   ),
+      // ),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
         child: Stack(
@@ -479,13 +479,15 @@ class RewardsStatusScreenState extends State<RewardStatusScreen> with AutoCancel
           }
           },
           ),
+            SizedBox(height: 80,),
           ],
           ),
 
 
 
-    bottomNavigationBar:
-    CustomBottomAppBar(currentScreen: "Rewards"),    );
+    // bottomNavigationBar:
+    // CustomBottomAppBar(currentScreen: "Rewards"),
+    );
 
 
   }

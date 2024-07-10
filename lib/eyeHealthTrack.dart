@@ -3,12 +3,13 @@ import 'dart:convert';
 import 'package:action_broadcast/action_broadcast.dart';
 import 'package:dio/dio.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:project_new/sign_up.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'package:http/http.dart' as http;
 
-import 'package:fl_chart/fl_chart.dart'hide AxisTitle;
+import 'package:fl_chart/fl_chart.dart' hide AxisTitle;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -22,6 +23,7 @@ import 'eyeFatigueTest/EyeFatigueSelfieScreen.dart';
 import 'eyeFatigueTest/eyeFatigueTest.dart';
 import 'models/fatigueGraphModel.dart';
 import 'notification/notification_dashboard.dart';
+
 class DotWithLabel extends StatelessWidget {
   // final Color color;
   final int index;
@@ -33,64 +35,58 @@ class DotWithLabel extends StatelessWidget {
     Key? key,
     // required this.color,
     required this.index,
-
     required this.label,
     required this.point,
-
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Container(
-      width: screenWidth, // Ensure the container spans the full width of the screen
+      width:
+          screenWidth, // Ensure the container spans the full width of the screen
       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-      child: Builder(
-          builder: (context) {
-            Color textColor = _getTextColor(index);
+      child: Builder(builder: (context) {
+        Color textColor = _getTextColor(index);
 
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                // Container(
-                //   width: 14.0,
-                //   height: 15.0,
-                //   decoration: BoxDecoration(
-                //     shape: BoxShape.circle,
-                //     color: color,
-                //   ),
-                // ),
-                //
-                // SizedBox(width: MediaQuery.of(context).size.width/4), // Adjust spacing as needed
-                Expanded(
-                  child: Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            // Container(
+            //   width: 14.0,
+            //   height: 15.0,
+            //   decoration: BoxDecoration(
+            //     shape: BoxShape.circle,
+            //     color: color,
+            //   ),
+            // ),
+            //
+            // SizedBox(width: MediaQuery.of(context).size.width/4), // Adjust spacing as needed
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
                 ),
-                SizedBox(width: 20), // Adjust spacing as needed
-                Text(
-                  '$point',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: textColor,
-                    fontWeight: FontWeight.w600,
-
-                  ),
-                ),
-              ],
-            );
-          }
-      ),
+              ),
+            ),
+            SizedBox(width: 20), // Adjust spacing as needed
+            Text(
+              '$point',
+              style: TextStyle(
+                fontSize: 18,
+                color: textColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        );
+      }),
     );
   }
-
 
   Color _getTextColor(int index) {
     // Define your logic to determine text color based on point value
@@ -98,10 +94,9 @@ class DotWithLabel extends StatelessWidget {
       return Colors.green; // Example condition for green color
     } else if (index == 1) {
       return Colors.orange; // Example condition for orange color
-    }
-    else if (index == 2) {
+    } else if (index == 2) {
       return Colors.blue; // Example condition for orange color
-    }else {
+    } else {
       return Colors.background; // Example condition for red color
     }
   }
@@ -112,15 +107,15 @@ class EyeHealthTrackDashboard extends StatefulWidget {
   EyeHealthTrackDashboardState createState() => EyeHealthTrackDashboardState();
 }
 
-class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with AutoCancelStreamMixin{
-
+class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard>
+    with AutoCancelStreamMixin {
   final GlobalKey<ScaffoldState> _scafoldKey = GlobalKey();
   int? isReadFalseCount = 0;
 
   @override
   Iterable<StreamSubscription> get registerSubscriptions sync* {
     yield registerReceiver(['actionMusicPlaying']).listen(
-          (intent) {
+      (intent) {
         switch (intent.action) {
           case 'actionMusicPlaying':
             setState(() {
@@ -131,6 +126,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
       },
     );
   }
+
   Future<void> getNotifactionCount() async {
     try {
       String userToken = '';
@@ -156,15 +152,13 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
         if (mounted) {
           setState(() {});
         }
-      }
-      else if (response.statusCode == 401) {
+      } else if (response.statusCode == 401) {
         Fluttertoast.showToast(msg: "Session Expired");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => SignIn()),
         );
-      }
-      else {
+      } else {
         throw Exception('Failed to load data');
       }
     } on DioError catch (e) {
@@ -186,107 +180,117 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
     }
   }
 
-  double first_day_data=0.0;double current_day_data=0.0;double get_percentile_graph=0.0;double get_ideal_graph=0.0;
+  double first_day_data = 0.0;
+  double current_day_data = 0.0;
+  double get_percentile_graph = 0.0;
+  double get_ideal_graph = 0.0;
 
-  bool fatigue_left=false; List<double>? _data;int i=0;bool isLoading = false;bool isLoading1 =true;
-  bool fatigue_right=false;fatigueGraph? fatigueGraphData;int count=0;
-  bool midtiredness_right= false;List<double> todaygraphData = [];
+  bool fatigue_left = false;
+  List<double>? _data;
+  int i = 0;
+  bool isLoading = false;
+  bool isLoading1 = true;
+  bool fatigue_right = false;
+  fatigueGraph? fatigueGraphData;
+  int count = 0;
+  bool midtiredness_right = false;
+  List<double> todaygraphData = [];
   List<double> firstTestgraphData = [];
-  bool midtiredness_left=false;
-  String no_of_eye_test="0";String eye_health_score="";String name="";String no_of_fatigue_test="0";
+  bool midtiredness_left = false;
+  String no_of_eye_test = "0";
+  String eye_health_score = "";
+  String name = "";
+  String no_of_fatigue_test = "0";
 
   List<double> idealTestgraphData = [];
   List<double> populationTestgraphData = [];
 
-
-
-
-  Future<void> getGraph() async {//List<double>
+  Future<void> getGraph() async {
+    //List<double>
     // try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String authToken = prefs.getString('access_token') ?? '';
-      final response = await http.get(
-        Uri.parse('${ApiProvider.baseUrl}/api/fatigue/fatigue-graph?user_timezone=Asia/Kolkata'),
-        headers: <String, String>{
-          'Authorization': 'Bearer $authToken',
-        },
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String authToken = prefs.getString('access_token') ?? '';
+    final response = await http.get(
+      Uri.parse(
+          '${ApiProvider.baseUrl}/api/fatigue/fatigue-graph?user_timezone=Asia/Kolkata'),
+      headers: <String, String>{
+        'Authorization': 'Bearer $authToken',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      // fatigueGraphData = fatigueGraph.fromJson(responseData);
+
+      print("graphdata===:${response.body}");
+
+      Map<String, dynamic> jsonData = jsonDecode(response.body);
+      // List<dynamic> data = jsonData['data'];
+      int no_of_fatigue = jsonData['no_of_fatigue_test'];
+      int no_of_eye_ = jsonData['no_of_eye_test'];
+      dynamic eye_hscore = jsonData['eye_health_score'];
+      setState(() {
+        // _datagraph = List<Map<String, dynamic>>.from(jsonData['data']);
+        first_day_data = jsonData['first_day_data'].toDouble();
+        current_day_data = jsonData['current_day_data'].toDouble();
+        get_percentile_graph = jsonData['get_percentile_graph'].toDouble();
+        get_ideal_graph = jsonData['get_ideal_graph'].toDouble();
+        no_of_fatigue_test = no_of_fatigue.toString();
+        no_of_eye_test = no_of_eye_.toString();
+        eye_health_score = eye_hscore.toString();
+      });
+      // if (responseData.containsKey('status') && responseData['status']) {
+      //   if (responseData.containsKey('first_day_data') && responseData['first_day_data'].containsKey('value')) {
+      //     List<dynamic> firstDayValue = responseData['first_day_data']['value'];
+      //     firstTestgraphData.addAll(firstDayValue.map((value) => value.toDouble()));
+      //   }
+      //   if (responseData.containsKey('current_day_data') && responseData['current_day_data'].containsKey('value')) {
+      //     List<dynamic> currentDayValue = responseData['current_day_data']['value'];
+      //     todaygraphData.addAll(currentDayValue.map((value) => value.toDouble()));
+      //   }
+      //   if (responseData.containsKey('current_day_data') ) {
+      //     List<dynamic> population = List<double>.from(jsonData['get_percentile_graph']);
+      //
+      //     populationTestgraphData.addAll(population.map((value) => value.toDouble()));
+      //   }
+      //   if (responseData.containsKey('get_ideal_graph') ) {
+      //     List<dynamic> ideal =  List<double>.from(jsonData['get_ideal_graph']);
+      //
+      //     idealTestgraphData.addAll(ideal.map((value) => value.toDouble()));
+      //   }
+      // }
+      print("fffffffffffffff$todaygraphData");
+      // setState(() {
+      // chartData = <_ChartData>[
+      //   _ChartData('6 AM', firstTestgraphData[0], idealTestgraphData[0] ,populationTestgraphData[0],todaygraphData[0]),
+      //   _ChartData('9 AM', firstTestgraphData[1], idealTestgraphData[1], populationTestgraphData[1],todaygraphData[1]),
+      //   _ChartData('12 PM', firstTestgraphData[2],  idealTestgraphData[2],populationTestgraphData[2],todaygraphData[2]),
+      //   _ChartData('3 PM', firstTestgraphData[3], idealTestgraphData[3],populationTestgraphData[3], todaygraphData[3]),
+      //   _ChartData('6 PM', firstTestgraphData[4], idealTestgraphData[4], populationTestgraphData[4],todaygraphData[4]),
+      //   _ChartData('9 PM', firstTestgraphData[5],  idealTestgraphData[5],populationTestgraphData[5],todaygraphData[5]),
+      //   _ChartData('12 AM', firstTestgraphData[6],  idealTestgraphData[6],populationTestgraphData[6],todaygraphData[6]),
+      //
+      //
+      //
+      // ];
+      // });
+      setState(() {
+        count = jsonData['no_of_fatigue_test'];
+        isLoading1 = false;
+      });
+
+      // return data
+      //     .map((item) => double.parse(item['value'].toString()))
+      //     .toList();
+    } else if (response.statusCode == 401) {
+      Fluttertoast.showToast(msg: "Session Expired");
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => SignIn()),
       );
-
-      if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        // fatigueGraphData = fatigueGraph.fromJson(responseData);
-
-        print("graphdata===:${response.body}");
-
-        Map<String, dynamic> jsonData = jsonDecode(response.body);
-        // List<dynamic> data = jsonData['data'];
-        int no_of_fatigue = jsonData['no_of_fatigue_test'];
-        int no_of_eye_ = jsonData['no_of_eye_test'];
-        dynamic eye_hscore = jsonData['eye_health_score'];
-        setState(() {
-          // _datagraph = List<Map<String, dynamic>>.from(jsonData['data']);
-          first_day_data=jsonData['first_day_data'].toDouble();
-          current_day_data=jsonData['current_day_data'].toDouble();
-          get_percentile_graph=jsonData['get_percentile_graph'].toDouble();
-          get_ideal_graph=jsonData['get_ideal_graph'].toDouble();
-          no_of_fatigue_test = no_of_fatigue.toString();
-          no_of_eye_test = no_of_eye_.toString();
-          eye_health_score = eye_hscore.toString();
-        });
-        // if (responseData.containsKey('status') && responseData['status']) {
-        //   if (responseData.containsKey('first_day_data') && responseData['first_day_data'].containsKey('value')) {
-        //     List<dynamic> firstDayValue = responseData['first_day_data']['value'];
-        //     firstTestgraphData.addAll(firstDayValue.map((value) => value.toDouble()));
-        //   }
-        //   if (responseData.containsKey('current_day_data') && responseData['current_day_data'].containsKey('value')) {
-        //     List<dynamic> currentDayValue = responseData['current_day_data']['value'];
-        //     todaygraphData.addAll(currentDayValue.map((value) => value.toDouble()));
-        //   }
-        //   if (responseData.containsKey('current_day_data') ) {
-        //     List<dynamic> population = List<double>.from(jsonData['get_percentile_graph']);
-        //
-        //     populationTestgraphData.addAll(population.map((value) => value.toDouble()));
-        //   }
-        //   if (responseData.containsKey('get_ideal_graph') ) {
-        //     List<dynamic> ideal =  List<double>.from(jsonData['get_ideal_graph']);
-        //
-        //     idealTestgraphData.addAll(ideal.map((value) => value.toDouble()));
-        //   }
-        // }
-        print("fffffffffffffff$todaygraphData");
-        // setState(() {
-          // chartData = <_ChartData>[
-          //   _ChartData('6 AM', firstTestgraphData[0], idealTestgraphData[0] ,populationTestgraphData[0],todaygraphData[0]),
-          //   _ChartData('9 AM', firstTestgraphData[1], idealTestgraphData[1], populationTestgraphData[1],todaygraphData[1]),
-          //   _ChartData('12 PM', firstTestgraphData[2],  idealTestgraphData[2],populationTestgraphData[2],todaygraphData[2]),
-          //   _ChartData('3 PM', firstTestgraphData[3], idealTestgraphData[3],populationTestgraphData[3], todaygraphData[3]),
-          //   _ChartData('6 PM', firstTestgraphData[4], idealTestgraphData[4], populationTestgraphData[4],todaygraphData[4]),
-          //   _ChartData('9 PM', firstTestgraphData[5],  idealTestgraphData[5],populationTestgraphData[5],todaygraphData[5]),
-          //   _ChartData('12 AM', firstTestgraphData[6],  idealTestgraphData[6],populationTestgraphData[6],todaygraphData[6]),
-          //
-          //
-          //
-          // ];
-        // });
-        setState(() {
-          count = jsonData['no_of_eye_test'];
-          isLoading1=false;
-
-        });
-
-        // return data
-        //     .map((item) => double.parse(item['value'].toString()))
-        //     .toList();
-      }
-      else if (response.statusCode == 401) {
-        Fluttertoast.showToast(msg: "Session Expired");
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => SignIn()),
-        );
-      }      else {
-        print(response.body);
-      }
+    } else {
+      print(response.body);
+    }
     // } catch (e) {
     //   // _progressDialog!.hide();
     //
@@ -301,15 +305,9 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
   void initState() {
     super.initState();
 
-    getGraph();    getNotifactionCount();
-
-
-
+    getGraph();
+    getNotifactionCount();
   }
-
-
-
-
 
   bool isSelected = false;
   bool isLeftEyeSelected = false;
@@ -332,62 +330,64 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
         },
       ),
       backgroundColor: Colors.white,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.all(8.0), // Add padding
-        child: ClipOval(
-          child: Material(
-            color: Colors.white70.withOpacity(0.9), // Background color
-            elevation: 4.0, // Shadow
-            child: InkWell(
-              onTap: () {
-                Navigator.of(context).pop();
-                // Navigator.push(
-                //   context, CupertinoPageRoute(
-                //   builder: (context) => HomePage(
-                //   ),
-                // ),
-                //
-                // );
-              },
-              child: SizedBox(
-                width: 53.0, // Width of the FloatingActionButton
-                height: 50.0, // Height of the FloatingActionButton
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0), // Add padding for the icon
-                    child: Image.asset(
-                      "assets/home_icon.jpeg",
-                      width: 20,
-                      // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
-                      // color: Colors.grey, // Uncomment if you want to apply a color to the image
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      // floatingActionButton: Padding(
+      //   padding: const EdgeInsets.all(8.0), // Add padding
+      //   child: ClipOval(
+      //     child: Material(
+      //       color: Colors.white70.withOpacity(0.9), // Background color
+      //       elevation: 4.0, // Shadow
+      //       child: InkWell(
+      //         onTap: () {
+      //           // Navigator.of(context).pop();
+      //           Navigator.push(
+      //             context, CupertinoPageRoute(
+      //             builder: (context) => HomePage(
+      //             ),
+      //           ),
+      //
+      //           );
+      //         },
+      //         child: SizedBox(
+      //           width: 53.0, // Width of the FloatingActionButton
+      //           height: 50.0, // Height of the FloatingActionButton
+      //           child: Center(
+      //             child: Padding(
+      //               padding:
+      //                   const EdgeInsets.all(8.0), // Add padding for the icon
+      //               child: Image.asset(
+      //                 "assets/home_icon.jpg",
+      //                 width: 20,
+      //                 // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
+      //                 // color: Colors.grey, // Uncomment if you want to apply a color to the image
+      //               ),
+      //             ),
+      //           ),
+      //         ),
+      //       ),
+      //     ),
+      //   ),
+      // ),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(52),
         child: Stack(
           children: [
-            Align(
-              alignment: Alignment.topLeft,
-              child: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back,
-                  color: Colors.black,
-                ),
-                iconSize: 28, // Back button icon
-                onPressed: () {
-                  Navigator.of(context).pop();              },
-              ),
-            ),
+            // Align(
+            //   alignment: Alignment.topLeft,
+            //   child: IconButton(
+            //     icon: const Icon(
+            //       Icons.arrow_back,
+            //       color: Colors.black,
+            //     ),
+            //     iconSize: 28, // Back button icon
+            //     onPressed: () {
+            //       Navigator.of(context).pop();
+            //     },
+            //   ),
+            // ),
             Center(
               child: Padding(
-                padding:  EdgeInsets.symmetric(vertical: 14.0),
+                padding: EdgeInsets.symmetric(vertical: 14.0),
                 child: Text(
                   'Eye Health Track',
                   style: TextStyle(
@@ -429,7 +429,8 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                     ),
                     Positioned(
                       right: 0,
-                      top: -1, // Adjust this value to position the text properly
+                      top:
+                          -1, // Adjust this value to position the text properly
                       child: Container(
                         padding: EdgeInsets.all(2),
                         decoration: BoxDecoration(
@@ -453,7 +454,6 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
           ],
         ),
       ),
-
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -463,9 +463,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
               child: Text(
                 'Today $formattedDate', // Display formatted current date
                 style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black45
-                ),
+                    fontWeight: FontWeight.bold, color: Colors.black45),
               ),
             ),
             Stack(
@@ -478,7 +476,8 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                 // Positioned text - Eye health score
                 Positioned.fill(
                   left: MediaQuery.of(context).size.width * 0.37,
-                  top: MediaQuery.of(context).size.height * 0.15, // Adjust this fraction as needed
+                  top: MediaQuery.of(context).size.height *
+                      0.15, // Adjust this fraction as needed
 // Adjust this fraction as needed
                   child: Align(
                     alignment: Alignment.topCenter,
@@ -495,8 +494,10 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                 ),
                 // Positioned text - Eye health score value with gradient
                 Positioned.fill(
-                  left: MediaQuery.of(context).size.width * 0.35, // Adjust this fraction as needed
-                  top: MediaQuery.of(context).size.height * 0.2, // Adjust this fraction as needed
+                  left: MediaQuery.of(context).size.width *
+                      0.35, // Adjust this fraction as needed
+                  top: MediaQuery.of(context).size.height *
+                      0.2, // Adjust this fraction as needed
                   child: Align(
                     alignment: Alignment.topCenter,
                     child: ShaderMask(
@@ -525,8 +526,6 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                 ),
               ],
             ),
-
-
 
             const Padding(
               padding: EdgeInsets.fromLTRB(16.0, 10, 0, 10),
@@ -572,7 +571,11 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              DotWithLabel(index: 0, label: 'Ideal Score',point:get_ideal_graph.toDouble(), ),
+                              DotWithLabel(
+                                index: 0,
+                                label: 'Ideal Score',
+                                point: get_ideal_graph.toDouble(),
+                              ),
                               Divider(
                                 height: 5,
                                 thickness: 0.5,
@@ -580,8 +583,14 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                                 indent: 20,
                                 endIndent: 20,
                               ),
-                              SizedBox(height: 7,),
-                              DotWithLabel(index: 1, label: 'Percentile Score of the population',point:get_percentile_graph.toDouble(),),
+                              SizedBox(
+                                height: 7,
+                              ),
+                              DotWithLabel(
+                                index: 1,
+                                label: 'Percentile Score of the population',
+                                point: get_percentile_graph.toDouble(),
+                              ),
                               Divider(
                                 height: 5,
                                 thickness: 0.5,
@@ -589,9 +598,15 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                                 indent: 20,
                                 endIndent: 20,
                               ),
-                              SizedBox(height: 7,),
+                              SizedBox(
+                                height: 7,
+                              ),
 
-                              DotWithLabel( index:2,label: 'Your Avg. Score',point:current_day_data.toDouble(),),
+                              DotWithLabel(
+                                index: 2,
+                                label: 'Your Avg. Score',
+                                point: current_day_data.toDouble(),
+                              ),
                               Divider(
                                 height: 5,
                                 thickness: 0.5,
@@ -599,15 +614,24 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                                 indent: 20,
                                 endIndent: 20,
                               ),
-                              SizedBox(height: 7,),
+                              SizedBox(
+                                height: 7,
+                              ),
 
-                              DotWithLabel(index: 3, label: 'Your First Score',point:first_day_data.toDouble(),),//color: Colors.black,
+                              DotWithLabel(
+                                index: 3,
+                                label: 'Your First Score',
+                                point: first_day_data.toDouble(),
+                              ), //color: Colors.black,
                             ],
                           ),
                         ),
-                        SizedBox(height: 20,),
+                        SizedBox(
+                          height: 20,
+                        ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 1),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -617,7 +641,8 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                                   width: 10,
                                   height: 10,
                                   decoration: BoxDecoration(
-                                    color: Colors.background, // Adjust color as needed
+                                    color: Colors
+                                        .background, // Adjust color as needed
                                     shape: BoxShape.circle,
                                   ),
                                 ),
@@ -629,7 +654,8 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
-                                    color: Colors.background, // Adjust text color as needed
+                                    color: Colors
+                                        .background, // Adjust text color as needed
                                   ),
                                 ),
                               ),
@@ -637,9 +663,12 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                           ),
                         ),
 
-                        SizedBox(height: 10,),
+                        SizedBox(
+                          height: 10,
+                        ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 1),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -649,7 +678,8 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                                   width: 10,
                                   height: 10,
                                   decoration: BoxDecoration(
-                                    color: Colors.redAccent, // Adjust color as needed
+                                    color: Colors
+                                        .redAccent, // Adjust color as needed
                                     shape: BoxShape.circle,
                                   ),
                                 ),
@@ -661,7 +691,8 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
-                                    color: Colors.redAccent, // Adjust text color as needed
+                                    color: Colors
+                                        .redAccent, // Adjust text color as needed
                                   ),
                                 ),
                               ),
@@ -669,23 +700,15 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                           ),
                         ),
 
-
-
-
-
-
-
-
-                        if   (count==0)...{
+                        if (count == 0) ...{
                           SizedBox(height: 10),
 
                           Padding(
                             padding: EdgeInsets.fromLTRB(16.0, 10, 0, 0),
                             child: Text(
                               'Get your first test done now and start tracking your eye health.', // Display formatted current date
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black),
+                              style:
+                                  TextStyle(fontSize: 14, color: Colors.black),
                             ),
                           ),
                           SizedBox(height: 9),
@@ -694,7 +717,6 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                               padding: const EdgeInsets.all(8.0),
                               child: ElevatedButton(
                                 onPressed: () {
-
                                   requestPermission();
 
                                   // Navigator.push(
@@ -743,12 +765,9 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                           //   ),
                           // ),
                           // SizedBox(height: 30),
-
                         },
 
-
                         // },
-
 
                         SizedBox(height: 29),
                       ],
@@ -953,15 +972,15 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
             //     ),
             //   ),
             // ),
+            SizedBox(height: 80,),
 
           ],
         ),
       ),
-      bottomNavigationBar:
-      CustomBottomAppBar(currentScreen: "EyeHealth"),
-
+      // bottomNavigationBar: CustomBottomAppBar(currentScreen: "EyeHealth"),
     );
   }
+
   Widget _buildColorDescription(Color color, String text) {
     return Row(
       children: [
@@ -980,20 +999,26 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
     PermissionStatus status = await Permission.camera.status;
     PermissionStatus status2 = await Permission.microphone.status;
 
-    if((status==PermissionStatus.granted&&status2==PermissionStatus.granted) ){
+    if ((status == PermissionStatus.granted &&
+        status2 == PermissionStatus.granted)) {
       setState(() {
-        Navigator.push(
+        pushNewScreenWithRouteSettings(
           context,
-          MaterialPageRoute(
-              builder: (context) => EyeFatigueSelfieScreen()),
+          settings: const RouteSettings(name: 'music_player_page'),
+          screen: EyeFatigueSelfieScreen(),
+          withNavBar: false,
+          pageTransitionAnimation: PageTransitionAnimation.cupertino,
         );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => EyeFatigueSelfieScreen()),
+        // );
       });
-
     }
-    if (!status.isGranted ) {
+    if (!status.isGranted) {
       status = await Permission.camera.request();
     }
-    if (!status2.isGranted ) {
+    if (!status2.isGranted) {
       status = await Permission.microphone.request();
     }
     if (status == PermissionStatus.denied ||
@@ -1001,18 +1026,19 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
       await [Permission.camera].request();
 
       // Permissions are denied or denied forever, let's request it!
-      status =  await Permission.camera.status;
+      status = await Permission.camera.status;
       if (status == PermissionStatus.denied) {
         await [Permission.camera].request();
         print("camera permissions are still denied");
-      } else if (status ==PermissionStatus.permanentlyDenied) {
+      } else if (status == PermissionStatus.permanentlyDenied) {
         print("camera permissions are permanently denied");
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text("camera permissions required"),
-              content: Text("camera permissions are permanently denied. Please go to app settings to enable camera permissions."),
+              content: Text(
+                  "camera permissions are permanently denied. Please go to app settings to enable camera permissions."),
               actions: <Widget>[
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -1024,13 +1050,11 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                     Navigator.pop(context); // Close the dialog
                     await openAppSettings();
                   },
-                  child: Text("OK",
-
-                    style: TextStyle(
-                        color: Colors.white, fontSize: 16),
+                  child: Text(
+                    "OK",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
-
               ],
             );
           },
@@ -1043,18 +1067,20 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
       await [Permission.microphone].request();
 
       // Permissions are denied or denied forever, let's request it!
-      status2 =  await Permission.microphone.status;
+      status2 = await Permission.microphone.status;
       if (status2 == PermissionStatus.denied) {
         await [Permission.microphone].request();
         print("microphone permissions are still denied");
-      }  if (status2 ==PermissionStatus.permanentlyDenied) {
+      }
+      if (status2 == PermissionStatus.permanentlyDenied) {
         print("microphone permissions are permanently denied");
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text("microphone permissions required"),
-              content: Text("microphone permissions are permanently denied. Please go to app settings to enable microphone permissions."),
+              content: Text(
+                  "microphone permissions are permanently denied. Please go to app settings to enable microphone permissions."),
               actions: <Widget>[
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -1066,42 +1092,38 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
                     Navigator.pop(context); // Close the dialog
                     await openAppSettings();
                   },
-                  child: Text("OK",
-
-                    style: TextStyle(
-                        color: Colors.white, fontSize: 16),
+                  child: Text(
+                    "OK",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
-
               ],
             );
           },
         );
       }
     }
-
-
   }
-
 
   SfCartesianChart _buildVerticalSplineChart() {
     return SfCartesianChart(
       isTransposed: false,
       plotAreaBorderWidth: 0,
 
-      legend: const Legend(isVisible:true),
+      legend: const Legend(isVisible: true),
       primaryXAxis: const CategoryAxis(
         majorTickLines: MajorTickLines(size: 0),
         axisLine: AxisLine(width: 0.3),
         majorGridLines: MajorGridLines(width: 0),
-        title:  AxisTitle(text: 'time slots  (x-axis) --->'),
-      ),// Disable vertical inner gridlines
+        title: AxisTitle(text: 'time slots  (x-axis) --->'),
+      ), // Disable vertical inner gridlines
       primaryYAxis: const NumericAxis(
         minimum: 0,
         maximum: 11,
         interval: 1,
         labelFormat: '{value}',
-        title: AxisTitle(text: 'eye score  (y-axis)  --->'), // Description for X axis
+        title: AxisTitle(
+            text: 'eye score  (y-axis)  --->'), // Description for X axis
         majorGridLines: MajorGridLines(width: 0), // Hide horizontal grid lines
       ),
       series: _getVerticalSplineSeries(),
@@ -1109,35 +1131,39 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
     );
   }
 
-
   List<SplineSeries<_ChartData, String>> _getVerticalSplineSeries() {
     return <SplineSeries<_ChartData, String>>[
-
       SplineSeries<_ChartData, String>(
         markerSettings: const MarkerSettings(isVisible: true),
         dataSource: chartData,
         cardinalSplineTension: 0.5,
         splineType: SplineType.monotonic,
-        name: 'Ideal Score',color: Colors.green,
+        name: 'Ideal Score',
+        color: Colors.green,
         xValueMapper: (_ChartData sales, _) => sales.x,
         yValueMapper: (_ChartData sales, _) => sales.y2,
         emptyPointSettings: EmptyPointSettings(
-          mode: EmptyPointMode.gap, // Connect points with a line when there's a gap
-          color: Colors.green, // Optional: Set color of the line connecting null points
+          mode: EmptyPointMode
+              .gap, // Connect points with a line when there's a gap
+          color: Colors
+              .green, // Optional: Set color of the line connecting null points
         ),
       ),
-
       SplineSeries<_ChartData, String>(
         markerSettings: const MarkerSettings(isVisible: true),
-        dataSource: chartData,color: Colors.blue,
+        dataSource: chartData,
+        color: Colors.blue,
         name: 'User Average Score',
         cardinalSplineTension: 0.5,
         splineType: SplineType.monotonic,
         xValueMapper: (_ChartData sales, _) => sales.x,
-        yValueMapper: (_ChartData sales, _) => sales.y4, emptyPointSettings: EmptyPointSettings(
-        mode: EmptyPointMode.gap, // Connect points with a line when there's a gap
-        color: Colors.blue, // Optional: Set color of the line connecting null points
-      ),
+        yValueMapper: (_ChartData sales, _) => sales.y4,
+        emptyPointSettings: EmptyPointSettings(
+          mode: EmptyPointMode
+              .gap, // Connect points with a line when there's a gap
+          color: Colors
+              .blue, // Optional: Set color of the line connecting null points
+        ),
       )
     ];
   }
@@ -1148,6 +1174,7 @@ class EyeHealthTrackDashboardState extends State<EyeHealthTrackDashboard> with A
     super.dispose();
   }
 }
+
 /// Private class for storing the spline series data points.
 class _ChartData {
   _ChartData(this.x, this.y, this.y2, this.y3, this.y4);
@@ -1156,11 +1183,7 @@ class _ChartData {
   final double y2;
   final double y3;
   final double y4;
-
 }
-
-
-
 
 class LeftEyeHealthWidget extends StatelessWidget {
   @override
@@ -1169,7 +1192,7 @@ class LeftEyeHealthWidget extends StatelessWidget {
       children: [
         // First Card for Image, Label, and Text
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 1),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
           child: Card(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -1196,7 +1219,9 @@ class LeftEyeHealthWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-                    SizedBox(height: 16), // Add spacing between the row and the additional columns
+                    SizedBox(
+                        height:
+                            16), // Add spacing between the row and the additional columns
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -1224,15 +1249,16 @@ class LeftEyeHealthWidget extends StatelessWidget {
         ),
         // Second Card for Heading and Graph
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 1),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
           child: Card(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Padding(padding: EdgeInsets.all(1),
-                    child :ListTile(
+                  const Padding(
+                    padding: EdgeInsets.all(1),
+                    child: ListTile(
                       title: Text(
                         'Left Eye Health',
                         style: TextStyle(
@@ -1241,7 +1267,8 @@ class LeftEyeHealthWidget extends StatelessWidget {
                         ),
                       ),
                       // subtitle: Text('April 30-May 30'),
-                    ),),
+                    ),
+                  ),
 
                   // Container with fixed height to contain the LineChart
                   SizedBox(
@@ -1324,7 +1351,7 @@ class RightEyeHealthWidget extends StatelessWidget {
       children: [
         // First Card for Image, Label, and Text
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical:1),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
           child: Card(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -1351,7 +1378,9 @@ class RightEyeHealthWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-                    SizedBox(height: 16), // Add spacing between the row and the additional columns
+                    SizedBox(
+                        height:
+                            16), // Add spacing between the row and the additional columns
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -1379,14 +1408,13 @@ class RightEyeHealthWidget extends StatelessWidget {
         ),
         // Second Card for Heading and Graph
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 1),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 1),
           child: Card(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   Container(
                     height: 200,
                     width: MediaQuery.of(context).size.width,
@@ -1459,4 +1487,3 @@ class RightEyeHealthWidget extends StatelessWidget {
     );
   }
 }
-

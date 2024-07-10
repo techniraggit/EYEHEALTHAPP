@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
@@ -130,11 +131,9 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> with AutoCan
     String formattedDate = DateFormat('dd MMMM').format(DateTime.now());
     return WillPopScope(
       onWillPop: () async {
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomePage()),
-            (Route<dynamic> route) => false);
+       Navigator.pop(context);                    Navigator.pop(context);
 
-        return false;
+       return true;
       },
       child: isLoading
           ? const Center(
@@ -168,10 +167,13 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> with AutoCan
                   ),
                   iconSize: 28, // Back button icon
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomePage()),
-                    );                  },
+                    Navigator.pop(context);                    Navigator.pop(context);
+
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(builder: (context) => HomePage()),
+                    // );
+                    },
                 ),
               ),
               Column(
@@ -643,7 +645,7 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> with AutoCan
                         ),
                       ),
                     ),
-                    SizedBox(height: 20,),
+                    SizedBox(height: 80,),
                   ],
                 ),
               ),
@@ -717,6 +719,7 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> with AutoCan
 
   Future<String?> downloadReport() async {
     try {
+      EasyLoading.show();
       var sharedPref = await SharedPreferences.getInstance();
       String userToken = sharedPref.getString("access_token") ?? '';
       int report_id = sharedPref.getInt('report_id') ?? 0;
@@ -730,7 +733,7 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> with AutoCan
         headers: headers,
       );
       print('PDFreport_id $report_id');
-
+EasyLoading.dismiss();
       if (response.statusCode == 200) {
         Fluttertoast.showToast(msg: "PDF downloaded successfully");
 
@@ -739,7 +742,7 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> with AutoCan
             : await getApplicationDocumentsDirectory(); // For iOS
 
         // Create a file in the downloads directory
-        String pdfPath = '${downloadsDir?.path}/downloaded_file.pdf';
+        String pdfPath = '${downloadsDir?.path}/report.pdf';
         File pdfFile = File(pdfPath);
 
         // Write the response content to the file

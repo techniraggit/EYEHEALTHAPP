@@ -13,6 +13,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:project_new/HomePage.dart';
+import 'package:project_new/dashboard.dart';
 import 'package:project_new/sign_up.dart';
 // import 'package:video_compress/video_compress.dart';
 import 'package:camera/camera.dart';
@@ -154,13 +155,16 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
                 ElevatedButton(
                   onPressed: () {
 
-
-
-                    Navigator.push(
+                    Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => EyeFatigueSecondScreen()),
-                    );
+                      CupertinoPageRoute(builder: (context) => EyeFatigueSecondScreen()),
+                    ).then((value) => Navigator.of(context).pop() );
+
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //       builder: (context) => EyeFatigueSecondScreen()),
+                    // );
 
                   },
                   style: ElevatedButton.styleFrom(
@@ -177,6 +181,7 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
                   ),
                   child: const Text('Let\'s Check Eyes'),
                 ),
+                SizedBox(height: 80,)
               ],
             ),
           ),
@@ -527,11 +532,15 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
         setState(() {
           uploaded=true;
         });
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-              builder: (context) => EyeFatigueThirdScreen()),
-        );
+          CupertinoPageRoute(builder: (context) => EyeFatigueThirdScreen()),
+        ).then((value) => Navigator.of(context).pop() );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //       builder: (context) => EyeFatigueThirdScreen()),
+        // );
 
         // MyProgressDialog.dismissProgressDialog(progressDialog!);
 
@@ -969,11 +978,15 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
                  ElevatedButton(
                    onPressed:enable ? () async {
                      setState(() {
-                       Navigator.push(
+                       Navigator.pushReplacement(
                          context,
-                         MaterialPageRoute(
-                             builder: (context) => EyeFatigueTestReport()),
-                       );
+                         CupertinoPageRoute(builder: (context) => EyeFatigueTestReport()),
+                       ).then((value) => Navigator.of(context).pop() );
+                       // Navigator.push(
+                       //   context,
+                       //   MaterialPageRoute(
+                       //       builder: (context) => EyeFatigueTestReport()),
+                       // );
                      });
                    }:null,
                    style: ElevatedButton.styleFrom(
@@ -1062,8 +1075,12 @@ print("50000");
 //TODO remove
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
+          CupertinoPageRoute(builder: (context) => Dashboard()),
+        ).then((value) => Navigator.of(context).pop() );
+        // Navigator.pushReplacement(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => HomePage()),
+        // );
 
       }
       else{
@@ -1083,8 +1100,8 @@ print("50000");
           Fluttertoast.showToast(msg:message );}
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => HomePage()),
-          );
+            CupertinoPageRoute(builder: (context) => Dashboard()),
+          ).then((value) => Navigator.of(context).pop() );
           // You can show an appropriate message to the user or take other actions as needed
         }
         throw Exception('Failed to load data');
