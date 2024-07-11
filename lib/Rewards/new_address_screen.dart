@@ -1,7 +1,8 @@
 import 'dart:convert';
-import 'dart:ffi';
-import 'dart:io';
+import 'dart:ffi' hide Size;
+import 'dart:io' ;
 
+import 'package:dio/dio.dart' hide Response;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,8 @@ import 'package:second_eye/Rewards/rewards_sync.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api/config.dart';
+import '../notification/notification_dashboard.dart';
+import '../sign_up.dart';
 
 
 class NewAddressScreen extends StatefulWidget {
@@ -60,6 +63,7 @@ class AddADressSCreen extends State<NewAddressScreen> {
   @override
   void initState() {
     super.initState();
+    getNotifactionCount();
   }
   bool isVerifiedEmail = false; // Example boolean variable indicating verification status
   bool isVerifiedPhone = false; // Example boolean variable indicating verification status
@@ -77,9 +81,67 @@ class AddADressSCreen extends State<NewAddressScreen> {
         : Icon(Icons.warning, color: Colors.red);
   }
 
+  Future<void> getNotifactionCount() async {
+    try {
+      String userToken = '';
+      var sharedPref = await SharedPreferences.getInstance();
+      userToken = sharedPref.getString("access_token") ?? '';
+      String url = "${ApiProvider.baseUrl}/api/user_notification";
+      print("URL: $url");
+      print("userToken: $userToken");
+      Map<String, String> headers = {
+        'Authorization': 'Bearer $userToken', // Bearer token type
+        'Content-Type': 'application/json',
+      };
+      var response = await Dio().get(url, options: Options(headers: headers));
+      print('drf gfbt Count: $response');
 
+      if (response.statusCode == 200) {
+        final responseData = response.data;
+        // Map<String, dynamic> responseData = json.decode(response.data);
+        int unreadNotificationCount = responseData['is_read_false_count'];
+        isReadFalseCount = unreadNotificationCount;
+        print('Unread Notification Count: $unreadNotificationCount');
+        print('Unread gfbt Count: $response');
+        if (mounted) {
+          setState(() {});
+        }
+      }
+      else if (response.statusCode == 401) {
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      }
+      else {
+        throw Exception('Failed to load data');
+      }
+    } on DioError catch (e) {
+      if (e.response != null || e.response!.statusCode == 401) {
+        // Handle 401 error
+
+        Fluttertoast.showToast(msg: "Session Expired");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      } else {
+        // Handle other Dio errors
+        print("DioError: ${e.error}");
+      }
+    } catch (e) {
+      // Handle other exceptions
+      print("Exception---: $e");
+    }
+  }
+  final GlobalKey<ScaffoldState> _scafoldKey = GlobalKey();
+  int? isReadFalseCount = 0;
   @override
   Widget build(BuildContext context) {
+
+
+
     return
       // MaterialApp(
       // theme: ThemeData(
@@ -88,19 +150,115 @@ class AddADressSCreen extends State<NewAddressScreen> {
       // ),
       // home:
       Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          title:
-          const Align(
-              alignment: Alignment.center,
-              child: Text("Addresses",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500),)),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              // Add your back button functionality here
-            },
+        key: _scafoldKey,
+        endDrawer: NotificationSideBar(
+          onNotificationUpdate: () {
+            setState(() {
+              if (isReadFalseCount != null) {
+                if (isReadFalseCount! > 0) {
+                  isReadFalseCount = isReadFalseCount! - 1;
+                }
+              }
+            });
+          },
+        ),
+        endDrawerEnableOpenDragGesture: false,
+        appBar: PreferredSize(
+          preferredSize:  Size.fromHeight(60),
+          child: Stack(
+            children: [
+              Align(
+                alignment: Alignment.topLeft,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.black,
+                  ),
+                  iconSize: 28, // Back button icon
+                  onPressed: () {
+                    Navigator.of(context).pop();                  },
+                ),
+              ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    height: 18, // Adjust height as needed
+                  ),
+                  Center(
+                    child: Text(
+                      'Address',
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        // Adjust size as needed
+                        // Add other styling properties as needed
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+
+                ],
+              ),
+              Positioned(
+                right: 16,
+                top: 16,
+                child: GestureDetector(
+                  onTap: () {
+                    _scafoldKey.currentState!.openEndDrawer();
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20.0),
+                          border: Border.all(
+                            color: Colors.grey, // Border color
+                            width: 1.0, // Border width
+                          ),
+                        ),
+                        height: 30,
+                        width: 30,
+                        child: Center(
+                          child: Icon(
+                            Icons.notifications_none,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        right: 0,
+                        top: -1,
+                        // Adjust this value to position the text properly
+                        child: Container(
+                          padding: EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.red,
+                          ),
+                          child: Text(
+                            '${isReadFalseCount}',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
+
+
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
           child: Column(
@@ -145,13 +303,13 @@ class AddADressSCreen extends State<NewAddressScreen> {
                             controller: _firstNameController,
                             textInputAction: TextInputAction.next,
                             decoration: InputDecoration(
-                              labelText: 'First Name',
+                              labelText: 'Name',
                               labelStyle: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.background,
                                 fontWeight: FontWeight.w400,
                               ),
-                              hintText: 'First Name',
+                              hintText: 'Name',
                               hintStyle: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.hinttext,
@@ -680,7 +838,7 @@ class AddADressSCreen extends State<NewAddressScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 80),
 
                     ],
                   ),
@@ -759,7 +917,53 @@ class AddADressSCreen extends State<NewAddressScreen> {
     // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE2MjcyODc2LCJpYXQiOjE3MTYxODY0NzYsImp0aSI6ImYyMjJhM2VlZDNjYTRlZjc4MmNmNmEyNTYzOGQxMmU1IiwidXNlcl9pZCI6IjkxOTNhOTE1LWY5YzItNDQ0MC04MDVlLTQxNDBhYTc5ZDQzOSJ9.2Gj1laeNGLhy0FxYQCQVoB_Idt5W0F0X621BVPtNaic";
     sharedPref.getString("access_token") ?? '';
   String offer_id= sharedPref.getString("offer_id") ?? '';
-    if(checkValidationForAddAddress()){
+    if(_emailController.text.trim().isEmpty && _emailController.text.trim().isEmpty ){
+      Fluttertoast.showToast(msg: "enter the details");
+
+    }
+   else if(address_type.isEmpty){
+      Fluttertoast.showToast(msg: "select address type");
+    }
+    else if(_firstNameController.text.trim().isEmpty){
+      Fluttertoast.showToast(msg: " Enter Name");
+
+    }
+    else if(_localityController.text.trim().isEmpty){
+      Fluttertoast.showToast(msg: " Enter locality");
+
+    }
+
+   else if(_phoneController.text.trim().isEmpty){
+      Fluttertoast.showToast(msg: " Enter Phone Number");
+
+    }
+   else if(_emailController.text.trim().isEmpty){
+      Fluttertoast.showToast(msg: " Enter Email");
+
+    }
+   else if(_pinCodeController.text.trim().isEmpty){
+      Fluttertoast.showToast(msg: " Enter Pincode");
+
+    }
+   else if(_countryController.text.trim().isEmpty){
+      Fluttertoast.showToast(msg: " Enter Country");
+
+    }
+    else if(_houseNoController.text.trim().isEmpty){
+      Fluttertoast.showToast(msg: " Enter House No./Building Name");
+
+    }
+    else if(_stateController.text.trim().isEmpty){
+      Fluttertoast.showToast(msg: " Enter State");
+
+
+    }
+    else if(_cityController.text.trim().isEmpty){
+      Fluttertoast.showToast(msg: " Enter City");
+
+
+    }
+    // if(checkValidationForAddAddress()){
 
 
 
@@ -798,12 +1002,17 @@ class AddADressSCreen extends State<NewAddressScreen> {
         if (response.statusCode == 201) {
 
           Map<String, dynamic> data = json.decode(response.body);
-          Fluttertoast.showToast(msg: data['message']);
+          Fluttertoast.showToast(msg: "Address added successfully !!, now you can Redeem ");//data['message']
 
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => RewardSpecs(offer_id: offer_id)),
           );
+
+          // Navigator.pop(context, );
+
+
+
 
           print("Email verified $data");
 
@@ -827,6 +1036,16 @@ class AddADressSCreen extends State<NewAddressScreen> {
                 Fluttertoast.showToast(msg: '${responseMap['data']['email'][0]}');// Print the error message
 
               }
+
+
+
+              if (responseMap['data']['address_type'] is List && responseMap['data']['address_type'].isNotEmpty) {
+                Fluttertoast.showToast(msg: 'Select Address type');// Print the error message
+                String errorMessage = responseMap['data']['address_type'][0];
+                print("eroooooooooo"+errorMessage); // Print the error message
+
+              }
+
             }
           }
         }
@@ -844,7 +1063,7 @@ class AddADressSCreen extends State<NewAddressScreen> {
 
         }
       }
-    }
+    // }
   }
 
 
@@ -860,8 +1079,12 @@ class AddADressSCreen extends State<NewAddressScreen> {
       return false;
 
     }
+    if(address_type.isEmpty){
+      Fluttertoast.showToast(msg: "select address type");
+      return false;
+    }
     if(_firstNameController.text.trim().isEmpty){
-      Fluttertoast.showToast(msg: " Enter First Name");
+      Fluttertoast.showToast(msg: " Enter Name");
       return false;
 
     }

@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -376,7 +378,8 @@ String username='';
                             height: 50,
                             width: 300,
                             child: ElevatedButton(
-                              onPressed: () {
+                              onPressed:
+                                  () {
                                 initPlatformState();
                                 Navigator.push(
                                   context,
@@ -848,7 +851,8 @@ class SignUp extends StatefulWidget {
 
 class SignUpScreen extends State<SignUp> {
   TextEditingController _phoneController = TextEditingController();
-  bool isMobileValid = true;
+  bool isMobileValid = true;  bool _isChecked = false;
+
   TextEditingController _firstNameController = TextEditingController();
   TextEditingController _lastNmeController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
@@ -884,10 +888,12 @@ class SignUpScreen extends State<SignUp> {
       });
     }
   }
-
+  String termsContent = '';
+  bool enable=false;
   @override
   void initState() {
     super.initState();
+    loadTerms();
     _phoneController.addListener(_onPhoneNumberChanged);
     _emailController.addListener(_onEmailChanged);
 
@@ -1056,6 +1062,50 @@ class SignUpScreen extends State<SignUp> {
     );
 
   }*/
+  Future<void> loadTerms() async {
+
+
+
+
+    try {
+      final response = await http.get(
+        Uri.parse(ApiProvider.baseUrl + ApiProvider.termsPage),
+        headers: <String, String>{},
+      );
+      print("waaa" + response.body);
+
+      if (response.statusCode == 200) {
+        // _progressDialog!.hide();
+
+        final jsonResponse = jsonDecode(response.body);
+        setState(() {
+          termsContent = jsonResponse['content'];
+
+        });
+
+//         List<dynamic> dataList = jsonResponse['data'];
+//
+// // Assuming you want to retrieve content from the first item in the data array
+//         if (dataList.isNotEmpty) {
+//           termsContent = dataList[1]['content'];
+//           print('Content from API: $termsContent');
+//         }
+        setState(() {
+
+        });
+      } else {
+        // _progressDialog!.hide();
+
+        print(response.body);
+      }
+    } catch (e) {
+      print('Error loading privacy policy: $e');
+      // Handle error loading privacy policy
+    }
+    if (mounted) {
+      setState(() {}); // Refresh UI
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1493,149 +1543,241 @@ class SignUpScreen extends State<SignUp> {
                           child: Container(
                             decoration: BoxDecoration(
                               border: Border.all(
-                                  color: Colors
-                                      .background), // Set border properties
+                                color: _isChecked&&enable ? Colors.background : Colors.lightgrey, // Border color based on _isChecked
+
+                              ), // Set border properties
                               borderRadius: BorderRadius.circular(
                                   27), // Set border radius for rounded corners
                             ),
                             height: 50,
                             width: 300,
                             child: ElevatedButton(
-                              onPressed: () {
-
+                              onPressed: _isChecked&&enable ? () {
                                 requestLocationPermission();
-                                initPlatformState();
-
-                                RegisterUser();
-                              },
+                                  initPlatformState();
+                                  RegisterUser();
+                              } : null,
+                              //     () {
+                              //
+                              //   requestLocationPermission();
+                              //   initPlatformState();
+                              //
+                              //   RegisterUser();
+                              // },
                               style: ButtonStyle(
                                 elevation: MaterialStateProperty.all<double>(
                                     0), // Set elevation to 0 to remove shadow
-
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(Colors
-                                        .background), // Set your desired background color here
+                                backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+                                  if (states.contains(MaterialState.disabled)) {
+                                    return Colors.lightgrey; // Change disabled color
+                                  } else {
+                                    return Colors.background; // Change enabled color
+                                  }
+                                }),
+                                // Set your desired background color here
                               ),
-                              child: const Text('Sign Up',
+                              child:  Text('Sign Up',
                                   style: TextStyle(
-                                      color: Colors.white,
+                                      color:  _isChecked&&enable ? Colors.white : Colors.black45,
+                                      // color: Colors.white,
                                       fontWeight: FontWeight.w400,
                                       fontSize: 16)),
                             ),
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: RichText(
-                            text: const TextSpan(
-                              text: 'By tapping “Sign Up” you accept our ',
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400),
-                              children: <TextSpan>[
-                                TextSpan(
-                                  text: 'terms',
-                                  style: TextStyle(
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.bold),
-                                  // Add onTap if you want to make the term clickable
-                                  // onTap: () {
-                                  //   // Add your onTap logic here
-                                  // },
-                                ),
-                                TextSpan(
-                                  text: ' and ',
-                                ),
-                                TextSpan(
-                                  text: 'conditions',
-                                  style: TextStyle(
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.bold),
-                                  // Add onTap if you want to make the term clickable
-                                  // onTap: () {
-                                  //   // Add your onTap logic here
-                                  // },
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 9,
-                        ),
-                        const Row(
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding: EdgeInsets.fromLTRB(8.0, 18, 8, 0),
-                                child: Divider(
-                                  thickness: 2,
-                                  color: Colors
-                                      .lightgrey, // Adjust thickness as needed
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        const Text(
-                          'Already have an account?',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400),
-                        ),
-                        const SizedBox(height: 8),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 25.0, vertical: 20),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: Colors
-                                      .background), // Set border properties
-                              borderRadius: BorderRadius.circular(
-                                  27), // Set border radius for rounded corners
-                            ),
-                            height: 50,
-                            width: 300,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  CupertinoPageRoute(
-                                      builder: (context) => SignIn()),
+                        GestureDetector(
+                          onTap:(){
+
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  // title: Text('HTML Content'),
+                                  content: SingleChildScrollView(
+                                    // padding: EdgeInsets.symmetric(horizontal: 4.0,vertical: 2),
+                                    child: Column(
+                                      children: [
+                                        Html(data: termsContent),
+                                        SizedBox(height: 8,)
+                                      ],
+                                    ),
+                                  ),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: Text('Close'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
                                 );
                               },
-                              style: ButtonStyle(
-                                elevation: MaterialStateProperty.all<double>(
-                                    0), // Set elevation to 0 to remove shadow
+                            );
 
-                                backgroundColor: MaterialStateProperty
-                                    .all<Color>(Colors.white.withOpacity(
-                                        1)), // Set your desired background color here
+
+
+
+                          },
+                          child:  Builder(
+                            builder: (context) {
+
+
+                              if (_emailController.text.trim().isEmpty ||
+                                  _phoneController.text.trim().isEmpty ||
+                                  _dobController.text.trim().isEmpty ||
+                                  _firstNameController.text.trim().isEmpty
+                              ){
+                                // setState(() {
+                                  enable=false;
+
+                                // });
+                              }else{
+                                // setState(() {
+                                  enable=true;
+
+                                // });
+
+                              }
+
+
+
+
+
+                              return Column(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                    child: Row(
+                                      children: <Widget>[
+                                        Checkbox(
+                                          value: _isChecked,
+                                          onChanged: (bool? value) {
+                                            setState(() {
+                                              _isChecked = value ?? false;
+                                            });
+                                          },
+                                        ),
+                                        Flexible(
+                                          child: RichText(
+                                            text: TextSpan(
+                                              text: 'By creating an account, you agree to our ',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                              children: <TextSpan>[
+                                                TextSpan(
+                                                  text: 'terms',
+                                                  style: TextStyle(
+                                                    color: Colors.blue,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                  // Add onTap if you want to make the term clickable
+                                                  // onTap: () {
+                                                  //   // Add your onTap logic here
+                                                  // },
+                                                ),
+                                                TextSpan(
+                                                  text: ' and ',
+                                                ),
+                                                TextSpan(
+                                                  text: 'conditions',
+                                                  style: TextStyle(
+                                                    color: Colors.blue,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                  // Add onTap if you want to make the term clickable
+                                                  // onTap: () {
+                                                  //   // Add your onTap logic here
+                                                  // },
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  const SizedBox(
+                              width: 9,
+                                                      ),
+                                                      const Row(
+                              children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: EdgeInsets.fromLTRB(8.0, 18, 8, 0),
+                                    child: Divider(
+                                      thickness: 2,
+                                      color: Colors
+                                          .lightgrey, // Adjust thickness as needed
+                                    ),
+                                  ),
+                                ),
+                              ],
+                                                      ),
+                                                      const SizedBox(
+                              height: 30,
+                                                      ),
+                                                      const Text(
+                              'Already have an account?',
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400),
+                                                      ),
+                                                      const SizedBox(height: 8),
+                                                      Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 25.0, vertical: 20),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: Colors
+                                          .background), // Set border properties
+                                  borderRadius: BorderRadius.circular(
+                                      27), // Set border radius for rounded corners
+                                ),
+                                height: 50,
+                                width: 300,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      CupertinoPageRoute(
+                                          builder: (context) => SignIn()),
+                                    );
+                                  },
+                                  style: ButtonStyle(
+                                    elevation: MaterialStateProperty.all<double>(
+                                        0), // Set elevation to 0 to remove shadow
+
+                                    backgroundColor: MaterialStateProperty
+                                        .all<Color>(Colors.white.withOpacity(
+                                            1)), // Set your desired background color here
+                                  ),
+                                  child: const Text('Sign In',
+                                      style: TextStyle(
+                                          color: Colors.background,
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 16)),
+                                ),
                               ),
-                              child: const Text('Sign In',
-                                  style: TextStyle(
-                                      color: Colors.background,
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 16)),
-                            ),
+                                                      ),
+                                                    ],
+                                                  );
+                            }
                           ),
-                        ),
-                      ],
-                    ),
                   ),
-                ),
+                ]),
               ),
             ),
-          ],
+    ),
         ),
-      );
+      ])
+    );
     // );
   }
 
@@ -2677,7 +2819,10 @@ class SignUpScreen extends State<SignUp> {
 
   bool checkValidationForSignup() {
     if (_emailController.text.trim().isEmpty &&
-        _emailController.text.trim().isEmpty) {
+        _phoneController.text.trim().isEmpty &&
+        _dobController.text.trim().isEmpty &&
+        _firstNameController.text.trim().isEmpty
+        ) {
       Fluttertoast.showToast(msg: "enter the details");
       return false;
     }

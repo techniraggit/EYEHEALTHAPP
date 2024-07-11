@@ -2,6 +2,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:second_eye/Rewards/rewardStatus.dart';
+import 'package:second_eye/Rewards/rewards.dart';
+import 'package:second_eye/dashboard.dart';
 
 import '../Custom_navbar/bottom_navbar.dart';
 import '../HomePage.dart';
@@ -63,8 +65,10 @@ class RedeemSuccess extends State<RedeemSuccessPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            // Add your back button functionality here
-          },
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => RewardsScreen()),
+            );          },
         ),
       ),
       body: Padding(
@@ -81,7 +85,7 @@ class RedeemSuccess extends State<RedeemSuccessPage> {
                   ),
                   SizedBox(height: 20), // Add some space between the image and text
                   Text(
-                    'We have recvied your request',
+                    'We have received your request',
                     style: TextStyle(
                       fontSize: 20,color: Colors.background,
                       fontWeight: FontWeight.bold,

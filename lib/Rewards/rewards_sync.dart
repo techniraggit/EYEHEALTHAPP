@@ -447,172 +447,175 @@ class _RewardsContactsSync extends State<RewardContact> {
               Expanded(
                 child: TabBarView(
                   children: [
-                    Center(
-                        child: _contacts.isNotEmpty
-                            ? ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: _contacts.length,
-                                itemBuilder: (context, i) => Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Card(
-                                    color: Colors.white,
-                                    elevation: 0.9,
-                                    child: ListTile(
-                                      leading: _contacts[i].avatar != null &&
-                                              _contacts[i].avatar!.isNotEmpty
-                                          ? Container(
-                                              height: 50,
-                                              width: 50,
-                                              decoration: const BoxDecoration(
-                                                  shape: BoxShape.circle),
-                                              child: Image.memory(
-                                                  _contacts[i].avatar!))
-                                          : Container(
-                                              height: 50,
-                                              width: 50,
-                                              decoration: const BoxDecoration(
-                                                  shape: BoxShape.circle),
-                                              child: Image.asset(
-                                                  'assets/contact.png')),
-                                      title: Text(
-                                        _contacts[i].displayName ?? '',
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 15,
-                                            color: Colors.black),
-                                      ),
-                                      subtitle: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            '+91 ${_contacts[i].phones!.isNotEmpty ? _contacts[i].phones!.first.value : 'N/A'}',
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 14,
-                                                color: Color(0xFF667085)),
-                                          ),
-                                          const Spacer(),
-                                          GestureDetector(
-                                            onTap: () async {
-                                              shareAppLink();
-                                            },
-                                            child: Text(
-                                              'INVITE',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 14,
-                                                  color: Color(0xFF667085)),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              )
-                            : Container(
-                                // Set constraints, width, height, etc. for the Container
-                                child: Center(
-                                  child: Text(
-                                    'Sync Contacts to see contact list here',
-                                    textAlign: TextAlign.center,
-                                    // You can specify other text properties here like style, fontSize, etc.
-                                  ),
-                                ),
-                              )
-
-                        // if (_permissionDenied)
-                        //   const Center(child: Text('Permission denied')),
-                        // if (_contacts != null) ...{
-
-                        ),
-
-                    Center(
-                        child: _refferconatcts.isNotEmpty
-                            ? ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: _refferconatcts.length,
-                                itemBuilder: (context, i) => Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Card(
-                                    color: Colors.white,
-                                    elevation: 0.9,
-                                    child: ListTile(
-                                      leading: Container(
+                    _contacts.isNotEmpty
+                        ? ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: _contacts.length,
+                            itemBuilder: (context, i) => Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Card(
+                                color: Colors.white,
+                                elevation: 0.9,
+                                child: ListTile(
+                                  leading: _contacts[i].avatar != null &&
+                                          _contacts[i].avatar!.isNotEmpty
+                                      ? Container(
                                           height: 50,
                                           width: 50,
                                           decoration: const BoxDecoration(
                                               shape: BoxShape.circle),
-                                          child: Image.asset(
-                                              'assets/contact.png')),
-                                      title: Text(
-                                        _refferconatcts[i]['full_name'] ?? '',
+                                          child: Image.memory(
+                                              _contacts[i].avatar!))
+                                      : Container(
+                                    height: 50,
+                                    width: 50,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      Icons.account_circle,
+                                      size: 40,
+                                    ),
+                                  ),
+
+                                  title: Text(
+                                    _contacts[i].displayName ?? '',
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 15,
+                                        color: Colors.black),
+                                  ),
+                                  subtitle: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${_contacts[i].phones!.isNotEmpty ? _contacts[i].phones!.first.value : 'N/A'}',
                                         style: const TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 15,
-                                            color: Colors.black),
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 14,
+                                            color: Color(0xFF667085)),
                                       ),
-                                      subtitle: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            '+91 ${_refferconatcts[i]['phone']}',
-                                            style: const TextStyle(
+                                      const Spacer(),
+                                      GestureDetector(
+                                        onTap: () async {
+                                          shareAppLink();
+                                        },
+                                        child: Text(
+                                          'INVITE',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 14,
+                                              color: Color(0xFF667085)),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        : Container(
+                            // Set constraints, width, height, etc. for the Container
+                            child: Center(
+                              child: Text(
+                                'Sync Contacts to see contact list here',
+                                textAlign: TextAlign.center,
+                                // You can specify other text properties here like style, fontSize, etc.
+                              ),
+                            ),
+                          ),
+
+                    _refferconatcts.isNotEmpty
+                        ? ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: _refferconatcts.length,
+                            itemBuilder: (context, i) => Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Card(
+                                color: Colors.white,
+                                elevation: 0.9,
+                                child: ListTile(
+                                  leading: Container(
+                                    height: 50,
+                                    width: 50,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      Icons.account_circle,
+                                      size: 40,
+                                    ),
+                                  ),
+
+                                  // Container(
+                                  //     height: 50,
+                                  //     width: 50,
+                                  //     decoration: const BoxDecoration(
+                                  //         shape: BoxShape.circle),
+                                  //     child: Image.asset(
+                                  //         'assets/account.png')),
+                                  title: Text(
+                                    _refferconatcts[i]['full_name'] ?? '',
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 15,
+                                        color: Colors.black),
+                                  ),
+                                  subtitle: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${_refferconatcts[i]['phone']}',
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 14,
+                                            color: Color(0xFF667085)),
+                                      ),
+                                      const Spacer(),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.green.withOpacity(0.5),
+                                          // Green background color
+                                          borderRadius: BorderRadius.circular(
+                                              20), // Rounded border
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(4.0),
+                                          child: Text(
+                                            'Accepted',
+                                            style: TextStyle(
                                                 fontWeight: FontWeight.w400,
                                                 fontSize: 14,
                                                 color: Color(0xFF667085)),
                                           ),
-                                          const Spacer(),
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  Colors.green.withOpacity(0.5),
-                                              // Green background color
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                      20), // Rounded border
-                                            ),
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(4.0),
-                                              child: Text(
-                                                'Accepted',
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 14,
-                                                    color: Color(0xFF667085)),
-                                              ),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                      onTap: () async {},
-                                    ),
+                                        ),
+                                      )
+                                    ],
                                   ),
+                                  onTap: () async {},
                                 ),
-                              )
-                            : Container(
-                                // Set constraints, width, height, etc. for the Container
-                                child: Center(
-                                  child: Text(
-                                    "you haven't referred any contact yet.",
-                                    textAlign: TextAlign.center,
-                                    // You can specify other text properties here like style, fontSize, etc.
-                                  ),
-                                ),
-                              )
-                        // if (_permissionDenied)
-                        //   const Center(child: Text('Permission denied')),
-                        // if (_contacts != null) ...{
-
-                        ),
+                              ),
+                            ),
+                          )
+                        : Container(
+                            // Set constraints, width, height, etc. for the Container
+                            child: Center(
+                              child: Text(
+                                "you haven't referred any contact yet.",
+                                textAlign: TextAlign.center,
+                                // You can specify other text properties here like style, fontSize, etc.
+                              ),
+                            ),
+                          ),
                     // Content of Tab 2
                   ],
                 ),
               ),
-              SizedBox(height: 80,),
+              SizedBox(
+                height: 80,
+              ),
             ],
           ),
           // bottomNavigationBar: CustomBottomAppBar(currentScreen: "Rewards"),
@@ -738,13 +741,13 @@ class _RewardsContactsSync extends State<RewardContact> {
   Future<void> sendSMSToAllContacts() async {
     try {
       List<String> allContactNumbers = await _getContactNumbers();
-     await _sendSMS(allContactNumbers);
+      await _sendSMS(allContactNumbers);
     } catch (error) {
       print("erooooorrrrrrrrrr" + error.toString());
     }
   }
 
-   Future<void> _sendSMS(List<String> recipients) async {
+  Future<void> _sendSMS(List<String> recipients) async {
     try {
       String _result = await sendSMS(
         message:
@@ -1183,219 +1186,221 @@ class RewardSpecsSync extends State<RewardSpecs> {
 
   @override
   Widget build(BuildContext context) {
-    return
-        Scaffold(
-              backgroundColor: Colors.white,
-              // floatingActionButtonLocation:
-              //     FloatingActionButtonLocation.centerDocked,
-              // floatingActionButton: Padding(
-              //   padding: const EdgeInsets.all(8.0), // Add padding
-              //   child: ClipOval(
-              //     child: Material(
-              //       color: Colors.white70.withOpacity(0.9), // Background color
-              //       elevation: 4.0, // Shadow
-              //       child: InkWell(
-              //         onTap: () {
-              //           Navigator.push(
-              //             context,
-              //             CupertinoPageRoute(
-              //               builder: (context) => HomePage(),
-              //             ),
-              //           );
-              //         },
-              //         child: SizedBox(
-              //           width: 53.0, // Width of the FloatingActionButton
-              //           height: 50.0, // Height of the FloatingActionButton
-              //           child: Center(
-              //             child: Padding(
-              //               padding: const EdgeInsets.all(
-              //                   8.0), // Add padding for the icon
-              //               child: Image.asset(
-              //                 "assets/home_icon.jpg",
-              //                 width: 20,
-              //                 // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
-              //                 // color: Colors.grey, // Uncomment if you want to apply a color to the image
-              //               ),
-              //             ),
-              //           ),
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      // floatingActionButtonLocation:
+      //     FloatingActionButtonLocation.centerDocked,
+      // floatingActionButton: Padding(
+      //   padding: const EdgeInsets.all(8.0), // Add padding
+      //   child: ClipOval(
+      //     child: Material(
+      //       color: Colors.white70.withOpacity(0.9), // Background color
+      //       elevation: 4.0, // Shadow
+      //       child: InkWell(
+      //         onTap: () {
+      //           Navigator.push(
+      //             context,
+      //             CupertinoPageRoute(
+      //               builder: (context) => HomePage(),
+      //             ),
+      //           );
+      //         },
+      //         child: SizedBox(
+      //           width: 53.0, // Width of the FloatingActionButton
+      //           height: 50.0, // Height of the FloatingActionButton
+      //           child: Center(
+      //             child: Padding(
+      //               padding: const EdgeInsets.all(
+      //                   8.0), // Add padding for the icon
+      //               child: Image.asset(
+      //                 "assets/home_icon.jpg",
+      //                 width: 20,
+      //                 // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
+      //                 // color: Colors.grey, // Uncomment if you want to apply a color to the image
+      //               ),
+      //             ),
+      //           ),
+      //         ),
+      //       ),
+      //     ),
+      //   ),
+      // ),
 
-              // appBar: PreferredSize(
-              //   preferredSize: const Size.fromHeight(10),
-              //   child: AppBar(
-              //     backgroundColor:
-              //     Colors.white70, // Set app bar background color to white
-              //     elevation: 0, // Remove app bar shadow
-              //     // Add any other app bar properties as needed
-              //   ),
-              // ),
-              body: isLoading
-                  ? const Center(
-                child: CircularProgressIndicator(
-                  color: Colors.black,
-                ),
-              ): Column(
-                children: [
-                  Stack(
-                    children: [
-                      Container(
-                        height: 125,
-                        // width: MediaQuery.of(context).size.width,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(
-                                "assets/rewards_back.png"), // Add your background image path
-                            fit: BoxFit.fill,
-                          ),
+      // appBar: PreferredSize(
+      //   preferredSize: const Size.fromHeight(10),
+      //   child: AppBar(
+      //     backgroundColor:
+      //     Colors.white70, // Set app bar background color to white
+      //     elevation: 0, // Remove app bar shadow
+      //     // Add any other app bar properties as needed
+      //   ),
+      // ),
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+                color: Colors.black,
+              ),
+            )
+          : Column(
+              children: [
+                Stack(
+                  children: [
+                    Container(
+                      height: 125,
+                      // width: MediaQuery.of(context).size.width,
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(
+                              "assets/rewards_back.png"), // Add your background image path
+                          fit: BoxFit.fill,
                         ),
                       ),
-                      SizedBox(
-                        height: 110,
-                        child: Column(
-                          children: <Widget>[
-                            const SizedBox(height: 5),
+                    ),
+                    SizedBox(
+                      height: 110,
+                      child: Column(
+                        children: <Widget>[
+                          const SizedBox(height: 5),
 
-                            Align(
-                              alignment: Alignment.topLeft,
-                              child: IconButton(
-                                icon: const Icon(
-                                  Icons.arrow_back,
-                                  color: Colors.white,
-                                ),
-                                iconSize: 28, // Back button icon
-                                onPressed: () {
-                                  Navigator.pop(context);
-
-                                  // Navigator.of(context).pop();
-                                },
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.arrow_back,
+                                color: Colors.white,
                               ),
+                              iconSize: 28, // Back button icon
+                              onPressed: () {
+                                Navigator.pop(context);
+
+                                // Navigator.of(context).pop();
+                              },
                             ),
-                            const SizedBox(height: 5),
-                            Align(
-                              alignment: Alignment.center,
-                              child: RichText(
-                                text: TextSpan(
-                                  children: [
-                                    WidgetSpan(
-                                      alignment: PlaceholderAlignment.middle,
-                                      child: ShaderMask(
-                                        shaderCallback: (Rect bounds) {
-                                          return const RadialGradient(
-                                            radius: 1.0,
-                                            colors: [
-                                              Color(0xFFFFF400),
-                                              Color(0xFFFFE800),
-                                              Color(0xFFFFCA00),
-                                              Color(0xFFFF9A00),
-                                              Color(0xFFFF9800),
-                                            ],
-                                          ).createShader(bounds);
-                                        },
-                                        child: Text(
-                                          ' $EyeHealthPoints ',
-                                          style: const TextStyle(
-                                            fontSize: 28,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors
-                                                .white, // Specify a color for the text
-                                          ),
+                          ),
+                          const SizedBox(height: 5),
+                          Align(
+                            alignment: Alignment.center,
+                            child: RichText(
+                              text: TextSpan(
+                                children: [
+                                  WidgetSpan(
+                                    alignment: PlaceholderAlignment.middle,
+                                    child: ShaderMask(
+                                      shaderCallback: (Rect bounds) {
+                                        return const RadialGradient(
+                                          radius: 1.0,
+                                          colors: [
+                                            Color(0xFFFFF400),
+                                            Color(0xFFFFE800),
+                                            Color(0xFFFFCA00),
+                                            Color(0xFFFF9A00),
+                                            Color(0xFFFF9800),
+                                          ],
+                                        ).createShader(bounds);
+                                      },
+                                      child: Text(
+                                        '$totalPoints',
+
+                                        style: const TextStyle(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors
+                                              .white, // Specify a color for the text
                                         ),
                                       ),
                                     ),
-                                    const TextSpan(
-                                      text: 'Eye health points loading ',
-                                      style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-
-                            // Add more Text widgets as needed
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  Expanded(
-                    child: Container(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            const SizedBox(
-                              height: 7,
-                            ),
-                            Align(
-                              alignment: Alignment.center,
-                              child: ShaderMask(
-                                shaderCallback: (Rect bounds) {
-                                  return const LinearGradient(
-                                    colors: [
-                                      Colors.bluegradient,
-                                      Colors.greengradient
-                                    ], // Your gradient colors
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                  ).createShader(bounds);
-                                },
-                                child: Text(
-                                  '$totalPoints',
-                                  style: const TextStyle(
-                                      fontSize: 22,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.fromLTRB(18.0, 5, 18, 10),
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  'Total Point Earned Till Now',
-                                  style: TextStyle(
-                                      fontSize: 13,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                              ),
-                            ),
-
-                            Align(
-                                alignment: Alignment.center,
-                                child: Container(
-                                  height: MediaQuery.of(context).size.width / 2,
-                                  decoration: BoxDecoration(
-                                    image: image_url != null
-                                        ? DecorationImage(
-                                            image: NetworkImage(
-                                                "${ApiProvider.baseUrl}$image_url"),
-                                            // fit: BoxFit.cover,
-                                          )
-                                        : null,
                                   ),
-                                )),
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(18.0, 5, 18, 10),
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  '${title}',
-                                  // 'Win a cool pair of sunglasses of worth rs 1000 free',
-                                  style: TextStyle(
-                                      fontSize: 13,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w500),
-                                ),
+                                  const TextSpan(
+                                    text: '   Eye health points loading ',
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ],
                               ),
                             ),
-                            /*     Padding(
+                          ),
+
+                          // Add more Text widgets as needed
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: Container(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          const SizedBox(
+                            height: 7,
+                          ),
+                          Align(
+                            alignment: Alignment.center,
+                            child: ShaderMask(
+                              shaderCallback: (Rect bounds) {
+                                return const LinearGradient(
+                                  colors: [
+                                    Colors.bluegradient,
+                                    Colors.greengradient
+                                  ], // Your gradient colors
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                ).createShader(bounds);
+                              },
+                              child: Text(
+                                ' $EyeHealthPoints ',
+                                // '$totalPoints',
+                                style: const TextStyle(
+                                    fontSize: 22,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.fromLTRB(18.0, 5, 18, 10),
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                'Total Point Earned Till Now',
+                                style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                            ),
+                          ),
+
+                          Align(
+                              alignment: Alignment.center,
+                              child: Container(
+                                height: MediaQuery.of(context).size.width / 2,
+                                decoration: BoxDecoration(
+                                  image: image_url != null
+                                      ? DecorationImage(
+                                          image: NetworkImage(
+                                              "${ApiProvider.baseUrl}$image_url"),
+                                          // fit: BoxFit.cover,
+                                        )
+                                      : null,
+                                ),
+                              )),
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(18.0, 5, 18, 10),
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                '${title}',
+                                // 'Win a cool pair of sunglasses of worth rs 1000 free',
+                                style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                          ),
+                          /*     Padding(
                         padding: EdgeInsets.fromLTRB(18.0, 10, 18, 10),
                         child: Align(
                           alignment: Alignment.center,
@@ -1410,149 +1415,148 @@ class RewardSpecsSync extends State<RewardSpecs> {
                           ),
                         ),
                       ),*/
-                            // SizedBox(height: 10,),
-                            Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SliderTheme(
-                                    data: const SliderThemeData(
-                                      trackHeight:
-                                          8.0, // Increase the slider height
-                                      thumbColor: Colors
-                                          .blue, // Set thumb color to blue
-                                      thumbShape: RoundSliderThumbShape(
-                                          enabledThumbRadius:
-                                              6.0), // Adjust thumb size
-                                      trackShape:
-                                          RoundedRectSliderTrackShape(), // Customize track shape
-                                      overlayShape: RoundSliderOverlayShape(
-                                          overlayRadius:
-                                              20.0), // Adjust overlay size
-                                      valueIndicatorShape:
-                                          PaddleSliderValueIndicatorShape(), // Customize value indicator shape
-                                      valueIndicatorTextStyle: TextStyle(
-                                          color: Colors
-                                              .white), // Text style of value indicator
-                                    ),
-                                    child: Slider(
-                                      value: userPercentage ?? 0.0,
-                                      min: 0.0,
-                                      max:
-                                          100.0, // Adjust the max value according to your requirement
-                                      // divisions: 10,
-                                      label: '$_currentTime',
-                                      onChanged:
-                                          (_) {}, // Empty function to disable interaction
-                                      activeColor: const Color(
-                                          0xFF8925CD), // Set the color for moved slider to blue
-                                    ),
+                          // SizedBox(height: 10,),
+                          Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SliderTheme(
+                                  data: const SliderThemeData(
+                                    trackHeight:
+                                        8.0, // Increase the slider height
+                                    thumbColor:
+                                        Colors.blue, // Set thumb color to blue
+                                    thumbShape: RoundSliderThumbShape(
+                                        enabledThumbRadius:
+                                            6.0), // Adjust thumb size
+                                    trackShape:
+                                        RoundedRectSliderTrackShape(), // Customize track shape
+                                    overlayShape: RoundSliderOverlayShape(
+                                        overlayRadius:
+                                            20.0), // Adjust overlay size
+                                    valueIndicatorShape:
+                                        PaddleSliderValueIndicatorShape(), // Customize value indicator shape
+                                    valueIndicatorTextStyle: TextStyle(
+                                        color: Colors
+                                            .white), // Text style of value indicator
                                   ),
-                                  // const SizedBox(
-                                  //     height: 8), // Add some spacing between icon and text
-
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 18.0, right: 50),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        // const Icon(
-                                        //   Icons.watch_later,
-                                        //   color: Colors.purple,
-                                        // ), // Watch icon
-                                        // const SizedBox(
-                                        //     width:
-                                        //         8), // Add some spacing between icon and text
-                                        // Text(
-                                        //   '$hours h:${minutes.toString().padLeft(2, '0')} m:${seconds.toString().padLeft(2, '0')} s',
-                                        //   style: const TextStyle(
-                                        //       fontSize: 16, color: Colors.purple),
-                                        // ),
-
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            Text(
-                                              '$userPercentage %',
-                                              style: const TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.purple,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
+                                  child: Slider(
+                                    value: userPercentage ?? 0.0,
+                                    min: 0.0,
+                                    max:
+                                        100.0, // Adjust the max value according to your requirement
+                                    // divisions: 10,
+                                    label: '$_currentTime',
+                                    onChanged:
+                                        (_) {}, // Empty function to disable interaction
+                                    activeColor: const Color(
+                                        0xFF8925CD), // Set the color for moved slider to blue
                                   ),
-                                  // SizedBox(height: 10),
+                                ),
+                                // const SizedBox(
+                                //     height: 8), // Add some spacing between icon and text
 
-                                  GestureDetector(
-                                    onTap: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            title: Text('Choose a Test'),
-                                            content: Container(
-                                              height:
-                                                  200, // Adjust the height as needed
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.8, // Adjust the width as needed
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                children: [
-                                                  GestureDetector(
-                                                    onTap: () {
-                                                      sendcustomerDetails(true);
-                                                    },
-                                                    child: Image.asset(
-                                                      'assets/digital_eye_exam.png',
-                                                      // height: 100,
-                                                    ),
-                                                  ),
-                                                  GestureDetector(
-                                                    onTap: () {
-                                                      requestPermission();
-                                                      // Navigator.push(
-                                                      //   context,
-                                                      //   MaterialPageRoute(
-                                                      //       builder: (context) =>
-                                                      //           EyeFatigueStartScreen()),
-                                                      // );
-                                                    },
-                                                    child: Image.asset(
-                                                      'assets/eyeFatigueTest.png',
-                                                      // height: 100,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                    child: Padding(
-                                      padding:
-                                          EdgeInsets.fromLTRB(18.0, 10, 18, 10),
-                                      child: Align(
-                                        alignment: Alignment.center,
-                                        child: DecoratedBox(
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                              bottom: BorderSide(
-                                                color: Colors.background,
-                                                width: 1.5,
-                                              ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 18.0, right: 50),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      // const Icon(
+                                      //   Icons.watch_later,
+                                      //   color: Colors.purple,
+                                      // ), // Watch icon
+                                      // const SizedBox(
+                                      //     width:
+                                      //         8), // Add some spacing between icon and text
+                                      // Text(
+                                      //   '$hours h:${minutes.toString().padLeft(2, '0')} m:${seconds.toString().padLeft(2, '0')} s',
+                                      //   style: const TextStyle(
+                                      //       fontSize: 16, color: Colors.purple),
+                                      // ),
+
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            '$userPercentage %',
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.purple,
                                             ),
                                           ),
-                                          /* child: Text(
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                // SizedBox(height: 10),
+
+                                GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text('Choose a Test'),
+                                          content: Container(
+                                            height:
+                                                200, // Adjust the height as needed
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.8, // Adjust the width as needed
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    sendcustomerDetails(true);
+                                                  },
+                                                  child: Image.asset(
+                                                    'assets/digital_eye_exam.png',
+                                                    // height: 100,
+                                                  ),
+                                                ),
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    requestPermission();
+                                                    // Navigator.push(
+                                                    //   context,
+                                                    //   MaterialPageRoute(
+                                                    //       builder: (context) =>
+                                                    //           EyeFatigueStartScreen()),
+                                                    // );
+                                                  },
+                                                  child: Image.asset(
+                                                    'assets/eyeFatigueTest.png',
+                                                    // height: 100,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Padding(
+                                    padding:
+                                        EdgeInsets.fromLTRB(18.0, 10, 18, 10),
+                                    child: Align(
+                                      alignment: Alignment.center,
+                                      child: DecoratedBox(
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                            bottom: BorderSide(
+                                              color: Colors.background,
+                                              width: 1.5,
+                                            ),
+                                          ),
+                                        ),
+                                        /* child: Text(
                                       'Click Here To Start',
                                       style: TextStyle(
                                         fontSize: 16,
@@ -1560,58 +1564,59 @@ class RewardSpecsSync extends State<RewardSpecs> {
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),*/
-                                        ),
                                       ),
                                     ),
                                   ),
+                                ),
 
-                                  const SizedBox(height: 20),
-                                  Align(
-                                    alignment: Alignment.bottomCenter,
-                                    child: SizedBox(
-                                      width: 250, // Set the desired width here
-                                      height: 45,
-                                      child: GestureDetector(
-                                        onTap: isReedemButtonEnabled
-                                            ? () {
-                                                RedeemaddressSheet(context);
-                                              }
-                                            : null,
-                                        child: Container(
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                            color: isReedemButtonEnabled
-                                                ? Colors.background
-                                                : buttonColor, // Change color when disabled
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                          ),
-                                          child: Text(
-                                            'Redeem',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16,
-                                            ),
+                                const SizedBox(height: 20),
+                                Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: SizedBox(
+                                    width: 250, // Set the desired width here
+                                    height: 45,
+                                    child: GestureDetector(
+                                      onTap: isReedemButtonEnabled
+                                          ? () {
+                                              RedeemaddressSheet(context);
+                                            }
+                                          : null,
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                          color: isReedemButtonEnabled
+                                              ? Colors.background
+                                              : buttonColor, // Change color when disabled
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                        child: Text(
+                                          'Redeem',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  SizedBox(height: 80,),
-                ],
-              ),
-              // bottomNavigationBar: CustomBottomAppBar(currentScreen: "Rewards"),
+                ),
+                SizedBox(
+                  height: 80,
+                ),
+              ],
+            ),
+      // bottomNavigationBar: CustomBottomAppBar(currentScreen: "Rewards"),
 // Include the persistent bottom bar here
-            );
-
+    );
   }
 
   void requestPermission() async {
@@ -1766,7 +1771,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
                             Navigator.of(context).pop();
                           },
                         ),
-                      ],
+                    ],
                     ),
                   ),
 
@@ -1942,15 +1947,15 @@ class RewardSpecsSync extends State<RewardSpecs> {
                                 ),
                               ],
                             ),
-                            Align(
-                              alignment: Alignment.center,
-                              child: IconButton(
-                                icon: Icon(Icons.edit),
-                                onPressed: () {
-                                  // Handle edit button press
-                                },
-                              ),
-                            ),
+                            // Align(
+                            //   alignment: Alignment.center,
+                            //   child: IconButton(
+                            //     icon: Icon(Icons.edit),
+                            //     onPressed: () {
+                            //       // Handle edit button press
+                            //     },
+                            //   ),
+                            // ),
                           ],
                         ),
                       );
@@ -2067,6 +2072,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
                       ),
                     ),
                   ),
+                  SizedBox(height: 80,)
                 ],
               ),
             );
@@ -2306,589 +2312,600 @@ class PresUpload extends State<PrescriptionUpload> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        // floatingActionButton: Padding(
-        //   padding: const EdgeInsets.all(8.0), // Add padding
-        //   child: ClipOval(
-        //     child: Material(
-        //       color: Colors.white70.withOpacity(0.9), // Background color
-        //       elevation: 4.0, // Shadow
-        //       child: InkWell(
-        //         onTap: () {
-        //           Navigator.push(
-        //             context,
-        //             CupertinoPageRoute(
-        //               builder: (context) => HomePage(),
-        //             ),
-        //           );
-        //         },
-        //         child: SizedBox(
-        //           width: 53.0, // Width of the FloatingActionButton
-        //           height: 50.0, // Height of the FloatingActionButton
-        //           child: Center(
-        //             child: Padding(
-        //               padding:
-        //                   const EdgeInsets.all(8.0), // Add padding for the icon
-        //               child: Image.asset(
-        //                 "assets/home_icon.jpg",
-        //                 width: 20,
-        //                 // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
-        //                 // color: Colors.grey, // Uncomment if you want to apply a color to the image
-        //               ),
-        //             ),
-        //           ),
-        //         ),
-        //       ),
-        //     ),
-        //   ),
-        // ),
-        // appBar: PreferredSize(
-        //   preferredSize: const Size.fromHeight(10),
-        //   child: AppBar(
-        //     backgroundColor:
-        //     Colors.white, // Set app bar background color to white
-        //     elevation: 0, // Remove app bar shadow
-        //     // Add any other app bar properties as needed
-        //   ),
-        // ),
-        body:isLoading
-            ? const Center(
-          child: CircularProgressIndicator(
-            color: Colors.blue,
-          ),
-        )
-            : Column(
-          children: [
-            Stack(
+      backgroundColor: Colors.white,
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      // floatingActionButton: Padding(
+      //   padding: const EdgeInsets.all(8.0), // Add padding
+      //   child: ClipOval(
+      //     child: Material(
+      //       color: Colors.white70.withOpacity(0.9), // Background color
+      //       elevation: 4.0, // Shadow
+      //       child: InkWell(
+      //         onTap: () {
+      //           Navigator.push(
+      //             context,
+      //             CupertinoPageRoute(
+      //               builder: (context) => HomePage(),
+      //             ),
+      //           );
+      //         },
+      //         child: SizedBox(
+      //           width: 53.0, // Width of the FloatingActionButton
+      //           height: 50.0, // Height of the FloatingActionButton
+      //           child: Center(
+      //             child: Padding(
+      //               padding:
+      //                   const EdgeInsets.all(8.0), // Add padding for the icon
+      //               child: Image.asset(
+      //                 "assets/home_icon.jpg",
+      //                 width: 20,
+      //                 // fit: BoxFit.cover, // Uncomment if you want the image to cover the button
+      //                 // color: Colors.grey, // Uncomment if you want to apply a color to the image
+      //               ),
+      //             ),
+      //           ),
+      //         ),
+      //       ),
+      //     ),
+      //   ),
+      // ),
+      // appBar: PreferredSize(
+      //   preferredSize: const Size.fromHeight(10),
+      //   child: AppBar(
+      //     backgroundColor:
+      //     Colors.white, // Set app bar background color to white
+      //     elevation: 0, // Remove app bar shadow
+      //     // Add any other app bar properties as needed
+      //   ),
+      // ),
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+                color: Colors.blue,
+              ),
+            )
+          : Column(
               children: [
-                Container(
-                  height: 125,
-                  // width: MediaQuery.of(context).size.width,
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(
-                          "assets/rewards_back.png"), // Add your background image path
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 110,
-                  child: Column(
-                    children: <Widget>[
-                      const SizedBox(height: 5),
-
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.arrow_back,
-                            color: Colors.white,
-                          ),
-                          iconSize: 28, // Back button icon
-                          onPressed: () {
-                            Navigator.pop(context);
-                            // Navigator.of(context).pop();
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      Align(
-                        alignment: Alignment.center,
-                        child: RichText(
-                          text: TextSpan(
-                            children: [
-                              WidgetSpan(
-                                alignment: PlaceholderAlignment.middle,
-                                child: ShaderMask(
-                                  shaderCallback: (Rect bounds) {
-                                    return const RadialGradient(
-                                      radius: 1.0,
-                                      colors: [
-                                        Color(0xFFFFF400),
-                                        Color(0xFFFFE800),
-                                        Color(0xFFFFCA00),
-                                        Color(0xFFFF9A00),
-                                        Color(0xFFFF9800),
-                                      ],
-                                    ).createShader(bounds);
-                                  },
-                                  child: Text(
-                                    ' $EyeHealthPoints ',
-                                    style: const TextStyle(
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors
-                                          .white, // Specify a color for the text
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const TextSpan(
-                                text: 'Every visit to Optometrist ',
-                                style: TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.w500),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      // Add more Text widgets as needed
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            Expanded(
-              child: Container(
-                // child: SingleChildScrollView(
-                child: Column(
+                Stack(
                   children: [
-                    const SizedBox(
-                      height: 7,
-                    ),
-                    Align(
-                      alignment: Alignment.center,
-                      child: ShaderMask(
-                        shaderCallback: (Rect bounds) {
-                          return const LinearGradient(
-                            colors: [
-                              Colors.bluegradient,
-                              Colors.greengradient
-                            ], // Your gradient colors
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ).createShader(bounds);
-                        },
-                        child: Text(
-                          '$totalPoints',
-                          style: const TextStyle(
-                              fontSize: 22,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-
-                    const Padding(
-                      padding: EdgeInsets.fromLTRB(18.0, 5, 18, 10),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Total Point Earned Till Now',
-                          style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.fromLTRB(18.0, 5, 18, 10),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Upload',
-                          style: TextStyle(
-                              fontSize: 15,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                    ),
-
                     Container(
-                      height: MediaQuery.of(context).size.width / 2.1,
-                      width: MediaQuery.of(context).size.width / 1.3,
-                      color: Colors.white.withOpacity(0.7),
-                      child: Align(
-                          alignment: Alignment.center,
-                          child: Column(
-                            children: [
-                              SizedBox(
-                                height: 10,
-                              ),
-                              GestureDetector(
-                                onTap: isEnabled ? _pickFiles : null,
-
-                                // onTap: _pickFiles,
-                                child: Container(
-                                  height: 60,
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                      image: AssetImage(
-                                        isEnabled
-                                            ? 'assets/upload_icon.png'
-                                            : 'assets/upload_success.png', // Change the paths accordingly
-                                      ),
-                                      // AssetImage(
-                                      //     'assets/upload_icon.png'), // Replace with your image asset path
-                                      fit: BoxFit
-                                          .contain, // Adjust the fit as needed
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height: isEnabled
-                                    ? 10
-                                    : 0, // Adjust height based on condition
-                              ),
-                              Padding(
-                                  padding: EdgeInsets.fromLTRB(18.0, 7, 18, 3),
-                                  child: Align(
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      isEnabled
-                                          ? 'Drag & drop files or Browse'
-                                          : 'Prescription upload',
-
-                                      // 'Drag & drop files or Browse',
-                                      // 'Win a cool pair of sunglasses of worth rs 1000 free',
-                                      style: TextStyle(
-                                          fontSize: 13,
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                  )),
-                              SizedBox(
-                                height: isEnabled
-                                    ? 10
-                                    : 0, // Adjust height based on condition
-                              ),
-                              Padding(
-                                  padding: EdgeInsets.fromLTRB(18.0, 0, 18, 4),
-                                  child: Align(
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      isEnabled
-                                          ? 'Supported formates: JPG, JPEG, PNG, WEBP, SVG, BMP'
-                                          : 'Your prescription has been uploaded and is currently being verified by our team. This process will take approximately 24 hours. ',
-
-                                      // 'Win a cool pair of sunglasses of worth rs 1000 free',
-                                      style: TextStyle(
-                                          fontSize: 11,
-                                          color: Colors.greytext,
-                                          fontWeight: FontWeight.w400),
-                                    ),
-                                  )),
-                            ],
-                          )),
+                      height: 125,
+                      // width: MediaQuery.of(context).size.width,
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(
+                              "assets/rewards_back.png"), // Add your background image path
+                          fit: BoxFit.fill,
+                        ),
+                      ),
                     ),
-                    // TODO REPLACEMENT ===add progress bar for uploading files
-
-                    // Padding(
-                    //   padding: EdgeInsets.fromLTRB(18.0,10,18,10),
-                    //   child: Text(
-                    //     'Uploading - 1/1 files',
-                    //     // 'Win a cool pair of sunglasses of worth rs 1000 free',
-                    //     style: TextStyle(
-                    //         fontSize: 13,
-                    //         color: Colors.greytext,
-                    //         fontWeight: FontWeight.w500),
-                    //   ),
-                    // ),
-
                     SizedBox(
-                      height: 15,
-                    ),
-                    _files == null || _files.isEmpty
-                        ? Expanded(
-                            child: SingleChildScrollView(
-                              child: Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Image.asset(
-                                        'assets/error.png', // Replace with your image path
-                                        width: 200, // Adjust width as needed
-                                        // height: 200, // Adjust height as needed
-                                      ),
-                                      // SizedBox(height: 20), // Adjust spacing between image and text
-                                      Text(
-                                        'No prescription is uploaded yet... upload new prescription to get points!',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.black,
+                      height: 110,
+                      child: Column(
+                        children: <Widget>[
+                          const SizedBox(height: 5),
+
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.arrow_back,
+                                color: Colors.white,
+                              ),
+                              iconSize: 28, // Back button icon
+                              onPressed: () {
+                                Navigator.pop(context);
+                                // Navigator.of(context).pop();
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Align(
+                            alignment: Alignment.center,
+                            child: RichText(
+                              text: TextSpan(
+                                children: [
+                                  WidgetSpan(
+                                    alignment: PlaceholderAlignment.middle,
+                                    child: ShaderMask(
+                                      shaderCallback: (Rect bounds) {
+                                        return const RadialGradient(
+                                          radius: 1.0,
+                                          colors: [
+                                            Color(0xFFFFF400),
+                                            Color(0xFFFFE800),
+                                            Color(0xFFFFCA00),
+                                            Color(0xFFFF9A00),
+                                            Color(0xFFFF9800),
+                                          ],
+                                        ).createShader(bounds);
+                                      },
+                                      child: Text(
+                                        ' $EyeHealthPoints ',
+                                        style: const TextStyle(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors
+                                              .white, // Specify a color for the text
                                         ),
                                       ),
-                                      SizedBox(
-                                        height: 20,
-                                      ),
-                                    ],
+                                    ),
                                   ),
-                                ),
+                                  const TextSpan(
+                                    text: 'Every visit to Optometrist ',
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ],
                               ),
                             ),
-                          )
-                        : Expanded(
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              physics: const ScrollPhysics(),
-                              itemCount: _files.length,
-                              itemBuilder: (context, index) {
-                                return ListTile(
-                                  leading:
-                                      const Icon(Icons.picture_as_pdf_outlined),
-                                  title: Text(
-                                    _files[index].name ?? '',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 11),
+                          ),
+
+                          // Add more Text widgets as needed
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: Container(
+                    // child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 7,
+                        ),
+                        Align(
+                          alignment: Alignment.center,
+                          child: ShaderMask(
+                            shaderCallback: (Rect bounds) {
+                              return const LinearGradient(
+                                colors: [
+                                  Colors.bluegradient,
+                                  Colors.greengradient
+                                ], // Your gradient colors
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                              ).createShader(bounds);
+                            },
+                            child: Text(
+                              '$totalPoints',
+                              style: const TextStyle(
+                                  fontSize: 22,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+
+                        const Padding(
+                          padding: EdgeInsets.fromLTRB(18.0, 5, 18, 10),
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Total Point Earned Till Now',
+                              style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.fromLTRB(18.0, 5, 18, 10),
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Upload',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                        ),
+
+                        Container(
+                          height: MediaQuery.of(context).size.width / 2.1,
+                          width: MediaQuery.of(context).size.width / 1.3,
+                          color: Colors.white.withOpacity(0.7),
+                          child: Align(
+                              alignment: Alignment.center,
+                              child: Column(
+                                children: [
+                                  SizedBox(
+                                    height: 10,
                                   ),
-                                  subtitle: Padding(
-                                    padding: const EdgeInsets.only(top: 5.0),
-                                    child: Text(
-                                        '${dates[index].toString().substring(0, 10)} , ${dates[index].toString().substring(12, 19)} ago',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 12)),
+                                  GestureDetector(
+                                    onTap: isEnabled ? _pickFiles : null,
+
+                                    // onTap: _pickFiles,
+                                    child: Container(
+                                      height: 60,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image: AssetImage(
+                                            isEnabled
+                                                ? 'assets/upload_icon.png'
+                                                : 'assets/upload_success.png', // Change the paths accordingly
+                                          ),
+                                          // AssetImage(
+                                          //     'assets/upload_icon.png'), // Replace with your image asset path
+                                          fit: BoxFit
+                                              .contain, // Adjust the fit as needed
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Row(
+                                  SizedBox(
+                                    height: isEnabled
+                                        ? 10
+                                        : 0, // Adjust height based on condition
+                                  ),
+                                  Padding(
+                                      padding:
+                                          EdgeInsets.fromLTRB(18.0, 7, 18, 3),
+                                      child: Align(
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          isEnabled
+                                              ? 'Drag & drop files or Browse'
+                                              : 'Prescription upload',
+
+
+                                          style: TextStyle(
+                                              fontSize: 13,
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w500),
+                                        ),
+                                      )),
+                                  SizedBox(
+                                    height: isEnabled
+                                        ? 10
+                                        : 0, // Adjust height based on condition
+                                  ),
+                                  Padding(
+                                      padding:
+                                          EdgeInsets.fromLTRB(18.0, 0, 18, 4),
+                                      child: Align(
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          isEnabled
+                                              ? 'Supported formates: JPG, JPEG, PNG, WEBP, SVG, BMP'
+                                              : 'Your prescription has been uploaded and is currently being verified by our team. This process will take approximately 24 hours. ',
+
+                                          // 'Win a cool pair of sunglasses of worth rs 1000 free',
+                                          style: TextStyle(
+                                              fontSize: 11,
+                                              color: Colors.greytext,
+                                              fontWeight: FontWeight.w400),
+                                        ),
+                                      )),
+                                ],
+                              )),
+                        ),
+                        // TODO REPLACEMENT ===add progress bar for uploading files
+
+                        // Padding(
+                        //   padding: EdgeInsets.fromLTRB(18.0,10,18,10),
+                        //   child: Text(
+                        //     'Uploading - 1/1 files',
+                        //     // 'Win a cool pair of sunglasses of worth rs 1000 free',
+                        //     style: TextStyle(
+                        //         fontSize: 13,
+                        //         color: Colors.greytext,
+                        //         fontWeight: FontWeight.w500),
+                        //   ),
+                        // ),
+
+                        SizedBox(
+                          height: 15,
+                        ),
+                        _files == null || _files.isEmpty
+                            ? Expanded(
+                                child: SingleChildScrollView(
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
-                                          Container(
-                                            width: 20,
-                                            height: 10,
+                                          Image.asset(
+                                            'assets/error.png', // Replace with your image path
+                                            width:
+                                                200, // Adjust width as needed
+                                            // height: 200, // Adjust height as needed
                                           ),
-                                          // if (statuses[index].toLowerCase() ==
-                                          //     "approved")
-                                          //   Container(
-                                          //     decoration: BoxDecoration(
-                                          //       border: Border.all(
-                                          //           color: Colors.black),
-                                          //       borderRadius:
-                                          //           BorderRadius.circular(5.0),
-                                          //     ),
-                                          //     padding: EdgeInsets.all(8.0),
-                                          //     child: Text(
-                                          //       '$points Points',
-                                          //       style: TextStyle(
-                                          //           fontWeight: FontWeight.w400,
-                                          //           fontSize: 12),
-                                          //     ),
-                                          //   ),
-                                          // if (statuses[index].toLowerCase() ==
-                                          //     "pending")
-                                          //   Container(
-                                          //     decoration: BoxDecoration(
-                                          //       border: Border.all(
-                                          //           color: Colors.black),
-                                          //       borderRadius:
-                                          //           BorderRadius.circular(5.0),
-                                          //     ),
-                                          //     padding: EdgeInsets.all(8.0),
-                                          //     child: Text(
-                                          //       '${statuses[index]}',
-                                          //       style: TextStyle(
-                                          //           fontWeight: FontWeight.w400,
-                                          //           fontSize: 12),
-                                          //     ),
-                                          //   ),
+                                          // SizedBox(height: 20), // Adjust spacing between image and text
+                                          Text(
+                                            'No prescription is uploaded yet... upload new prescription to get points!',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.black,
+                                            ),
+                                          ),
                                           SizedBox(
-                                            width: 20,
+                                            height: 20,
                                           ),
-                                          GestureDetector(
-                                            onTap: () {
-                                              showDialog(
-                                                context: context,
-                                                builder:
-                                                    (BuildContext context) {
-                                                  return Dialog(
-                                                    backgroundColor:
-                                                        Colors.white,
-                                                    child: Column(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      // Use min to make the dialog size wrap its content
-                                                      // crossAxisAlignment: CrossAxisAlignment.stretch,
-                                                      children: [
-                                                        Center(
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(12.0),
-                                                            child: Container(
-                                                              color:
-                                                                  Colors.white,
-                                                              // constraints: BoxConstraints(
-                                                              //   maxHeight: MediaQuery.of(context).size.height *
-                                                              //       0.55, // Set max height for the image container
-                                                              // ),
-                                                              child: ClipRect(
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : Expanded(
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const ScrollPhysics(),
+                                  itemCount: _files.length,
+                                  itemBuilder: (context, index) {
+                                    return ListTile(
+                                      leading: const Icon(
+                                          Icons.picture_as_pdf_outlined),
+                                      title: Text(
+                                        _files[index].name ?? '',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 11),
+                                      ),
+                                      subtitle: Padding(
+                                        padding:
+                                            const EdgeInsets.only(top: 5.0),
+                                        child: Text(
+                                            '${dates[index].toString().substring(0, 10)} , ${dates[index].toString().substring(12, 19)} ago',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 12)),
+                                      ),
+                                      trailing: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Container(
+                                                width: 20,
+                                                height: 10,
+                                              ),
+                                              // if (statuses[index].toLowerCase() ==
+                                              //     "approved")
+                                              //   Container(
+                                              //     decoration: BoxDecoration(
+                                              //       border: Border.all(
+                                              //           color: Colors.black),
+                                              //       borderRadius:
+                                              //           BorderRadius.circular(5.0),
+                                              //     ),
+                                              //     padding: EdgeInsets.all(8.0),
+                                              //     child: Text(
+                                              //       '$points Points',
+                                              //       style: TextStyle(
+                                              //           fontWeight: FontWeight.w400,
+                                              //           fontSize: 12),
+                                              //     ),
+                                              //   ),
+                                              // if (statuses[index].toLowerCase() ==
+                                              //     "pending")
+                                              //   Container(
+                                              //     decoration: BoxDecoration(
+                                              //       border: Border.all(
+                                              //           color: Colors.black),
+                                              //       borderRadius:
+                                              //           BorderRadius.circular(5.0),
+                                              //     ),
+                                              //     padding: EdgeInsets.all(8.0),
+                                              //     child: Text(
+                                              //       '${statuses[index]}',
+                                              //       style: TextStyle(
+                                              //           fontWeight: FontWeight.w400,
+                                              //           fontSize: 12),
+                                              //     ),
+                                              //   ),
+                                              SizedBox(
+                                                width: 20,
+                                              ),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return Dialog(
+                                                        backgroundColor:
+                                                            Colors.white,
+                                                        child: Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          // Use min to make the dialog size wrap its content
+                                                          // crossAxisAlignment: CrossAxisAlignment.stretch,
+                                                          children: [
+                                                            Center(
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .all(
+                                                                        12.0),
                                                                 child:
-                                                                    FittedBox(
-                                                                  fit: BoxFit
-                                                                      .fill,
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .center,
-                                                                  child: Image
-                                                                      .network(
-                                                                    "https://eyehealth.backend.zuktiinnovations.com" +
-                                                                        image[
-                                                                            index],
+                                                                    Container(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  // constraints: BoxConstraints(
+                                                                  //   maxHeight: MediaQuery.of(context).size.height *
+                                                                  //       0.55, // Set max height for the image container
+                                                                  // ),
+                                                                  child:
+                                                                      ClipRect(
+                                                                    child:
+                                                                        FittedBox(
+                                                                      fit: BoxFit
+                                                                          .fill,
+                                                                      alignment:
+                                                                          Alignment
+                                                                              .center,
+                                                                      child: Image
+                                                                          .network(
+                                                                        "https://eyehealth.backend.zuktiinnovations.com" +
+                                                                            image[index],
+                                                                      ),
+                                                                    ),
                                                                   ),
                                                                 ),
                                                               ),
                                                             ),
-                                                          ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8.0),
+                                                              child: TextButton(
+                                                                onPressed: () =>
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop(),
+                                                                child: Text(
+                                                                    'Close'),
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8.0),
-                                                          child: TextButton(
-                                                            onPressed: () =>
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop(),
-                                                            child:
-                                                                Text('Close'),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
+                                                      );
+                                                    },
                                                   );
                                                 },
-                                              );
-                                            },
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    color: Colors.black),
-                                                borderRadius:
-                                                    BorderRadius.circular(5.0),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        color: Colors.black),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5.0),
+                                                  ),
+                                                  padding: EdgeInsets.all(8.0),
+                                                  child: Text(
+                                                    'Preview',
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        fontSize: 12),
+                                                  ),
+                                                ),
                                               ),
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text(
-                                                'Preview',
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 12),
-                                              ),
-                                            ),
+
+                                              // if (statuses[index].toLowerCase() == "pending")
+                                              // GestureDetector(
+                                              //   onTap: () {
+                                              //     showDialog(
+                                              //       context: context,
+                                              //       builder:
+                                              //           (BuildContext context) {
+                                              //         return Dialog(backgroundColor: Colors.white,
+                                              //           child: SizedBox(
+                                              //
+                                              //             height: MediaQuery.of(
+                                              //                         context)
+                                              //                     .size
+                                              //                     .height *
+                                              //                 0.75,
+                                              //             // Set height to half of screen height
+                                              //             child: Column(
+                                              //               // mainAxisSize:
+                                              //               //     MainAxisSize.min,
+                                              //               children: [
+                                              //                 Center(
+                                              //                   child: Container(
+                                              //                     height: MediaQuery.of(
+                                              //                                 context)
+                                              //                             .size
+                                              //                             .height *
+                                              //                         0.55, // Set the height of the image container
+                                              //                     child: ClipRect(
+                                              //                       child:
+                                              //                           FittedBox(
+                                              //                         fit: BoxFit
+                                              //                             .contain,
+                                              //                         alignment:
+                                              //                             Alignment
+                                              //                                 .center,
+                                              //                         child: Padding(
+                                              //                           padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 19),
+                                              //                           child: Image
+                                              //                               .network(
+                                              //                             "https://eyehealth.backend.zuktiinnovations.com" +
+                                              //                                 image[
+                                              //                                     index],
+                                              //                           ),
+                                              //                         ),
+                                              //                       ),
+                                              //                     ),
+                                              //                   ),
+                                              //                 ),
+                                              //                 TextButton(
+                                              //                   onPressed: () =>
+                                              //                       Navigator.of(
+                                              //                               context)
+                                              //                           .pop(),
+                                              //                   child:
+                                              //                       Text('Close'),
+                                              //                 ),
+                                              //               ],
+                                              //             ),
+                                              //           ),
+                                              //         );
+                                              //       },
+                                              //     );
+                                              //   },
+                                              //   child: Container(
+                                              //     decoration: BoxDecoration(
+                                              //       border: Border.all(
+                                              //           color: Colors.black),
+                                              //       borderRadius:
+                                              //           BorderRadius.circular(5.0),
+                                              //     ),
+                                              //     padding: EdgeInsets.all(8.0),
+                                              //     child: Text(
+                                              //       'Preview',
+                                              //       style: TextStyle(
+                                              //           fontWeight: FontWeight.w400,
+                                              //           fontSize: 12),
+                                              //     ),
+                                              //   ),
+                                              // ),
+                                            ],
                                           ),
 
-                                          // if (statuses[index].toLowerCase() == "pending")
-                                          // GestureDetector(
-                                          //   onTap: () {
-                                          //     showDialog(
-                                          //       context: context,
-                                          //       builder:
-                                          //           (BuildContext context) {
-                                          //         return Dialog(backgroundColor: Colors.white,
-                                          //           child: SizedBox(
-                                          //
-                                          //             height: MediaQuery.of(
-                                          //                         context)
-                                          //                     .size
-                                          //                     .height *
-                                          //                 0.75,
-                                          //             // Set height to half of screen height
-                                          //             child: Column(
-                                          //               // mainAxisSize:
-                                          //               //     MainAxisSize.min,
-                                          //               children: [
-                                          //                 Center(
-                                          //                   child: Container(
-                                          //                     height: MediaQuery.of(
-                                          //                                 context)
-                                          //                             .size
-                                          //                             .height *
-                                          //                         0.55, // Set the height of the image container
-                                          //                     child: ClipRect(
-                                          //                       child:
-                                          //                           FittedBox(
-                                          //                         fit: BoxFit
-                                          //                             .contain,
-                                          //                         alignment:
-                                          //                             Alignment
-                                          //                                 .center,
-                                          //                         child: Padding(
-                                          //                           padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 19),
-                                          //                           child: Image
-                                          //                               .network(
-                                          //                             "https://eyehealth.backend.zuktiinnovations.com" +
-                                          //                                 image[
-                                          //                                     index],
-                                          //                           ),
-                                          //                         ),
-                                          //                       ),
-                                          //                     ),
-                                          //                   ),
-                                          //                 ),
-                                          //                 TextButton(
-                                          //                   onPressed: () =>
-                                          //                       Navigator.of(
-                                          //                               context)
-                                          //                           .pop(),
-                                          //                   child:
-                                          //                       Text('Close'),
-                                          //                 ),
-                                          //               ],
-                                          //             ),
-                                          //           ),
-                                          //         );
-                                          //       },
-                                          //     );
+                                          // Add your text here
+                                          // IconButton(
+                                          //   icon: Icon(Icons.more_vert),
+                                          //   onPressed: () {
+                                          //     // _removeFile(index, _files[index].identifier ?? '');
                                           //   },
-                                          //   child: Container(
-                                          //     decoration: BoxDecoration(
-                                          //       border: Border.all(
-                                          //           color: Colors.black),
-                                          //       borderRadius:
-                                          //           BorderRadius.circular(5.0),
-                                          //     ),
-                                          //     padding: EdgeInsets.all(8.0),
-                                          //     child: Text(
-                                          //       'Preview',
-                                          //       style: TextStyle(
-                                          //           fontWeight: FontWeight.w400,
-                                          //           fontSize: 12),
-                                          //     ),
-                                          //   ),
                                           // ),
                                         ],
                                       ),
+                                    );
+                                  },
+                                ),
+                              ),
+                      ],
+                    ),
 
-                                      // Add your text here
-                                      // IconButton(
-                                      //   icon: Icon(Icons.more_vert),
-                                      //   onPressed: () {
-                                      //     // _removeFile(index, _files[index].identifier ?? '');
-                                      //   },
-                                      // ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                  ],
+                    // ),
+                  ),
                 ),
-
-                // ),
-              ),
+                SizedBox(
+                  height: 80,
+                ),
+              ],
             ),
-            SizedBox(height: 80,),
-          ],
-        ),
 
-        // bottomNavigationBar: CustomBottomAppBar(currentScreen: "Rewards"),
-      );
+      // bottomNavigationBar: CustomBottomAppBar(currentScreen: "Rewards"),
+    );
   }
 
   void _pickFiles() async {
     FilePickerResult? pickedFiles = await FilePicker.platform.pickFiles(
-      allowMultiple: true,
+      allowMultiple: false,
       type: FileType.custom,
       allowedExtensions: [
         'jpg',
@@ -2901,6 +2918,7 @@ class PresUpload extends State<PrescriptionUpload> {
     );
 
     if (pickedFiles != null) {
+
       List<File> files = pickedFiles.paths.map((path) => File(path!)).toList();
 
       List<PlatformFile> pdfFiles =
@@ -3062,8 +3080,9 @@ class PresUpload extends State<PrescriptionUpload> {
                     ),
                   ),
                 ),
-
-                SizedBox(height: 80,),
+                SizedBox(
+                  height: 80,
+                ),
               ],
             ),
           ),

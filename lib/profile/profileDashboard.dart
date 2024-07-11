@@ -84,7 +84,7 @@ class UserProfiledash extends State<UserDashboard> {
               ),
               Positioned(
                 top: 0,
-                right: 0,
+                right: 8,
                 child: GestureDetector(
                   onTap: () {
                     Logout();
