@@ -113,84 +113,90 @@ SizedBox(height: 5,),
                           'assets/profileline.png', // Replace this with your image path
                         ),
                       ),
-                      Center(
-                        child: CircleAvatar(
-                          radius: 50.0,
-                          backgroundColor: Colors.transparent,
-                          child: ClipOval(
-                            child: Column(
-                              children: [
 
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: SizedBox(
-                                    width: 100.0,
-                                    height: 100.0,
-                                    child: isLoading
-                                        ? Center(
-                                      child: CircularProgressIndicator(),
-                                    )
-                                        : (imageUrl1.isNotEmpty && imageUrl1 != '')
-                                        ? Image.network(
-                                      imageUrl1,
-                                      fit: BoxFit.cover,
-                                    )
-                                        :
-                                    Icon(
-                                      Icons.account_circle,
-                                      // Use the account circle icon from the Icons class
-                                      size: MediaQuery.of(context).size.width/3.8,  // Adjust the size of the icon as needed
-                                      color: Colors.white,
+                      Column(
+                        children: [
+                          Center(
+                            child: CircleAvatar(
+                              radius: 50.0,
+                              backgroundColor: Colors.transparent,
+                              child: ClipOval(
+                                child: Column(
+                                  children: [
 
-                                      // Adjust the color of the icon as needed
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: SizedBox(
+                                        width: 100.0,
+                                        height: 100.0,
+                                        child: isLoading
+                                            ? Center(
+                                          child: CircularProgressIndicator(),
+                                        )
+                                            : (imageUrl1.isNotEmpty && imageUrl1 != '')
+                                            ? Image.network(
+                                          imageUrl1,
+                                          fit: BoxFit.cover,
+                                        )
+                                            :
+                                        Icon(
+                                          Icons.account_circle,
+                                          // Use the account circle icon from the Icons class
+                                          size: MediaQuery.of(context).size.width/3.8,  // Adjust the size of the icon as needed
+                                          color: Colors.white,
+
+                                          // Adjust the color of the icon as needed
+                                        ),
+                                        // Image.asset(
+                                        //   'assets/profile.png',
+                                        //   // 'assets/profile_pic.png',
+                                        //   fit: BoxFit.cover,
+                                        // ),
+                                      ),
                                     ),
-                                    // Image.asset(
-                                    //   'assets/profile.png',
-                                    //   // 'assets/profile_pic.png',
-                                    //   fit: BoxFit.cover,
-                                    // ),
-                                  ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
                           ),
-                        ),
+
+                          Text(
+                            name.toString(),
+                            style: const TextStyle(
+                                fontSize: 18,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500),
+                          ),
+                          ShaderMask(
+                            shaderCallback: (Rect bounds) {
+                              return const RadialGradient(
+                                radius: 1.0,
+                                colors: [
+                                  Color(0xFFFFF400),
+                                  Color(0xFFFFE800),
+                                  Color(0xFFFFCA00),
+                                  Color(0xFFFF9A00),
+                                  Color(0xFFFF9800),
+                                ],
+                              ).createShader(bounds);
+                            },
+                            child: Text(
+                              '${points_.text}',
+                              style: const TextStyle(
+                                  fontSize: 28,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                        ],
                       ),
 
                     ],
                   ),
 
-                  Text(
-                    name.toString(),
-                    style: const TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500),
-                  ),
-                  ShaderMask(
-                    shaderCallback: (Rect bounds) {
-                      return const RadialGradient(
-                        radius: 1.0,
-                        colors: [
-                          Color(0xFFFFF400),
-                          Color(0xFFFFE800),
-                          Color(0xFFFFCA00),
-                          Color(0xFFFF9A00),
-                          Color(0xFFFF9800),
-                        ],
-                      ).createShader(bounds);
-                    },
-                    child: Text(
-                      '${points_.text}',
-                      style: const TextStyle(
-                          fontSize: 28,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
                   Expanded(
                     child: Container(
                       width: double.infinity,

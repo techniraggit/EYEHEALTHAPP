@@ -116,7 +116,7 @@ class ProfileDetails extends State<UserProfile> {
       body: isLoading
           ? const Center(
               child: CircularProgressIndicator(
-                color: Colors.blue,
+                color: Colors.white,
               ),
             )
           : Column(
@@ -770,13 +770,11 @@ class ProfileDetails extends State<UserProfile> {
   }
 
   Future<Map<String, dynamic>> getProfile() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String userId = prefs.getString('id') ?? '';
+    String token = prefs.getString('access_token') ?? '';
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String userId = prefs.getString('id') ?? '';
-      String token = prefs.getString('access_token') ?? '';
-      // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1OTM5NDcyLCJpYXQiOjE3MTU4NTMwNzIsImp0aSI6ImU1ZjdmNjc2NzZlOTRkOGNhYjE1MmMyNmZlYjY4Y2Y5IiwidXNlcl9pZCI6IjA5ZTllYTU0LTQ0ZGMtNGVlMC04Y2Y1LTdlMTUwMmVlZTUzZCJ9.GdbpdA91F2TaKhuNC28_FO21F_jT_TxvkgGQ7t2CAVk";
 
-      // prefs.getString('access_token') ?? '';
 
       print("id :$userId");
       final response = await http.get(

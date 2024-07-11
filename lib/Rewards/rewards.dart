@@ -616,11 +616,9 @@ class RewardsScreenState extends State<RewardsScreen>
                                           onTap: () {
                                             Navigator.of(context).pop();
                                             // sendcustomerDetails(true);
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute<void>(
-                                                builder: (context) => BottomDialog(),
-                                              ),
+                                            showModalBottomSheet(
+                                              context: context,
+                                              builder: (context) => BottomDialog(),
                                             );
                                           },
                                           child: Image.asset(

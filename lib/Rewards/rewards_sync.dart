@@ -4,6 +4,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:dio/dio.dart';
+import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
@@ -40,6 +42,7 @@ import '../api/config.dart';
 import '../digitalEyeTest/testScreen.dart';
 import '../eyeFatigueTest/EyeFatigueSelfieScreen.dart';
 import '../eyeFatigueTest/eyeFatigueTest.dart';
+import '../updateaddress.dart';
 import 'new_address_screen.dart';
 
 class RewardContact extends StatefulWidget {
@@ -1783,24 +1786,15 @@ class RewardSpecsSync extends State<RewardSpecs> {
                     itemCount: address_list?.data?.length ?? 0,
                     itemBuilder: (BuildContext context, int index) {
                       return Card(
-                        margin: EdgeInsets.all(8.0),
+                        margin: EdgeInsets.all(4.0),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Builder(builder: (context) {
-                                //   bool isSelected = address_list?.data?[index].isDefault ?? false;
-                                //   return Checkbox(
-                                //     value: isSelected,
-                                //     onChanged: (newValue) {
-                                //       setState(() {
-                                //         isSelected = newValue ?? false; // Update the state of isSelected
-                                //       });
-                                //     },
-                                //   );
-                                // }),
+
+
 
                                 Builder(builder: (context) {
                                   ino = index;
@@ -1863,7 +1857,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
                                   );
                                 }),
                                 Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                                  padding:  EdgeInsets.all(8.0),
                                   child: Container(
                                     decoration: BoxDecoration(
                                       border: Border.all(
@@ -1922,7 +1916,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
                                         padding: const EdgeInsets.only(
                                             top: 5.0, left: 10),
                                         child: Text(
-                                          '${address_list?.data?[index].phoneNumber}  ${address_list?.data?[index].email}   ',
+                                          '${address_list?.data?[index].phoneNumber}  ',
                                           style: TextStyle(
                                             fontSize: 14,
                                             color: Colors.black,
@@ -1931,9 +1925,26 @@ class RewardSpecsSync extends State<RewardSpecs> {
                                         ),
                                       ),
                                     ),
+                                    Container(
+                                      width: MediaQuery.of(context).size.width /
+                                          2.7,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 5.0, left: 4),
+                                        child: Text(
+                                          ' ${address_list?.data?[index].email}   ',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+
                                     Padding(
                                       padding: const EdgeInsets.only(
-                                          top: 5.0, left: 10),
+                                          top: 5.0, left: 4),
                                       child: Text(
                                         '${address_list?.data?[index].state}',
                                         style: TextStyle(
@@ -1947,15 +1958,36 @@ class RewardSpecsSync extends State<RewardSpecs> {
                                 ),
                               ],
                             ),
-                            // Align(
-                            //   alignment: Alignment.center,
-                            //   child: IconButton(
-                            //     icon: Icon(Icons.edit),
-                            //     onPressed: () {
-                            //       // Handle edit button press
-                            //     },
-                            //   ),
-                            // ),
+                            Column(
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.edit,size: 25,),
+                                  onPressed: () {
+                                    print("address+id"+address_list!.data![index].addressId!);
+                                    setState(() {
+
+                                    });
+                                    Navigator.push(context, MaterialPageRoute(
+                                        builder: (context) => updateAddressScreen(address_id:address_list?.data?[index].addressId)),
+                                    );
+
+                                },
+                                ),
+                                SizedBox(height: 8,),
+                                IconButton(
+                                  icon: Icon(Icons.delete,size: 25,),
+                                  onPressed: () {
+                                    print("address+id"+address_list!.data![index].addressId!);
+                                    setState(() {
+                                      _showDeleteConfirmationDialog(address_list!.data![index].addressId!);
+
+                                    });
+                                   // deleteAddress(address_list!.data![index].addressId);
+
+                                  },
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                       );
@@ -2192,7 +2224,119 @@ class RewardSpecsSync extends State<RewardSpecs> {
     prefs =
         await SharedPreferences.getInstance(); // Initialize SharedPreferences
   }
+
+  Future<void> deleteAddress(String? addressId) async {
+    try {
+      print("addresss_id===del2"+addressId!);
+
+
+    String userToken = '';
+    var sharedPref = await SharedPreferences.getInstance();
+    userToken =
+        sharedPref.getString("access_token") ?? '';
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $userToken', // Bearer token type
+    };
+    print("statusCode================${userToken}");
+
+    final response = await http.delete(
+      Uri.parse('${ApiProvider.baseUrl}/api/address?address_id=$addressId'),
+      headers: headers,
+    );
+      print("statusCodeurl================+{${ApiProvider.baseUrl}/api/address?address_id=$addressId}");
+
+      print("statusCode================${response.statusCode}");
+    print("responsebody================${response.body}");
+
+    if (response.statusCode == 200) {
+
+
+      Fluttertoast.showToast(msg: "Address Deleted Successfully!!");
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => RewardSpecs(offer_id: offer_id)),
+      );
+
+      setState(() {});
+    } else if (response.statusCode == 401) {
+      Fluttertoast.showToast(msg: "Session Expired");
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => SignIn()),
+      );
+    } else {
+      throw Exception('Failed to load data');
+    }
+  } on DioError catch (e) {
+  if (e.response != null || e.response!.statusCode == 401) {
+  // Handle 401 error
+
+  Fluttertoast.showToast(msg: "Session Expired");
+  Navigator.pushReplacement(
+  context,
+  MaterialPageRoute(builder: (context) => SignIn()),
+  );
+  } else {
+  // Handle other Dio errors
+  print("DioError: ${e.error}");
+  }
+  } catch (e) {
+  // Handle other exceptions
+  print("Exception---: $e");
+  }
+
+
+
+
+
+
+
+  }
+
+  void _showDeleteConfirmationDialog(String address_id) {
+print("addresss_id===del"+address_id);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Confirm Delete"),
+          content: Text("Are you sure you want to delete this address?"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text("Delete"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                deleteAddress(address_id);
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+  }
+
+
+
+
+
+
 }
+
+
+
+
+
+
+
+
 
 class PrescriptionUpload extends StatefulWidget {
   const PrescriptionUpload({super.key});
@@ -2669,40 +2813,7 @@ class PresUpload extends State<PrescriptionUpload> {
                                                 width: 20,
                                                 height: 10,
                                               ),
-                                              // if (statuses[index].toLowerCase() ==
-                                              //     "approved")
-                                              //   Container(
-                                              //     decoration: BoxDecoration(
-                                              //       border: Border.all(
-                                              //           color: Colors.black),
-                                              //       borderRadius:
-                                              //           BorderRadius.circular(5.0),
-                                              //     ),
-                                              //     padding: EdgeInsets.all(8.0),
-                                              //     child: Text(
-                                              //       '$points Points',
-                                              //       style: TextStyle(
-                                              //           fontWeight: FontWeight.w400,
-                                              //           fontSize: 12),
-                                              //     ),
-                                              //   ),
-                                              // if (statuses[index].toLowerCase() ==
-                                              //     "pending")
-                                              //   Container(
-                                              //     decoration: BoxDecoration(
-                                              //       border: Border.all(
-                                              //           color: Colors.black),
-                                              //       borderRadius:
-                                              //           BorderRadius.circular(5.0),
-                                              //     ),
-                                              //     padding: EdgeInsets.all(8.0),
-                                              //     child: Text(
-                                              //       '${statuses[index]}',
-                                              //       style: TextStyle(
-                                              //           fontWeight: FontWeight.w400,
-                                              //           fontSize: 12),
-                                              //     ),
-                                              //   ),
+
                                               SizedBox(
                                                 width: 20,
                                               ),
@@ -2949,7 +3060,7 @@ class PresUpload extends State<PrescriptionUpload> {
             child: Column(
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     const Text(
                       'Prescription Upload Feedback',
@@ -2976,8 +3087,12 @@ class PresUpload extends State<PrescriptionUpload> {
                 ),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 1.0),
-                  child: Text(
-                      "1.Kindly enter the name of the Doctor you visited. "),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+
+                    child: Text(
+                        "1.Kindly enter the name of the Doctor you visited. "),
+                  ),
                 ),
                 SizedBox(height: 10),
                 Padding(
@@ -2993,9 +3108,10 @@ class PresUpload extends State<PrescriptionUpload> {
                 ),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 1.0, vertical: 10),
-                  child: Text("2.Kindly enter the date of your eye test."),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                      child: Text("2.Kindly enter the date of your eye test.")),
                 ),
-                SizedBox(height: 10),
                 SizedBox(
                   height: 55,
                   child: Padding(
@@ -3035,10 +3151,12 @@ class PresUpload extends State<PrescriptionUpload> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 1.0),
-                  child: Text("3.Why you visited for the eyetest?"),
+                  padding: EdgeInsets.symmetric(horizontal: 1.0,vertical: 10),
+                  child: Align(
+                      alignment: Alignment.topLeft,
+
+                      child: Text("3.Why you visited for the eyetest?")),
                 ),
-                SizedBox(height: 10),
                 Padding(
                   padding: EdgeInsets.all(16.0),
                   child: TextField(
@@ -3172,6 +3290,8 @@ class PresUpload extends State<PrescriptionUpload> {
           "Error uploading file: $e================$Stacktrace================");
     }
   }
+
+
 }
 
 class ImagePreviewDialog extends StatelessWidget {
@@ -3194,4 +3314,6 @@ class ImagePreviewDialog extends StatelessWidget {
       ),
     );
   }
+
+
 }

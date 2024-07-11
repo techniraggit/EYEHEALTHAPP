@@ -4979,8 +4979,9 @@ class redgreen extends State<RedGreenTest> {
       // print("test_distance :" + distanceType);
       print("response-camera==${response.body}");
       Map<String, dynamic> data = jsonDecode(response.body);
+      String alertMessage = data['alert'];
+
       setState(() {
-        String alertMessage = data['alert'];
         alert = alertMessage;
       });
     } catch (e) {
@@ -5047,6 +5048,18 @@ class redgreen extends State<RedGreenTest> {
         _data = json.decode(response.body);
         snellenFraction = _data['snellen_fraction'];
         textSize = _data['text_size'];
+        if(textSize==1.72){
+          setState(() {
+            textSize=textSize*4;
+
+          });
+        }
+        if(textSize==1.455){
+          setState(() {
+            textSize=textSize*4;
+
+          });
+        }
         print('Red/green Test: $snellenFraction');
         snellenFraction;
         setState(() {
@@ -5120,6 +5133,7 @@ class redgreen extends State<RedGreenTest> {
         print('Red/green Test: $snellenFraction');
         print('Red/green Test: $randomText');
         print('Red/green Test: $textSize');
+
         textSize = textSize * 3.4;
         setState(() {
           snellenFraction;

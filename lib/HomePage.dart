@@ -466,12 +466,16 @@ SizedBox(height: 10,),
                             );
                             break;
                           case 'Eye Test':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute<void>(
-                                builder: (context) => BottomDialog(),
-                              ),
+                            showModalBottomSheet(
+                              context: context,
+                              builder: (context) => BottomDialog(),
                             );
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute<void>(
+                            //     builder: (context) => BottomDialog(),
+                            //   ),
+                            // );
                             break;
                           case 'Eye Fatigue Test':
                             if (context.mounted) {
