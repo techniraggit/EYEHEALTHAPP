@@ -11,8 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
-import 'package:project_new/Rewards/rewards_sync.dart';
-import 'package:project_new/api/config.dart';
+import 'package:second_eye/Rewards/rewards_sync.dart';
+import 'package:second_eye/api/config.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -615,7 +615,13 @@ class RewardsScreenState extends State<RewardsScreen>
                                         GestureDetector(
                                           onTap: () {
                                             Navigator.of(context).pop();
-                                            sendcustomerDetails(true);
+                                            // sendcustomerDetails(true);
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute<void>(
+                                                builder: (context) => BottomDialog(),
+                                              ),
+                                            );
                                           },
                                           child: Image.asset(
                                             'assets/digital_eye_exam.png',
@@ -1141,10 +1147,13 @@ class RewardsScreenState extends State<RewardsScreen>
 
           // Check if the context is still mounted before navigating
           if (context.mounted) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => GiveInfo()),
-            );
+              pushNewScreenWithRouteSettings(
+                context,
+                settings: const RouteSettings(name: 'music_player_page'),
+                screen: GiveInfo(),
+                withNavBar: false,
+                pageTransitionAnimation: PageTransitionAnimation.cupertino,
+              );
           }
         } else {
           print('Customer ID not found in response.');

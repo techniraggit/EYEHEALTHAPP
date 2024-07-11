@@ -15,11 +15,11 @@ import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
-import 'package:project_new/HomePage.dart';
-import 'package:project_new/Rewards/rewards_sync.dart';
-import 'package:project_new/api/Api.dart';
-import 'package:project_new/digitalEyeTest/EyeTestReportDetail.dart';
-import 'package:project_new/digitalEyeTest/TestReport.dart';
+import 'package:second_eye/HomePage.dart';
+import 'package:second_eye/Rewards/rewards_sync.dart';
+import 'package:second_eye/api/Api.dart';
+import 'package:second_eye/digitalEyeTest/EyeTestReportDetail.dart';
+import 'package:second_eye/digitalEyeTest/TestReport.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -1261,7 +1261,7 @@ class __ReportFatigueTestState extends State<_ReportFatigueTest> {
                 );
               },
             ),
-
+SizedBox(height: 80,),
           ],
         ),
       ),
@@ -1624,9 +1624,11 @@ class __ReportEyeTestState extends State<_ReportEyeTest> {
                     );
                   },
                 ),
+
               ],
             ),
           ),
+          SizedBox(height: 80,)
         ],
       ),
     );

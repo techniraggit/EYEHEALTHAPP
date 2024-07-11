@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:project_new/Rewards/rewards.dart';
+import 'package:second_eye/Rewards/rewards.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -424,8 +424,8 @@ late String email='';late String phoneno='';
           var options = {
             'key': 'rzp_test_2l6JfsPM4u3Y2l',
             'amount':calculateAmount(price),
-            'name': 'Zukti Eye Health App',
-            'description': 'Fine T-Shirt',
+            'name': 'Second Eye',
+            'description': 'Plan Purchase',
             'notes':{
               'plan_id': PlanId,
               'user_id': UserId,

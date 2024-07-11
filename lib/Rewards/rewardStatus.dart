@@ -9,9 +9,9 @@ import 'package:http/http.dart' as http;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:project_new/api/config.dart';
-import 'package:project_new/main.dart';
-import 'package:project_new/Rewards/rewards_sync.dart';
+import 'package:second_eye/api/config.dart';
+import 'package:second_eye/main.dart';
+import 'package:second_eye/Rewards/rewards_sync.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Custom_navbar/bottom_navbar.dart';

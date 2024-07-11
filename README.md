@@ -1,4 +1,4 @@
-# project_new
+# second_eye
 
 A new Flutter project.
 

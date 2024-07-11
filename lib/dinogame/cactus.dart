@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/widgets.dart';
-import 'package:project_new/dinogame/sprite.dart';
+import 'package:second_eye/dinogame/sprite.dart';
 
 import 'constants.dart';
 import 'game_object.dart';

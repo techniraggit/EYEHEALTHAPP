@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:project_new/sign_up.dart';
+import 'package:second_eye/sign_up.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api/config.dart';

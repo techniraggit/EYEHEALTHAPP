@@ -11,6 +11,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_sms/flutter_sms.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 //import 'package:flutter_sms/flutter_sms.dart';
@@ -23,10 +24,10 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
-import 'package:project_new/Rewards/redeem_sucess.dart';
-import 'package:project_new/models/OfferData.dart';
-import 'package:project_new/models/address_list.dart';
-import 'package:project_new/sign_up.dart';
+import 'package:second_eye/Rewards/redeem_sucess.dart';
+import 'package:second_eye/models/OfferData.dart';
+import 'package:second_eye/models/address_list.dart';
+import 'package:second_eye/sign_up.dart';
 import 'package:rename/platform_file_editors/abs_platform_file_editor.dart';
 import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -737,13 +738,13 @@ class _RewardsContactsSync extends State<RewardContact> {
   Future<void> sendSMSToAllContacts() async {
     try {
       List<String> allContactNumbers = await _getContactNumbers();
-//      await _sendSMS(allContactNumbers);
+     await _sendSMS(allContactNumbers);
     } catch (error) {
       print("erooooorrrrrrrrrr" + error.toString());
     }
   }
 
-  /* Future<void> _sendSMS(List<String> recipients) async {
+   Future<void> _sendSMS(List<String> recipients) async {
     try {
       String _result = await sendSMS(
         message:
@@ -755,7 +756,7 @@ class _RewardsContactsSync extends State<RewardContact> {
     } catch (error) {
       setState(() => _message = error.toString());
     }
-  }*/
+  }
 
   Future _fetchContacts() async {
     await [Permission.contacts].request();
@@ -2110,9 +2111,12 @@ class RewardSpecsSync extends State<RewardSpecs> {
 
           // Check if the context is still mounted before navigating
           if (context.mounted) {
-            Navigator.push(
+            pushNewScreenWithRouteSettings(
               context,
-              MaterialPageRoute(builder: (context) => GiveInfo()),
+              settings: const RouteSettings(name: 'music_player_page'),
+              screen: GiveInfo(),
+              withNavBar: false,
+              pageTransitionAnimation: PageTransitionAnimation.cupertino,
             );
           }
         } else {
@@ -2920,11 +2924,11 @@ class PresUpload extends State<PrescriptionUpload> {
         builder: (context) => SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
+                // bottom: MediaQuery.of(context).viewInsets.bottom,
                 left: 16,
                 right: 16,
                 top: 16),
-            child: Wrap(
+            child: Column(
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -3058,6 +3062,7 @@ class PresUpload extends State<PrescriptionUpload> {
                     ),
                   ),
                 ),
+
                 SizedBox(height: 80,),
               ],
             ),

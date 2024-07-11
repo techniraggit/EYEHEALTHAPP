@@ -1,6 +1,6 @@
 {
-    "name": "project_new",
-    "short_name": "project_new",
+    "name": "second_eye",
+    "short_name": "second_eye",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

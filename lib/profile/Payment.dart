@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
-import 'package:project_new/eyeFatigueTest/ReportPage.dart';
+import 'package:second_eye/eyeFatigueTest/ReportPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../digitalEyeTest/Counter.dart';
 import 'myPlanPage.dart';

@@ -6,7 +6,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:http/http.dart' as http;
-import 'package:project_new/digitalEyeTest/testScreen.dart';
+import 'package:second_eye/digitalEyeTest/testScreen.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert' as convert;

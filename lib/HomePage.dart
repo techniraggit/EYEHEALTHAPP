@@ -20,13 +20,13 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
-import 'package:project_new/alarm/SharedPref.dart';
-import 'package:project_new/alarm/demo_main.dart';
-// import 'package:project_new/alarm/demo_main.dart';
+import 'package:second_eye/alarm/SharedPref.dart';
+import 'package:second_eye/alarm/demo_main.dart';
+// import 'package:second_eye/alarm/demo_main.dart';
 
-import 'package:project_new/digitalEyeTest/testScreen.dart';
-import 'package:project_new/eyeFatigueTest/EyeFatigueSelfieScreen.dart';
-import 'package:project_new/sign_up.dart';
+import 'package:second_eye/digitalEyeTest/testScreen.dart';
+import 'package:second_eye/eyeFatigueTest/EyeFatigueSelfieScreen.dart';
+import 'package:second_eye/sign_up.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -1685,10 +1685,13 @@ class BottomAlarmDialog extends StatelessWidget {
 
           // Check if the context is still mounted before navigating
           if (context.mounted) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => GiveInfo()),
-            );
+              pushNewScreenWithRouteSettings(
+                context,
+                settings: const RouteSettings(name: 'music_player_page'),
+                screen: GiveInfo(),
+                withNavBar: false,
+                pageTransitionAnimation: PageTransitionAnimation.cupertino,
+              );
           }
         } else {
           print('Customer ID not found in response.');
@@ -1749,10 +1752,14 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
           //   screen:  GiveInfo(),
           //   withNavBar: false,
           // );
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => GiveInfo()),
-          );
+          if (context.mounted) {
+            pushNewScreenWithRouteSettings(
+              context,
+              settings: const RouteSettings(name: 'music_player_page'),
+              screen: GiveInfo(),
+              withNavBar: false,
+              pageTransitionAnimation: PageTransitionAnimation.cupertino,
+            );}
         } else {
           print('Customer ID not found in response.');
         }

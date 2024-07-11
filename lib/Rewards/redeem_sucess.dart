@@ -1,7 +1,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:project_new/Rewards/rewardStatus.dart';
+import 'package:second_eye/Rewards/rewardStatus.dart';
 
 import '../Custom_navbar/bottom_navbar.dart';
 import '../HomePage.dart';

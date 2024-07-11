@@ -18,12 +18,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart' hide LocationAccuracy;
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:project_new/HomePage.dart';
-import 'package:project_new/profile/myPlanPage.dart';
-import 'package:project_new/Rewards/rewardStatus.dart';
-import 'package:project_new/Rewards/rewards_sync.dart';
-import 'package:project_new/sign_up.dart';
-import 'package:project_new/profile/user_profile.dart';
+import 'package:second_eye/HomePage.dart';
+import 'package:second_eye/profile/myPlanPage.dart';
+import 'package:second_eye/Rewards/rewardStatus.dart';
+import 'package:second_eye/Rewards/rewards_sync.dart';
+import 'package:second_eye/sign_up.dart';
+import 'package:second_eye/profile/user_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Custom_navbar/bottom_navbar.dart';
 import '../api/config.dart';
@@ -52,21 +52,16 @@ class UserProfiledash extends State<UserDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: isLoading
-          ? Center(
-              child: CircularProgressIndicator(
-                color: Colors.black,
-              ),
-            )
-          : Scaffold(
+    return  Scaffold(
               backgroundColor: Colors.bluebutton,
 
-              body: Column(
+              body:  isLoading
+                  ? Center(
+                child: CircularProgressIndicator(
+                  color: Colors.black,
+                ),
+              )
+                  :Column(
                 children: [
                   SizedBox(
                     height: 20,
@@ -142,8 +137,9 @@ SizedBox(height: 5,),
                                     )
                                         :
                                     Icon(
-                                      Icons.account_circle,  // Use the account circle icon from the Icons class
-                                      size: MediaQuery.of(context).size.width/3.5,  // Adjust the size of the icon as needed
+                                      Icons.account_circle,
+                                      // Use the account circle icon from the Icons class
+                                      size: MediaQuery.of(context).size.width/3.8,  // Adjust the size of the icon as needed
                                       color: Colors.white,
 
                                       // Adjust the color of the icon as needed
@@ -616,8 +612,8 @@ SizedBox(height: 5,),
               // bottomNavigationBar: CustomBottomAppBar(
               //   currentScreen: 'ProfileDashboard',
               // ),
-            ),
-    );
+            );
+
   }
 
   void _showConfirmationDialog() {

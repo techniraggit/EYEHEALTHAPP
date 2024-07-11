@@ -8,13 +8,14 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:project_new/HomePage.dart';
-import 'package:project_new/sign_up.dart';
+import 'package:second_eye/HomePage.dart';
+import 'package:second_eye/sign_up.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -30,10 +31,15 @@ class ReportDetails extends StatefulWidget {
   EyeFatiguereports createState() => EyeFatiguereports();
 }
 
-class EyeFatiguereports extends State<ReportDetails>  with AutoCancelStreamMixin{
+class EyeFatiguereports extends State<ReportDetails>
+    with AutoCancelStreamMixin {
   final GlobalKey<ScaffoldState> _scafoldKey = GlobalKey();
   int? isReadFalseCount = 0;
-  String firstname="";String lastname="";String age="";String testresult= "";String created_on="";
+  String firstname = "";
+  String lastname = "";
+  String age = "";
+  String testresult = "";
+  String created_on = "";
   int report_id = 0;
 
   bool is_fatigue_right = false;
@@ -49,11 +55,14 @@ class EyeFatiguereports extends State<ReportDetails>  with AutoCancelStreamMixin
     "Without confirmation from your eye doctor or Eye health optometrist, do not use this power to make glasses."
   ];
 
-
-
-  bool _saving = false; List<int> pdfBytes = [0x25, 0x50, 0x44, 0x46, ];
+  bool _saving = false;
+  List<int> pdfBytes = [
+    0x25,
+    0x50,
+    0x44,
+    0x46,
+  ];
   String _message = '';
-
 
   @override
   void initState() {
@@ -62,6 +71,7 @@ class EyeFatiguereports extends State<ReportDetails>  with AutoCancelStreamMixin
     getReport(widget.reportId);
     getNotifactionCount();
   }
+
   Future<void> getNotifactionCount() async {
     try {
       String userToken = '';
@@ -87,15 +97,13 @@ class EyeFatiguereports extends State<ReportDetails>  with AutoCancelStreamMixin
         if (mounted) {
           setState(() {});
         }
-      }
-      else if (response.statusCode == 401) {
+      } else if (response.statusCode == 401) {
         Fluttertoast.showToast(msg: "Session Expired");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => SignIn()),
         );
-      }
-      else {
+      } else {
         throw Exception('Failed to load data');
       }
     } on DioError catch (e) {
@@ -120,7 +128,7 @@ class EyeFatiguereports extends State<ReportDetails>  with AutoCancelStreamMixin
   @override
   Iterable<StreamSubscription> get registerSubscriptions sync* {
     yield registerReceiver(['actionMusicPlaying']).listen(
-          (intent) {
+      (intent) {
         switch (intent.action) {
           case 'actionMusicPlaying':
             setState(() {
@@ -131,495 +139,489 @@ class EyeFatiguereports extends State<ReportDetails>  with AutoCancelStreamMixin
       },
     );
   }
+
   // Sample data for line 2
   @override
   Widget build(BuildContext context) {
     String formattedDate = DateFormat('dd MMMM').format(DateTime.now());
     return isLoading
         ? const Center(
-      child: CircularProgressIndicator(
-        color: Colors.blue,
-      ),
-    )
-        : Scaffold(
-      backgroundColor: Colors.white,
-
-      key: _scafoldKey,
-      endDrawer: NotificationSideBar(
-        onNotificationUpdate: () {
-          setState(() {
-            if (isReadFalseCount != null) {
-              if (isReadFalseCount! > 0) {
-                isReadFalseCount = isReadFalseCount! - 1;
-              }
-            }
-          });
-        },
-      ),
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60),
-        child: Stack(
-          children: [
-            Align(
-              alignment: Alignment.topLeft,
-              child: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back,
-                  color: Colors.black,
-                ),
-                iconSize: 28, // Back button icon
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
+            child: CircularProgressIndicator(
+              color: Colors.blue,
             ),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  height: 10, // Adjust height as needed
-                ),
-                Center(
-                  child: Text(
-                    'Eye Fatigue Test Report',
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      // Adjust size as needed
-                      // Add other styling properties as needed
+          )
+        : Scaffold(
+            backgroundColor: Colors.white,
+            key: _scafoldKey,
+            endDrawer: NotificationSideBar(
+              onNotificationUpdate: () {
+                setState(() {
+                  if (isReadFalseCount != null) {
+                    if (isReadFalseCount! > 0) {
+                      isReadFalseCount = isReadFalseCount! - 1;
+                    }
+                  }
+                });
+              },
+            ),
+            appBar: PreferredSize(
+              preferredSize: const Size.fromHeight(60),
+              child: Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        color: Colors.black,
+                      ),
+                      iconSize: 28, // Back button icon
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-
-              ],
-            ),
-            Positioned(
-              right: 16,
-              top: 16,
-              child: GestureDetector(
-                onTap: () {
-                  _scafoldKey.currentState!.openEndDrawer();
-                },
-                child: Stack(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20.0),
-                        border: Border.all(
-                          color: Colors.grey, // Border color
-                          width: 1.0, // Border width
-                        ),
-                      ),
-                      height: 35,
-                      width: 35,
-                      child: Center(
-                        child: Icon(
-                          Icons.notifications_none,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      right: 0,
-                      top: -1,
-                      // Adjust this value to position the text properly
-                      child: Container(
-                        padding: EdgeInsets.all(2),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.red,
-                        ),
-                        child: Text(
-                          '${isReadFalseCount}',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Center(
-              child: Text(
-                created_on ?? "",
-                // 'Today $formattedDate', // Display formatted current date
-                style: const TextStyle(
-                  fontStyle: FontStyle.normal,
-                  color: Colors.grey,
-                ),
-              ),
-            ),
-            const Padding(
-              padding:
-              EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-              child: Text(
-                "Patient's Details",
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
-                ),
-              ),
-            ),
-            Padding(
-                padding:
-                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
-                child: Card(
-                    child: ListTile(
-                        title: Column(children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text('Full Name', style:  TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w300,
-                                  ),),
-                                  Text(
-                                    '${firstname} ${lastname}',
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  const Text('Age', style:  TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w300,
-                              ),),
-                                  Text(
-                                    age ?? "",
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                        ])))),
-            Padding(
-              padding:
-              const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
-              child: Card(
-                child: ListTile(
-                  title: Column(
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Add spacing between the row and the additional columns
-                      Row(
-                        mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                            children: [
-                              const Text('Eye Fatigue in Left',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 15)),
-                              Center(
-                                child: is_fatigue_left
-                                    ? const Text(
-                                  'Yes',
-                                  style: TextStyle(
-                                      color: Colors.green,
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 15),
-                                )
-                                    : const Text('No',
-                                    style: TextStyle(
-                                        color: Colors.red,
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 13)),
-                              ),
-                              // Text('Yes',style: TextStyle(
-                              //   fontSize: 16,
-                              //   fontWeight: FontWeight.bold,
-                              // ),),
-                            ],
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Column(
-                            crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                            children: [
-                              const Text('Eye Fatigue in Right',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 15)),
-                              Center(
-                                child: is_fatigue_right
-                                    ? const Text(
-                                  'Yes',
-                                  style: TextStyle(
-                                      color: Colors.green,
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 15),
-                                )
-                                    : const Text('No',
-                                    style: TextStyle(
-                                        color: Colors.red,
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 13)),
-                              ),
-                            ],
-                          ),
-                        ],
+                      SizedBox(
+                        height: 10, // Adjust height as needed
                       ),
-                      const SizedBox(
-                          height:
-                          16), // Add spacing between the row and the additional columns
-                      Row(
-                        mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                            children: [
-                              const Text('Tiredness in Left',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 15)),
-                              Center(
-                                child: is_mild_tiredness_left
-                                    ? const Text(
-                                  'Yes',
-                                  style: TextStyle(
-                                      color: Colors.green,
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 15),
-                                )
-                                    : const Text('No',
-                                    style: TextStyle(
-                                        color: Colors.red,
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 13)),
-                              ),
-                              // Text('Yes',style: TextStyle(
-                              //   fontSize: 16,
-                              //   fontWeight: FontWeight.bold,
-                              // ),),
-                            ],
+                      Center(
+                        child: Text(
+                          'Eye Fatigue Test Report',
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            // Adjust size as needed
+                            // Add other styling properties as needed
                           ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Column(
-                            crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                            children: [
-                              const Text('Tiredness in in Right',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 15)),
-                              Center(
-                                child: is_mild_tiredness_right
-                                    ? const Text(
-                                  'Yes',
-                                  style: TextStyle(
-                                      color: Colors.green,
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 15),
-                                )
-                                    : const Text('No',
-                                    style: TextStyle(
-                                        color: Colors.red,
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 13)),
-                              ),
-                            ],
-                          ),
-                        ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
                       ),
                     ],
                   ),
-                ),
-              ),
-            ),
-            const Padding(
-              padding:
-              EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-              child: Text(
-                "Patient's Description",
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
-                ),
-              ),
-            ),
-            Padding(
-              padding:
-              const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-              child: Card(
-                child: ListTile(
-                  title: Container(
-                    alignment: Alignment.centerLeft,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Test Results',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                    Column(
-                      // crossAxisAlignment: CrossAxisAlignment.start,
-                      children: testresult
-                          .split('\n')
-                          .map(
-                            (line) => Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
-                              child: Icon(Icons.circle, size: 10),
-                            ),
-                            SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                line,
-                                style: TextStyle(fontSize: 14),
+                  Positioned(
+                    right: 16,
+                    top: 16,
+                    child: GestureDetector(
+                      onTap: () {
+                        _scafoldKey.currentState!.openEndDrawer();
+                      },
+                      child: Stack(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20.0),
+                              border: Border.all(
+                                color: Colors.grey, // Border color
+                                width: 1.0, // Border width
                               ),
                             ),
-                            SizedBox(height: 8),
-
-                          ],
-                        ),
-                      )
-                          .toList(),
-                    ),
-
-
-                      ],
+                            height: 35,
+                            width: 35,
+                            child: Center(
+                              child: Icon(
+                                Icons.notifications_none,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            right: 0,
+                            top: -1,
+                            // Adjust this value to position the text properly
+                            child: Container(
+                              padding: EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.red,
+                              ),
+                              child: Text(
+                                '$isReadFalseCount',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
             ),
-            const Padding(
-              padding:
-              EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-              child: Text(
-                'Suggestion Test',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: bulletPoints
-                  .map((bullet) => Padding(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 8.0, horizontal: 16.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding:
-                      EdgeInsets.only(top: 4.0, left: 8),
-                      child: Icon(
-                        Icons.circle,
-                        size: 11,
+            body: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Center(
+                    child: Text(
+                      created_on ?? "",
+                      // 'Today $formattedDate', // Display formatted current date
+                      style: const TextStyle(
+                        fontStyle: FontStyle.normal,
                         color: Colors.grey,
                       ),
                     ),
-                    const SizedBox(width: 8.0),
-                    Expanded(
-                      child: Text(
-                        bullet,
-                        style: const TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.w400),
+                  ),
+                  const Padding(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+                    child: Text(
+                      "Patient's Details",
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple,
                       ),
                     ),
-                  ],
-                ),
-              ))
-                  .toList(),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: ElevatedButton(
-                  onPressed: () async {
-                    downloadReport();
-
-                },
-
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple.shade400,
-                  padding: const EdgeInsets.all(16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(26),
                   ),
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                        width:
-                        8), // Add spacing between the icon and text
-                    Text(
-                      'Download Report',
+                  Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 12),
+                      child: Card(
+                          child: ListTile(
+                              title: Column(children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Full Name',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w300,
+                                  ),
+                                ),
+                                Text(
+                                  '$firstname $lastname',
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                const Text(
+                                  'Age',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w300,
+                                  ),
+                                ),
+                                Text(
+                                  age ?? "",
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                      ])))),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 12),
+                    child: Card(
+                      child: ListTile(
+                        title: Column(
+                          children: [
+                            // Add spacing between the row and the additional columns
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('Eye Fatigue in Left',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 15)),
+                                    Center(
+                                      child: is_fatigue_left
+                                          ? const Text(
+                                              'Yes',
+                                              style: TextStyle(
+                                                  color: Colors.green,
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 15),
+                                            )
+                                          : const Text('No',
+                                              style: TextStyle(
+                                                  color: Colors.red,
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 13)),
+                                    ),
+                                    // Text('Yes',style: TextStyle(
+                                    //   fontSize: 16,
+                                    //   fontWeight: FontWeight.bold,
+                                    // ),),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('Eye Fatigue in Right',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 15)),
+                                    Center(
+                                      child: is_fatigue_right
+                                          ? const Text(
+                                              'Yes',
+                                              style: TextStyle(
+                                                  color: Colors.green,
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 15),
+                                            )
+                                          : const Text('No',
+                                              style: TextStyle(
+                                                  color: Colors.red,
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 13)),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                                height:
+                                    16), // Add spacing between the row and the additional columns
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('Tiredness in Left',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 15)),
+                                    Center(
+                                      child: is_mild_tiredness_left
+                                          ? const Text(
+                                              'Yes',
+                                              style: TextStyle(
+                                                  color: Colors.green,
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 15),
+                                            )
+                                          : const Text('No',
+                                              style: TextStyle(
+                                                  color: Colors.red,
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 13)),
+                                    ),
+                                    // Text('Yes',style: TextStyle(
+                                    //   fontSize: 16,
+                                    //   fontWeight: FontWeight.bold,
+                                    // ),),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('Tiredness in in Right',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 15)),
+                                    Center(
+                                      child: is_mild_tiredness_right
+                                          ? const Text(
+                                              'Yes',
+                                              style: TextStyle(
+                                                  color: Colors.green,
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 15),
+                                            )
+                                          : const Text('No',
+                                              style: TextStyle(
+                                                  color: Colors.red,
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 13)),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Padding(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+                    child: Text(
+                      "Patient's Description",
                       style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple,
+                      ),
                     ),
-                    Icon(
-                      Icons.picture_as_pdf,
-                      color: Colors.white,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16),
+                    child: Card(
+                      child: ListTile(
+                        title: Container(
+                          alignment: Alignment.centerLeft,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Test Results',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Column(
+                                // crossAxisAlignment: CrossAxisAlignment.start,
+                                children: testresult
+                                    .split('\n')
+                                    .map(
+                                      (line) => Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 8.0),
+                                            child: Icon(Icons.circle, size: 10),
+                                          ),
+                                          SizedBox(width: 8),
+                                          Expanded(
+                                            child: Text(
+                                              line,
+                                              style: TextStyle(fontSize: 14),
+                                            ),
+                                          ),
+                                          SizedBox(height: 8),
+                                        ],
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                  const Padding(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+                    child: Text(
+                      'Suggestion Test',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: bulletPoints
+                        .map((bullet) => Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8.0, horizontal: 16.0),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.only(top: 4.0, left: 8),
+                                    child: Icon(
+                                      Icons.circle,
+                                      size: 11,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8.0),
+                                  Expanded(
+                                    child: Text(
+                                      bullet,
+                                      style: const TextStyle(
+                                          fontSize: 14.0,
+                                          fontWeight: FontWeight.w400),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ))
+                        .toList(),
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        downloadReport();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepPurple.shade400,
+                        padding: const EdgeInsets.all(16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(26),
+                        ),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                              width:
+                                  8), // Add spacing between the icon and text
+                          Text(
+                            'Download Report',
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
+                          Icon(
+                            Icons.picture_as_pdf,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 80,
+                  ),
+                ],
               ),
             ),
-            const SizedBox(
-              height: 80,
-            ),
-          ],
-        ),
-      ),
-    );
+          );
   }
 
   Future<void> getReport(int id) async {
@@ -631,10 +633,11 @@ class EyeFatiguereports extends State<ReportDetails>  with AutoCancelStreamMixin
         'Authorization': 'Bearer $userToken',
 // Bearer token type
       };
-      print("statusCode================${userToken}");
+      print("statusCode================$userToken");
 
       final response = await http.get(
-        Uri.parse('${ApiProvider.baseUrl}/api/fatigue/fatigue-reports?report_id=$id'),
+        Uri.parse(
+            '${ApiProvider.baseUrl}/api/fatigue/fatigue-reports?report_id=$id'),
         headers: headers,
       );
       print("statusCode================${response.body}");
@@ -647,16 +650,15 @@ class EyeFatiguereports extends State<ReportDetails>  with AutoCancelStreamMixin
         age = responseData['data']['user']['age'].toString();
         testresult = responseData['data']['suggestion'];
         report_id = responseData['data']['report_id'];
-        print("report_id================${report_id}");
-        created_on = responseData['data']['created_on'].toString().substring(0, 10);
-
+        print("report_id================$report_id");
+        created_on =
+            responseData['data']['created_on'].toString().substring(0, 10);
 
         is_fatigue_right = responseData['data']['is_fatigue_right'];
         is_mild_tiredness_right =
-        responseData['data']['is_mild_tiredness_right'];
+            responseData['data']['is_mild_tiredness_right'];
         is_fatigue_left = responseData['data']['is_fatigue_left'];
-        is_mild_tiredness_left =
-        responseData['data']['is_mild_tiredness_left'];
+        is_mild_tiredness_left = responseData['data']['is_mild_tiredness_left'];
         setState(() {});
       } else if (response.statusCode == 401) {
         Fluttertoast.showToast(msg: "Session Expired");
@@ -685,71 +687,74 @@ class EyeFatiguereports extends State<ReportDetails>  with AutoCancelStreamMixin
       print("Exception---: $e");
     }
   }
+
   void requestStoragePermission() async {
     PermissionStatus status = await Permission.storage.status;
 
-    if (!status.isGranted ) {
+    if (!status.isGranted) {
       status = await Permission.storage.request();
     }
 
-
     if (status == PermissionStatus.denied ||
-          status == PermissionStatus.permanentlyDenied) {
+        status == PermissionStatus.permanentlyDenied) {
+      await [Permission.storage].request();
+
+      // Permissions are denied or denied forever, let's request it!
+      status = await Permission.storage.status;
+      if (status == PermissionStatus.denied) {
         await [Permission.storage].request();
-
-        // Permissions are denied or denied forever, let's request it!
-        status =  await Permission.storage.status;
-        if (status == PermissionStatus.denied) {
-          await [Permission.storage].request();
-          print("storage permissions are still denied");
-        } else if (status ==PermissionStatus.permanentlyDenied) {
-          print("storage permissions are permanently denied");
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text("storage permissions required"),
-                content: Text("storage permissions are permanently denied. Please go to app settings to enable files and media permissions."),
-                actions: <Widget>[
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors
-                          .background, // Set your desired background color here
-                      // You can also customize other button properties here if needed
-                    ),
-                    onPressed: () async {
-                      Navigator.pop(context); // Close the dialog
-                      await openAppSettings();
-                    },
-                    child: Text("OK",
-
-                      style: TextStyle(
-                          color: Colors.white, fontSize: 16),
-                    ),
+        print("storage permissions are still denied");
+      } else if (status == PermissionStatus.permanentlyDenied) {
+        print("storage permissions are permanently denied");
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("storage permissions required"),
+              content: Text(
+                  "storage permissions are permanently denied. Please go to app settings to enable files and media permissions."),
+              actions: <Widget>[
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors
+                        .background, // Set your desired background color here
+                    // You can also customize other button properties here if needed
                   ),
-
-                ],
-              );
-            },
-          );
-        }
+                  onPressed: () async {
+                    Navigator.pop(context); // Close the dialog
+                    await openAppSettings();
+                  },
+                  child: Text(
+                    "OK",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
       }
+    }
 
-     if( status.isGranted) {
+    if (status.isGranted) {
       print("storage permissions are granted ");
       downloadReport();
-
     }
   }
+
   Future<String?> downloadReport() async {
     String _filePath = '';
     try {
+      EasyLoading.show();
       var sharedPref = await SharedPreferences.getInstance();
       String userToken = sharedPref.getString("access_token") ?? '';
 
       Map<String, String> headers = {
         'Authorization': 'Bearer $userToken',
       };
+
+      print(
+          "URl ${ApiProvider.baseUrl}/api/fatigue/download-report?report_id=$report_id");
 
       final response = await http.get(
         Uri.parse(
@@ -759,18 +764,24 @@ class EyeFatiguereports extends State<ReportDetails>  with AutoCancelStreamMixin
       var status = await Permission.storage.request();
 
       print('PDFreport_id $report_id');
-
-
+      EasyLoading.dismiss();
 
       if (response.statusCode == 200) {
-        Directory? downloadsDirectory = await getDownloadsDirectory();
+        // Directory? downloadsDirectory = await getDownloadsDirectory();
 
-        if (downloadsDirectory != null) {
-          File? pdfFile; String? pdfPath ;
+        // final Directory? downloadsDirectory =
+        //     await getExternalStorageDirectory();
+        final String? downloadsPath = await getDownloadPath();
+
+        print("Download path $downloadsPath");
+
+        if (downloadsPath != null) {
+          File? pdfFile;
+          String? pdfPath;
           // Create a file in the Downloads directory
 
-           pdfPath = '${downloadsDirectory.path}${report_id}/report.pdf';
-           pdfFile = File(pdfPath);
+          pdfPath = '$downloadsPath/report$report_id.pdf';
+          pdfFile = File(pdfPath);
           // Write the response content to the file
           await pdfFile.writeAsBytes(response.bodyBytes);
 
@@ -784,30 +795,44 @@ class EyeFatiguereports extends State<ReportDetails>  with AutoCancelStreamMixin
             Fluttertoast.showToast(msg: "Failed to save PDF");
             return null;
           }
-        }
-        else {
+        } else {
           print('Downloads directory not found.');
           Fluttertoast.showToast(msg: "Failed to save PDF");
           return null;
         }
-      }
-      else if (response.statusCode == 401) {
+      } else if (response.statusCode == 401) {
         Fluttertoast.showToast(msg: "Session Expired");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => SignIn()),
         );
         return null;
-      }
-      else {
+      } else {
         print('Failed to download PDF: ${response.statusCode}');
 
         // Handle other error cases if necessary
         return null;
       }
-
-  }catch (e) {
+    } catch (e) {
       print("Exception: $e");
       return null;
     }
-}}
+  }
+
+  Future<String?> getDownloadPath() async {
+    Directory? directory;
+    try {
+      if (Platform.isIOS) {
+        directory = await getApplicationDocumentsDirectory();
+      } else {
+        directory = Directory('/storage/emulated/0/Download');
+        // Put file in global download folder, if for an unknown reason it didn't exist, we fallback
+        // ignore: avoid_slow_async_io
+        if (!await directory.exists()) directory = await getExternalStorageDirectory();
+      }
+    } catch (err, stack) {
+      print("Cannot get download folder path");
+    }
+    return directory?.path;
+  }
+}

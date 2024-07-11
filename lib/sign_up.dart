@@ -18,7 +18,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:platform_device_id_v2/platform_device_id_v2.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
-import 'package:project_new/dashboard.dart';
+import 'package:second_eye/dashboard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'HomePage.dart';
 import 'api/config.dart';
@@ -176,8 +176,7 @@ String username='';
         SystemNavigator.pop();
         return false;
       },
-      child: MaterialApp(
-        home: Scaffold(
+      child:  Scaffold(
           backgroundColor: Colors.background,
           body: Column(
             children: [
@@ -412,7 +411,7 @@ String username='';
             ],
           ),
         ),
-      ),
+
     );
   }
 
@@ -1060,12 +1059,14 @@ class SignUpScreen extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: Scaffold(
+    return
+      // MaterialApp(
+      // theme: ThemeData(
+      //   primarySwatch: Colors.blue,
+      //   visualDensity: VisualDensity.adaptivePlatformDensity,
+      // ),
+      // home:
+    Scaffold(
         backgroundColor: Colors.background,
         body: Column(
           children: [
@@ -1123,7 +1124,7 @@ class SignUpScreen extends State<SignUp> {
                               children: [
                                 Expanded(
                                   child: Container(
-                                    height: 59, // Set the height as needed
+                                    height: 60, // Set the height as needed
 
                                     child: Padding(
                                       padding:
@@ -1161,9 +1162,9 @@ class SignUpScreen extends State<SignUp> {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
-                                      vertical: 3.0, horizontal: 4),
+                                      vertical: 3.0, horizontal: 2),
                                   child: Container(
-                                    width: 69,
+                                    width: 70,
                                     height: 35,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(
@@ -1191,6 +1192,7 @@ class SignUpScreen extends State<SignUp> {
                                     ),
                                   ),
                                 ),
+                                SizedBox(width: 1,)
                               ],
                             ),
                           ),
@@ -1633,8 +1635,8 @@ class SignUpScreen extends State<SignUp> {
             ),
           ],
         ),
-      ),
-    );
+      );
+    // );
   }
 
   bool isValidEmail(String email) {
@@ -1838,10 +1840,12 @@ class SignUpScreen extends State<SignUp> {
 
         Response response = await post(
           Uri.parse('${ApiProvider.baseUrl + ApiProvider.verifyEmailOtp}'),
+          // body: {
+          //   "username": username,
+          // },
           body: {
-            "username": username,
+            "username":'+91${_phoneController.text.trim()}',
           },
-
         );
         print('Response Status Code33: ${response.statusCode}');
         print('Response Body: ${response.body}');
@@ -3166,8 +3170,10 @@ class _OTPScreenState extends State<OtpVerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return
+      // MaterialApp(
+      // home:
+      Scaffold(
         backgroundColor: Colors.background,
         body: Column(
           children: [
@@ -3354,7 +3360,7 @@ class _OTPScreenState extends State<OtpVerificationScreen> {
             ),
           ],
         ),
-      ),
+      // ),
     );
   }
 }

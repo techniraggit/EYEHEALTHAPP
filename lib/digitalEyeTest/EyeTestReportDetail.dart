@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:project_new/HomePage.dart';
+import 'package:second_eye/HomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -217,8 +217,10 @@ class TestReportState extends State<EyeTestReport> {
           );
           return false;
         },
-        child: MaterialApp(
-            home: Scaffold(
+        child:
+        // MaterialApp(
+        //     home:
+            Scaffold(
               backgroundColor: Colors.white,
                 appBar: AppBar(
                   backgroundColor: Colors.white,
@@ -871,7 +873,7 @@ class TestReportState extends State<EyeTestReport> {
 
                     SizedBox(height: 80),
                   ],
-                ))));
+                )));
   }
 }
 

@@ -4,7 +4,7 @@ import 'package:action_broadcast/action_broadcast.dart';
 import 'package:dio/dio.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
-import 'package:project_new/sign_up.dart';
+import 'package:second_eye/sign_up.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'package:http/http.dart' as http;

@@ -12,8 +12,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
-import 'package:project_new/HomePage.dart';
-import 'package:project_new/dashboard.dart';
+import 'package:second_eye/HomePage.dart';
+import 'package:second_eye/dashboard.dart';
 import 'package:rename/platform_file_editors/abs_platform_file_editor.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:typed_data';
@@ -255,7 +255,7 @@ class SelectQuestion extends State<GiveInfo> {
                                 ),
                               ),
                               const Text(
-                                'Welcome to Eye Health',
+                                'Welcome to Second Eye',
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
@@ -1155,8 +1155,10 @@ class AlphabetTestState extends State<AlphabetTest> {
         );
         return true;
       },
-      child: MaterialApp(
-        home: Scaffold(
+      child:
+      // MaterialApp(
+      //   home:
+        Scaffold(
           appBar: AppBar(
             title: const Text("EYE TEST"),
             centerTitle: true,
@@ -1410,7 +1412,7 @@ class AlphabetTestState extends State<AlphabetTest> {
             ],
           ),
         ),
-      ),
+      // ),
     );
   }
 
@@ -1871,8 +1873,10 @@ class Reading extends State<ReadingTest> {
       onWillPop: () async {
         return false;
       },
-      child: MaterialApp(
-        home: Scaffold(
+      child:
+      // MaterialApp(
+      //   home:
+        Scaffold(
           appBar: AppBar(
             title: const Text("EYE TEST"),
             centerTitle: true,
@@ -2049,7 +2053,7 @@ class Reading extends State<ReadingTest> {
             ],
           ),
         ),
-      ),
+      // ),
     );
   }
 
@@ -2095,7 +2099,7 @@ class Reading extends State<ReadingTest> {
         if (responseData['message'] == 'data save successfully') {
 
           Navigator.push(
-              context, CupertinoPageRoute(builder: (context) => const TestReport())).then((value) => Navigator.of(context).pop());
+              context, CupertinoPageRoute(builder: (context) => const TestReport()));//).then((value) => Navigator.of(context).pop()
         } else {}
         if (responseData.containsKey('data')) {
           // Handle the first type of response
@@ -2173,7 +2177,7 @@ class Reading extends State<ReadingTest> {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('page', "readingtestpage");
         Navigator.push(context,
-            CupertinoPageRoute(builder: (context) => const TestReport())).then((value) => Navigator.of(context).pop());
+            CupertinoPageRoute(builder: (context) => const TestReport()));//.then((value) => Navigator.of(context).pop()
         // getActivePlan();
       } else {
         Navigator.push(
@@ -2605,8 +2609,10 @@ class AstigmationTest1 extends State<AstigmationTest> {
         );
         return true;
       },
-      child: MaterialApp(
-        home: Scaffold(
+      child:
+      // MaterialApp(
+      //   home:
+        Scaffold(
           appBar: AppBar(
             title: const Text("EYE TEST"),
             centerTitle: true,
@@ -2845,7 +2851,7 @@ class AstigmationTest1 extends State<AstigmationTest> {
             ],
           ),
         ),
-      ),
+      // ),
     );
   }
 
@@ -3292,8 +3298,10 @@ class Astigmationtest2 extends State<AstigmationTest2> {
         );
         return true;
       },
-      child: MaterialApp(
-        home: Scaffold(
+      child:
+      // MaterialApp(
+      //   home:
+        Scaffold(
           appBar: AppBar(
             title: const Text("EYE TEST"),
             centerTitle: true,
@@ -3565,7 +3573,7 @@ class Astigmationtest2 extends State<AstigmationTest2> {
             ],
           ),
         ),
-      ),
+      // ),
     );
   }
 
@@ -3970,8 +3978,10 @@ class AstigmationTestNone extends State<AstigmationTest3> {
         );
         return true;
       },
-      child: MaterialApp(
-        home: Scaffold(
+      child:
+      // MaterialApp(
+      //   home:
+        Scaffold(
           appBar: AppBar(
             title: const Text("EYE TEST"),
             centerTitle: true,
@@ -4177,7 +4187,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
             ],
           ),
         ),
-      ),
+      // ),
     );
   }
 
@@ -4535,8 +4545,10 @@ class _ShadowTestState extends State<ShadowTest> {
         );
         return true;
       },
-      child: MaterialApp(
-        home: Scaffold(
+      child:
+      // MaterialApp(
+      //   home:
+        Scaffold(
           appBar: AppBar(
             title: const Text("EYE TEST"),
             centerTitle: true,
@@ -4742,7 +4754,7 @@ class _ShadowTestState extends State<ShadowTest> {
             ),
           ),
         ),
-      ),
+      // ),
     );
   }
 
@@ -5207,7 +5219,7 @@ class redgreen extends State<RedGreenTest> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const TestReport())).then((value) => Navigator.of(context).pop());
+                        builder: (context) => const TestReport()));//).then((value) => Navigator.of(context).pop()
               } else if (age >= 40 &&
                   !jsonResponseMap["data"]['data']["is_completed"]) {
                 // Otherwise, navigate to the next appropriate screen

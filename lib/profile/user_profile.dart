@@ -15,7 +15,7 @@ import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart' hide LocationAccuracy;
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:project_new/profile/profileDashboard.dart';
+import 'package:second_eye/profile/profileDashboard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../api/config.dart';
 
@@ -109,12 +109,7 @@ class ProfileDetails extends State<UserProfile> {
   @override
   Widget build(BuildContext context) {
     return
-        // MaterialApp(
-        // theme: ThemeData(
-        //   primarySwatch: Colors.blue,
-        //   visualDensity: VisualDensity.adaptivePlatformDensity,
-        // ),
-        // home:
+
 
         Scaffold(
       backgroundColor: Colors.bluebutton,
@@ -227,7 +222,7 @@ class ProfileDetails extends State<UserProfile> {
                                                                       context)
                                                                   .size
                                                                   .width /
-                                                              3.5, // Adjust the size of the icon as needed
+                                                              3.8, // Adjust the size of the icon as needed
                                                           color: Colors
                                                               .white, // Adjust the color of the icon as needed
                                                         ),

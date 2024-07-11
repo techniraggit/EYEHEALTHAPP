@@ -5,13 +5,15 @@ import 'package:alarm/model/alarm_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
-import 'package:project_new/HomePage.dart';
-import 'package:project_new/Rewards/rewards.dart';
-import 'package:project_new/alarm/SharedPref.dart';
-import 'package:project_new/eyeFatigueTest/ReportPage.dart';
-import 'package:project_new/eyeHealthTrack.dart';
-import 'package:project_new/profile/profileDashboard.dart';
+
+import 'package:second_eye/profile/profileDashboard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'HomePage.dart';
+import 'Rewards/rewards.dart';
+import 'alarm/SharedPref.dart';
+import 'eyeFatigueTest/ReportPage.dart';
+import 'eyeHealthTrack.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -180,7 +182,7 @@ class _DashboardState extends State<Dashboard> {
         screens: _buildScreens(),
         padding: const NavBarPadding.all(8.0),
         items: _navBarsItems(),
-        handleAndroidBackButtonPress: true,
+        handleAndroidBackButtonPress: false,
         navBarStyle: NavBarStyle.style15,
         decoration: NavBarDecoration(
           adjustScreenBottomPaddingOnCurve: true,

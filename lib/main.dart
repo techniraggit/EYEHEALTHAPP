@@ -17,8 +17,8 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:platform_device_id_v2/platform_device_id_v2.dart';
-import 'package:project_new/HomePage.dart';
-import 'package:project_new/sign_up.dart';
+import 'package:second_eye/HomePage.dart';
+import 'package:second_eye/sign_up.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:upgrader/upgrader.dart';
 import 'FirebaseOptions/FirebaseApi.dart';
@@ -47,7 +47,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message)async {
 }
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+   WidgetsFlutterBinding.ensureInitialized();
   await Upgrader.clearSavedSettings(); // REMOVE this for release builds
 
   // FlutterAlarmBackgroundTrigger.initialize();
@@ -137,13 +137,20 @@ class Splash extends State<SplashScreen> {
                 (Route<dynamic> route) => false,
           );
         } else {
-          Navigator.pushAndRemoveUntil(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => SwipeableScreens(),//OnBoardingScreen1(),
+              builder: (context) => SwipeableScreens(),
             ),
-                (Route<dynamic> route) => false,
           );
+
+          // Navigator.pushAndRemoveUntil(
+          //   context,
+          //   MaterialPageRoute(
+          //     builder: (context) => SwipeableScreens(),//OnBoardingScreen1(),
+          //   ),
+          //       (Route<dynamic> route) => false,
+          // );
         }
       },
     );
@@ -169,20 +176,22 @@ class Splash extends State<SplashScreen> {
 
 
 
-
-
 class SwipeableScreens extends StatefulWidget {
   @override
   _SwipeableScreensState createState() => _SwipeableScreensState();
 }
 
-class _SwipeableScreensState extends State<SwipeableScreens> {
+class _SwipeableScreensState extends State<SwipeableScreens> with AutomaticKeepAliveClientMixin {
+
   PageController _pageController = PageController(initialPage: 0);
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  bool get wantKeepAlive => true;
 
+  @override
+  Widget build(BuildContext context) {
+    super.build(context); // Ensure super.build is called first
+    return Scaffold(
       body: PageView(
         controller: _pageController,
         children: [
@@ -194,6 +203,9 @@ class _SwipeableScreensState extends State<SwipeableScreens> {
     );
   }
 }
+
+
+
 
 
 
@@ -278,66 +290,75 @@ class _OnBoardingScreen1State extends State<OnBoardingScreen1> {
   Widget build(BuildContext context) {
     return Scaffold(
 
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween, // To position the Row at the vertical end
-          children: [
-            const SizedBox(height: 40,),
-            Image.asset(
-              'assets/onboardingperson1.png', // Replace this with your image path
-              width:MediaQuery.of(context).size.width,
-            ),
-            SvgPicture.asset(
-              'assets/unevenline.svg', // Replace this with your image path
-              // width:MediaQuery.of(context).size.width,
-            ),
-            const SizedBox(height: 40,),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 30.0),
-              child: Align(
-                alignment: Alignment.center,
-                child: Text(
-                  'Welcome to Eye Health Your Personal Eye Health Companion',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,fontWeight: FontWeight.w600,
+      body:
+
+        SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween, // To position the Row at the vertical end
+            children: [
+              const SizedBox(height: 40,),
+              Image.asset(
+                'assets/onboardingperson1.png', // Replace this with your image path
+                width:MediaQuery.of(context).size.width,
+                height:MediaQuery.of(context).size.width,
+
+              ),
+              SvgPicture.asset(
+                'assets/unevenline.svg', // Replace this with your image path
+                // width:MediaQuery.of(context).size.width,
+              ),
+              const SizedBox(height: 40,),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30.0),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Welcome to Second Eye Your Personal Eye Health Companion',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
+              SizedBox(height: 10,),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 5),
+              child: Align(
+                alignment: Alignment.center,
+                child: Row(
+                  children: <Widget>[
+
+                    Container(
+                      // margin: EdgeInsets.only(top: 8.0),  // Adjust the vertical alignment of the bullet point
+                      width: 6,  // Diameter of the bullet point
+                      height: 6,  // Diameter of the bullet point
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.black,  // Color of the bullet point
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      'Digital eye test and prescription generation',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            SizedBox(height: 10,),
+
+
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 5),
             child: Align(
               alignment: Alignment.center,
               child: Row(
                 children: <Widget>[
-                  // Container(
-                  //   width: 14,  // Diameter of the circle
-                  //   height: 14,  // Diameter of the circle
-                  //   decoration: BoxDecoration(
-                  //     shape: BoxShape.circle,
-                  //     border: Border.all(
-                  //       color: Colors.black,
-                  //       width: 1.0,  // Adjust the width of the border as needed
-                  //       style: BorderStyle.solid,
-                  //     ),
-                  //   ),
-                  //   child: Center(
-                  //     child: Container(
-                  //       width: 8,  // Diameter of the inner dotted circle
-                  //       height: 8,  // Diameter of the inner dotted circle
-                  //       decoration: BoxDecoration(
-                  //         shape: BoxShape.circle,
-                  //         border: Border.all(
-                  //           color: Colors.black,
-                  //           width: 1.0,  // Adjust the width of the border as needed
-                  //           style: BorderStyle.solid,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
                   Container(
                     // margin: EdgeInsets.only(top: 8.0),  // Adjust the vertical alignment of the bullet point
                     width: 6,  // Diameter of the bullet point
@@ -347,9 +368,9 @@ class _OnBoardingScreen1State extends State<OnBoardingScreen1> {
                       color: Colors.black,  // Color of the bullet point
                     ),
                   ),
-                  SizedBox(width: 8),
+                  SizedBox(width: 8),  // Adjust the space between the dotted circle and the text as needed
                   Text(
-                    'Digital eye test and prescription generation',
+                    'Eye fatigue assessment and prevention tips',
                     style: TextStyle(
                       color: Colors.grey,
                       fontSize: 14,
@@ -361,109 +382,80 @@ class _OnBoardingScreen1State extends State<OnBoardingScreen1> {
             ),
           ),
 
+          SizedBox(height: 10,),
 
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 5),
-          child: Align(
-            alignment: Alignment.center,
-            child: Row(
-              children: <Widget>[
-                Container(
-                  // margin: EdgeInsets.only(top: 8.0),  // Adjust the vertical alignment of the bullet point
-                  width: 6,  // Diameter of the bullet point
-                  height: 6,  // Diameter of the bullet point
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.black,  // Color of the bullet point
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0,vertical: 25),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+
+                    const SizedBox(width: 4,),
+                    Container(
+                      width: 20,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF4600A9),
+                        borderRadius: BorderRadius.circular(10), // Half of height to make it oval
+                      ),
+                    ),
+                    const SizedBox(width: 4,),
+
+                    Container(
+                      width: 20,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFCEB0FA),
+                        borderRadius: BorderRadius.circular(10), // Half of height to make it oval
+                      ),
+                    ),
+                    const SizedBox(width: 4,),
+
+                    Container(
+                      width: 20,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFCEB0FA),
+                        borderRadius: BorderRadius.circular(10), // Half of height to make it oval
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 10,),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: GestureDetector(
+                  onTap: () {
+                    // getDeviceInfo();
+                    initPlatformState();
+
+                    Navigator.push(context,
+                        CupertinoPageRoute(builder:
+                            (context) =>
+                            OnBoardingScreen2()//change this in final step  SecondScreen
+                        )
+                    ) ;               },
+
+                  child: Container(
+                    margin:  EdgeInsets.symmetric(vertical: 10,horizontal: 50),
+
+                    // height:17 ,width: 31,
+                    child: Text(
+                      'Skip',
+                      style: TextStyle(fontSize: 14, color: Color(0xFF4600A9),fontWeight: FontWeight.w400),
+                    ),
                   ),
                 ),
-                SizedBox(width: 8),  // Adjust the space between the dotted circle and the text as needed
-                Text(
-                  'Eye fatigue assessment and prevention tips',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
-            ),
+              ),
+              SizedBox(height: 20,),
+
+            ],
           ),
+
         ),
 
-        SizedBox(height: 10,),
-
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25.0,vertical: 25),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-
-                  const SizedBox(width: 4,),
-                  Container(
-                    width: 20,
-                    height: 10,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF4600A9),
-                      borderRadius: BorderRadius.circular(10), // Half of height to make it oval
-                    ),
-                  ),
-                  const SizedBox(width: 4,),
-
-                  Container(
-                    width: 20,
-                    height: 10,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFCEB0FA),
-                      borderRadius: BorderRadius.circular(10), // Half of height to make it oval
-                    ),
-                  ),
-                  const SizedBox(width: 4,),
-
-                  Container(
-                    width: 20,
-                    height: 10,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFCEB0FA),
-                      borderRadius: BorderRadius.circular(10), // Half of height to make it oval
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 10,),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: GestureDetector(
-                onTap: () {
-                  // getDeviceInfo();
-                  initPlatformState();
-
-                  Navigator.push(context,
-                      CupertinoPageRoute(builder:
-                          (context) =>
-                          OnBoardingScreen2()//change this in final step  SecondScreen
-                      )
-                  ) ;               },
-
-                child: Container(
-                  margin:  EdgeInsets.symmetric(vertical: 10,horizontal: 50),
-
-                  // height:17 ,width: 31,
-                  child: Text(
-                    'Skip',
-                    style: TextStyle(fontSize: 14, color: Color(0xFF4600A9),fontWeight: FontWeight.w400),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 20,),
-
-          ],
-        ),
-
-      ),
 
     );
   }
@@ -540,7 +532,7 @@ class _OnBoardingScreen2State extends State<OnBoardingScreen2> {
                       ),
                       SizedBox(height: 8),  // Adjust the space between the heading and the bullet points
                       Text(
-                        '• Get points and boost your rewards with regular tests.',
+                        'Get points and boost your rewards with regular tests.',
                         style: TextStyle(
                           color: Colors.grey,
                           fontSize: 15,
@@ -585,7 +577,7 @@ class _OnBoardingScreen2State extends State<OnBoardingScreen2> {
                       ),
                       SizedBox(height: 8),  // Adjust the space between the heading and the bullet points
                       Text(
-                        '• Earn bonus points for each friend who joins with your code.',
+                        'Earn bonus points for each friend who joins with your code.',
                         style: TextStyle(
                           color: Colors.grey,
                           fontSize: 15,
@@ -629,7 +621,7 @@ class _OnBoardingScreen2State extends State<OnBoardingScreen2> {
                       ),
                       SizedBox(height: 8),  // Adjust the space between the heading and the bullet points
                       Text(
-                        '• Use points for discounts on eyewear and more!',
+                        'Use points for discounts on eyewear and more!',
                         style: TextStyle(
                           color: Colors.grey,
                           fontSize: 15,
@@ -783,7 +775,7 @@ class _OnBoardingScreen3State extends State<OnBoardingScreen3> {
                   ),
                   SizedBox(height: 8),  // Adjust the space between the heading and the bullet points
                   Text(
-                    '• Find a quiet spot, position your device, and follow the on-screen instructions .\n'
+                    'Find a quiet spot, position your device, and follow the on-screen instructions .\n'
                     ,style: TextStyle(
                       color: Colors.grey,
                       fontSize: 14,
@@ -813,7 +805,7 @@ class _OnBoardingScreen3State extends State<OnBoardingScreen3> {
                   ),
                   SizedBox(height: 8),  // Adjust the space between the heading and the bullet points
                   Text(
-                    '• Get a report with a prescription suggestion and eye fatigue assessment.\n',
+                    'Get a report with a prescription suggestion and eye fatigue assessment.\n',
                     style: TextStyle(
                       color: Colors.grey,
                       fontSize: 14,
@@ -843,7 +835,7 @@ class _OnBoardingScreen3State extends State<OnBoardingScreen3> {
                     ),
                     SizedBox(height: 8),  // Adjust the space between the heading and the bullet points
                     Text(
-                      '• Receive recommendations to keep your eyes feeling fresh.\n',
+                      'Receive recommendations to keep your eyes feeling fresh.\n',
                       style: TextStyle(
                         color: Colors.grey,
                         fontSize: 14,

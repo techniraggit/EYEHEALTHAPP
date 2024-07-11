@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:project_new/eyeFatigueTest/ReportPage.dart';
-import 'package:project_new/eyeHealthTrack.dart';
-import 'package:project_new/Rewards/rewards.dart';
-import 'package:project_new/profile/user_profile.dart';
+import 'package:second_eye/eyeFatigueTest/ReportPage.dart';
+import 'package:second_eye/eyeHealthTrack.dart';
+import 'package:second_eye/Rewards/rewards.dart';
+import 'package:second_eye/profile/user_profile.dart';
 
 import '../notification/notification_dashboard.dart';
 import '../profile/profileDashboard.dart';

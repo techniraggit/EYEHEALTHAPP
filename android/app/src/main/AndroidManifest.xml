@@ -37,7 +37,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
-        android:label="second_eye"
+        android:label="Second Eye"
         android:name="${applicationName}"
    android:requestLegacyExternalStorage="true"
 
@@ -74,7 +74,10 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-
+<!--        <meta-data-->
+<!--            android:name="io.flutter.embedding.android.SplashScreenDrawable"-->
+<!--            android:resource="@drawable/splashscreen"-->
+<!--            />-->
 
 
 

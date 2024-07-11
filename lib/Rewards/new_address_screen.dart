@@ -15,7 +15,7 @@ import 'package:geocoding/geocoding.dart'hide Location;
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart';
 import 'package:location/location.dart'hide LocationAccuracy;
-import 'package:project_new/Rewards/rewards_sync.dart';
+import 'package:second_eye/Rewards/rewards_sync.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -80,12 +80,14 @@ class AddADressSCreen extends State<NewAddressScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: Scaffold(
+    return
+      // MaterialApp(
+      // theme: ThemeData(
+      //   primarySwatch: Colors.blue,
+      //   visualDensity: VisualDensity.adaptivePlatformDensity,
+      // ),
+      // home:
+      Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
           title:
@@ -687,8 +689,8 @@ class AddADressSCreen extends State<NewAddressScreen> {
             ],
           ),
         ),
-      ),
-    );
+      );
+    // );
   }
   bool isValidEmail(String email) {
     // Simple email validation regex pattern

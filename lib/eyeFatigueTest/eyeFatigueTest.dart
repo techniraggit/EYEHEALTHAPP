@@ -12,9 +12,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 // import 'package:light_compressor/light_compressor.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
-import 'package:project_new/HomePage.dart';
-import 'package:project_new/dashboard.dart';
-import 'package:project_new/sign_up.dart';
+import 'package:second_eye/HomePage.dart';
+import 'package:second_eye/dashboard.dart';
+import 'package:second_eye/sign_up.dart';
 // import 'package:video_compress/video_compress.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -59,8 +59,10 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return
+      // MaterialApp(
+      // home:
+      Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
           title: const Text("Eye Fatigue Test"),
@@ -89,7 +91,7 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: const Text(
-                    'Welcome to Eye Health Fatique Meter',
+                    'Welcome to Second Eye Fatique Meter',
                     style: TextStyle(
                         color: Colors.purple,
                         fontSize: 17,
@@ -186,7 +188,7 @@ class EyeFatigueStartScreenState extends State<EyeFatigueStartScreen>{
             ),
           ),
         ),
-      ),
+      // ),
     );
   }
 }
@@ -665,8 +667,10 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
 
         return false;
       },
-      child: MaterialApp(
-        home: Scaffold(
+      child:
+      // MaterialApp(
+      //   home:
+        Scaffold(
           backgroundColor: Colors.white,
           body: Stack(
             children: [
@@ -870,7 +874,7 @@ class EyeFatigueSecondScreenState extends State<EyeFatigueSecondScreen> with Sin
             ],
           ),
         ),
-      ),
+      // ),
     );
   }
 
@@ -927,9 +931,11 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
 
         return false;
       },
-      child: MaterialApp(
-
-        home: Scaffold(
+      child:
+      // MaterialApp(
+      //
+      //   home:
+        Scaffold(
 
           backgroundColor: Colors.white,
           appBar: AppBar(
@@ -1005,7 +1011,7 @@ class EyeFatigueThirdScreenState extends State<EyeFatigueThirdScreen> {
 
 
         ),
-      ),
+      // ),
     );
   }
 

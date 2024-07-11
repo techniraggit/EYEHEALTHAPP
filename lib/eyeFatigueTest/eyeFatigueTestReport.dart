@@ -12,8 +12,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:project_new/HomePage.dart';
-import 'package:project_new/sign_up.dart';
+import 'package:second_eye/HomePage.dart';
+import 'package:second_eye/sign_up.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -718,44 +718,65 @@ class EyeFatigueTestReportState extends State<EyeFatigueTestReport> with AutoCan
   }
 
   Future<String?> downloadReport() async {
+    String _filePath = '';
     try {
       EasyLoading.show();
+
       var sharedPref = await SharedPreferences.getInstance();
       String userToken = sharedPref.getString("access_token") ?? '';
-      int report_id = sharedPref.getInt('report_id') ?? 0;
+
       Map<String, String> headers = {
         'Authorization': 'Bearer $userToken',
       };
+
+      print(
+          "URl ${ApiProvider.baseUrl}/api/fatigue/download-report?report_id=$report_id");
 
       final response = await http.get(
         Uri.parse(
             '${ApiProvider.baseUrl}/api/fatigue/download-report?report_id=$report_id'), // Adjust the URL as needed
         headers: headers,
       );
+      var status = await Permission.storage.request();
+
       print('PDFreport_id $report_id');
-EasyLoading.dismiss();
+      EasyLoading.dismiss();
+
       if (response.statusCode == 200) {
-        Fluttertoast.showToast(msg: "PDF downloaded successfully");
+        // Directory? downloadsDirectory = await getDownloadsDirectory();
 
-        Directory? downloadsDir = Platform.isAndroid
-            ? await getExternalStorageDirectory() // For Android
-            : await getApplicationDocumentsDirectory(); // For iOS
+        // final Directory? downloadsDirectory =
+        //     await getExternalStorageDirectory();
+        final String? downloadsPath = await getDownloadPath();
 
-        // Create a file in the downloads directory
-        String pdfPath = '${downloadsDir?.path}/report.pdf';
-        File pdfFile = File(pdfPath);
+        print("Download path $downloadsPath");
 
-        // Write the response content to the file
-        await pdfFile.writeAsBytes(response.bodyBytes);
+        if (downloadsPath != null) {
+          File? pdfFile;
+          String? pdfPath;
+          // Create a file in the Downloads directory
 
-        // Show a message or perform any further actions if needed
-        print('PDF downloaded successfully: $pdfFile.path');
+          pdfPath = '$downloadsPath/report$report_id.pdf';
+          pdfFile = File(pdfPath);
+          // Write the response content to the file
+          await pdfFile.writeAsBytes(response.bodyBytes);
 
-        // Return the path of the downloaded file
-        return pdfFile.path;
-      }
-
-      else if (response.statusCode == 401) {
+          // Check if the file was successfully saved
+          if (await pdfFile.exists()) {
+            // Show a message or perform any further actions if needed
+            print('PDF downloaded successfully: $pdfPath');
+            Fluttertoast.showToast(msg: "PDF downloaded successfully");
+            return pdfPath;
+          } else {
+            Fluttertoast.showToast(msg: "Failed to save PDF");
+            return null;
+          }
+        } else {
+          print('Downloads directory not found.');
+          Fluttertoast.showToast(msg: "Failed to save PDF");
+          return null;
+        }
+      } else if (response.statusCode == 401) {
         Fluttertoast.showToast(msg: "Session Expired");
         Navigator.pushReplacement(
           context,
@@ -772,5 +793,22 @@ EasyLoading.dismiss();
       print("Exception: $e");
       return null;
     }
+  }
+
+  Future<String?> getDownloadPath() async {
+    Directory? directory;
+    try {
+      if (Platform.isIOS) {
+        directory = await getApplicationDocumentsDirectory();
+      } else {
+        directory = Directory('/storage/emulated/0/Download');
+        // Put file in global download folder, if for an unknown reason it didn't exist, we fallback
+        // ignore: avoid_slow_async_io
+        if (!await directory.exists()) directory = await getExternalStorageDirectory();
+      }
+    } catch (err, stack) {
+      print("Cannot get download folder path");
+    }
+    return directory?.path;
   }
 }
