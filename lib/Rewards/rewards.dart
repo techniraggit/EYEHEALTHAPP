@@ -1134,6 +1134,8 @@ class RewardsScreenState extends State<RewardsScreen>
       print('API Response: ${response.statusCode} - ${response.body}');
 
       if (response.statusCode == 200) {
+        Navigator.pop(context);
+
         Map<String, dynamic> jsonResponse = jsonDecode(response.body);
         if (jsonResponse.containsKey('customer_id')) {
           String customerId = jsonResponse['customer_id'];

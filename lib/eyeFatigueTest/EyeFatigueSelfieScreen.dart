@@ -66,6 +66,8 @@ class EyeFatigueTestSelfieState extends State<EyeFatigueSelfieScreen> {
        );
        print('response === ' + response.body);
        if (response.statusCode == 200) {
+         // Navigator.pop(context);
+
          if (kDebugMode) {
            print('sddd ${response.body}');
          }

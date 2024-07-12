@@ -42,7 +42,7 @@ import '../api/config.dart';
 import '../digitalEyeTest/testScreen.dart';
 import '../eyeFatigueTest/EyeFatigueSelfieScreen.dart';
 import '../eyeFatigueTest/eyeFatigueTest.dart';
-import '../updateaddress.dart';
+import 'updateaddress.dart';
 import 'new_address_screen.dart';
 
 class RewardContact extends StatefulWidget {
@@ -2029,7 +2029,7 @@ class RewardSpecsSync extends State<RewardSpecs> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                             builder: (context) => NewAddressScreen()),
@@ -2042,11 +2042,11 @@ class RewardSpecsSync extends State<RewardSpecs> {
                           IconButton(
                             icon: Icon(Icons.add),
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => NewAddressScreen()),
-                              );
+                              // Navigator.pushReplacement(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //       builder: (context) => NewAddressScreen()),
+                              // );
                             },
                           ),
                           SizedBox(width: 8),
@@ -2138,6 +2138,8 @@ class RewardSpecsSync extends State<RewardSpecs> {
       print('API Response: ${response.statusCode} - ${response.body}');
 
       if (response.statusCode == 200) {
+        Navigator.pop(context);
+
         Map<String, dynamic> jsonResponse = jsonDecode(response.body);
         if (jsonResponse.containsKey('customer_id')) {
           String customerId = jsonResponse['customer_id'];

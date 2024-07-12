@@ -145,6 +145,7 @@ class ReportPageState extends State<ReportPage> with AutoCancelStreamMixin {
     String formattedDate = DateFormat('dd MMMM').format(DateTime.now());
     return  WillPopScope(
         onWillPop: () async {
+          Navigator.of(context).pop();
       // Navigator.push(
       //   context,
       //   MaterialPageRoute(builder: (context) =>   HomePage()),

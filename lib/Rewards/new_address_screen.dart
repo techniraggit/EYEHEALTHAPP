@@ -149,210 +149,609 @@ class AddADressSCreen extends State<NewAddressScreen> {
       //   visualDensity: VisualDensity.adaptivePlatformDensity,
       // ),
       // home:
-      Scaffold(
-        key: _scafoldKey,
-        endDrawer: NotificationSideBar(
-          onNotificationUpdate: () {
-            setState(() {
-              if (isReadFalseCount != null) {
-                if (isReadFalseCount! > 0) {
-                  isReadFalseCount = isReadFalseCount! - 1;
+      WillPopScope(
+        onWillPop: () async {
+          Navigator.pop(context);
+
+          return true;
+        },
+        child: Scaffold(
+          key: _scafoldKey,
+          endDrawer: NotificationSideBar(
+            onNotificationUpdate: () {
+              setState(() {
+                if (isReadFalseCount != null) {
+                  if (isReadFalseCount! > 0) {
+                    isReadFalseCount = isReadFalseCount! - 1;
+                  }
                 }
-              }
-            });
-          },
-        ),
-        endDrawerEnableOpenDragGesture: false,
-        appBar: PreferredSize(
-          preferredSize:  Size.fromHeight(60),
-          child: Stack(
-            children: [
-              Align(
-                alignment: Alignment.topLeft,
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.black,
+              });
+            },
+          ),
+          endDrawerEnableOpenDragGesture: false,
+          appBar: PreferredSize(
+            preferredSize:  Size.fromHeight(60),
+            child: Stack(
+              children: [
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: IconButton(
+                    icon: const Icon(
+                      Icons.arrow_back,
+                      color: Colors.black,
+                    ),
+                    iconSize: 28, // Back button icon
+                    onPressed: () {
+                      Navigator.of(context).pop();                  },
                   ),
-                  iconSize: 28, // Back button icon
-                  onPressed: () {
-                    Navigator.of(context).pop();                  },
                 ),
-              ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    height: 18, // Adjust height as needed
-                  ),
-                  Center(
-                    child: Text(
-                      'Address',
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                        // Adjust size as needed
-                        // Add other styling properties as needed
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      height: 18, // Adjust height as needed
+                    ),
+                    Center(
+                      child: Text(
+                        'Address',
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                          // Adjust size as needed
+                          // Add other styling properties as needed
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
+                    SizedBox(
+                      height: 10,
+                    ),
 
-                ],
-              ),
-              Positioned(
-                right: 16,
-                top: 16,
-                child: GestureDetector(
-                  onTap: () {
-                    _scafoldKey.currentState!.openEndDrawer();
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20.0),
-                          border: Border.all(
-                            color: Colors.grey, // Border color
-                            width: 1.0, // Border width
-                          ),
-                        ),
-                        height: 30,
-                        width: 30,
-                        child: Center(
-                          child: Icon(
-                            Icons.notifications_none,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        right: 0,
-                        top: -1,
-                        // Adjust this value to position the text properly
-                        child: Container(
-                          padding: EdgeInsets.all(2),
+                  ],
+                ),
+                Positioned(
+                  right: 16,
+                  top: 16,
+                  child: GestureDetector(
+                    onTap: () {
+                      _scafoldKey.currentState!.openEndDrawer();
+                    },
+                    child: Stack(
+                      children: [
+                        Container(
                           decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.red,
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20.0),
+                            border: Border.all(
+                              color: Colors.grey, // Border color
+                              width: 1.0, // Border width
+                            ),
                           ),
-                          child: Text(
-                            '${isReadFalseCount}',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
+                          height: 30,
+                          width: 30,
+                          child: Center(
+                            child: Icon(
+                              Icons.notifications_none,
+                              color: Colors.black,
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                        Positioned(
+                          right: 0,
+                          top: -1,
+                          // Adjust this value to position the text properly
+                          child: Container(
+                            padding: EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.red,
+                            ),
+                            child: Text(
+                              '${isReadFalseCount}',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
 
 
-        backgroundColor: Colors.white,
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
+          backgroundColor: Colors.white,
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
 
 
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+                const SizedBox(
+                  height: 10,
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25,vertical: 10),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 10.0, vertical: 1),
-                        child: Align(
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            'Add your address or select an existing one to redeem your prize. We will send it to your chosen location.',
-                            style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.grey),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 23),
-
-                      SizedBox(
-                        height: 50,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
-                          child: TextField(
-                            controller: _firstNameController,
-                            textInputAction: TextInputAction.next,
-                            decoration: InputDecoration(
-                              labelText: 'Name',
-                              labelStyle: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.background,
-                                fontWeight: FontWeight.w400,
-                              ),
-                              hintText: 'Name',
-                              hintStyle: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.hinttext,
-                                fontWeight: FontWeight.w400,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(27.0),                               borderSide: BorderSide(color: Colors.grey, width: 0.7), // Set border color and width
-// Add circular border
-                              ),
-                              // Set floatingLabelBehavior to always display the label
-                              floatingLabelBehavior: FloatingLabelBehavior.always,
-                              // Add button to the end of the TextField
-
-                            ),
-                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w400),
-                          ),
-                        ),
-                      ),
-
-
-                      const SizedBox(height: 25),
-
-                      SizedBox(
-                        height: 50,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
+                Container(
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25,vertical: 10),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.symmetric(
                               horizontal: 10.0, vertical: 1),
-                          child: TextField(
-                            controller: _phoneController,
-                            inputFormatters: [
-                              LengthLimitingTextInputFormatter(10), // Limits input length to 10 characters
-                            ],keyboardType: TextInputType.number,
-                            textInputAction: TextInputAction.next,
-                            decoration: InputDecoration(
-                              labelText: 'Phone',
-                              hintText: 'Phone Number',
+                          child: Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'Add your address or select an existing one to redeem your prize. We will send it to your chosen location.',
+                              style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.grey),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 23),
+
+                        SizedBox(
+                          height: 50,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 1),
+                            child: TextField(
+                              controller: _firstNameController,
+                              textInputAction: TextInputAction.next,
+                              decoration: InputDecoration(
+                                labelText: 'Name',
+                                labelStyle: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.background,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                                hintText: 'Name',
+                                hintStyle: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.hinttext,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(27.0),                               borderSide: BorderSide(color: Colors.grey, width: 0.7), // Set border color and width
+        // Add circular border
+                                ),
+                                // Set floatingLabelBehavior to always display the label
+                                floatingLabelBehavior: FloatingLabelBehavior.always,
+                                // Add button to the end of the TextField
+
+                              ),
+                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w400),
+                            ),
+                          ),
+                        ),
+
+
+                        const SizedBox(height: 25),
+
+                        SizedBox(
+                          height: 50,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 1),
+                            child: TextField(
+                              controller: _phoneController,
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(10), // Limits input length to 10 characters
+                              ],keyboardType: TextInputType.number,
+                              textInputAction: TextInputAction.next,
+                              decoration: InputDecoration(
+                                labelText: 'Phone',
+                                hintText: 'Phone Number',
+                                labelStyle: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.background,
+
+                                    fontWeight: FontWeight.w400),
+                                hintStyle: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.hinttext,
+                                    fontWeight: FontWeight.w400),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      27.0),                              borderSide: BorderSide(color: Colors.grey, width: 0.7), // Set border color and width
+                                  // Add circular border
+                                ),
+                                // Set floatingLabelBehavior to always display the label
+                                floatingLabelBehavior:
+                                FloatingLabelBehavior.always,
+                                // suffixIcon: GestureDetector(
+                                //     onTap: () {
+                                //       getVerifyPhoneOtp();
+                                //
+                                //     },
+                                //     child: getSuffixIconPhone())
+                              ),
+                              style: const TextStyle(
+                                  fontSize: 13, fontWeight: FontWeight.w400),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 25),
+                        SizedBox(
+                          height: 65,
+                          width: MediaQuery.of(context).size.width/1.2,
+
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 1),
+                            child: TextField(
+                              controller: _emailController,
+                              textInputAction: TextInputAction.next,
+                              onChanged: (value) {
+                                setState(() {
+                                  _emailValid = isValidEmail(value); // Validate email on change
+                                });
+                              },                              decoration: InputDecoration(
+                              labelText: 'Email',
+                              hintText: 'Email Address',
                               labelStyle: const TextStyle(
                                   fontSize: 12,
                                   color: Colors.background,
-
                                   fontWeight: FontWeight.w400),
+
                               hintStyle: const TextStyle(
                                   fontSize: 12,
+                                  color: Colors.hinttext,
+                                  fontWeight: FontWeight.w400),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(
+                                    27.0),                               borderSide: BorderSide(color: Colors.grey, width: 0.7), // Set border color and width
+        // Add circular border
+                              ),
+                              // Set floatingLabelBehavior to always display the label
+                              floatingLabelBehavior:
+                              FloatingLabelBehavior.always,
+                              // suffixIcon:GestureDetector(
+                              //     onTap: () {
+                              //       getVerifyEmailOtp();
+                              //       print('Icon tapped');
+                              //     },child: getSuffixIconEmail()),
+                              errorText: _emailValid ? null : 'Please enter a valid email',
+
+                            ),
+                              style: const TextStyle(
+                                  fontSize: 13, fontWeight: FontWeight.w400),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 55),
+                        SizedBox(
+                          height: 50,
+                          width: MediaQuery.of(context).size.width/1.2,
+
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 1),
+                            child: TextField(
+                              controller: _houseNoController,
+                              textInputAction: TextInputAction.next,
+                              onChanged: (value) {
+                                setState(() {
+                                });
+                              },                              decoration: InputDecoration(
+                              labelText: '',
+                              hintText: 'House No, Building Name.',
+                              labelStyle: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.background,
+                                  fontWeight: FontWeight.w400),
+
+                              hintStyle: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.hinttext,
+                                  fontWeight: FontWeight.w400),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(
+                                    27.0),
+                                borderSide: BorderSide(color: Colors.grey, width: 0.7), // Set border color and width
+        // Add circular border
+                              ),
+                              // Set floatingLabelBehavior to always display the label
+                              floatingLabelBehavior:
+                              FloatingLabelBehavior.always,
+
+
+                            ),
+                              style: const TextStyle(
+                                  fontSize: 13, fontWeight: FontWeight.w400),
+                            ),
+                          ),
+                        ),
+
+
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          height: 50,                            width: MediaQuery.of(context).size.width/1.2,
+
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 1),
+                            child: TextField(
+                              controller: _localityController,
+                              textInputAction: TextInputAction.next,
+                              onChanged: (value) {
+                                setState(() {
+                                });
+                              },                              decoration: InputDecoration(
+                              labelText: '',
+                              hintText: 'Locality, Town.',
+                              labelStyle: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.background,
+                                  fontWeight: FontWeight.w400),
+
+                              hintStyle: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.hinttext,
+                                  fontWeight: FontWeight.w400),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(
+                                    27.0),                               borderSide: BorderSide(color: Colors.grey, width: 0.7), // Set border color and width
+        // Add circular border
+                              ),
+                              // Set floatingLabelBehavior to always display the label
+                              floatingLabelBehavior:
+                              FloatingLabelBehavior.always,
+
+
+                            ),
+                              style: const TextStyle(
+                                  fontSize: 13, fontWeight: FontWeight.w400),
+                            ),
+                          ),
+                        ),
+
+
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          height: 50,
+                          width: MediaQuery.of(context).size.width/1.2,
+
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 1),
+                            child: TextField(
+                              controller: _pinCodeController,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(6), // Limits input length to 10 characters
+                              ],
+                              textInputAction: TextInputAction.next,
+                              onChanged: (value) {
+                                setState(() {
+                                });
+                              },                              decoration: InputDecoration(
+                              labelText: '',
+                              hintText: 'Pincode',
+                              labelStyle: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.background,
+                                  fontWeight: FontWeight.w400),
+
+                              hintStyle: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.hinttext,
+                                  fontWeight: FontWeight.w400),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(
+                                    27.0),                               borderSide: BorderSide(color: Colors.grey, width: 0.7), // Set border color and width
+        // Add circular border
+                              ),
+                              // Set floatingLabelBehavior to always display the label
+                              floatingLabelBehavior:
+                              FloatingLabelBehavior.always,
+
+
+                            ),
+                              style: const TextStyle(
+                                  fontSize: 13, fontWeight: FontWeight.w400),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+
+
+                        Row(
+                          children: [
+                            SizedBox(
+                              height: 49,
+                              width: MediaQuery.of(context).size.width/2.5,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0, vertical: 3),
+                                child: TextField(
+                                  controller: _countryController,
+                                  textInputAction: TextInputAction.next,
+                                  onChanged: (value) {
+                                    setState(() {
+                                    });
+                                  },                              decoration: InputDecoration(
+                                  labelText: '',
+                                  hintText: 'Country',
+                                  labelStyle: const TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.background,
+                                      fontWeight: FontWeight.w400),
+
+                                  hintStyle: const TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.hinttext,
+                                      fontWeight: FontWeight.w400),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        27.0),                              borderSide: BorderSide(color: Colors.grey, width: 0.7), // Set border color and width
+                                    // Add circular border
+                                  ),
+                                  // Set floatingLabelBehavior to always display the label
+                                  floatingLabelBehavior:
+                                  FloatingLabelBehavior.always,
+
+
+                                ),
+                                  style: const TextStyle(
+                                      fontSize: 13, fontWeight: FontWeight.w400),
+                                ),
+                              ),
+                            ),
+
+
+                            SizedBox(width: 3,),
+                            SizedBox(
+                              height: 49,
+                              width: MediaQuery.of(context).size.width/2.5,
+
+
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0, vertical: 3),
+                                child: TextField(
+                                  controller: _stateController,
+                                  textInputAction: TextInputAction.next,
+                                  onChanged: (value) {
+                                    setState(() {
+                                    });
+                                  },                              decoration: InputDecoration(
+                                  labelText: '',
+                                  hintText: 'State',
+                                  labelStyle: const TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.background,
+                                      fontWeight: FontWeight.w400),
+
+                                  hintStyle: const TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.hinttext,
+                                      fontWeight: FontWeight.w400),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        27.0),                              borderSide: BorderSide(color: Colors.grey, width: 0.7), // Set border color and width
+                                    // Add circular border
+                                  ),
+                                  // Set floatingLabelBehavior to always display the label
+                                  floatingLabelBehavior:
+                                  FloatingLabelBehavior.always,
+
+
+                                ),
+                                  style: const TextStyle(
+                                      fontSize: 13, fontWeight: FontWeight.w400),
+                                ),
+                              ),
+                            ),
+
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          height: 50,
+                          width: MediaQuery.of(context).size.width/1.2,
+
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 1),
+                            child: TextField(
+                              controller: _cityController,
+                              textInputAction: TextInputAction.next,
+                              onChanged: (value) {
+                                setState(() {
+                                });
+                              },                              decoration: InputDecoration(
+                              labelText: '',
+                              hintText: 'City',
+                              labelStyle: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.background,
+                                  fontWeight: FontWeight.w400),
+
+                              hintStyle: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.hinttext,
+                                  fontWeight: FontWeight.w400),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(
+                                    27.0),
+                                borderSide: BorderSide(color: Colors.grey, width: 0.7), // Set border color and width
+        // Add circular border
+                              ),
+                              // Set floatingLabelBehavior to always display the label
+                              floatingLabelBehavior:
+                              FloatingLabelBehavior.always,
+
+
+                            ),
+                              style: const TextStyle(
+                                  fontSize: 13, fontWeight: FontWeight.w400),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 18,),
+
+
+                        Row(
+                          children: [
+                            SelectableContainer(
+                              text: 'Home',
+                              isSelected: address_type == 'Home',
+                              onTap: () => setSelectedValue('Home'),
+                            ),
+                            SelectableContainer(
+                              text: 'Custom',
+                              isSelected: address_type == 'Custom',
+                              onTap: () => setSelectedValue('Custom'),
+                            ),
+                            SelectableContainer(
+                              text: 'Work',
+                              isSelected: address_type == 'Work',
+                              onTap: () => setSelectedValue('Work'),
+                            ),
+                          ],
+                        ),
+
+
+
+                        SizedBox(height: 18,),
+
+
+
+                        SizedBox(
+                          height: 54,
+                          width: MediaQuery.of(context).size.width/0.9,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 3),
+                            child: TextField(
+                              inputFormatters: [ LengthLimitingTextInputFormatter(20),],
+                              controller: _addressname,
+                              textInputAction: TextInputAction.next,
+                              onChanged: (value) {
+                                setState(() {
+                                });
+                              },                              decoration: InputDecoration(
+                              labelText: '',
+                              hintText: 'Save as - New Home, Dad’s workplace  ',
+                              labelStyle: const TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.background,
+                                  fontWeight: FontWeight.w400),
+
+                              hintStyle: const TextStyle(
+                                  fontSize: 13,
                                   color: Colors.hinttext,
                                   fontWeight: FontWeight.w400),
                               border: OutlineInputBorder(
@@ -363,488 +762,96 @@ class AddADressSCreen extends State<NewAddressScreen> {
                               // Set floatingLabelBehavior to always display the label
                               floatingLabelBehavior:
                               FloatingLabelBehavior.always,
-                              // suffixIcon: GestureDetector(
-                              //     onTap: () {
-                              //       getVerifyPhoneOtp();
-                              //
-                              //     },
-                              //     child: getSuffixIconPhone())
+
+
                             ),
-                            style: const TextStyle(
-                                fontSize: 13, fontWeight: FontWeight.w400),
+                              style: const TextStyle(
+                                  fontSize: 13, fontWeight: FontWeight.w400),
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 25),
-                      SizedBox(
-                        height: 65,
-                        width: MediaQuery.of(context).size.width/1.2,
-
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 1),
-                          child: TextField(
-                            controller: _emailController,
-                            textInputAction: TextInputAction.next,
-                            onChanged: (value) {
-                              setState(() {
-                                _emailValid = isValidEmail(value); // Validate email on change
-                              });
-                            },                              decoration: InputDecoration(
-                            labelText: 'Email',
-                            hintText: 'Email Address',
-                            labelStyle: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.background,
-                                fontWeight: FontWeight.w400),
-
-                            hintStyle: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.hinttext,
-                                fontWeight: FontWeight.w400),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                  27.0),                               borderSide: BorderSide(color: Colors.grey, width: 0.7), // Set border color and width
-// Add circular border
-                            ),
-                            // Set floatingLabelBehavior to always display the label
-                            floatingLabelBehavior:
-                            FloatingLabelBehavior.always,
-                            // suffixIcon:GestureDetector(
-                            //     onTap: () {
-                            //       getVerifyEmailOtp();
-                            //       print('Icon tapped');
-                            //     },child: getSuffixIconEmail()),
-                            errorText: _emailValid ? null : 'Please enter a valid email',
-
-                          ),
-                            style: const TextStyle(
-                                fontSize: 13, fontWeight: FontWeight.w400),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 55),
-                      SizedBox(
-                        height: 50,
-                        width: MediaQuery.of(context).size.width/1.2,
-
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 1),
-                          child: TextField(
-                            controller: _houseNoController,
-                            textInputAction: TextInputAction.next,
-                            onChanged: (value) {
-                              setState(() {
-                              });
-                            },                              decoration: InputDecoration(
-                            labelText: '',
-                            hintText: 'House No, Building Name.',
-                            labelStyle: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.background,
-                                fontWeight: FontWeight.w400),
-
-                            hintStyle: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.hinttext,
-                                fontWeight: FontWeight.w400),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                  27.0),
-                              borderSide: BorderSide(color: Colors.grey, width: 0.7), // Set border color and width
-// Add circular border
-                            ),
-                            // Set floatingLabelBehavior to always display the label
-                            floatingLabelBehavior:
-                            FloatingLabelBehavior.always,
 
 
-                          ),
-                            style: const TextStyle(
-                                fontSize: 13, fontWeight: FontWeight.w400),
-                          ),
-                        ),
-                      ),
+
+                        SizedBox(height: 8,),
 
 
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        height: 50,                            width: MediaQuery.of(context).size.width/1.2,
 
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 1),
-                          child: TextField(
-                            controller: _localityController,
-                            textInputAction: TextInputAction.next,
-                            onChanged: (value) {
-                              setState(() {
-                              });
-                            },                              decoration: InputDecoration(
-                            labelText: '',
-                            hintText: 'Locality, Town.',
-                            labelStyle: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.background,
-                                fontWeight: FontWeight.w400),
-
-                            hintStyle: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.hinttext,
-                                fontWeight: FontWeight.w400),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                  27.0),                               borderSide: BorderSide(color: Colors.grey, width: 0.7), // Set border color and width
-// Add circular border
-                            ),
-                            // Set floatingLabelBehavior to always display the label
-                            floatingLabelBehavior:
-                            FloatingLabelBehavior.always,
-
-
-                          ),
-                            style: const TextStyle(
-                                fontSize: 13, fontWeight: FontWeight.w400),
-                          ),
-                        ),
-                      ),
-
-
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        height: 50,
-                        width: MediaQuery.of(context).size.width/1.2,
-
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 1),
-                          child: TextField(
-                            controller: _pinCodeController,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              LengthLimitingTextInputFormatter(6), // Limits input length to 10 characters
-                            ],
-                            textInputAction: TextInputAction.next,
-                            onChanged: (value) {
-                              setState(() {
-                              });
-                            },                              decoration: InputDecoration(
-                            labelText: '',
-                            hintText: 'Pincode',
-                            labelStyle: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.background,
-                                fontWeight: FontWeight.w400),
-
-                            hintStyle: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.hinttext,
-                                fontWeight: FontWeight.w400),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                  27.0),                               borderSide: BorderSide(color: Colors.grey, width: 0.7), // Set border color and width
-// Add circular border
-                            ),
-                            // Set floatingLabelBehavior to always display the label
-                            floatingLabelBehavior:
-                            FloatingLabelBehavior.always,
-
-
-                          ),
-                            style: const TextStyle(
-                                fontSize: 13, fontWeight: FontWeight.w400),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-
-
-                      Row(
-                        children: [
-                          SizedBox(
-                            height: 49,
-                            width: MediaQuery.of(context).size.width/2.5,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 3),
-                              child: TextField(
-                                controller: _countryController,
-                                textInputAction: TextInputAction.next,
-                                onChanged: (value) {
-                                  setState(() {
-                                  });
-                                },                              decoration: InputDecoration(
-                                labelText: '',
-                                hintText: 'Country',
-                                labelStyle: const TextStyle(
+                        Container(
+                          padding: EdgeInsets.only(top: 10.0,left: 10),
+                          child: Column(
+                            children: <Widget>[
+                              CheckboxListTile(
+                                title: Text(
+                                  'Make this as default',
+                                  style: TextStyle(
+                                    color: Colors.black87,
                                     fontSize: 13,
-                                    color: Colors.background,
-                                    fontWeight: FontWeight.w400),
-
-                                hintStyle: const TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.hinttext,
-                                    fontWeight: FontWeight.w400),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      27.0),                              borderSide: BorderSide(color: Colors.grey, width: 0.7), // Set border color and width
-                                  // Add circular border
-                                ),
-                                // Set floatingLabelBehavior to always display the label
-                                floatingLabelBehavior:
-                                FloatingLabelBehavior.always,
-
-
-                              ),
-                                style: const TextStyle(
-                                    fontSize: 13, fontWeight: FontWeight.w400),
-                              ),
-                            ),
-                          ),
-
-
-                          SizedBox(width: 3,),
-                          SizedBox(
-                            height: 49,
-                            width: MediaQuery.of(context).size.width/2.5,
-
-
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 3),
-                              child: TextField(
-                                controller: _stateController,
-                                textInputAction: TextInputAction.next,
-                                onChanged: (value) {
-                                  setState(() {
-                                  });
-                                },                              decoration: InputDecoration(
-                                labelText: '',
-                                hintText: 'State',
-                                labelStyle: const TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.background,
-                                    fontWeight: FontWeight.w400),
-
-                                hintStyle: const TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.hinttext,
-                                    fontWeight: FontWeight.w400),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      27.0),                              borderSide: BorderSide(color: Colors.grey, width: 0.7), // Set border color and width
-                                  // Add circular border
-                                ),
-                                // Set floatingLabelBehavior to always display the label
-                                floatingLabelBehavior:
-                                FloatingLabelBehavior.always,
-
-
-                              ),
-                                style: const TextStyle(
-                                    fontSize: 13, fontWeight: FontWeight.w400),
-                              ),
-                            ),
-                          ),
-
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        height: 50,
-                        width: MediaQuery.of(context).size.width/1.2,
-
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 1),
-                          child: TextField(
-                            controller: _cityController,
-                            textInputAction: TextInputAction.next,
-                            onChanged: (value) {
-                              setState(() {
-                              });
-                            },                              decoration: InputDecoration(
-                            labelText: '',
-                            hintText: 'City',
-                            labelStyle: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.background,
-                                fontWeight: FontWeight.w400),
-
-                            hintStyle: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.hinttext,
-                                fontWeight: FontWeight.w400),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                  27.0),
-                              borderSide: BorderSide(color: Colors.grey, width: 0.7), // Set border color and width
-// Add circular border
-                            ),
-                            // Set floatingLabelBehavior to always display the label
-                            floatingLabelBehavior:
-                            FloatingLabelBehavior.always,
-
-
-                          ),
-                            style: const TextStyle(
-                                fontSize: 13, fontWeight: FontWeight.w400),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 18,),
-
-
-                      Row(
-                        children: [
-                          SelectableContainer(
-                            text: 'Home',
-                            isSelected: address_type == 'Home',
-                            onTap: () => setSelectedValue('Home'),
-                          ),
-                          SelectableContainer(
-                            text: 'Custom',
-                            isSelected: address_type == 'Custom',
-                            onTap: () => setSelectedValue('Custom'),
-                          ),
-                          SelectableContainer(
-                            text: 'Work',
-                            isSelected: address_type == 'Work',
-                            onTap: () => setSelectedValue('Work'),
-                          ),
-                        ],
-                      ),
-
-
-
-                      SizedBox(height: 18,),
-
-
-
-                      SizedBox(
-                        height: 54,
-                        width: MediaQuery.of(context).size.width/0.9,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 3),
-                          child: TextField(
-                            inputFormatters: [ LengthLimitingTextInputFormatter(20),],
-                            controller: _addressname,
-                            textInputAction: TextInputAction.next,
-                            onChanged: (value) {
-                              setState(() {
-                              });
-                            },                              decoration: InputDecoration(
-                            labelText: '',
-                            hintText: 'Save as - New Home, Dad’s workplace  ',
-                            labelStyle: const TextStyle(
-                                fontSize: 13,
-                                color: Colors.background,
-                                fontWeight: FontWeight.w400),
-
-                            hintStyle: const TextStyle(
-                                fontSize: 13,
-                                color: Colors.hinttext,
-                                fontWeight: FontWeight.w400),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                  27.0),                              borderSide: BorderSide(color: Colors.grey, width: 0.7), // Set border color and width
-                              // Add circular border
-                            ),
-                            // Set floatingLabelBehavior to always display the label
-                            floatingLabelBehavior:
-                            FloatingLabelBehavior.always,
-
-
-                          ),
-                            style: const TextStyle(
-                                fontSize: 13, fontWeight: FontWeight.w400),
-                          ),
-                        ),
-                      ),
-
-
-
-                      SizedBox(height: 8,),
-
-
-
-                      Container(
-                        padding: EdgeInsets.only(top: 10.0,left: 10),
-                        child: Column(
-                          children: <Widget>[
-                            CheckboxListTile(
-                              title: Text(
-                                'Make this as default',
-                                style: TextStyle(
-                                  color: Colors.black87,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              value: isChecked,
-                              onChanged: (newValue) {
-                                setState(() {
-                                  isChecked = newValue!;
-                                });
-                              },
-                              controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
-                            )
-                          ],
-                        ),
-                      ),
-
-
-
-
-
-
-
-
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 25.0, vertical: 20),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Colors
-                                    .background), // Set border properties
-                            borderRadius: BorderRadius.circular(
-                                27), // Set border radius for rounded corners
-                          ),
-                          height: 50,
-                          width: 300,
-                          child: ElevatedButton(
-                            onPressed: () {
-
-                              AddAddress();
-
-                            },
-                            style: ButtonStyle(
-                              elevation: MaterialStateProperty.all<double>(
-                                  0), // Set elevation to 0 to remove shadow
-
-                              backgroundColor:
-                              MaterialStateProperty.all<Color>(Colors
-                                  .background), // Set your desired background color here
-                            ),
-                            child: const Text('Save',
-                                style: TextStyle(
-                                    color: Colors.white,
                                     fontWeight: FontWeight.w400,
-                                    fontSize: 16)),
+                                  ),
+                                ),
+                                value: isChecked,
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    isChecked = newValue!;
+                                  });
+                                },
+                                controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                              )
+                            ],
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 80),
 
-                    ],
+
+
+
+
+
+
+
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 25.0, vertical: 20),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                  color: Colors
+                                      .background), // Set border properties
+                              borderRadius: BorderRadius.circular(
+                                  27), // Set border radius for rounded corners
+                            ),
+                            height: 50,
+                            width: 300,
+                            child: ElevatedButton(
+                              onPressed: () {
+
+                                AddAddress();
+
+                              },
+                              style: ButtonStyle(
+                                elevation: MaterialStateProperty.all<double>(
+                                    0), // Set elevation to 0 to remove shadow
+
+                                backgroundColor:
+                                MaterialStateProperty.all<Color>(Colors
+                                    .background), // Set your desired background color here
+                              ),
+                              child: const Text('Save',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 16)),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 80),
+
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       );
@@ -1004,7 +1011,7 @@ class AddADressSCreen extends State<NewAddressScreen> {
           Map<String, dynamic> data = json.decode(response.body);
           Fluttertoast.showToast(msg: "Address added successfully !!, now you can Redeem ");//data['message']
 
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => RewardSpecs(offer_id: offer_id)),
           );

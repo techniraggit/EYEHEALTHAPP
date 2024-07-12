@@ -1415,6 +1415,7 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
         // mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
+
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
@@ -1543,7 +1544,7 @@ class _ExampleAlarmEditScreenState extends State<ExampleAlarmEditScreen> {
                 activeColor: Colors.white,
                 activeTrackColor: Colors.background,
                 inactiveThumbColor: Colors.grey,
-                inactiveTrackColor: Colors.grey[300],
+                inactiveTrackColor: Colors.background.withOpacity(0.05),
               ),
             ],
           ),

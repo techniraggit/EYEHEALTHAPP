@@ -1187,6 +1187,8 @@ SizedBox(height: 10,),
       );
       print('response === ' + response.body);
       if (response.statusCode == 200) {
+        Navigator.pop(context);
+
         if (kDebugMode) {
           print('sddd ${response.body}');
         }
@@ -1460,6 +1462,7 @@ class BottomDialog extends StatelessWidget {
       print('API Response: ${response.statusCode} - ${response.body}');
 
       if (response.statusCode == 200) {
+        Navigator.pop(context);
         Map<String, dynamic> jsonResponse = jsonDecode(response.body);
         if (jsonResponse.containsKey('customer_id')) {
           String customerId = jsonResponse['customer_id'];
@@ -1575,8 +1578,8 @@ class BottomAlarmDialog extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Icon(
-                          Icons.arrow_forward,
-                          size: 28,
+                          Icons.arrow_forward_ios,color: Colors.background,
+                          size: 20,
                         ),
                       ),
                     ],
@@ -1632,8 +1635,8 @@ class BottomAlarmDialog extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Icon(
-                          Icons.arrow_forward,
-                          size: 28,
+                          Icons.arrow_forward_ios,color: Colors.background,
+                          size: 20,
                         ),
                       ),
                     ],
@@ -1678,6 +1681,8 @@ class BottomAlarmDialog extends StatelessWidget {
       print('API Response: ${response.statusCode} - ${response.body}');
 
       if (response.statusCode == 200) {
+        Navigator.pop(context);
+
         Map<String, dynamic> jsonResponse = jsonDecode(response.body);
         if (jsonResponse.containsKey('customer_id')) {
           String customerId = jsonResponse['customer_id'];
@@ -1743,6 +1748,7 @@ class _OtherDetailsBottomSheetState extends State<OtherDetailsBottomSheet> {
       print('API Response: ${response.statusCode} - ${response.body}');
 
       if (response.statusCode == 200) {
+        Navigator.pop(context);
         Map<String, dynamic> jsonResponse = jsonDecode(response.body);
         if (jsonResponse.containsKey('customer_id')) {
           String customerId = jsonResponse['customer_id'];

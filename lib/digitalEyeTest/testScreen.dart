@@ -2099,7 +2099,7 @@ class Reading extends State<ReadingTest> {
         if (responseData['message'] == 'data save successfully') {
 
           Navigator.push(
-              context, CupertinoPageRoute(builder: (context) => const TestReport()));//).then((value) => Navigator.of(context).pop()
+              context, CupertinoPageRoute(builder: (context) => const TestReport())).then((value) => Navigator.of(context).pop());//).then((value) => Navigator.of(context).pop()
         } else {}
         if (responseData.containsKey('data')) {
           // Handle the first type of response
@@ -2177,7 +2177,7 @@ class Reading extends State<ReadingTest> {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('page', "readingtestpage");
         Navigator.push(context,
-            CupertinoPageRoute(builder: (context) => const TestReport()));//.then((value) => Navigator.of(context).pop()
+            CupertinoPageRoute(builder: (context) =>  TestReport())).then((value) => Navigator.of(context).pop());//.then((value) => Navigator.of(context).pop()
         // getActivePlan();
       } else {
         Navigator.push(
@@ -4265,7 +4265,7 @@ class AstigmationTestNone extends State<AstigmationTest3> {
               Navigator.push(
                 context,
                 CupertinoPageRoute(builder: (context) => RedGreenTest()),
-              );
+              ).then((value) => Navigator.of(context).pop());
               return;
             }
           });
@@ -4472,8 +4472,9 @@ class _ShadowTestState extends State<ShadowTest> {
   String alert = '';
   String dynamicText = 'A';
   double currentTextSize = 15.118110236220474;
-  double curentSizemm = 0.50; //4-29
+  double curentSizemm = 4; //4-29
   void changeSize(String direction) {
+
     if (direction == 'up') {
       if (currentTextSize < 109.60629921259843 &&
           currentTextSize >= 15.118110236220474) {
@@ -4482,8 +4483,12 @@ class _ShadowTestState extends State<ShadowTest> {
         print("currentTextSize" +
             currentTextSize.toString() +
             "----------------${curentSizemm}");
+        setState(() {
+
+        });
       }
-    } else if (direction == 'down') {
+    }
+    else if (direction == 'down') {
       if (currentTextSize > 15.118110236220474 &&
           currentTextSize <= 109.60629921259843) {
         currentTextSize -= 1.8897637795275593;
@@ -4491,8 +4496,13 @@ class _ShadowTestState extends State<ShadowTest> {
         print("currentTextSize" +
             currentTextSize.toString() +
             "----------------${curentSizemm}");
+        setState(() {
+
+        });
       }
     }
+
+
     setState(() {
       currentTextSize;
     });
@@ -5233,7 +5243,7 @@ class redgreen extends State<RedGreenTest> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const TestReport()));//).then((value) => Navigator.of(context).pop()
+                        builder: (context) => const TestReport())).then((value) => Navigator.of(context).pop());
               } else if (age >= 40 &&
                   !jsonResponseMap["data"]['data']["is_completed"]) {
                 // Otherwise, navigate to the next appropriate screen
