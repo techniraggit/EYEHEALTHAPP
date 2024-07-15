@@ -382,51 +382,46 @@ class AddADressSCreen extends State<NewAddressScreen> {
                           ),
                         ),
                         const SizedBox(height: 25),
-                        SizedBox(
-                          height: 65,
-                          width: MediaQuery.of(context).size.width/1.2,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10.0, vertical: 1),
+                          child: TextField(
+                            controller: _emailController,
+                            textInputAction: TextInputAction.next,
+                            onChanged: (value) {
+                              setState(() {
+                                _emailValid = isValidEmail(value); // Validate email on change
+                              });
+                            },                              decoration: InputDecoration(
+                            labelText: 'Email',
+                            hintText: 'Email Address',
+                            labelStyle: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.background,
+                                fontWeight: FontWeight.w400),
 
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10.0, vertical: 1),
-                            child: TextField(
-                              controller: _emailController,
-                              textInputAction: TextInputAction.next,
-                              onChanged: (value) {
-                                setState(() {
-                                  _emailValid = isValidEmail(value); // Validate email on change
-                                });
-                              },                              decoration: InputDecoration(
-                              labelText: 'Email',
-                              hintText: 'Email Address',
-                              labelStyle: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.background,
-                                  fontWeight: FontWeight.w400),
-
-                              hintStyle: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.hinttext,
-                                  fontWeight: FontWeight.w400),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                    27.0),                               borderSide: BorderSide(color: Colors.grey, width: 0.7), // Set border color and width
-        // Add circular border
-                              ),
-                              // Set floatingLabelBehavior to always display the label
-                              floatingLabelBehavior:
-                              FloatingLabelBehavior.always,
-                              // suffixIcon:GestureDetector(
-                              //     onTap: () {
-                              //       getVerifyEmailOtp();
-                              //       print('Icon tapped');
-                              //     },child: getSuffixIconEmail()),
-                              errorText: _emailValid ? null : 'Please enter a valid email',
-
+                            hintStyle: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.hinttext,
+                                fontWeight: FontWeight.w400),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                  27.0),                               borderSide: BorderSide(color: Colors.grey, width: 0.7), // Set border color and width
+                                // Add circular border
                             ),
-                              style: const TextStyle(
-                                  fontSize: 13, fontWeight: FontWeight.w400),
-                            ),
+                            // Set floatingLabelBehavior to always display the label
+                            floatingLabelBehavior:
+                            FloatingLabelBehavior.always,
+                            // suffixIcon:GestureDetector(
+                            //     onTap: () {
+                            //       getVerifyEmailOtp();
+                            //       print('Icon tapped');
+                            //     },child: getSuffixIconEmail()),
+                            errorText: _emailValid ? null : 'Please enter a valid email',
+
+                          ),
+                            style: const TextStyle(
+                                fontSize: 13, fontWeight: FontWeight.w400),
                           ),
                         ),
 
