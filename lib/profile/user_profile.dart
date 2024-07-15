@@ -347,6 +347,47 @@ class ProfileDetails extends State<UserProfile> {
                               ),
                             ),
                             const SizedBox(height: 25),
+                            SizedBox(
+                              height: 55,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0, vertical: 1),
+                                child: TextField(
+                                  controller: _dobController,
+                                  readOnly: true,
+                                  // Make the TextField read-only
+                                  onTap: () {
+                                    _selectDate(
+                                        context); // Show date picker when the TextField is tapped
+                                  },
+                                  decoration: InputDecoration(
+                                    labelText: 'D.O.B',
+                                    hintText: 'YYYY-MM-DD',
+                                    labelStyle: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.background,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    hintStyle: const TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.hinttext,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          27.0), // Add circular border
+                                    ),
+                                    // Set floatingLabelBehavior to always display the label
+                                    floatingLabelBehavior:
+                                    FloatingLabelBehavior.always,
+                                  ),
+                                  style: const TextStyle(
+                                      fontSize: 15, fontWeight: FontWeight.w400),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 25),
+
                             Builder(builder: (context) {
                               print(
                                   "_phoneController=======${_phoneController.text}========initialPhone$initialPhone");
@@ -530,6 +571,7 @@ class ProfileDetails extends State<UserProfile> {
                                 ),
                               ),
                             ),
+                            SizedBox(height: 80,)
                           ],
                         ),
                       ),
@@ -573,6 +615,25 @@ class ProfileDetails extends State<UserProfile> {
       _determinePosition().then((value) {
         _getAddressFromLatLng(value.latitude, value.longitude);
         print("User loation ${value.latitude} ,, ${value.longitude}");
+      });
+    }
+  }
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate:
+      _selectedDate ?? DateTime.now().subtract(Duration(days: 10 * 365)),
+      // Default to 20 years ago
+      firstDate: DateTime.now().subtract(Duration(days: 70 * 365)),
+      // 70 years ago
+      lastDate: DateTime.now().subtract(Duration(days: 10 * 365)),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+        _dobController.text = _selectedDate
+            .toString()
+            .substring(0, 10); // Update the TextField with selected date
       });
     }
   }
@@ -724,7 +785,7 @@ class ProfileDetails extends State<UserProfile> {
     request.fields['phone_number'] = '+91${_phoneController.text}'; //
     request.fields['last_name'] = _lastNmeController.text;
     request.fields['first_name'] = _firstNameController.text;
-    // request.fields['dob'] = '1982-12-11';
+    request.fields['dob'] = _dobController.text;
     print("request.fields===${request.fields}");
 
     // try {
@@ -807,6 +868,7 @@ class ProfileDetails extends State<UserProfile> {
           }
           _phoneController.text =
               jsonResponse['data']['phone_number'].toString().substring(3, 13);
+          _dobController.text= jsonResponse['data']['dob'];
           _emailController.text = jsonResponse['data']['email'];
           initialEmail = jsonResponse['data']['email'];
           initialPhone =
